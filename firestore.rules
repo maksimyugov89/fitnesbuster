@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Users ──────────────────────────────────────────────────────────────────
+    match /users/{uid} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── Friend requests ────────────────────────────────────────────────────────
+    match /friend_requests/{reqId} {
+      allow read: if request.auth != null &&
+        (resource.data.fromUid == request.auth.uid ||
+         resource.data.toUid   == request.auth.uid);
+      allow create: if request.auth != null &&
+        request.resource.data.fromUid == request.auth.uid;
+      allow update: if request.auth != null &&
+        resource.data.toUid == request.auth.uid;
+      allow delete: if request.auth != null &&
+        (resource.data.fromUid == request.auth.uid ||
+         resource.data.toUid   == request.auth.uid);
+    }
+
+    // ── Friends lists (bidirectional sub-collections) ─────────────────────────
+    match /friends/{uid}/list/{friendUid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      // Write only via Cloud Functions (Admin SDK bypasses rules)
+    }
+
+    // ── Activity events (user writes own events, Functions fan out) ───────────
+    match /activity_events/{uid}/items/{eventId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── Feed (written by Cloud Functions only) ─────────────────────────────────
+    match /feed/{uid}/events/{eventId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      // Write only via Cloud Functions (Admin SDK)
+    }
+
+    // ── Challenges ─────────────────────────────────────────────────────────────
+    match /challenges/{challengeId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null &&
+        request.resource.data.createdBy == request.auth.uid;
+      allow update: if request.auth != null &&
+        resource.data.createdBy == request.auth.uid;
+      // participants changes only via Cloud Functions (Admin SDK)
+    }
+
+    match /challenge_progress/{challengeId}/participants/{uid} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── Notifications ──────────────────────────────────────────────────────────
+    match /notifications/{uid}/items/{notifId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+      // Create only via Cloud Functions
+    }
+  }
+}

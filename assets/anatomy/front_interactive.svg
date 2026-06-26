@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1024" height="1536" viewBox="0 0 1024 1536">
+
+  <!-- Background anatomical rendering.
+       Flutter Stack usage:
+         Stack(children: [
+           Image.asset("assets/anatomy/front_body.png"),
+           SvgPicture.asset("assets/anatomy/...interactive.svg"),
+         ])
+  -->
+  <image id="body-background" href="front_body.png"
+         x="0" y="0" width="1024" height="1536"
+         preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Interactive muscle zones
+       Default: fill-opacity="0" (invisible)
+       Activated by Flutter: fill-opacity="0.45" to highlight -->
+  <g id="neck" class="muscle-zone">
+    <path d="M 455,225 L 570,225 L 578,298 L 448,298 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="upper_trapezius" class="muscle-zone">
+    <path d="M 448,215 L 572,215 L 718,305 L 700,335 L 570,292 L 455,292 L 325,335 L 307,305 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="anterior_deltoid_right" class="muscle-zone">
+    <path d="M 295,300 L 390,300 L 395,385 L 365,450 L 260,445 L 258,380 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="anterior_deltoid_left" class="muscle-zone">
+    <path d="M 635,300 L 730,300 L 767,380 L 765,445 L 630,450 L 608,385 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="lateral_deltoid_right" class="muscle-zone">
+    <path d="M 200,295 L 300,295 L 275,455 L 185,445 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="lateral_deltoid_left" class="muscle-zone">
+    <path d="M 725,295 L 825,295 L 840,445 L 750,455 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="pectoralis_upper_right" class="muscle-zone">
+    <path d="M 370,298 L 510,298 L 508,445 L 352,435 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="pectoralis_upper_left" class="muscle-zone">
+    <path d="M 515,298 L 655,298 L 673,435 L 515,445 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="pectoralis_lower_right" class="muscle-zone">
+    <path d="M 365,445 L 508,445 L 505,518 L 388,528 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="pectoralis_lower_left" class="muscle-zone">
+    <path d="M 515,445 L 660,445 L 637,528 L 518,518 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="biceps_right" class="muscle-zone">
+    <path d="M 225,455 L 365,455 L 368,630 L 218,625 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="biceps_left" class="muscle-zone">
+    <path d="M 660,455 L 800,455 L 808,625 L 658,630 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="forearm_flexors_right" class="muscle-zone">
+    <path d="M 208,635 L 370,635 L 355,830 L 200,820 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="forearm_flexors_left" class="muscle-zone">
+    <path d="M 655,635 L 820,635 L 828,820 L 670,830 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="rectus_abdominis" class="muscle-zone">
+    <path d="M 452,518 L 572,518 L 568,840 L 455,840 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="external_oblique_right" class="muscle-zone">
+    <path d="M 372,518 L 452,518 L 448,840 L 358,800 L 355,680 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="external_oblique_left" class="muscle-zone">
+    <path d="M 572,518 L 652,518 L 668,680 L 665,800 L 575,840 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="hip_flexors_right" class="muscle-zone">
+    <path d="M 385,840 L 510,840 L 502,960 L 375,952 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="hip_flexors_left" class="muscle-zone">
+    <path d="M 515,840 L 640,840 L 650,952 L 522,960 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="adductors_right" class="muscle-zone">
+    <path d="M 430,960 L 510,960 L 508,1185 L 435,1182 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="adductors_left" class="muscle-zone">
+    <path d="M 515,960 L 595,960 L 590,1182 L 515,1185 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="quadriceps_right" class="muscle-zone">
+    <path d="M 350,952 L 430,952 L 435,1185 L 345,1178 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="quadriceps_left" class="muscle-zone">
+    <path d="M 595,952 L 675,952 L 680,1178 L 568,1185 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="tibialis_anterior_right" class="muscle-zone">
+    <path d="M 415,1192 L 505,1192 L 498,1390 L 420,1388 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+  <g id="tibialis_anterior_left" class="muscle-zone">
+    <path d="M 520,1192 L 610,1192 L 605,1388 L 525,1390 Z"
+          fill="#E8453C" fill-opacity="0"
+          stroke="#E8453C" stroke-opacity="0"
+          stroke-width="1.5"/>
+  </g>
+
+</svg>

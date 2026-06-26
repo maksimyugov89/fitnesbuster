@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "184541768053",
+    "firebase_url": "https://fitnesbuster-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "fitnesbuster",
+    "storage_bucket": "fitnesbuster.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:184541768053:android:dcba6eb4f5611b9d3c4b3c",
+        "android_client_info": {
+          "package_name": "com.example.fitnesbuster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "184541768053-b2n40fvr6udtvdr6tgct4v539ip1j9rp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fitnesbuster",
+            "certificate_hash": "0a0a9f2a6772942557ab5355d76af442f8f65e01"
+          }
+        },
+        {
+          "client_id": "184541768053-6hbmbgdl3g0ijpb5nre7tah5bupuorfd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXV3wyJ0FApfqUATvvTpuc0kw2Hnt5TI8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "184541768053-6hbmbgdl3g0ijpb5nre7tah5bupuorfd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

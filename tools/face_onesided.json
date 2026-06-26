@@ -1,0 +1,60 @@
+{
+  "in_muscles_onesided": [
+    {
+      "has": "Trochlea of superior oblique muscle.r",
+      "missing": "Trochlea of superior oblique muscle.l",
+      "cz": 1.607
+    },
+    {
+      "has": "Levator palpebrae superioris.r",
+      "missing": "Levator palpebrae superioris.l",
+      "cz": 1.601
+    },
+    {
+      "has": "Superior oblique muscle.r",
+      "missing": "Superior oblique muscle.l",
+      "cz": 1.601
+    },
+    {
+      "has": "Superior rectus muscle.r",
+      "missing": "Superior rectus muscle.l",
+      "cz": 1.601
+    },
+    {
+      "has": "Common tendinous ring.r",
+      "missing": "Common tendinous ring.l",
+      "cz": 1.6
+    },
+    {
+      "has": "Superior tarsus.r",
+      "missing": "Superior tarsus.l",
+      "cz": 1.598
+    },
+    {
+      "has": "Lateral rectus muscle.r",
+      "missing": "Lateral rectus muscle.l",
+      "cz": 1.594
+    },
+    {
+      "has": "Medial rectus muscle.r",
+      "missing": "Medial rectus muscle.l",
+      "cz": 1.593
+    },
+    {
+      "has": "Inferior rectus muscle.r",
+      "missing": "Inferior rectus muscle.l",
+      "cz": 1.588
+    },
+    {
+      "has": "Inferior tarsus.r",
+      "missing": "Inferior tarsus.l",
+      "cz": 1.584
+    },
+    {
+      "has": "Inferior oblique muscle.r",
+      "missing": "Inferior oblique muscle.l",
+      "cz": 1.584
+    }
+  ],
+  "count": 11
+}

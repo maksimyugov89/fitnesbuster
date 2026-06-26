@@ -1,0 +1,34 @@
+{
+  "check": {
+    "1st metacarpal bone.r": true,
+    "1st metacarpal bone.l": false,
+    "Proximal phalanx of 1st finger.r": true,
+    "Proximal phalanx of 1st finger.l": false,
+    "Distal phalanx of 1st finger.r": true,
+    "Distal phalanx of 1st finger.l": false,
+    "Proximal phalanx of hand-1st finger.r": false,
+    "Proximal phalanx of hand-1st finger.l": true,
+    "Distal phalanx of hand-1st finger.r": false,
+    "Distal phalanx of hand-1st finger.l": true,
+    "Middle phalanx of 1st finger.r": false,
+    "Middle phalanx of 1st finger.l": false
+  },
+  "similar": [
+    "Abductor hallucis on proximal phalanx of 1st finger.l",
+    "Abductor hallucis on proximal phalanx of 1st finger.r",
+    "Distal phalanx of 1st finger.r",
+    "Distal phalanx of 1st finger.r.001",
+    "Distal phalanx of 1st finger.r.002",
+    "Distal phalanx of 1st finger.r.004",
+    "Distal phalanx of hand-1st finger.l",
+    "Distal phalanx of hand-1st finger.r.002",
+    "Flexor digitorum profundus on distal phalanx of 1st finger.",
+    "Flexor digitorum profundus on distal phalanx of 1st finger.r",
+    "Proximal phalanx of 1st finger.r",
+    "Proximal phalanx of 1st finger.r.001",
+    "Proximal phalanx of 1st finger.r.002",
+    "Proximal phalanx of 1st finger.r.004",
+    "Proximal phalanx of hand-1st finger.l",
+    "Proximal phalanx of hand-1st finger.r.002"
+  ]
+}

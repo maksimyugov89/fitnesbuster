@@ -1,0 +1,232 @@
+{
+  "neck": {
+    "displayName": "Neck",
+    "displayNameRu": "Шея",
+    "view": "front"
+  },
+  "upper_trapezius": {
+    "displayName": "Upper Trapezius",
+    "displayNameRu": "Верхняя трапеция",
+    "view": "front"
+  },
+  "anterior_deltoid_left": {
+    "displayName": "Left Anterior Deltoid",
+    "displayNameRu": "Передняя дельта (левая)",
+    "view": "front"
+  },
+  "anterior_deltoid_right": {
+    "displayName": "Right Anterior Deltoid",
+    "displayNameRu": "Передняя дельта (правая)",
+    "view": "front"
+  },
+  "lateral_deltoid_left": {
+    "displayName": "Left Lateral Deltoid",
+    "displayNameRu": "Средняя дельта (левая)",
+    "view": "front"
+  },
+  "lateral_deltoid_right": {
+    "displayName": "Right Lateral Deltoid",
+    "displayNameRu": "Средняя дельта (правая)",
+    "view": "front"
+  },
+  "pectoralis_upper_left": {
+    "displayName": "Left Upper Pectoralis",
+    "displayNameRu": "Верх грудной мышцы (левой)",
+    "view": "front"
+  },
+  "pectoralis_upper_right": {
+    "displayName": "Right Upper Pectoralis",
+    "displayNameRu": "Верх грудной мышцы (правой)",
+    "view": "front"
+  },
+  "pectoralis_lower_left": {
+    "displayName": "Left Lower Pectoralis",
+    "displayNameRu": "Низ грудной мышцы (левой)",
+    "view": "front"
+  },
+  "pectoralis_lower_right": {
+    "displayName": "Right Lower Pectoralis",
+    "displayNameRu": "Низ грудной мышцы (правой)",
+    "view": "front"
+  },
+  "biceps_left": {
+    "displayName": "Left Biceps",
+    "displayNameRu": "Бицепс (левый)",
+    "view": "front"
+  },
+  "biceps_right": {
+    "displayName": "Right Biceps",
+    "displayNameRu": "Бицепс (правый)",
+    "view": "front"
+  },
+  "forearm_flexors_left": {
+    "displayName": "Left Forearm Flexors",
+    "displayNameRu": "Сгибатели предплечья (левого)",
+    "view": "front"
+  },
+  "forearm_flexors_right": {
+    "displayName": "Right Forearm Flexors",
+    "displayNameRu": "Сгибатели предплечья (правого)",
+    "view": "front"
+  },
+  "rectus_abdominis": {
+    "displayName": "Rectus Abdominis",
+    "displayNameRu": "Прямая мышца живота",
+    "view": "front"
+  },
+  "external_oblique_left": {
+    "displayName": "Left External Oblique",
+    "displayNameRu": "Косые мышцы (левые)",
+    "view": "front"
+  },
+  "external_oblique_right": {
+    "displayName": "Right External Oblique",
+    "displayNameRu": "Косые мышцы (правые)",
+    "view": "front"
+  },
+  "hip_flexors_left": {
+    "displayName": "Left Hip Flexors",
+    "displayNameRu": "Сгибатели бедра (левого)",
+    "view": "front"
+  },
+  "hip_flexors_right": {
+    "displayName": "Right Hip Flexors",
+    "displayNameRu": "Сгибатели бедра (правого)",
+    "view": "front"
+  },
+  "adductors_left": {
+    "displayName": "Left Adductors",
+    "displayNameRu": "Приводящие мышцы (левые)",
+    "view": "front"
+  },
+  "adductors_right": {
+    "displayName": "Right Adductors",
+    "displayNameRu": "Приводящие мышцы (правые)",
+    "view": "front"
+  },
+  "quadriceps_left": {
+    "displayName": "Left Quadriceps",
+    "displayNameRu": "Квадрицепс (левый)",
+    "view": "front"
+  },
+  "quadriceps_right": {
+    "displayName": "Right Quadriceps",
+    "displayNameRu": "Квадрицепс (правый)",
+    "view": "front"
+  },
+  "tibialis_anterior_left": {
+    "displayName": "Left Tibialis Anterior",
+    "displayNameRu": "Передняя большеберцовая (левая)",
+    "view": "front"
+  },
+  "tibialis_anterior_right": {
+    "displayName": "Right Tibialis Anterior",
+    "displayNameRu": "Передняя большеберцовая (правая)",
+    "view": "front"
+  },
+  "posterior_deltoid_left": {
+    "displayName": "Left Posterior Deltoid",
+    "displayNameRu": "Задняя дельта (левая)",
+    "view": "back"
+  },
+  "posterior_deltoid_right": {
+    "displayName": "Right Posterior Deltoid",
+    "displayNameRu": "Задняя дельта (правая)",
+    "view": "back"
+  },
+  "middle_trapezius": {
+    "displayName": "Middle Trapezius",
+    "displayNameRu": "Средняя трапеция",
+    "view": "back"
+  },
+  "lower_trapezius": {
+    "displayName": "Lower Trapezius",
+    "displayNameRu": "Нижняя трапеция",
+    "view": "back"
+  },
+  "latissimus_left": {
+    "displayName": "Left Latissimus Dorsi",
+    "displayNameRu": "Широчайшая (левая)",
+    "view": "back"
+  },
+  "latissimus_right": {
+    "displayName": "Right Latissimus Dorsi",
+    "displayNameRu": "Широчайшая (правая)",
+    "view": "back"
+  },
+  "teres_major_left": {
+    "displayName": "Left Teres Major",
+    "displayNameRu": "Большая круглая (левая)",
+    "view": "back"
+  },
+  "teres_major_right": {
+    "displayName": "Right Teres Major",
+    "displayNameRu": "Большая круглая (правая)",
+    "view": "back"
+  },
+  "triceps_left": {
+    "displayName": "Left Triceps",
+    "displayNameRu": "Трицепс (левый)",
+    "view": "back"
+  },
+  "triceps_right": {
+    "displayName": "Right Triceps",
+    "displayNameRu": "Трицепс (правый)",
+    "view": "back"
+  },
+  "erector_spinae": {
+    "displayName": "Erector Spinae",
+    "displayNameRu": "Разгибатели позвоночника",
+    "view": "back"
+  },
+  "gluteus_maximus_left": {
+    "displayName": "Left Gluteus Maximus",
+    "displayNameRu": "Большая ягодичная (левая)",
+    "view": "back"
+  },
+  "gluteus_maximus_right": {
+    "displayName": "Right Gluteus Maximus",
+    "displayNameRu": "Большая ягодичная (правая)",
+    "view": "back"
+  },
+  "gluteus_medius_left": {
+    "displayName": "Left Gluteus Medius",
+    "displayNameRu": "Средняя ягодичная (левая)",
+    "view": "back"
+  },
+  "gluteus_medius_right": {
+    "displayName": "Right Gluteus Medius",
+    "displayNameRu": "Средняя ягодичная (правая)",
+    "view": "back"
+  },
+  "hamstrings_left": {
+    "displayName": "Left Hamstrings",
+    "displayNameRu": "Задняя поверхность бедра (левая)",
+    "view": "back"
+  },
+  "hamstrings_right": {
+    "displayName": "Right Hamstrings",
+    "displayNameRu": "Задняя поверхность бедра (правая)",
+    "view": "back"
+  },
+  "gastrocnemius_left": {
+    "displayName": "Left Gastrocnemius",
+    "displayNameRu": "Икроножная (левая)",
+    "view": "back"
+  },
+  "gastrocnemius_right": {
+    "displayName": "Right Gastrocnemius",
+    "displayNameRu": "Икроножная (правая)",
+    "view": "back"
+  },
+  "soleus_left": {
+    "displayName": "Left Soleus",
+    "displayNameRu": "Камбаловидная (левая)",
+    "view": "back"
+  },
+  "soleus_right": {
+    "displayName": "Right Soleus",
+    "displayNameRu": "Камбаловидная (правая)",
+    "view": "back"
+  }
+}

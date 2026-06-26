@@ -1,0 +1,3686 @@
+{
+  "skull_top_objects": [
+    {
+      "name": "Vertex.l",
+      "center_z": 1.708,
+      "min_z": 1.706,
+      "max_z": 1.709,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Vertex.r",
+      "center_z": 1.708,
+      "min_z": 1.706,
+      "max_z": 1.709,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Frontal branches of callosomarginal artery.l",
+      "center_z": 1.67,
+      "min_z": 1.658,
+      "max_z": 1.682,
+      "exported_as": null
+    },
+    {
+      "name": "Frontal branches of callosomarginal artery.r",
+      "center_z": 1.67,
+      "min_z": 1.658,
+      "max_z": 1.682,
+      "exported_as": null
+    },
+    {
+      "name": "Postcentral gyrus.l.001",
+      "center_z": 1.665,
+      "min_z": 1.636,
+      "max_z": 1.694,
+      "exported_as": null
+    },
+    {
+      "name": "Postcentral gyrus.r.001",
+      "center_z": 1.665,
+      "min_z": 1.636,
+      "max_z": 1.694,
+      "exported_as": null
+    },
+    {
+      "name": "Precentral gyrus.l.001",
+      "center_z": 1.664,
+      "min_z": 1.632,
+      "max_z": 1.696,
+      "exported_as": null
+    },
+    {
+      "name": "Precentral gyrus.r.001",
+      "center_z": 1.664,
+      "min_z": 1.632,
+      "max_z": 1.696,
+      "exported_as": null
+    },
+    {
+      "name": "Middle frontal gyrus.l.001",
+      "center_z": 1.662,
+      "min_z": 1.632,
+      "max_z": 1.692,
+      "exported_as": null
+    },
+    {
+      "name": "Middle frontal gyrus.r.001",
+      "center_z": 1.662,
+      "min_z": 1.632,
+      "max_z": 1.692,
+      "exported_as": null
+    },
+    {
+      "name": "Superior frontal gyrus.l.001",
+      "center_z": 1.662,
+      "min_z": 1.624,
+      "max_z": 1.7,
+      "exported_as": null
+    },
+    {
+      "name": "Superior frontal gyrus.r.001",
+      "center_z": 1.662,
+      "min_z": 1.624,
+      "max_z": 1.7,
+      "exported_as": null
+    },
+    {
+      "name": "Callosomarginal artery.l",
+      "center_z": 1.658,
+      "min_z": 1.619,
+      "max_z": 1.697,
+      "exported_as": null
+    },
+    {
+      "name": "Callosomarginal artery.r",
+      "center_z": 1.658,
+      "min_z": 1.619,
+      "max_z": 1.697,
+      "exported_as": null
+    },
+    {
+      "name": "Pericallosal artery.l",
+      "center_z": 1.658,
+      "min_z": 1.616,
+      "max_z": 1.701,
+      "exported_as": null
+    },
+    {
+      "name": "Pericallosal artery.r",
+      "center_z": 1.658,
+      "min_z": 1.616,
+      "max_z": 1.701,
+      "exported_as": null
+    },
+    {
+      "name": "Parietal region.l",
+      "center_z": 1.656,
+      "min_z": 1.604,
+      "max_z": 1.709,
+      "exported_as": null
+    },
+    {
+      "name": "Parietal region.r",
+      "center_z": 1.656,
+      "min_z": 1.604,
+      "max_z": 1.709,
+      "exported_as": null
+    },
+    {
+      "name": "Superior parietal lobule.l",
+      "center_z": 1.654,
+      "min_z": 1.622,
+      "max_z": 1.687,
+      "exported_as": null
+    },
+    {
+      "name": "Superior parietal lobule.l.001",
+      "center_z": 1.654,
+      "min_z": 1.622,
+      "max_z": 1.687,
+      "exported_as": null
+    },
+    {
+      "name": "Epicranial aponeurosis",
+      "center_z": 1.653,
+      "min_z": 1.599,
+      "max_z": 1.708,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Supramarginal gyrus.l",
+      "center_z": 1.653,
+      "min_z": 1.633,
+      "max_z": 1.673,
+      "exported_as": null
+    },
+    {
+      "name": "Supramarginal gyrus.r",
+      "center_z": 1.653,
+      "min_z": 1.633,
+      "max_z": 1.673,
+      "exported_as": null
+    },
+    {
+      "name": "Frontal branches of middle cerebral artery.l",
+      "center_z": 1.653,
+      "min_z": 1.615,
+      "max_z": 1.691,
+      "exported_as": null
+    },
+    {
+      "name": "Frontal branches of middle cerebral artery.r",
+      "center_z": 1.653,
+      "min_z": 1.615,
+      "max_z": 1.691,
+      "exported_as": null
+    },
+    {
+      "name": "Orbitofrontal branches of middle cerebral artery.l",
+      "center_z": 1.653,
+      "min_z": 1.626,
+      "max_z": 1.68,
+      "exported_as": null
+    },
+    {
+      "name": "Orbitofrontal branches of middle cerebral artery.r",
+      "center_z": 1.653,
+      "min_z": 1.626,
+      "max_z": 1.68,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior frontal gyrus.l.001",
+      "center_z": 1.648,
+      "min_z": 1.619,
+      "max_z": 1.677,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior frontal gyrus.r.001",
+      "center_z": 1.648,
+      "min_z": 1.619,
+      "max_z": 1.677,
+      "exported_as": null
+    },
+    {
+      "name": "Left parietal bone",
+      "center_z": 1.648,
+      "min_z": 1.59,
+      "max_z": 1.705,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Parietal bone.r",
+      "center_z": 1.648,
+      "min_z": 1.59,
+      "max_z": 1.705,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Frontal region.l",
+      "center_z": 1.646,
+      "min_z": 1.588,
+      "max_z": 1.704,
+      "exported_as": null
+    },
+    {
+      "name": "Frontal region.r",
+      "center_z": 1.646,
+      "min_z": 1.588,
+      "max_z": 1.704,
+      "exported_as": null
+    },
+    {
+      "name": "Frontal bone",
+      "center_z": 1.646,
+      "min_z": 1.593,
+      "max_z": 1.699,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "White matter of telencephalon.l",
+      "center_z": 1.644,
+      "min_z": 1.595,
+      "max_z": 1.693,
+      "exported_as": null
+    },
+    {
+      "name": "White matter of telencephalon.r",
+      "center_z": 1.644,
+      "min_z": 1.595,
+      "max_z": 1.693,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior parietal lobule.l.001",
+      "center_z": 1.642,
+      "min_z": 1.612,
+      "max_z": 1.673,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior parietal lobule.r.001",
+      "center_z": 1.642,
+      "min_z": 1.612,
+      "max_z": 1.673,
+      "exported_as": null
+    },
+    {
+      "name": "Parietal branches of middle cerebral artery.l",
+      "center_z": 1.641,
+      "min_z": 1.595,
+      "max_z": 1.686,
+      "exported_as": null
+    },
+    {
+      "name": "Parietal branches of middle cerebral artery.r",
+      "center_z": 1.641,
+      "min_z": 1.595,
+      "max_z": 1.686,
+      "exported_as": null
+    },
+    {
+      "name": "Frontalis.l",
+      "center_z": 1.639,
+      "min_z": 1.604,
+      "max_z": 1.674,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Frontalis.r",
+      "center_z": 1.639,
+      "min_z": 1.604,
+      "max_z": 1.674,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Cingulate gyrus.l.001",
+      "center_z": 1.635,
+      "min_z": 1.603,
+      "max_z": 1.668,
+      "exported_as": null
+    },
+    {
+      "name": "Cingulate gyrus.r.001",
+      "center_z": 1.635,
+      "min_z": 1.603,
+      "max_z": 1.668,
+      "exported_as": null
+    },
+    {
+      "name": "Corpus callosum.001",
+      "center_z": 1.635,
+      "min_z": 1.617,
+      "max_z": 1.654,
+      "exported_as": null
+    },
+    {
+      "name": "Septum pellucidum.001",
+      "center_z": 1.635,
+      "min_z": 1.624,
+      "max_z": 1.646,
+      "exported_as": null
+    },
+    {
+      "name": "Insula.l.001",
+      "center_z": 1.634,
+      "min_z": 1.618,
+      "max_z": 1.651,
+      "exported_as": null
+    },
+    {
+      "name": "Insula.r.001",
+      "center_z": 1.634,
+      "min_z": 1.618,
+      "max_z": 1.651,
+      "exported_as": null
+    },
+    {
+      "name": "Parieto-occipital artery.l",
+      "center_z": 1.633,
+      "min_z": 1.61,
+      "max_z": 1.656,
+      "exported_as": null
+    },
+    {
+      "name": "Parieto-occipital artery.r",
+      "center_z": 1.633,
+      "min_z": 1.61,
+      "max_z": 1.656,
+      "exported_as": null
+    },
+    {
+      "name": "Hair",
+      "center_z": 1.632,
+      "min_z": 1.523,
+      "max_z": 1.74,
+      "exported_as": null
+    },
+    {
+      "name": "Internal capsule.l",
+      "center_z": 1.632,
+      "min_z": 1.616,
+      "max_z": 1.648,
+      "exported_as": null
+    },
+    {
+      "name": "Internal capsule.r",
+      "center_z": 1.632,
+      "min_z": 1.616,
+      "max_z": 1.648,
+      "exported_as": null
+    },
+    {
+      "name": "Caudate nucleus.l.001",
+      "center_z": 1.631,
+      "min_z": 1.613,
+      "max_z": 1.649,
+      "exported_as": null
+    },
+    {
+      "name": "Caudate nucleus.r.001",
+      "center_z": 1.631,
+      "min_z": 1.613,
+      "max_z": 1.649,
+      "exported_as": null
+    },
+    {
+      "name": "Putamen.l.001",
+      "center_z": 1.63,
+      "min_z": 1.618,
+      "max_z": 1.643,
+      "exported_as": null
+    },
+    {
+      "name": "Putamen.r.001",
+      "center_z": 1.63,
+      "min_z": 1.618,
+      "max_z": 1.643,
+      "exported_as": null
+    },
+    {
+      "name": "Insular branches of middle cerebral artery.l",
+      "center_z": 1.63,
+      "min_z": 1.619,
+      "max_z": 1.642,
+      "exported_as": null
+    },
+    {
+      "name": "Insular branches of middle cerebral artery.r",
+      "center_z": 1.63,
+      "min_z": 1.619,
+      "max_z": 1.642,
+      "exported_as": null
+    },
+    {
+      "name": "Hippocampal commissure.001",
+      "center_z": 1.629,
+      "min_z": 1.619,
+      "max_z": 1.638,
+      "exported_as": null
+    },
+    {
+      "name": "Lateral ventricle.l.001",
+      "center_z": 1.627,
+      "min_z": 1.603,
+      "max_z": 1.65,
+      "exported_as": null
+    },
+    {
+      "name": "Lateral ventricle.r.001",
+      "center_z": 1.627,
+      "min_z": 1.603,
+      "max_z": 1.65,
+      "exported_as": null
+    },
+    {
+      "name": "Globus pallidus.l",
+      "center_z": 1.627,
+      "min_z": 1.618,
+      "max_z": 1.635,
+      "exported_as": null
+    },
+    {
+      "name": "Globus pallidus.r",
+      "center_z": 1.627,
+      "min_z": 1.618,
+      "max_z": 1.635,
+      "exported_as": null
+    },
+    {
+      "name": "Thalamus.l.001",
+      "center_z": 1.626,
+      "min_z": 1.614,
+      "max_z": 1.637,
+      "exported_as": null
+    },
+    {
+      "name": "Thalamus.r.001",
+      "center_z": 1.626,
+      "min_z": 1.614,
+      "max_z": 1.637,
+      "exported_as": null
+    },
+    {
+      "name": "Temporoparietalis muscle.l",
+      "center_z": 1.626,
+      "min_z": 1.575,
+      "max_z": 1.678,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Temporoparietalis muscle.r",
+      "center_z": 1.626,
+      "min_z": 1.575,
+      "max_z": 1.678,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Anterior commissure.001",
+      "center_z": 1.625,
+      "min_z": 1.624,
+      "max_z": 1.626,
+      "exported_as": null
+    },
+    {
+      "name": "Stria medullaris thalami.r.001",
+      "center_z": 1.625,
+      "min_z": 1.617,
+      "max_z": 1.633,
+      "exported_as": null
+    },
+    {
+      "name": "Superior temporal gyrus.l.001",
+      "center_z": 1.625,
+      "min_z": 1.606,
+      "max_z": 1.644,
+      "exported_as": null
+    },
+    {
+      "name": "Superior temporal gyrus.r.001",
+      "center_z": 1.625,
+      "min_z": 1.606,
+      "max_z": 1.644,
+      "exported_as": null
+    },
+    {
+      "name": "Choroid plexus.l.001",
+      "center_z": 1.624,
+      "min_z": 1.607,
+      "max_z": 1.64,
+      "exported_as": null
+    },
+    {
+      "name": "Choroid plexus.r.001",
+      "center_z": 1.624,
+      "min_z": 1.607,
+      "max_z": 1.64,
+      "exported_as": null
+    },
+    {
+      "name": "Stria terminalis.l.001",
+      "center_z": 1.624,
+      "min_z": 1.609,
+      "max_z": 1.639,
+      "exported_as": null
+    },
+    {
+      "name": "Stria terminalis.r.001",
+      "center_z": 1.624,
+      "min_z": 1.609,
+      "max_z": 1.639,
+      "exported_as": null
+    },
+    {
+      "name": "?.l",
+      "center_z": 1.623,
+      "min_z": 1.603,
+      "max_z": 1.643,
+      "exported_as": null
+    },
+    {
+      "name": "?.r",
+      "center_z": 1.623,
+      "min_z": 1.603,
+      "max_z": 1.643,
+      "exported_as": null
+    },
+    {
+      "name": "Fornix.l.001",
+      "center_z": 1.623,
+      "min_z": 1.608,
+      "max_z": 1.639,
+      "exported_as": null
+    },
+    {
+      "name": "Fornix.r.001",
+      "center_z": 1.623,
+      "min_z": 1.608,
+      "max_z": 1.639,
+      "exported_as": null
+    },
+    {
+      "name": "Supra-orbital artery.l",
+      "center_z": 1.622,
+      "min_z": 1.611,
+      "max_z": 1.632,
+      "exported_as": null
+    },
+    {
+      "name": "Supra-orbital artery.r",
+      "center_z": 1.622,
+      "min_z": 1.611,
+      "max_z": 1.632,
+      "exported_as": null
+    },
+    {
+      "name": "Third ventricle.001",
+      "center_z": 1.621,
+      "min_z": 1.61,
+      "max_z": 1.632,
+      "exported_as": null
+    },
+    {
+      "name": "Orbital part of inferior frontal gyrus.l",
+      "center_z": 1.621,
+      "min_z": 1.606,
+      "max_z": 1.635,
+      "exported_as": null
+    },
+    {
+      "name": "Orbital part of inferior frontal gyrus.r",
+      "center_z": 1.621,
+      "min_z": 1.606,
+      "max_z": 1.635,
+      "exported_as": null
+    },
+    {
+      "name": "Anterolateral central arteries.l",
+      "center_z": 1.621,
+      "min_z": 1.6,
+      "max_z": 1.641,
+      "exported_as": null
+    },
+    {
+      "name": "Anterolateral central arteries.r",
+      "center_z": 1.621,
+      "min_z": 1.6,
+      "max_z": 1.641,
+      "exported_as": null
+    },
+    {
+      "name": "Temporal region.l",
+      "center_z": 1.621,
+      "min_z": 1.587,
+      "max_z": 1.655,
+      "exported_as": null
+    },
+    {
+      "name": "Temporal region.r",
+      "center_z": 1.621,
+      "min_z": 1.587,
+      "max_z": 1.655,
+      "exported_as": null
+    },
+    {
+      "name": "Middle cerebral artery.l",
+      "center_z": 1.621,
+      "min_z": 1.607,
+      "max_z": 1.634,
+      "exported_as": null
+    },
+    {
+      "name": "Middle cerebral artery.r",
+      "center_z": 1.621,
+      "min_z": 1.607,
+      "max_z": 1.634,
+      "exported_as": null
+    },
+    {
+      "name": "Temporal operculum.l.001",
+      "center_z": 1.62,
+      "min_z": 1.597,
+      "max_z": 1.644,
+      "exported_as": null
+    },
+    {
+      "name": "Temporal operculum.r.001",
+      "center_z": 1.62,
+      "min_z": 1.597,
+      "max_z": 1.644,
+      "exported_as": null
+    },
+    {
+      "name": "Habenula.001",
+      "center_z": 1.619,
+      "min_z": 1.617,
+      "max_z": 1.621,
+      "exported_as": null
+    },
+    {
+      "name": "Septal nuclei.001",
+      "center_z": 1.618,
+      "min_z": 1.612,
+      "max_z": 1.623,
+      "exported_as": null
+    },
+    {
+      "name": "Orbitofrontal branches of anterior cerebral artery.l",
+      "center_z": 1.618,
+      "min_z": 1.608,
+      "max_z": 1.629,
+      "exported_as": null
+    },
+    {
+      "name": "Orbitofrontal branches of anterior cerebral artery.r",
+      "center_z": 1.618,
+      "min_z": 1.608,
+      "max_z": 1.629,
+      "exported_as": null
+    },
+    {
+      "name": "Eyebrow.r",
+      "center_z": 1.617,
+      "min_z": 1.613,
+      "max_z": 1.621,
+      "exported_as": null
+    },
+    {
+      "name": "Eyebrow.l",
+      "center_z": 1.617,
+      "min_z": 1.613,
+      "max_z": 1.621,
+      "exported_as": null
+    },
+    {
+      "name": "Occipital lobe.l.001",
+      "center_z": 1.617,
+      "min_z": 1.591,
+      "max_z": 1.643,
+      "exported_as": null
+    },
+    {
+      "name": "Occipital lobe.r.001",
+      "center_z": 1.617,
+      "min_z": 1.591,
+      "max_z": 1.643,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior commissure.001",
+      "center_z": 1.617,
+      "min_z": 1.616,
+      "max_z": 1.618,
+      "exported_as": null
+    },
+    {
+      "name": "Epiphysis",
+      "center_z": 1.616,
+      "min_z": 1.612,
+      "max_z": 1.62,
+      "exported_as": null
+    },
+    {
+      "name": "Interpeduncular fossa.l",
+      "center_z": 1.615,
+      "min_z": 1.614,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Interpeduncular fossa.r",
+      "center_z": 1.615,
+      "min_z": 1.614,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior cerebral artery.l",
+      "center_z": 1.615,
+      "min_z": 1.592,
+      "max_z": 1.638,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior cerebral artery.r",
+      "center_z": 1.615,
+      "min_z": 1.592,
+      "max_z": 1.638,
+      "exported_as": null
+    },
+    {
+      "name": "Anterior cerebral artery.l",
+      "center_z": 1.614,
+      "min_z": 1.607,
+      "max_z": 1.621,
+      "exported_as": null
+    },
+    {
+      "name": "Anterior cerebral artery.r",
+      "center_z": 1.614,
+      "min_z": 1.607,
+      "max_z": 1.621,
+      "exported_as": null
+    },
+    {
+      "name": "Cavernous sinus.l",
+      "center_z": 1.614,
+      "min_z": 1.605,
+      "max_z": 1.624,
+      "exported_as": null
+    },
+    {
+      "name": "Cavernous sinus.l.001",
+      "center_z": 1.614,
+      "min_z": 1.605,
+      "max_z": 1.624,
+      "exported_as": null
+    },
+    {
+      "name": "Cavernous sinus.r",
+      "center_z": 1.614,
+      "min_z": 1.605,
+      "max_z": 1.624,
+      "exported_as": null
+    },
+    {
+      "name": "Medial occipital artery.l",
+      "center_z": 1.614,
+      "min_z": 1.609,
+      "max_z": 1.618,
+      "exported_as": null
+    },
+    {
+      "name": "Medial occipital artery.r",
+      "center_z": 1.614,
+      "min_z": 1.609,
+      "max_z": 1.618,
+      "exported_as": null
+    },
+    {
+      "name": "Temporal branches of middle cerebral artery.l",
+      "center_z": 1.614,
+      "min_z": 1.591,
+      "max_z": 1.638,
+      "exported_as": null
+    },
+    {
+      "name": "Temporal branches of middle cerebral artery.r",
+      "center_z": 1.614,
+      "min_z": 1.591,
+      "max_z": 1.638,
+      "exported_as": null
+    },
+    {
+      "name": "Eyebrow(hair).l",
+      "center_z": 1.613,
+      "min_z": 1.609,
+      "max_z": 1.618,
+      "exported_as": null
+    },
+    {
+      "name": "Eyebrow(hair).r",
+      "center_z": 1.613,
+      "min_z": 1.609,
+      "max_z": 1.618,
+      "exported_as": null
+    },
+    {
+      "name": "Hippocampus.l.001",
+      "center_z": 1.613,
+      "min_z": 1.602,
+      "max_z": 1.623,
+      "exported_as": null
+    },
+    {
+      "name": "Hippocampus.r.001",
+      "center_z": 1.613,
+      "min_z": 1.602,
+      "max_z": 1.623,
+      "exported_as": null
+    },
+    {
+      "name": "Mamillary body.l.001",
+      "center_z": 1.613,
+      "min_z": 1.611,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Mamillary body.r.001",
+      "center_z": 1.613,
+      "min_z": 1.611,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Superior colliculus.l.001",
+      "center_z": 1.613,
+      "min_z": 1.61,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Superior colliculus.r.001",
+      "center_z": 1.613,
+      "min_z": 1.61,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Supratrochlear artery.l",
+      "center_z": 1.613,
+      "min_z": 1.604,
+      "max_z": 1.623,
+      "exported_as": null
+    },
+    {
+      "name": "Supratrochlear artery.r",
+      "center_z": 1.613,
+      "min_z": 1.604,
+      "max_z": 1.623,
+      "exported_as": null
+    },
+    {
+      "name": "Corrugator supercilii.l",
+      "center_z": 1.612,
+      "min_z": 1.602,
+      "max_z": 1.621,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Lateral geniculate body.l.001",
+      "center_z": 1.612,
+      "min_z": 1.609,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Lateral geniculate body.r.001",
+      "center_z": 1.612,
+      "min_z": 1.609,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Corrugator supercilii.r",
+      "center_z": 1.612,
+      "min_z": 1.602,
+      "max_z": 1.621,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Medial geniculate body.l.001",
+      "center_z": 1.612,
+      "min_z": 1.608,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Medial geniculate body.r.001",
+      "center_z": 1.612,
+      "min_z": 1.608,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Optic tract.l.001",
+      "center_z": 1.612,
+      "min_z": 1.608,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Optic tract.r.001",
+      "center_z": 1.612,
+      "min_z": 1.608,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Procerus.l",
+      "center_z": 1.612,
+      "min_z": 1.594,
+      "max_z": 1.63,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Procerus.r",
+      "center_z": 1.612,
+      "min_z": 1.594,
+      "max_z": 1.63,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Optic chiasm.l",
+      "center_z": 1.612,
+      "min_z": 1.608,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Optic chiasm.r",
+      "center_z": 1.612,
+      "min_z": 1.608,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Amygdaloid body.l.001",
+      "center_z": 1.611,
+      "min_z": 1.604,
+      "max_z": 1.617,
+      "exported_as": null
+    },
+    {
+      "name": "Amygdaloid body.r.001",
+      "center_z": 1.611,
+      "min_z": 1.604,
+      "max_z": 1.617,
+      "exported_as": null
+    },
+    {
+      "name": "Middle temporal gyrus.l.001",
+      "center_z": 1.611,
+      "min_z": 1.595,
+      "max_z": 1.628,
+      "exported_as": null
+    },
+    {
+      "name": "Middle temporal gyrus.r.001",
+      "center_z": 1.611,
+      "min_z": 1.595,
+      "max_z": 1.628,
+      "exported_as": null
+    },
+    {
+      "name": "Anterior communicating artery",
+      "center_z": 1.61,
+      "min_z": 1.609,
+      "max_z": 1.611,
+      "exported_as": null
+    },
+    {
+      "name": "Aqueduct of midbrain (Cerebral aqueduct)",
+      "center_z": 1.61,
+      "min_z": 1.601,
+      "max_z": 1.619,
+      "exported_as": null
+    },
+    {
+      "name": "Superior cerebellar peduncle.l.001",
+      "center_z": 1.61,
+      "min_z": 1.602,
+      "max_z": 1.618,
+      "exported_as": null
+    },
+    {
+      "name": "Superior cerebellar peduncle.r.001",
+      "center_z": 1.61,
+      "min_z": 1.602,
+      "max_z": 1.618,
+      "exported_as": null
+    },
+    {
+      "name": "Hypothalamus.l",
+      "center_z": 1.61,
+      "min_z": 1.605,
+      "max_z": 1.615,
+      "exported_as": null
+    },
+    {
+      "name": "Hypothalamus.r",
+      "center_z": 1.61,
+      "min_z": 1.605,
+      "max_z": 1.615,
+      "exported_as": null
+    },
+    {
+      "name": "Midbrain.l",
+      "center_z": 1.609,
+      "min_z": 1.601,
+      "max_z": 1.618,
+      "exported_as": null
+    },
+    {
+      "name": "Midbrain.r",
+      "center_z": 1.609,
+      "min_z": 1.601,
+      "max_z": 1.618,
+      "exported_as": null
+    },
+    {
+      "name": "Optic chiasm.l.001",
+      "center_z": 1.609,
+      "min_z": 1.609,
+      "max_z": 1.609,
+      "exported_as": null
+    },
+    {
+      "name": "Olfactory nerve (I).l",
+      "center_z": 1.609,
+      "min_z": 1.602,
+      "max_z": 1.617,
+      "exported_as": null
+    },
+    {
+      "name": "Olfactory nerve (I).r",
+      "center_z": 1.609,
+      "min_z": 1.602,
+      "max_z": 1.617,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior colliculus.l.001",
+      "center_z": 1.608,
+      "min_z": 1.601,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior colliculus.r.001",
+      "center_z": 1.608,
+      "min_z": 1.601,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Trochlea of superior oblique muscle.r",
+      "center_z": 1.607,
+      "min_z": 1.605,
+      "max_z": 1.609,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Lateral occipital artery.l",
+      "center_z": 1.607,
+      "min_z": 1.594,
+      "max_z": 1.619,
+      "exported_as": null
+    },
+    {
+      "name": "Lateral occipital artery.r",
+      "center_z": 1.607,
+      "min_z": 1.594,
+      "max_z": 1.619,
+      "exported_as": null
+    },
+    {
+      "name": "Apex of auricle.l",
+      "center_z": 1.605,
+      "min_z": 1.603,
+      "max_z": 1.607,
+      "exported_as": null
+    },
+    {
+      "name": "Apex of auricle.r",
+      "center_z": 1.605,
+      "min_z": 1.603,
+      "max_z": 1.607,
+      "exported_as": null
+    },
+    {
+      "name": "Parahippocampal gyrus.l",
+      "center_z": 1.605,
+      "min_z": 1.595,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Parahippocampal gyrus.r",
+      "center_z": 1.605,
+      "min_z": 1.595,
+      "max_z": 1.616,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior communicating artery.l",
+      "center_z": 1.605,
+      "min_z": 1.603,
+      "max_z": 1.607,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior communicating artery.r",
+      "center_z": 1.605,
+      "min_z": 1.603,
+      "max_z": 1.607,
+      "exported_as": null
+    },
+    {
+      "name": "Infraorbital region.l",
+      "center_z": 1.604,
+      "min_z": 1.556,
+      "max_z": 1.651,
+      "exported_as": null
+    },
+    {
+      "name": "Infraorbital region.r",
+      "center_z": 1.604,
+      "min_z": 1.556,
+      "max_z": 1.651,
+      "exported_as": null
+    },
+    {
+      "name": "Temporalis muscle.l",
+      "center_z": 1.604,
+      "min_z": 1.546,
+      "max_z": 1.662,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Temporalis muscle.r",
+      "center_z": 1.604,
+      "min_z": 1.546,
+      "max_z": 1.662,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Occipital region.l",
+      "center_z": 1.604,
+      "min_z": 1.558,
+      "max_z": 1.65,
+      "exported_as": null
+    },
+    {
+      "name": "Occipital region.r",
+      "center_z": 1.604,
+      "min_z": 1.558,
+      "max_z": 1.65,
+      "exported_as": null
+    },
+    {
+      "name": "Lacrimal gland.l",
+      "center_z": 1.603,
+      "min_z": 1.594,
+      "max_z": 1.612,
+      "exported_as": null
+    },
+    {
+      "name": "Lacrimal gland.r",
+      "center_z": 1.603,
+      "min_z": 1.594,
+      "max_z": 1.612,
+      "exported_as": null
+    },
+    {
+      "name": "Occipital bone",
+      "center_z": 1.603,
+      "min_z": 1.551,
+      "max_z": 1.655,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Optic nerve (II).l",
+      "center_z": 1.603,
+      "min_z": 1.591,
+      "max_z": 1.614,
+      "exported_as": null
+    },
+    {
+      "name": "Optic nerve (II).r",
+      "center_z": 1.603,
+      "min_z": 1.591,
+      "max_z": 1.614,
+      "exported_as": null
+    },
+    {
+      "name": "Lacrimal artery.l",
+      "center_z": 1.603,
+      "min_z": 1.6,
+      "max_z": 1.607,
+      "exported_as": null
+    },
+    {
+      "name": "Lacrimal artery.r",
+      "center_z": 1.603,
+      "min_z": 1.6,
+      "max_z": 1.607,
+      "exported_as": null
+    },
+    {
+      "name": "Long posterior ciliary arteries.l",
+      "center_z": 1.603,
+      "min_z": 1.598,
+      "max_z": 1.608,
+      "exported_as": null
+    },
+    {
+      "name": "Long posterior ciliary arteries.r",
+      "center_z": 1.603,
+      "min_z": 1.598,
+      "max_z": 1.608,
+      "exported_as": null
+    },
+    {
+      "name": "Root of the nose.l",
+      "center_z": 1.603,
+      "min_z": 1.598,
+      "max_z": 1.608,
+      "exported_as": null
+    },
+    {
+      "name": "Root of the nose.r",
+      "center_z": 1.603,
+      "min_z": 1.598,
+      "max_z": 1.608,
+      "exported_as": null
+    },
+    {
+      "name": "Hypophysis.001",
+      "center_z": 1.602,
+      "min_z": 1.595,
+      "max_z": 1.608,
+      "exported_as": null
+    },
+    {
+      "name": "Occipitalis.l",
+      "center_z": 1.602,
+      "min_z": 1.585,
+      "max_z": 1.618,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Occipitalis.r",
+      "center_z": 1.602,
+      "min_z": 1.585,
+      "max_z": 1.618,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Occipitotemporal gyri.l",
+      "center_z": 1.602,
+      "min_z": 1.589,
+      "max_z": 1.614,
+      "exported_as": null
+    },
+    {
+      "name": "Occipitotemporal gyri.r",
+      "center_z": 1.602,
+      "min_z": 1.589,
+      "max_z": 1.614,
+      "exported_as": null
+    },
+    {
+      "name": "Levator palpebrae superioris.r",
+      "center_z": 1.601,
+      "min_z": 1.592,
+      "max_z": 1.61,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Inferior temporal gyrus.r.004",
+      "center_z": 1.601,
+      "min_z": 1.587,
+      "max_z": 1.615,
+      "exported_as": null
+    },
+    {
+      "name": "Superior oblique muscle.r",
+      "center_z": 1.601,
+      "min_z": 1.595,
+      "max_z": 1.607,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Superior rectus muscle.r",
+      "center_z": 1.601,
+      "min_z": 1.597,
+      "max_z": 1.605,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Inferior temporal gyrus.l",
+      "center_z": 1.601,
+      "min_z": 1.587,
+      "max_z": 1.615,
+      "exported_as": null
+    },
+    {
+      "name": "Medial palpebral arteries.l",
+      "center_z": 1.601,
+      "min_z": 1.595,
+      "max_z": 1.606,
+      "exported_as": null
+    },
+    {
+      "name": "Medial palpebral arteries.r",
+      "center_z": 1.601,
+      "min_z": 1.595,
+      "max_z": 1.606,
+      "exported_as": null
+    },
+    {
+      "name": "Common tendinous ring.r",
+      "center_z": 1.6,
+      "min_z": 1.596,
+      "max_z": 1.603,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Anterior ethmoidal artery.l",
+      "center_z": 1.6,
+      "min_z": 1.6,
+      "max_z": 1.601,
+      "exported_as": null
+    },
+    {
+      "name": "Anterior ethmoidal artery.r",
+      "center_z": 1.6,
+      "min_z": 1.6,
+      "max_z": 1.601,
+      "exported_as": null
+    },
+    {
+      "name": "Ophtalmic artery.l",
+      "center_z": 1.6,
+      "min_z": 1.588,
+      "max_z": 1.613,
+      "exported_as": null
+    },
+    {
+      "name": "Ophtalmic artery.r",
+      "center_z": 1.6,
+      "min_z": 1.588,
+      "max_z": 1.613,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior ethmoidal artery.l",
+      "center_z": 1.6,
+      "min_z": 1.6,
+      "max_z": 1.601,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior ethmoidal artery.r",
+      "center_z": 1.6,
+      "min_z": 1.6,
+      "max_z": 1.601,
+      "exported_as": null
+    },
+    {
+      "name": "Short posterior ciliary arteries",
+      "center_z": 1.6,
+      "min_z": 1.598,
+      "max_z": 1.602,
+      "exported_as": null
+    },
+    {
+      "name": "Short posterior ciliary arteries.l",
+      "center_z": 1.6,
+      "min_z": 1.598,
+      "max_z": 1.602,
+      "exported_as": null
+    },
+    {
+      "name": "Short posterior ciliary arteries.r",
+      "center_z": 1.6,
+      "min_z": 1.598,
+      "max_z": 1.602,
+      "exported_as": null
+    },
+    {
+      "name": "Eminencia fossae triangularis.l",
+      "center_z": 1.599,
+      "min_z": 1.592,
+      "max_z": 1.606,
+      "exported_as": null
+    },
+    {
+      "name": "Eminencia fossae triangularis.r",
+      "center_z": 1.599,
+      "min_z": 1.592,
+      "max_z": 1.606,
+      "exported_as": null
+    },
+    {
+      "name": "Ciliary ganglion.l",
+      "center_z": 1.598,
+      "min_z": 1.597,
+      "max_z": 1.599,
+      "exported_as": null
+    },
+    {
+      "name": "Ciliary ganglion.r",
+      "center_z": 1.598,
+      "min_z": 1.597,
+      "max_z": 1.599,
+      "exported_as": null
+    },
+    {
+      "name": "Superior tarsus.r",
+      "center_z": 1.598,
+      "min_z": 1.592,
+      "max_z": 1.603,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Superior cerebellar artery.l",
+      "center_z": 1.598,
+      "min_z": 1.583,
+      "max_z": 1.614,
+      "exported_as": null
+    },
+    {
+      "name": "Superior cerebellar artery.r",
+      "center_z": 1.598,
+      "min_z": 1.583,
+      "max_z": 1.614,
+      "exported_as": null
+    },
+    {
+      "name": "Tentorium cerebelli.l",
+      "center_z": 1.597,
+      "min_z": 1.581,
+      "max_z": 1.614,
+      "exported_as": null
+    },
+    {
+      "name": "Tentorium cerebelli.r",
+      "center_z": 1.597,
+      "min_z": 1.581,
+      "max_z": 1.614,
+      "exported_as": null
+    },
+    {
+      "name": "Central retinal artery.l",
+      "center_z": 1.597,
+      "min_z": 1.594,
+      "max_z": 1.6,
+      "exported_as": null
+    },
+    {
+      "name": "Central retinal artery.r",
+      "center_z": 1.597,
+      "min_z": 1.594,
+      "max_z": 1.6,
+      "exported_as": null
+    },
+    {
+      "name": "Short ciliary nerves.l",
+      "center_z": 1.596,
+      "min_z": 1.594,
+      "max_z": 1.598,
+      "exported_as": null
+    },
+    {
+      "name": "Short ciliary nerves.r",
+      "center_z": 1.596,
+      "min_z": 1.594,
+      "max_z": 1.598,
+      "exported_as": null
+    },
+    {
+      "name": "Triangular fossa.l",
+      "center_z": 1.596,
+      "min_z": 1.591,
+      "max_z": 1.6,
+      "exported_as": null
+    },
+    {
+      "name": "Triangular fossa.r",
+      "center_z": 1.596,
+      "min_z": 1.591,
+      "max_z": 1.6,
+      "exported_as": null
+    },
+    {
+      "name": "Crura of antihelix.l",
+      "center_z": 1.594,
+      "min_z": 1.586,
+      "max_z": 1.603,
+      "exported_as": null
+    },
+    {
+      "name": "Crura of antihelix.r",
+      "center_z": 1.594,
+      "min_z": 1.586,
+      "max_z": 1.603,
+      "exported_as": null
+    },
+    {
+      "name": "Lateral rectus muscle.r",
+      "center_z": 1.594,
+      "min_z": 1.585,
+      "max_z": 1.603,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Orbital region.l",
+      "center_z": 1.594,
+      "min_z": 1.571,
+      "max_z": 1.617,
+      "exported_as": null
+    },
+    {
+      "name": "Orbital region.r",
+      "center_z": 1.594,
+      "min_z": 1.571,
+      "max_z": 1.617,
+      "exported_as": null
+    },
+    {
+      "name": "Medial rectus muscle.r",
+      "center_z": 1.593,
+      "min_z": 1.584,
+      "max_z": 1.603,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Suspensory ligament of eyeball.l",
+      "center_z": 1.593,
+      "min_z": 1.586,
+      "max_z": 1.6,
+      "exported_as": null
+    },
+    {
+      "name": "Suspensory ligament of eyeball.r",
+      "center_z": 1.593,
+      "min_z": 1.586,
+      "max_z": 1.6,
+      "exported_as": null
+    },
+    {
+      "name": "Cornea.r.001",
+      "center_z": 1.592,
+      "min_z": 1.585,
+      "max_z": 1.599,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Orbital part of orbicularis oculi.l",
+      "center_z": 1.592,
+      "min_z": 1.567,
+      "max_z": 1.617,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Orbital part of orbicularis oculi.r",
+      "center_z": 1.592,
+      "min_z": 1.567,
+      "max_z": 1.617,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Palpebral part of orbicularis oculi.r",
+      "center_z": 1.592,
+      "min_z": 1.579,
+      "max_z": 1.604,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Medial pontine branches of basilar artery.l",
+      "center_z": 1.592,
+      "min_z": 1.59,
+      "max_z": 1.594,
+      "exported_as": null
+    },
+    {
+      "name": "Medial pontine branches of basilar artery.r",
+      "center_z": 1.592,
+      "min_z": 1.59,
+      "max_z": 1.594,
+      "exported_as": null
+    },
+    {
+      "name": "Palpebral part of orbicularis oculi.l",
+      "center_z": 1.591,
+      "min_z": 1.579,
+      "max_z": 1.603,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Muscular arteries.l",
+      "center_z": 1.591,
+      "min_z": 1.579,
+      "max_z": 1.604,
+      "exported_as": null
+    },
+    {
+      "name": "Muscular arteries.r",
+      "center_z": 1.591,
+      "min_z": 1.579,
+      "max_z": 1.604,
+      "exported_as": null
+    },
+    {
+      "name": "Auricular tubercle.l",
+      "center_z": 1.59,
+      "min_z": 1.587,
+      "max_z": 1.593,
+      "exported_as": null
+    },
+    {
+      "name": "Auricular tubercle.r",
+      "center_z": 1.59,
+      "min_z": 1.587,
+      "max_z": 1.593,
+      "exported_as": null
+    },
+    {
+      "name": "Sclera.r.001",
+      "center_z": 1.59,
+      "min_z": 1.576,
+      "max_z": 1.605,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Basilar artery",
+      "center_z": 1.59,
+      "min_z": 1.576,
+      "max_z": 1.605,
+      "exported_as": null
+    },
+    {
+      "name": "Nasal bone.l",
+      "center_z": 1.589,
+      "min_z": 1.574,
+      "max_z": 1.605,
+      "exported_as": null
+    },
+    {
+      "name": "Nasal bone.r",
+      "center_z": 1.589,
+      "min_z": 1.574,
+      "max_z": 1.605,
+      "exported_as": null
+    },
+    {
+      "name": "Pons.l.001",
+      "center_z": 1.589,
+      "min_z": 1.575,
+      "max_z": 1.603,
+      "exported_as": null
+    },
+    {
+      "name": "Pons.r.001",
+      "center_z": 1.589,
+      "min_z": 1.575,
+      "max_z": 1.603,
+      "exported_as": null
+    },
+    {
+      "name": "Ampulla of lacrimal canaliculus.l",
+      "center_z": 1.588,
+      "min_z": 1.586,
+      "max_z": 1.589,
+      "exported_as": null
+    },
+    {
+      "name": "Ampulla of lacrimal canaliculus.r",
+      "center_z": 1.588,
+      "min_z": 1.586,
+      "max_z": 1.589,
+      "exported_as": null
+    },
+    {
+      "name": "Eminencia scaphae.l",
+      "center_z": 1.588,
+      "min_z": 1.569,
+      "max_z": 1.606,
+      "exported_as": null
+    },
+    {
+      "name": "Eminencia scaphae.r",
+      "center_z": 1.588,
+      "min_z": 1.569,
+      "max_z": 1.606,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior rectus muscle.r",
+      "center_z": 1.588,
+      "min_z": 1.576,
+      "max_z": 1.599,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Lacrimal canaliculus.l",
+      "center_z": 1.588,
+      "min_z": 1.585,
+      "max_z": 1.59,
+      "exported_as": null
+    },
+    {
+      "name": "Lacrimal canaliculus.r",
+      "center_z": 1.588,
+      "min_z": 1.585,
+      "max_z": 1.59,
+      "exported_as": null
+    },
+    {
+      "name": "Scapha.l",
+      "center_z": 1.588,
+      "min_z": 1.574,
+      "max_z": 1.603,
+      "exported_as": null
+    },
+    {
+      "name": "Scapha.r",
+      "center_z": 1.588,
+      "min_z": 1.574,
+      "max_z": 1.603,
+      "exported_as": null
+    },
+    {
+      "name": "Cerebellum.l.001",
+      "center_z": 1.587,
+      "min_z": 1.561,
+      "max_z": 1.613,
+      "exported_as": null
+    },
+    {
+      "name": "Cerebellum.r.001",
+      "center_z": 1.587,
+      "min_z": 1.561,
+      "max_z": 1.613,
+      "exported_as": null
+    },
+    {
+      "name": "Ethmoid bone",
+      "center_z": 1.587,
+      "min_z": 1.57,
+      "max_z": 1.605,
+      "exported_as": null
+    },
+    {
+      "name": "LAcrimal bone.l",
+      "center_z": 1.586,
+      "min_z": 1.573,
+      "max_z": 1.598,
+      "exported_as": null
+    },
+    {
+      "name": "LAcrimal bone.r",
+      "center_z": 1.586,
+      "min_z": 1.573,
+      "max_z": 1.598,
+      "exported_as": null
+    },
+    {
+      "name": "Sphenoid bone.l",
+      "center_z": 1.586,
+      "min_z": 1.552,
+      "max_z": 1.62,
+      "exported_as": null
+    },
+    {
+      "name": "Temporal bone.l",
+      "center_z": 1.586,
+      "min_z": 1.549,
+      "max_z": 1.623,
+      "exported_as": null
+    },
+    {
+      "name": "Temporal bone.r",
+      "center_z": 1.586,
+      "min_z": 1.549,
+      "max_z": 1.623,
+      "exported_as": null
+    },
+    {
+      "name": "Lateral pontine branches of basilar artery.l",
+      "center_z": 1.586,
+      "min_z": 1.582,
+      "max_z": 1.59,
+      "exported_as": null
+    },
+    {
+      "name": "Lateral pontine branches of basilar artery.r",
+      "center_z": 1.586,
+      "min_z": 1.582,
+      "max_z": 1.59,
+      "exported_as": null
+    },
+    {
+      "name": "Mastoid region.l",
+      "center_z": 1.586,
+      "min_z": 1.557,
+      "max_z": 1.614,
+      "exported_as": null
+    },
+    {
+      "name": "Mastoid region.r",
+      "center_z": 1.586,
+      "min_z": 1.557,
+      "max_z": 1.614,
+      "exported_as": null
+    },
+    {
+      "name": "Anterior notch of auricle.l",
+      "center_z": 1.584,
+      "min_z": 1.577,
+      "max_z": 1.591,
+      "exported_as": null
+    },
+    {
+      "name": "Anterior notch of auricle.r",
+      "center_z": 1.584,
+      "min_z": 1.577,
+      "max_z": 1.591,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior oblique muscle.r",
+      "center_z": 1.584,
+      "min_z": 1.575,
+      "max_z": 1.592,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Inferior tarsus.r",
+      "center_z": 1.584,
+      "min_z": 1.58,
+      "max_z": 1.588,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Cymba conchae.l",
+      "center_z": 1.583,
+      "min_z": 1.577,
+      "max_z": 1.589,
+      "exported_as": null
+    },
+    {
+      "name": "Cymba conchae.r",
+      "center_z": 1.583,
+      "min_z": 1.577,
+      "max_z": 1.589,
+      "exported_as": null
+    },
+    {
+      "name": "Fourth ventricle.001",
+      "center_z": 1.583,
+      "min_z": 1.565,
+      "max_z": 1.601,
+      "exported_as": null
+    },
+    {
+      "name": "Nasalis muscle.l",
+      "center_z": 1.583,
+      "min_z": 1.563,
+      "max_z": 1.604,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Nasalis muscle.r",
+      "center_z": 1.583,
+      "min_z": 1.563,
+      "max_z": 1.604,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Posterior auricular groove.l",
+      "center_z": 1.583,
+      "min_z": 1.562,
+      "max_z": 1.604,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior auricular groove.r",
+      "center_z": 1.583,
+      "min_z": 1.562,
+      "max_z": 1.604,
+      "exported_as": null
+    },
+    {
+      "name": "Helix.l",
+      "center_z": 1.582,
+      "min_z": 1.558,
+      "max_z": 1.607,
+      "exported_as": null
+    },
+    {
+      "name": "Helix.r",
+      "center_z": 1.582,
+      "min_z": 1.558,
+      "max_z": 1.607,
+      "exported_as": null
+    },
+    {
+      "name": "Lacrimal sac.l",
+      "center_z": 1.582,
+      "min_z": 1.573,
+      "max_z": 1.592,
+      "exported_as": null
+    },
+    {
+      "name": "Lacrimal sac.r",
+      "center_z": 1.582,
+      "min_z": 1.573,
+      "max_z": 1.592,
+      "exported_as": null
+    },
+    {
+      "name": "Zygomatic bone.l",
+      "center_z": 1.581,
+      "min_z": 1.554,
+      "max_z": 1.608,
+      "exported_as": null
+    },
+    {
+      "name": "Zygomatic bone.r",
+      "center_z": 1.581,
+      "min_z": 1.554,
+      "max_z": 1.608,
+      "exported_as": null
+    },
+    {
+      "name": "Auricular region.l",
+      "center_z": 1.58,
+      "min_z": 1.548,
+      "max_z": 1.612,
+      "exported_as": null
+    },
+    {
+      "name": "Auricular region.r",
+      "center_z": 1.58,
+      "min_z": 1.548,
+      "max_z": 1.612,
+      "exported_as": null
+    },
+    {
+      "name": "Anterior inferior cerebellar artery.l",
+      "center_z": 1.58,
+      "min_z": 1.575,
+      "max_z": 1.585,
+      "exported_as": null
+    },
+    {
+      "name": "Anterior inferior cerebellar artery.r",
+      "center_z": 1.58,
+      "min_z": 1.575,
+      "max_z": 1.585,
+      "exported_as": null
+    },
+    {
+      "name": "Antihelix.l",
+      "center_z": 1.579,
+      "min_z": 1.561,
+      "max_z": 1.596,
+      "exported_as": null
+    },
+    {
+      "name": "Antihelix.r",
+      "center_z": 1.579,
+      "min_z": 1.561,
+      "max_z": 1.596,
+      "exported_as": null
+    },
+    {
+      "name": "Fossa antihelica.l",
+      "center_z": 1.579,
+      "min_z": 1.564,
+      "max_z": 1.595,
+      "exported_as": null
+    },
+    {
+      "name": "Fossa antihelica.r",
+      "center_z": 1.579,
+      "min_z": 1.564,
+      "max_z": 1.595,
+      "exported_as": null
+    },
+    {
+      "name": "Concha of auricle.l",
+      "center_z": 1.578,
+      "min_z": 1.57,
+      "max_z": 1.586,
+      "exported_as": null
+    },
+    {
+      "name": "Concha of auricle.r",
+      "center_z": 1.578,
+      "min_z": 1.57,
+      "max_z": 1.586,
+      "exported_as": null
+    },
+    {
+      "name": "Dorsum of nose.l",
+      "center_z": 1.578,
+      "min_z": 1.557,
+      "max_z": 1.6,
+      "exported_as": null
+    },
+    {
+      "name": "Dorsum of nose.r",
+      "center_z": 1.578,
+      "min_z": 1.557,
+      "max_z": 1.6,
+      "exported_as": null
+    },
+    {
+      "name": "Superior head of lateral pterygoid muscle.l",
+      "center_z": 1.577,
+      "min_z": 1.569,
+      "max_z": 1.584,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Superior head of lateral pterygoid muscle.r",
+      "center_z": 1.577,
+      "min_z": 1.569,
+      "max_z": 1.584,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Tragus.l",
+      "center_z": 1.577,
+      "min_z": 1.567,
+      "max_z": 1.588,
+      "exported_as": null
+    },
+    {
+      "name": "Tragus.r",
+      "center_z": 1.577,
+      "min_z": 1.567,
+      "max_z": 1.588,
+      "exported_as": null
+    },
+    {
+      "name": "Eminencia conchae.l",
+      "center_z": 1.576,
+      "min_z": 1.558,
+      "max_z": 1.594,
+      "exported_as": null
+    },
+    {
+      "name": "Eminencia conchae.r",
+      "center_z": 1.576,
+      "min_z": 1.558,
+      "max_z": 1.594,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior inferior cereballar artery.l",
+      "center_z": 1.576,
+      "min_z": 1.562,
+      "max_z": 1.59,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior inferior cereballar artery.r",
+      "center_z": 1.576,
+      "min_z": 1.562,
+      "max_z": 1.59,
+      "exported_as": null
+    },
+    {
+      "name": "Cavity of concha.l",
+      "center_z": 1.573,
+      "min_z": 1.567,
+      "max_z": 1.579,
+      "exported_as": null
+    },
+    {
+      "name": "Cavity of concha.r",
+      "center_z": 1.573,
+      "min_z": 1.567,
+      "max_z": 1.579,
+      "exported_as": null
+    },
+    {
+      "name": "Nasal region.l",
+      "center_z": 1.573,
+      "min_z": 1.547,
+      "max_z": 1.598,
+      "exported_as": null
+    },
+    {
+      "name": "Nasal region.r",
+      "center_z": 1.573,
+      "min_z": 1.547,
+      "max_z": 1.598,
+      "exported_as": null
+    },
+    {
+      "name": "Zygomatic region.l",
+      "center_z": 1.573,
+      "min_z": 1.557,
+      "max_z": 1.589,
+      "exported_as": null
+    },
+    {
+      "name": "Zygomatic region.r",
+      "center_z": 1.573,
+      "min_z": 1.557,
+      "max_z": 1.589,
+      "exported_as": null
+    },
+    {
+      "name": "Levator nasolabialis.l",
+      "center_z": 1.572,
+      "min_z": 1.558,
+      "max_z": 1.587,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Levator nasolabialis.r",
+      "center_z": 1.572,
+      "min_z": 1.558,
+      "max_z": 1.587,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Maxilla.l",
+      "center_z": 1.571,
+      "min_z": 1.537,
+      "max_z": 1.605,
+      "exported_as": null
+    },
+    {
+      "name": "Maxilla.r",
+      "center_z": 1.571,
+      "min_z": 1.537,
+      "max_z": 1.605,
+      "exported_as": null
+    },
+    {
+      "name": "Nasal cartilages.r",
+      "center_z": 1.57,
+      "min_z": 1.554,
+      "max_z": 1.587,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Nasal cartilages.l.001",
+      "center_z": 1.57,
+      "min_z": 1.554,
+      "max_z": 1.587,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Vomer",
+      "center_z": 1.569,
+      "min_z": 1.557,
+      "max_z": 1.581,
+      "exported_as": null
+    },
+    {
+      "name": "Nasal cartilages.001",
+      "center_z": 1.568,
+      "min_z": 1.551,
+      "max_z": 1.585,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Intertragic incisure.l",
+      "center_z": 1.567,
+      "min_z": 1.56,
+      "max_z": 1.573,
+      "exported_as": null
+    },
+    {
+      "name": "Intertragic incisure.r",
+      "center_z": 1.567,
+      "min_z": 1.56,
+      "max_z": 1.573,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior head of lateral pterygoid muscle.l",
+      "center_z": 1.566,
+      "min_z": 1.555,
+      "max_z": 1.578,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Inferior head of lateral pterygoid muscle.r",
+      "center_z": 1.566,
+      "min_z": 1.555,
+      "max_z": 1.578,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Antitragus.l",
+      "center_z": 1.565,
+      "min_z": 1.56,
+      "max_z": 1.571,
+      "exported_as": null
+    },
+    {
+      "name": "Antitragus.r",
+      "center_z": 1.565,
+      "min_z": 1.56,
+      "max_z": 1.571,
+      "exported_as": null
+    },
+    {
+      "name": "Nasolacrimal duct.l",
+      "center_z": 1.564,
+      "min_z": 1.554,
+      "max_z": 1.575,
+      "exported_as": null
+    },
+    {
+      "name": "Nasolacrimal duct.r",
+      "center_z": 1.564,
+      "min_z": 1.554,
+      "max_z": 1.575,
+      "exported_as": null
+    },
+    {
+      "name": "Palatine bone.l",
+      "center_z": 1.564,
+      "min_z": 1.544,
+      "max_z": 1.584,
+      "exported_as": null
+    },
+    {
+      "name": "Palatine bone.r",
+      "center_z": 1.564,
+      "min_z": 1.544,
+      "max_z": 1.584,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior nasal concha bone.l",
+      "center_z": 1.563,
+      "min_z": 1.552,
+      "max_z": 1.575,
+      "exported_as": null
+    },
+    {
+      "name": "Inferior nasal concha bone.r",
+      "center_z": 1.563,
+      "min_z": 1.552,
+      "max_z": 1.575,
+      "exported_as": null
+    },
+    {
+      "name": "Levator labii superioris.l",
+      "center_z": 1.562,
+      "min_z": 1.547,
+      "max_z": 1.576,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Levator labii superioris.r",
+      "center_z": 1.562,
+      "min_z": 1.547,
+      "max_z": 1.576,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Zygomaticus minor muscle.l",
+      "center_z": 1.562,
+      "min_z": 1.547,
+      "max_z": 1.577,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Zygomaticus minor muscle.r",
+      "center_z": 1.562,
+      "min_z": 1.547,
+      "max_z": 1.577,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Internal carotid artery.l",
+      "center_z": 1.56,
+      "min_z": 1.51,
+      "max_z": 1.61,
+      "exported_as": null
+    },
+    {
+      "name": "Internal carotid artery.r",
+      "center_z": 1.56,
+      "min_z": 1.51,
+      "max_z": 1.61,
+      "exported_as": null
+    },
+    {
+      "name": "Medulla oblongata.l.001",
+      "center_z": 1.559,
+      "min_z": 1.539,
+      "max_z": 1.579,
+      "exported_as": null
+    },
+    {
+      "name": "Medulla oblongata.r.001",
+      "center_z": 1.559,
+      "min_z": 1.539,
+      "max_z": 1.579,
+      "exported_as": null
+    },
+    {
+      "name": "Lobule of auricle.l",
+      "center_z": 1.559,
+      "min_z": 1.551,
+      "max_z": 1.567,
+      "exported_as": null
+    },
+    {
+      "name": "Lobule of auricle.r",
+      "center_z": 1.559,
+      "min_z": 1.551,
+      "max_z": 1.567,
+      "exported_as": null
+    },
+    {
+      "name": "Apex of nose.l",
+      "center_z": 1.556,
+      "min_z": 1.551,
+      "max_z": 1.561,
+      "exported_as": null
+    },
+    {
+      "name": "Apex of nose.r",
+      "center_z": 1.556,
+      "min_z": 1.551,
+      "max_z": 1.561,
+      "exported_as": null
+    },
+    {
+      "name": "Rectus anterior capitis muscle.l",
+      "center_z": 1.556,
+      "min_z": 1.546,
+      "max_z": 1.566,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Rectus anterior capitis muscle.r",
+      "center_z": 1.556,
+      "min_z": 1.546,
+      "max_z": 1.566,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Nasal cartilages.r.001",
+      "center_z": 1.555,
+      "min_z": 1.548,
+      "max_z": 1.562,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Nasal cartilages.l",
+      "center_z": 1.555,
+      "min_z": 1.548,
+      "max_z": 1.562,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Levator anguli oris.l",
+      "center_z": 1.553,
+      "min_z": 1.542,
+      "max_z": 1.563,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Levator anguli oris.r",
+      "center_z": 1.553,
+      "min_z": 1.542,
+      "max_z": 1.563,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Obliquus superior capitis muscle.l",
+      "center_z": 1.553,
+      "min_z": 1.541,
+      "max_z": 1.564,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Obliquus superior capitis muscle.r",
+      "center_z": 1.553,
+      "min_z": 1.541,
+      "max_z": 1.564,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Rectus lateralis capitis muscle.r",
+      "center_z": 1.552,
+      "min_z": 1.541,
+      "max_z": 1.562,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Rectus lateralis capitis muscle.l",
+      "center_z": 1.552,
+      "min_z": 1.541,
+      "max_z": 1.562,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Rectus posterior minor capitis muscle.l",
+      "center_z": 1.552,
+      "min_z": 1.538,
+      "max_z": 1.565,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Rectus posterior minor capitis muscle.r",
+      "center_z": 1.552,
+      "min_z": 1.538,
+      "max_z": 1.565,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Zygomaticus major muscle.l",
+      "center_z": 1.552,
+      "min_z": 1.524,
+      "max_z": 1.579,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Zygomaticus major muscle.r",
+      "center_z": 1.552,
+      "min_z": 1.524,
+      "max_z": 1.579,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Anterior spinal artery.l",
+      "center_z": 1.552,
+      "min_z": 1.538,
+      "max_z": 1.565,
+      "exported_as": null
+    },
+    {
+      "name": "Anterior spinal artery.r",
+      "center_z": 1.552,
+      "min_z": 1.538,
+      "max_z": 1.565,
+      "exported_as": null
+    },
+    {
+      "name": "Medial pterygoid muscle.l",
+      "center_z": 1.551,
+      "min_z": 1.527,
+      "max_z": 1.576,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Medial pterygoid muscle.r",
+      "center_z": 1.551,
+      "min_z": 1.527,
+      "max_z": 1.576,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Depressor septi nasi.l",
+      "center_z": 1.55,
+      "min_z": 1.542,
+      "max_z": 1.558,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Depressor septi nasi.r",
+      "center_z": 1.55,
+      "min_z": 1.542,
+      "max_z": 1.558,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Central canal.001",
+      "center_z": 1.549,
+      "min_z": 1.531,
+      "max_z": 1.566,
+      "exported_as": null
+    },
+    {
+      "name": "17-Upper second molar.l",
+      "center_z": 1.546,
+      "min_z": 1.535,
+      "max_z": 1.557,
+      "exported_as": null
+    },
+    {
+      "name": "17-Upper second molar.r",
+      "center_z": 1.546,
+      "min_z": 1.535,
+      "max_z": 1.557,
+      "exported_as": null
+    },
+    {
+      "name": "Deep part of masseter.l",
+      "center_z": 1.546,
+      "min_z": 1.513,
+      "max_z": 1.579,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Deep part of masseter.r",
+      "center_z": 1.546,
+      "min_z": 1.513,
+      "max_z": 1.579,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Uvula of palate",
+      "center_z": 1.546,
+      "min_z": 1.541,
+      "max_z": 1.55,
+      "exported_as": null
+    },
+    {
+      "name": "16-Upper first molar.l",
+      "center_z": 1.544,
+      "min_z": 1.532,
+      "max_z": 1.556,
+      "exported_as": null
+    },
+    {
+      "name": "16-Upper first molar.r",
+      "center_z": 1.544,
+      "min_z": 1.532,
+      "max_z": 1.556,
+      "exported_as": null
+    },
+    {
+      "name": "Gingiva of upper jaw",
+      "center_z": 1.544,
+      "min_z": 1.535,
+      "max_z": 1.553,
+      "exported_as": null
+    },
+    {
+      "name": "14-Upper first premolar.l",
+      "center_z": 1.543,
+      "min_z": 1.529,
+      "max_z": 1.556,
+      "exported_as": null
+    },
+    {
+      "name": "14-Upper first premolar.r",
+      "center_z": 1.543,
+      "min_z": 1.529,
+      "max_z": 1.556,
+      "exported_as": null
+    },
+    {
+      "name": "Gingiva (superior)",
+      "center_z": 1.543,
+      "min_z": 1.534,
+      "max_z": 1.552,
+      "exported_as": null
+    },
+    {
+      "name": "C1",
+      "center_z": 1.543,
+      "min_z": 1.533,
+      "max_z": 1.553,
+      "exported_as": null
+    },
+    {
+      "name": "Superficial part of masseter.l",
+      "center_z": 1.543,
+      "min_z": 1.512,
+      "max_z": 1.574,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Superficial part of masseter.r",
+      "center_z": 1.543,
+      "min_z": 1.512,
+      "max_z": 1.574,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Parotidomassetereic region.l",
+      "center_z": 1.543,
+      "min_z": 1.509,
+      "max_z": 1.578,
+      "exported_as": null
+    },
+    {
+      "name": "Parotidomassetereic region.r",
+      "center_z": 1.543,
+      "min_z": 1.509,
+      "max_z": 1.578,
+      "exported_as": null
+    },
+    {
+      "name": "Philtrum.l",
+      "center_z": 1.543,
+      "min_z": 1.536,
+      "max_z": 1.55,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Philtrum.r",
+      "center_z": 1.543,
+      "min_z": 1.536,
+      "max_z": 1.55,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "13-Upper canine.l",
+      "center_z": 1.542,
+      "min_z": 1.527,
+      "max_z": 1.558,
+      "exported_as": null
+    },
+    {
+      "name": "13-Upper canine.r",
+      "center_z": 1.542,
+      "min_z": 1.527,
+      "max_z": 1.558,
+      "exported_as": null
+    },
+    {
+      "name": "15-Upper second premolar.l",
+      "center_z": 1.542,
+      "min_z": 1.53,
+      "max_z": 1.555,
+      "exported_as": null
+    },
+    {
+      "name": "15-Upper second premolar.r",
+      "center_z": 1.542,
+      "min_z": 1.53,
+      "max_z": 1.555,
+      "exported_as": null
+    },
+    {
+      "name": "Nasolabial sulcus.l",
+      "center_z": 1.542,
+      "min_z": 1.527,
+      "max_z": 1.557,
+      "exported_as": null
+    },
+    {
+      "name": "Nasolabial sulcus.r",
+      "center_z": 1.542,
+      "min_z": 1.527,
+      "max_z": 1.557,
+      "exported_as": null
+    },
+    {
+      "name": "12-Upper lateral incisor.l",
+      "center_z": 1.54,
+      "min_z": 1.526,
+      "max_z": 1.554,
+      "exported_as": null
+    },
+    {
+      "name": "12-Upper lateral incisor.r",
+      "center_z": 1.54,
+      "min_z": 1.526,
+      "max_z": 1.554,
+      "exported_as": null
+    },
+    {
+      "name": "11-Upper medial incisor.l",
+      "center_z": 1.539,
+      "min_z": 1.526,
+      "max_z": 1.552,
+      "exported_as": null
+    },
+    {
+      "name": "11-Upper medial incisor.r",
+      "center_z": 1.539,
+      "min_z": 1.526,
+      "max_z": 1.552,
+      "exported_as": null
+    },
+    {
+      "name": "Rectus posterior major capitis muscle.l",
+      "center_z": 1.538,
+      "min_z": 1.514,
+      "max_z": 1.561,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Rectus posterior major capitis muscle.r",
+      "center_z": 1.538,
+      "min_z": 1.514,
+      "max_z": 1.561,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Mandible",
+      "center_z": 1.537,
+      "min_z": 1.496,
+      "max_z": 1.579,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior belly of digastric muscle.l",
+      "center_z": 1.535,
+      "min_z": 1.503,
+      "max_z": 1.567,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Posterior belly of digastric muscle.r",
+      "center_z": 1.535,
+      "min_z": 1.503,
+      "max_z": 1.567,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Tubercle of upper lip.l",
+      "center_z": 1.535,
+      "min_z": 1.532,
+      "max_z": 1.537,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Tubercle of upper lip.r",
+      "center_z": 1.535,
+      "min_z": 1.532,
+      "max_z": 1.537,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Bucinator.l",
+      "center_z": 1.533,
+      "min_z": 1.515,
+      "max_z": 1.551,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Bucinator.r",
+      "center_z": 1.533,
+      "min_z": 1.515,
+      "max_z": 1.551,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Angle of mouth.l",
+      "center_z": 1.531,
+      "min_z": 1.526,
+      "max_z": 1.536,
+      "exported_as": null
+    },
+    {
+      "name": "Angle of mouth.r",
+      "center_z": 1.531,
+      "min_z": 1.526,
+      "max_z": 1.536,
+      "exported_as": null
+    },
+    {
+      "name": "Labial commissure.l",
+      "center_z": 1.531,
+      "min_z": 1.526,
+      "max_z": 1.535,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Labial commissure.r",
+      "center_z": 1.531,
+      "min_z": 1.526,
+      "max_z": 1.535,
+      "exported_as": "body_fill (skull_surface)"
+    },
+    {
+      "name": "Orbicularis oris",
+      "center_z": 1.531,
+      "min_z": 1.509,
+      "max_z": 1.554,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "C2",
+      "center_z": 1.53,
+      "min_z": 1.508,
+      "max_z": 1.551,
+      "exported_as": null
+    },
+    {
+      "name": "Stylohyoid muscle.l",
+      "center_z": 1.53,
+      "min_z": 1.499,
+      "max_z": 1.562,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Stylohyoid muscle.r",
+      "center_z": 1.53,
+      "min_z": 1.499,
+      "max_z": 1.562,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Oral region.l",
+      "center_z": 1.53,
+      "min_z": 1.51,
+      "max_z": 1.551,
+      "exported_as": null
+    },
+    {
+      "name": "Oral region.r",
+      "center_z": 1.53,
+      "min_z": 1.51,
+      "max_z": 1.551,
+      "exported_as": null
+    },
+    {
+      "name": "Buccal region.l",
+      "center_z": 1.529,
+      "min_z": 1.492,
+      "max_z": 1.566,
+      "exported_as": null
+    },
+    {
+      "name": "Buccal region.r",
+      "center_z": 1.529,
+      "min_z": 1.492,
+      "max_z": 1.566,
+      "exported_as": null
+    },
+    {
+      "name": "Risorius.l",
+      "center_z": 1.529,
+      "min_z": 1.515,
+      "max_z": 1.542,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Risorius.r",
+      "center_z": 1.529,
+      "min_z": 1.515,
+      "max_z": 1.542,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "37-Lower second molar.l",
+      "center_z": 1.528,
+      "min_z": 1.519,
+      "max_z": 1.537,
+      "exported_as": null
+    },
+    {
+      "name": "37-Lower second molar.r",
+      "center_z": 1.528,
+      "min_z": 1.519,
+      "max_z": 1.537,
+      "exported_as": null
+    },
+    {
+      "name": "Vertebral artery.l",
+      "center_z": 1.527,
+      "min_z": 1.475,
+      "max_z": 1.579,
+      "exported_as": null
+    },
+    {
+      "name": "Vertebral artery.r",
+      "center_z": 1.527,
+      "min_z": 1.475,
+      "max_z": 1.579,
+      "exported_as": null
+    },
+    {
+      "name": "Gingiva of lower jaw",
+      "center_z": 1.526,
+      "min_z": 1.509,
+      "max_z": 1.544,
+      "exported_as": null
+    },
+    {
+      "name": "Obliquus inferior capitis muscle.l",
+      "center_z": 1.526,
+      "min_z": 1.51,
+      "max_z": 1.542,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Obliquus inferior capitis muscle.r",
+      "center_z": 1.526,
+      "min_z": 1.51,
+      "max_z": 1.542,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Gingiva (inferior)",
+      "center_z": 1.524,
+      "min_z": 1.506,
+      "max_z": 1.542,
+      "exported_as": null
+    },
+    {
+      "name": "36-Lower first molar.l",
+      "center_z": 1.523,
+      "min_z": 1.513,
+      "max_z": 1.533,
+      "exported_as": null
+    },
+    {
+      "name": "36-Lower first molar.r",
+      "center_z": 1.523,
+      "min_z": 1.513,
+      "max_z": 1.533,
+      "exported_as": null
+    },
+    {
+      "name": "Submandibular gland.l",
+      "center_z": 1.522,
+      "min_z": 1.511,
+      "max_z": 1.533,
+      "exported_as": null
+    },
+    {
+      "name": "Submandibular gland.r",
+      "center_z": 1.522,
+      "min_z": 1.511,
+      "max_z": 1.533,
+      "exported_as": null
+    },
+    {
+      "name": "Tongue",
+      "center_z": 1.521,
+      "min_z": 1.503,
+      "max_z": 1.54,
+      "exported_as": null
+    },
+    {
+      "name": "Sublingual gland.l",
+      "center_z": 1.52,
+      "min_z": 1.513,
+      "max_z": 1.526,
+      "exported_as": null
+    },
+    {
+      "name": "Sublingual gland.r",
+      "center_z": 1.52,
+      "min_z": 1.513,
+      "max_z": 1.526,
+      "exported_as": null
+    },
+    {
+      "name": "Depressor anguli oris.l",
+      "center_z": 1.519,
+      "min_z": 1.498,
+      "max_z": 1.54,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Depressor anguli oris.r",
+      "center_z": 1.519,
+      "min_z": 1.498,
+      "max_z": 1.54,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "35-Lower second premolar.l",
+      "center_z": 1.518,
+      "min_z": 1.507,
+      "max_z": 1.53,
+      "exported_as": null
+    },
+    {
+      "name": "35-Lower second premolar.r",
+      "center_z": 1.518,
+      "min_z": 1.507,
+      "max_z": 1.53,
+      "exported_as": null
+    },
+    {
+      "name": "Intervertebral disc C2-C3",
+      "center_z": 1.518,
+      "min_z": 1.514,
+      "max_z": 1.522,
+      "exported_as": null
+    },
+    {
+      "name": "34-Lower first premolar.l",
+      "center_z": 1.517,
+      "min_z": 1.506,
+      "max_z": 1.528,
+      "exported_as": null
+    },
+    {
+      "name": "34-Lower first premolar.r",
+      "center_z": 1.517,
+      "min_z": 1.506,
+      "max_z": 1.528,
+      "exported_as": null
+    },
+    {
+      "name": "Mentolabial sulcus.l",
+      "center_z": 1.516,
+      "min_z": 1.512,
+      "max_z": 1.519,
+      "exported_as": null
+    },
+    {
+      "name": "Mentolabial sulcus.r",
+      "center_z": 1.516,
+      "min_z": 1.512,
+      "max_z": 1.519,
+      "exported_as": null
+    },
+    {
+      "name": "31-Lower medial incisor.l",
+      "center_z": 1.515,
+      "min_z": 1.503,
+      "max_z": 1.528,
+      "exported_as": null
+    },
+    {
+      "name": "31-Lower medial incisor.r",
+      "center_z": 1.515,
+      "min_z": 1.503,
+      "max_z": 1.528,
+      "exported_as": null
+    },
+    {
+      "name": "32-Lower lateral incisor.l",
+      "center_z": 1.515,
+      "min_z": 1.503,
+      "max_z": 1.527,
+      "exported_as": null
+    },
+    {
+      "name": "32-Lower lateral incisor.r",
+      "center_z": 1.515,
+      "min_z": 1.503,
+      "max_z": 1.527,
+      "exported_as": null
+    },
+    {
+      "name": "33-Lower canine.l",
+      "center_z": 1.515,
+      "min_z": 1.502,
+      "max_z": 1.528,
+      "exported_as": null
+    },
+    {
+      "name": "33-Lower canine.r",
+      "center_z": 1.515,
+      "min_z": 1.502,
+      "max_z": 1.528,
+      "exported_as": null
+    },
+    {
+      "name": "Depressor labii superioris.l",
+      "center_z": 1.515,
+      "min_z": 1.5,
+      "max_z": 1.53,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Depressor labii superioris.r",
+      "center_z": 1.515,
+      "min_z": 1.5,
+      "max_z": 1.53,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Longus capitis muscle.l",
+      "center_z": 1.514,
+      "min_z": 1.459,
+      "max_z": 1.569,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Longus capitis muscle.r",
+      "center_z": 1.514,
+      "min_z": 1.459,
+      "max_z": 1.569,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Mylohyoid muscle.l",
+      "center_z": 1.514,
+      "min_z": 1.501,
+      "max_z": 1.526,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Mylohyoid muscle.r",
+      "center_z": 1.514,
+      "min_z": 1.501,
+      "max_z": 1.526,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Spinalis capitis muscle.l",
+      "center_z": 1.511,
+      "min_z": 1.449,
+      "max_z": 1.573,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Spinalis capitis muscle.r",
+      "center_z": 1.511,
+      "min_z": 1.449,
+      "max_z": 1.573,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Submandibular triangle.l",
+      "center_z": 1.507,
+      "min_z": 1.489,
+      "max_z": 1.526,
+      "exported_as": null
+    },
+    {
+      "name": "Submandibular triangle.r",
+      "center_z": 1.507,
+      "min_z": 1.489,
+      "max_z": 1.526,
+      "exported_as": null
+    },
+    {
+      "name": "Geniohyoid muscle.l",
+      "center_z": 1.506,
+      "min_z": 1.501,
+      "max_z": 1.511,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "C3",
+      "center_z": 1.506,
+      "min_z": 1.493,
+      "max_z": 1.52,
+      "exported_as": null
+    },
+    {
+      "name": "Geniohyoid muscle.r",
+      "center_z": 1.506,
+      "min_z": 1.501,
+      "max_z": 1.511,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Mentalis muscle.l",
+      "center_z": 1.505,
+      "min_z": 1.498,
+      "max_z": 1.513,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Mentalis muscle.r",
+      "center_z": 1.505,
+      "min_z": 1.498,
+      "max_z": 1.513,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Fibrous loop for intermediate digastric tendon*.l",
+      "center_z": 1.503,
+      "min_z": 1.499,
+      "max_z": 1.507,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Fibrous loop for intermediate digastric tendon*.r",
+      "center_z": 1.503,
+      "min_z": 1.499,
+      "max_z": 1.507,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Intervertebral disc C3-C4",
+      "center_z": 1.503,
+      "min_z": 1.499,
+      "max_z": 1.507,
+      "exported_as": null
+    },
+    {
+      "name": "Anterior belly of digastric muscle.l",
+      "center_z": 1.502,
+      "min_z": 1.499,
+      "max_z": 1.506,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Anterior belly of digastric muscle.r",
+      "center_z": 1.502,
+      "min_z": 1.499,
+      "max_z": 1.506,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Mental region.l",
+      "center_z": 1.502,
+      "min_z": 1.488,
+      "max_z": 1.516,
+      "exported_as": null
+    },
+    {
+      "name": "Mental region.r",
+      "center_z": 1.502,
+      "min_z": 1.488,
+      "max_z": 1.516,
+      "exported_as": null
+    },
+    {
+      "name": "Hyoid bone",
+      "center_z": 1.501,
+      "min_z": 1.492,
+      "max_z": 1.511,
+      "exported_as": null
+    },
+    {
+      "name": "Epiglottis",
+      "center_z": 1.496,
+      "min_z": 1.481,
+      "max_z": 1.51,
+      "exported_as": null
+    },
+    {
+      "name": "Ascending part of trapezius muscle.l",
+      "center_z": 1.495,
+      "min_z": 1.416,
+      "max_z": 1.575,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Ascending part of trapezius muscle.r",
+      "center_z": 1.495,
+      "min_z": 1.416,
+      "max_z": 1.575,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Posterior cervical region.l",
+      "center_z": 1.495,
+      "min_z": 1.427,
+      "max_z": 1.562,
+      "exported_as": null
+    },
+    {
+      "name": "Posterior cervical region.r",
+      "center_z": 1.495,
+      "min_z": 1.427,
+      "max_z": 1.562,
+      "exported_as": null
+    },
+    {
+      "name": "Interspinales colli muscles.l",
+      "center_z": 1.493,
+      "min_z": 1.448,
+      "max_z": 1.539,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "C4",
+      "center_z": 1.493,
+      "min_z": 1.481,
+      "max_z": 1.506,
+      "exported_as": null
+    },
+    {
+      "name": "Interspinales colli muscles.r",
+      "center_z": 1.493,
+      "min_z": 1.448,
+      "max_z": 1.539,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Longissimus capitis.l",
+      "center_z": 1.491,
+      "min_z": 1.413,
+      "max_z": 1.57,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Longissimus capitis.r",
+      "center_z": 1.491,
+      "min_z": 1.413,
+      "max_z": 1.57,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Carotid triangle.l",
+      "center_z": 1.49,
+      "min_z": 1.467,
+      "max_z": 1.514,
+      "exported_as": null
+    },
+    {
+      "name": "Carotid triangle.r",
+      "center_z": 1.49,
+      "min_z": 1.467,
+      "max_z": 1.514,
+      "exported_as": null
+    },
+    {
+      "name": "Multifidus colli muscle.l",
+      "center_z": 1.49,
+      "min_z": 1.441,
+      "max_z": 1.539,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Multifidus colli muscle.r",
+      "center_z": 1.49,
+      "min_z": 1.441,
+      "max_z": 1.539,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Submental region.l",
+      "center_z": 1.49,
+      "min_z": 1.484,
+      "max_z": 1.496,
+      "exported_as": null
+    },
+    {
+      "name": "Submental region.r",
+      "center_z": 1.49,
+      "min_z": 1.484,
+      "max_z": 1.496,
+      "exported_as": null
+    },
+    {
+      "name": "Intervertebral disc C4-C5",
+      "center_z": 1.486,
+      "min_z": 1.48,
+      "max_z": 1.492,
+      "exported_as": null
+    },
+    {
+      "name": "Lateral cervical region.l",
+      "center_z": 1.486,
+      "min_z": 1.412,
+      "max_z": 1.56,
+      "exported_as": null
+    },
+    {
+      "name": "Lateral cervical region.r",
+      "center_z": 1.486,
+      "min_z": 1.412,
+      "max_z": 1.56,
+      "exported_as": null
+    },
+    {
+      "name": "Thyrohyoid muscle.l",
+      "center_z": 1.482,
+      "min_z": 1.467,
+      "max_z": 1.497,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Thyrohyoid muscle.r",
+      "center_z": 1.482,
+      "min_z": 1.467,
+      "max_z": 1.497,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Sternocleidomastoid region.l",
+      "center_z": 1.482,
+      "min_z": 1.401,
+      "max_z": 1.564,
+      "exported_as": null
+    },
+    {
+      "name": "Sternocleidomastoid region.r",
+      "center_z": 1.482,
+      "min_z": 1.401,
+      "max_z": 1.564,
+      "exported_as": null
+    },
+    {
+      "name": "C5",
+      "center_z": 1.48,
+      "min_z": 1.469,
+      "max_z": 1.491,
+      "exported_as": null
+    },
+    {
+      "name": "Thyroid cartilage",
+      "center_z": 1.48,
+      "min_z": 1.462,
+      "max_z": 1.499,
+      "exported_as": null
+    },
+    {
+      "name": "Sternocleidomastoid muscle.l",
+      "center_z": 1.479,
+      "min_z": 1.382,
+      "max_z": 1.575,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Sternocleidomastoid muscle.r",
+      "center_z": 1.479,
+      "min_z": 1.382,
+      "max_z": 1.575,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Intervertebral disc C5-C6",
+      "center_z": 1.47,
+      "min_z": 1.464,
+      "max_z": 1.476,
+      "exported_as": null
+    },
+    {
+      "name": "Platysma.l",
+      "center_z": 1.47,
+      "min_z": 1.399,
+      "max_z": 1.541,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Platysma.r",
+      "center_z": 1.47,
+      "min_z": 1.399,
+      "max_z": 1.541,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Scalenus anterior and medius.l",
+      "center_z": 1.469,
+      "min_z": 1.419,
+      "max_z": 1.519,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Scalenus anterior and medius.r",
+      "center_z": 1.469,
+      "min_z": 1.419,
+      "max_z": 1.519,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "C6",
+      "center_z": 1.466,
+      "min_z": 1.454,
+      "max_z": 1.478,
+      "exported_as": null
+    },
+    {
+      "name": "Longus colli muscle.l",
+      "center_z": 1.466,
+      "min_z": 1.387,
+      "max_z": 1.545,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Longus colli muscle.r",
+      "center_z": 1.466,
+      "min_z": 1.387,
+      "max_z": 1.545,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Splenius capitis muscle.l",
+      "center_z": 1.466,
+      "min_z": 1.358,
+      "max_z": 1.573,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Splenius capitis muscle.r",
+      "center_z": 1.466,
+      "min_z": 1.358,
+      "max_z": 1.573,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Levator scapulae.l",
+      "center_z": 1.463,
+      "min_z": 1.387,
+      "max_z": 1.539,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Levator scapulae.r",
+      "center_z": 1.463,
+      "min_z": 1.387,
+      "max_z": 1.539,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Deep cervical artery.l",
+      "center_z": 1.461,
+      "min_z": 1.422,
+      "max_z": 1.5,
+      "exported_as": null
+    },
+    {
+      "name": "Deep cervical artery.r",
+      "center_z": 1.461,
+      "min_z": 1.422,
+      "max_z": 1.5,
+      "exported_as": null
+    },
+    {
+      "name": "Spinalis colli muscle.l",
+      "center_z": 1.46,
+      "min_z": 1.407,
+      "max_z": 1.512,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Spinalis colli muscle.r",
+      "center_z": 1.46,
+      "min_z": 1.407,
+      "max_z": 1.512,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Superficial branch of transverse cervical artery.l",
+      "center_z": 1.457,
+      "min_z": 1.435,
+      "max_z": 1.478,
+      "exported_as": null
+    },
+    {
+      "name": "Superficial branch of transverse cervical artery.r",
+      "center_z": 1.457,
+      "min_z": 1.435,
+      "max_z": 1.478,
+      "exported_as": null
+    },
+    {
+      "name": "Intervertebral disc C6-C7",
+      "center_z": 1.456,
+      "min_z": 1.45,
+      "max_z": 1.461,
+      "exported_as": null
+    },
+    {
+      "name": "C7",
+      "center_z": 1.452,
+      "min_z": 1.439,
+      "max_z": 1.466,
+      "exported_as": null
+    },
+    {
+      "name": "Scalene anterior muscle.l",
+      "center_z": 1.452,
+      "min_z": 1.411,
+      "max_z": 1.494,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Scalene anterior muscle.r",
+      "center_z": 1.452,
+      "min_z": 1.411,
+      "max_z": 1.494,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Greater subclavian fossa.l",
+      "center_z": 1.451,
+      "min_z": 1.425,
+      "max_z": 1.477,
+      "exported_as": null
+    },
+    {
+      "name": "Greater subclavian fossa.r",
+      "center_z": 1.451,
+      "min_z": 1.425,
+      "max_z": 1.477,
+      "exported_as": null
+    },
+    {
+      "name": "Scalenus posterior.l",
+      "center_z": 1.451,
+      "min_z": 1.424,
+      "max_z": 1.477,
+      "exported_as": "body_fill (muscle)"
+    },
+    {
+      "name": "Scalenus posterior.r",
+      "center_z": 1.451,
+      "min_z": 1.424,
+      "max_z": 1.477,
+      "exported_as": "body_fill (muscle)"
+    }
+  ],
+  "skull_top_count": 517,
+  "asymmetric_at_skull_top": [
+    {
+      "only": "Medial rectus muscle.r",
+      "missing_mirror": "Medial rectus muscle.l"
+    },
+    {
+      "only": "Common tendinous ring.r",
+      "missing_mirror": "Common tendinous ring.l"
+    },
+    {
+      "only": "Parietal bone.r",
+      "missing_mirror": "Parietal bone.l"
+    },
+    {
+      "only": "Inferior temporal gyrus.l",
+      "missing_mirror": "Inferior temporal gyrus.r"
+    },
+    {
+      "only": "Trochlea of superior oblique muscle.r",
+      "missing_mirror": "Trochlea of superior oblique muscle.l"
+    },
+    {
+      "only": "Inferior oblique muscle.r",
+      "missing_mirror": "Inferior oblique muscle.l"
+    },
+    {
+      "only": "Superior parietal lobule.l",
+      "missing_mirror": "Superior parietal lobule.r"
+    },
+    {
+      "only": "Superior rectus muscle.r",
+      "missing_mirror": "Superior rectus muscle.l"
+    },
+    {
+      "only": "Inferior tarsus.r",
+      "missing_mirror": "Inferior tarsus.l"
+    },
+    {
+      "only": "Superior tarsus.r",
+      "missing_mirror": "Superior tarsus.l"
+    },
+    {
+      "only": "Lateral rectus muscle.r",
+      "missing_mirror": "Lateral rectus muscle.l"
+    },
+    {
+      "only": "Sphenoid bone.l",
+      "missing_mirror": "Sphenoid bone.r"
+    },
+    {
+      "only": "Inferior rectus muscle.r",
+      "missing_mirror": "Inferior rectus muscle.l"
+    },
+    {
+      "only": "Superior oblique muscle.r",
+      "missing_mirror": "Superior oblique muscle.l"
+    },
+    {
+      "only": "Levator palpebrae superioris.r",
+      "missing_mirror": "Levator palpebrae superioris.l"
+    }
+  ]
+}
