@@ -63,3 +63,6 @@ run_log.txt
 
 # Large Blender source files (271MB — use local copy)
 assets/animations/Z-Anatomy/
+
+# Development/build tooling scripts
+/tools/
