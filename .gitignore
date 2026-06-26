@@ -66,3 +66,23 @@ assets/animations/Z-Anatomy/
 
 # Development/build tooling scripts
 /tools/
+
+# Desktop platform targets (app targets Android/iOS only)
+/linux/
+/macos/
+/windows/
+
+# Firebase hosting cache
+.firebase/
+
+# Editor-specific configs
+.kilo/
+
+# Project analysis documents
+FITNESBUSTER_FULL_REPORT.md
+
+# Compiled Cloud Functions output (build artifact)
+functions/lib/
+
+# Android build artifacts
+android/build/
