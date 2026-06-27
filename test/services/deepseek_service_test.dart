@@ -35,7 +35,7 @@ void main() {
   // Full integration tests should be added via Firebase Emulator or widget tests with mock callable.
 }
 
-UserProfile _profile() => UserProfile(
+UserProfile _profile() => const UserProfile(
       weight: 80,
       height: 175,
       age: 30,

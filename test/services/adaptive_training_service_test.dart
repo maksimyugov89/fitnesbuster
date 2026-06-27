@@ -12,7 +12,7 @@ void main() {
   late MockIDeepSeekService mockAi;
   late AdaptiveTrainingService service;
 
-  final tProfile = const UserProfile(
+  const tProfile = UserProfile(
     weight: 80, height: 175, age: 30,
     gender: Gender.male, goal: FitnessGoal.loseWeight,
     intensity: IntensityLevel.balanced,
@@ -52,8 +52,8 @@ void main() {
     });
 
     test('weightMultiplier varies with intensity', () {
-      final hardcore = const UserProfile(weight: 80, height: 175, age: 30, gender: Gender.male, goal: FitnessGoal.loseWeight, intensity: IntensityLevel.hardcore, activityLevel: ActivityLevel.moderatelyActive);
-      final relaxed = const UserProfile(weight: 80, height: 175, age: 30, gender: Gender.male, goal: FitnessGoal.loseWeight, intensity: IntensityLevel.relaxed, activityLevel: ActivityLevel.moderatelyActive);
+      const hardcore = UserProfile(weight: 80, height: 175, age: 30, gender: Gender.male, goal: FitnessGoal.loseWeight, intensity: IntensityLevel.hardcore, activityLevel: ActivityLevel.moderatelyActive);
+      const relaxed = UserProfile(weight: 80, height: 175, age: 30, gender: Gender.male, goal: FitnessGoal.loseWeight, intensity: IntensityLevel.relaxed, activityLevel: ActivityLevel.moderatelyActive);
 
       final adjHard = service.calculateAdjustment(testResult: tTestResult, profile: hardcore).weightMultiplier;
       final adjSoft = service.calculateAdjustment(testResult: tTestResult, profile: relaxed).weightMultiplier;
@@ -69,7 +69,7 @@ void main() {
     });
 
     test('maxHeartRate is 220 - age', () {
-      final young = const UserProfile(weight: 70, height: 180, age: 25, gender: Gender.male, goal: FitnessGoal.gainWeight, intensity: IntensityLevel.intensive, activityLevel: ActivityLevel.veryActive);
+      const young = UserProfile(weight: 70, height: 180, age: 25, gender: Gender.male, goal: FitnessGoal.gainWeight, intensity: IntensityLevel.intensive, activityLevel: ActivityLevel.veryActive);
       final adj = service.calculateAdjustment(testResult: tTestResult, profile: young);
       expect(adj.maxHeartRate, equals(195));
     });

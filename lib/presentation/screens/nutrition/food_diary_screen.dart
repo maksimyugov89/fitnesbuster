@@ -105,7 +105,7 @@ class _FoodDiaryScreenState extends State<FoodDiaryScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Дневник питания', style: AppTextStyles.titleL),
+        title: const Text('Дневник питания', style: AppTextStyles.titleL),
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
@@ -164,7 +164,7 @@ class _FoodDiaryScreenState extends State<FoodDiaryScreen> {
         const SizedBox(height: 20),
 
         // ── Day list ─────────────────────────────────────────────────────────
-        Text('История питания', style: AppTextStyles.titleM),
+        const Text('История питания', style: AppTextStyles.titleM),
         const SizedBox(height: 12),
 
         ..._days.map((day) => _DayTile(record: day, colors: colors)),
@@ -273,7 +273,7 @@ class _DayTile extends StatelessWidget {
       ]),
       const SizedBox(height: 8),
       Row(children: [
-        Text('🍽️', style: const TextStyle(fontSize: 13)),
+        const Text('🍽️', style: TextStyle(fontSize: 13)),
         const SizedBox(width: 6),
         Text(
           record.eaten > 0
@@ -282,7 +282,7 @@ class _DayTile extends StatelessWidget {
           style: TextStyle(fontSize: 12, color: colors.textSecondary, fontWeight: FontWeight.w600),
         ),
         const Spacer(),
-        Text('💧', style: const TextStyle(fontSize: 13)),
+        const Text('💧', style: TextStyle(fontSize: 13)),
         const SizedBox(width: 4),
         Text('${record.waterGlasses} ст.', style: TextStyle(fontSize: 12, color: colors.info)),
         if (record.mealsDone > 0) ...[

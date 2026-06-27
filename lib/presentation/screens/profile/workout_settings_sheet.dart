@@ -100,10 +100,10 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.warning.withValues(alpha: 0.25)),
                 ),
-                child: Row(children: [
-                  const Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 18),
-                  const SizedBox(width: 10),
-                  const Expanded(child: Text(
+                child: const Row(children: [
+                  Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 18),
+                  SizedBox(width: 10),
+                  Expanded(child: Text(
                     'Смена места тренировок пересоздаст программу под новое оборудование. Текущий прогресс сохранится.',
                     style: TextStyle(fontSize: 12, color: AppColors.warning, height: 1.4),
                   )),

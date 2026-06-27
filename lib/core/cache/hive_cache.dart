@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:fitnesbuster/data/models/chat_message.dart';
+import 'package:fitnesbuster/domain/entities/chat_message.dart';
 import 'package:fitnesbuster/data/models/weekly_debrief.dart';
 
 /// Single entry point for all Hive cache operations.
@@ -84,7 +85,7 @@ class HiveCache {
     final raw = _box.get(_chatKey(uid));
     if (raw == null) return [];
     try {
-      return ChatMessage.decodeList(raw);
+      return ChatMessageModel.decodeList(raw);
     } catch (_) {
       return [];
     }
@@ -95,7 +96,7 @@ class HiveCache {
     final limited = messages.length > _maxHistoryMessages
         ? messages.sublist(messages.length - _maxHistoryMessages)
         : messages;
-    await _box.put(_chatKey(uid), ChatMessage.encodeList(limited));
+    await _box.put(_chatKey(uid), ChatMessageModel.encodeList(limited));
   }
 
   static Future<void> clearChatHistory(String uid) async {

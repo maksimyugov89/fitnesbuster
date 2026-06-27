@@ -125,7 +125,7 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
       );
     }
 
-    return FeasibilityResult(
+    return const FeasibilityResult(
       isFeasible: true,
       reason: 'Цель реалистична при текущих параметрах. ✅',
       suggestedActions: [],

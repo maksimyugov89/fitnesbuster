@@ -4,6 +4,7 @@ import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/social_service.dart';
+import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({super.key});
@@ -24,13 +25,13 @@ class FeedScreen extends StatelessWidget {
             child: Icon(Icons.arrow_back_rounded, color: colors.textPrimary, size: 20),
           ),
         ),
-        title: Text('Лента друзей', style: AppTextStyles.titleL),
+        title: const Text('Лента друзей', style: AppTextStyles.titleL),
       ),
       body: StreamBuilder<List<FeedEvent>>(
         stream: sl<SocialService>().feedStream(),
         builder: (context, snap) {
           if (snap.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: LoadingShimmer.listView(5));
           }
           final events = snap.data ?? [];
           if (events.isEmpty) {

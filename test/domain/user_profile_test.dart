@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 
 void main() {
-  final male80kg175cm30 = UserProfile(
+  const male80kg175cm30 = UserProfile(
     weight: 80,
     height: 175,
     age: 30,
@@ -12,7 +12,7 @@ void main() {
     activityLevel: ActivityLevel.moderatelyActive,
   );
 
-  final female60kg160cm25 = UserProfile(
+  const female60kg160cm25 = UserProfile(
     weight: 60,
     height: 160,
     age: 25,
@@ -105,10 +105,10 @@ void main() {
   });
 
   group('FoodItem.nutritionForGrams', () {
-    final item = FoodItem(
+    const item = FoodItem(
       id: 'f1',
       name: 'Chicken',
-      nutrition: const NutritionPer100g(
+      nutrition: NutritionPer100g(
         calories: 165,
         protein: 31,
         carbs: 0,

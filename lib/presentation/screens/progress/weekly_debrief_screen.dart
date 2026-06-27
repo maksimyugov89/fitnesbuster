@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/core/ai/deepseek_service.dart';
@@ -10,7 +10,6 @@ import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
 import 'package:fitnesbuster/data/models/weekly_debrief.dart';
 import 'package:fitnesbuster/data/repositories/pr_repository.dart';
-import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 
 class WeeklyDebriefScreen extends StatefulWidget {
@@ -31,9 +30,9 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
   @override
   void initState() {
     super.initState();
-    _uid = FirebaseAuth.instance.currentUser?.uid;
-    _weekStart = _currentWeekStart();
     final authState = context.read<AuthBloc>().state;
+    _uid = authState is AuthStateAuthenticated ? authState.userId : null;
+    _weekStart = _currentWeekStart();
     if (authState is AuthStateAuthenticated) {
       _profile = authState.user.profile;
     }

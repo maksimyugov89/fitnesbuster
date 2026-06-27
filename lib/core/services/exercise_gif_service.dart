@@ -4,14 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/services/exercise_matcher.dart';
-import 'package:fitnesbuster/data/models/exercise_db_model.dart';
+import 'package:fitnesbuster/domain/entities/exercise_info.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 
 class ExerciseGifService implements IExerciseService {
   ExerciseGifService();
 
   @override
-  ExerciseDbModel? findByRuName(String ruName) => ExerciseMatcher.instance.findByRuName(ruName);
+  ExerciseInfo? findByRuName(String ruName) => ExerciseMatcher.instance.findByRuName(ruName)?.toExerciseInfo();
 
   @override
   Future<void> init() => ExerciseMatcher.instance.init();

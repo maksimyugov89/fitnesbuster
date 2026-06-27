@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
-import 'package:fitnesbuster/presentation/widgets/muscle_map_3d_widget.dart';
+import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
 
 class WorkoutMuscle3DSheet extends StatelessWidget {
   final String title;
@@ -33,9 +33,9 @@ class WorkoutMuscle3DSheet extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(children: [
-            WorkoutLegendDot(color: const Color(0xFFE84444), label: 'Основные'),
+            const WorkoutLegendDot(color: Color(0xFFE84444), label: 'Основные'),
             const SizedBox(width: 16),
-            if (secondaryMuscles.isNotEmpty) WorkoutLegendDot(color: const Color(0xFF4FA3E0), label: 'Вспомогательные'),
+            if (secondaryMuscles.isNotEmpty) const WorkoutLegendDot(color: Color(0xFF4FA3E0), label: 'Вспомогательные'),
           ])),
         const SizedBox(height: 8),
         Expanded(

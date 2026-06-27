@@ -165,7 +165,7 @@ void main() {
         name: 'Updated Name',
         email: 'updated@test.com',
         avatarUrl: 'https://example.com/avatar.png',
-        profile: UserProfile(
+        profile: const UserProfile(
           weight: 82,
           height: 176,
           age: 31,
@@ -208,7 +208,7 @@ void main() {
         intensity: IntensityLevel.balanced,
         location: 'gym',
         running: 'withRunning',
-        profile: UserProfile(
+        profile: const UserProfile(
           weight: 75,
           height: 170,
           age: 25,

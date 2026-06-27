@@ -9,7 +9,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/services/workout_session.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
-import 'package:fitnesbuster/data/models/exercise_db_model.dart';
+import 'package:fitnesbuster/domain/entities/exercise_info.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/presentation/screens/workout/pr_screen.dart';
 import 'package:fitnesbuster/presentation/screens/workout/import_workout_sheet.dart';
@@ -53,8 +53,8 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
   bool _ttsReady = false;
 
   // ── Exercise model (free-exercise-db matcher) ───────────────────────────────
-  ExerciseDbModel? _currentExModel;
-  final Map<int, ExerciseDbModel?> _exModelCache = {};
+  ExerciseInfo? _currentExModel;
+  final Map<int, ExerciseInfo?> _exModelCache = {};
 
   // ── Helpers ────────────────────────────────────────────────────────────────
   WorkoutExercise get _ex => widget.workout.exercises[_exIdx];

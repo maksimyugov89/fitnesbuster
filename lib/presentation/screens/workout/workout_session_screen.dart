@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
@@ -61,8 +62,9 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
 
   Future<void> _loadWorkout() async {
     try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid == null) throw Exception(AppLocalizations.tl('notAuthorized'));
+      final authState = context.read<AuthBloc>().state;
+      if (authState is! AuthStateAuthenticated) throw Exception(AppLocalizations.tl('notAuthorized'));
+      final uid = authState.userId;
 
       final plans = await sl<UserRepository>().getAiPlans(uid);
       final planJson = plans['workoutPlan'];
@@ -236,7 +238,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
     body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
       CircularProgressIndicator(color: colors.primary),
       const SizedBox(height: 16),
-      Text('Загружаем тренировку...', style: TextStyle(color: colors.textMuted, fontSize: 14)),
+      Text(AppLocalizations.tl('loadingWorkout'), style: TextStyle(color: colors.textMuted, fontSize: 14)),
     ])),
   );
 
@@ -265,7 +267,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
           FilledButton(
             onPressed: () { setState(() { _loading = true; _loadError = null; }); _loadWorkout(); },
             style: FilledButton.styleFrom(backgroundColor: colors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-            child: const Text('Повторить'),
+            child: Text(AppLocalizations.tl('retry')),
           ),
         ]),
       ),
@@ -425,7 +427,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Подходы', style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+        Text(AppLocalizations.tl('setsLabel'), style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: colors.textPrimary)),
         const SizedBox(height: 12),
         ...List.generate(ex.sets, (i) {
           final done = _completedSets[_currentExercise][i];
@@ -465,7 +467,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(gradient: colors.primaryGradient, borderRadius: BorderRadius.circular(10)),
-                      child: Text('Готово', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.textOnPrimary)),
+                      child: Text(AppLocalizations.tl('done'), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.textOnPrimary)),
                     ),
                   )
                 else
@@ -492,7 +494,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
           child: Center(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Icon(Icons.arrow_back_rounded, size: 18, color: _currentExercise > 0 ? colors.textSecondary : colors.textMuted),
             const SizedBox(width: 6),
-            Text('Назад', style: TextStyle(fontSize: 13, color: _currentExercise > 0 ? colors.textSecondary : colors.textMuted, fontWeight: FontWeight.w600)),
+            Text(AppLocalizations.tl('back'), style: TextStyle(fontSize: 13, color: _currentExercise > 0 ? colors.textSecondary : colors.textMuted, fontWeight: FontWeight.w600)),
           ])),
         ),
       ),
@@ -508,7 +510,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
             borderRadius: BorderRadius.circular(14),
           ),
           child: Center(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text('Далее', style: TextStyle(fontSize: 13, color: _currentExercise < exercises.length - 1 ? colors.textPrimary : colors.textMuted, fontWeight: FontWeight.w600)),
+            Text(AppLocalizations.tl('forward'), style: TextStyle(fontSize: 13, color: _currentExercise < exercises.length - 1 ? colors.textPrimary : colors.textMuted, fontWeight: FontWeight.w600)),
             const SizedBox(width: 6),
             Icon(Icons.arrow_forward_rounded, size: 18, color: _currentExercise < exercises.length - 1 ? colors.textPrimary : colors.textMuted),
           ])),
@@ -528,7 +530,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
       Icon(Icons.lightbulb_outline_rounded, color: colors.accentPurple, size: 20),
       const SizedBox(width: 12),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Совет', style: TextStyle(fontSize: 11, color: colors.accentPurple, fontWeight: FontWeight.w700)),
+        Text(AppLocalizations.tl('tip'), style: TextStyle(fontSize: 11, color: colors.accentPurple, fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
         Text(tip, style: TextStyle(fontSize: 13, color: colors.textSecondary, height: 1.4)),
       ])),
@@ -540,17 +542,17 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
       color: colors.background.withValues(alpha: 0.88),
       child: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text('ОТДЫХ', style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: colors.textMuted, letterSpacing: 4)),
+          Text(AppLocalizations.tl('rest'), style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: colors.textMuted, letterSpacing: 4)),
           const SizedBox(height: 16),
           Text('$_restSeconds', style: TextStyle(fontFamily: 'Syne', fontSize: 96, fontWeight: FontWeight.w800, color: colors.primary)),
-          Text('секунд', style: TextStyle(fontSize: 16, color: colors.textSecondary)),
+          Text(AppLocalizations.tlp('secSuffix', {'n': _restSeconds.toString()}), style: TextStyle(fontSize: 16, color: colors.textSecondary)),
           const SizedBox(height: 40),
           GestureDetector(
             onTap: () { _restTimer?.cancel(); setState(() => _isResting = false); },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
               decoration: BoxDecoration(color: colors.surfaceLight, borderRadius: BorderRadius.circular(14)),
-              child: Text('Пропустить', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+              child: Text(AppLocalizations.tl('skip'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: colors.textPrimary)),
             ),
           ),
         ]),
@@ -564,11 +566,11 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
       builder: (_) => AlertDialog(
         backgroundColor: colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Завершить тренировку?', style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w700, color: colors.textPrimary)),
-        content: Text('Прогресс текущей сессии не будет сохранён.', style: TextStyle(color: colors.textSecondary)),
+        title: Text(AppLocalizations.tl('endWorkoutTitle'), style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w700, color: colors.textPrimary)),
+        content: Text(AppLocalizations.tl('endWorkoutBody'), style: TextStyle(color: colors.textSecondary)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('Продолжить', style: TextStyle(color: colors.primary))),
-          TextButton(onPressed: () { Navigator.pop(context); context.pop(); }, child: Text('Выйти', style: TextStyle(color: colors.error))),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.tl('continueLabel'), style: TextStyle(color: colors.primary))),
+          TextButton(onPressed: () { Navigator.pop(context); context.pop(); }, child: Text(AppLocalizations.tl('exit'), style: TextStyle(color: colors.error))),
         ],
       ),
     );

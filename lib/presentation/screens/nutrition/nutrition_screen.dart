@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -125,11 +126,12 @@ class _NutritionScreenState extends State<NutritionScreen>
 
   Future<void> _loadMealPlan() async {
     try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid == null) {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is! AuthStateAuthenticated) {
         if (mounted) { setState(() => _mealLoading = false); }
         return;
       }
+      final uid = authState.userId;
       final plans = await sl<UserRepository>().getAiPlans(uid);
       final jsonStr = plans['mealPlan'];
       if (jsonStr == null) {
@@ -240,7 +242,7 @@ class _NutritionScreenState extends State<NutritionScreen>
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Text('🛒', style: const TextStyle(fontSize: 14)),
+              const Text('🛒', style: TextStyle(fontSize: 14)),
               const SizedBox(width: 4),
               Text('Покупки', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.accentOrange)),
             ]),
@@ -342,7 +344,7 @@ class _NutritionScreenState extends State<NutritionScreen>
         // Supplements
         if (_supplements.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Text('Спортивное питание', style: AppTextStyles.titleM),
+          const Text('Спортивное питание', style: AppTextStyles.titleM),
           const SizedBox(height: 10),
           ..._supplements.map((s) => Container(
             margin: const EdgeInsets.only(bottom: 8),
@@ -379,7 +381,7 @@ class _NutritionScreenState extends State<NutritionScreen>
 
         // Recommendations
         if (_mealRecs.isNotEmpty) ...[
-          Text('Советы по питанию', style: AppTextStyles.titleM),
+          const Text('Советы по питанию', style: AppTextStyles.titleM),
           const SizedBox(height: 10),
           ..._mealRecs.map((rec) => Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -741,7 +743,7 @@ class _NutritionScreenState extends State<NutritionScreen>
         // Added foods list
         if (_addedFoods.isNotEmpty) ...[
           Row(children: [
-            Text('Добавленная еда', style: AppTextStyles.titleM),
+            const Text('Добавленная еда', style: AppTextStyles.titleM),
             const Spacer(),
             Text('$_manualCaloriesEaten ккал', style: TextStyle(fontSize: 13, color: colors.accentOrange, fontWeight: FontWeight.w700)),
           ]),

@@ -1,4 +1,5 @@
 import 'package:fitnesbuster/core/services/social_models.dart';
+import 'package:fitnesbuster/data/models/user_search_result.dart';
 
 abstract interface class ISocialService {
   Future<void> initFcm();
@@ -9,7 +10,7 @@ abstract interface class ISocialService {
   Future<void> acceptFriendRequest(String requestId);
   Future<void> declineFriendRequest(String requestId);
   Future<void> removeFriend(String friendUid);
-  Future<List<Map<String, dynamic>>> searchUsers(String query);
+  Future<List<UserSearchResult>> searchUsers(String query);
   Stream<List<FriendUser>> friendsStream();
   Stream<List<FriendRequest>> incomingRequestsStream();
 

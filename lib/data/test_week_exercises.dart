@@ -1,5 +1,5 @@
 import 'package:fitnesbuster/domain/entities/entities.dart';
-import 'package:fitnesbuster/bloc/training/test_week_bloc.dart';
+import 'package:fitnesbuster/domain/entities/test_day_exercise.dart';
 
 /// Static list of test-week exercises distributed across 4 days.
 /// Day 1: Chest + Triceps, Day 2: Back + Biceps,

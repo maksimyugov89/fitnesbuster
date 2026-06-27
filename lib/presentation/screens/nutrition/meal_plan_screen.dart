@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/repositories/user_repository.dart';
 import 'package:fitnesbuster/data/models/ai_meal_plan.dart';
+import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 
 class MealPlanScreen extends StatefulWidget {
   const MealPlanScreen({super.key});
@@ -39,11 +41,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   Future<void> _load() async {
     try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid == null) {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is! AuthStateAuthenticated) {
         setState(() { _loading = false; _error = 'Не авторизован'; });
         return;
       }
+      final uid = authState.userId;
       final plans = await sl<UserRepository>().getAiPlans(uid);
       final jsonStr = plans['mealPlan'];
       if (jsonStr == null) {
@@ -70,7 +73,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           _buildHeader(colors),
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: LoadingShimmer.cards(3))
                 : _error != null
                     ? _buildError(colors)
                     : _buildContent(colors),
@@ -94,7 +97,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         ),
         const SizedBox(width: 12),
         Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Питание', style: AppTextStyles.displayM),
+          const Text('Питание', style: AppTextStyles.displayM),
           Text('ИИ-план питания на день', style: TextStyle(fontSize: 13, color: colors.textMuted)),
         ]),
       ]),
@@ -138,7 +141,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Суточные цели', style: AppTextStyles.titleM),
+            const Text('Суточные цели', style: AppTextStyles.titleM),
             const SizedBox(height: 16),
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               _Target(label: 'Калории', value: '${plan.totalCalories}', unit: 'ккал', color: colors.accentOrange),
@@ -162,7 +165,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         ),
 
         const SizedBox(height: 20),
-        Text('Рекомендуемый план', style: AppTextStyles.titleM),
+        const Text('Рекомендуемый план', style: AppTextStyles.titleM),
         const SizedBox(height: 12),
 
         ...plan.meals.map((meal) => _buildMealCard(colors, meal)),
@@ -191,7 +194,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         // ── Supplements ──
         if (plan.supplements.isNotEmpty) ...[
           const SizedBox(height: 20),
-          Text('Спортивное питание', style: AppTextStyles.titleM),
+          const Text('Спортивное питание', style: AppTextStyles.titleM),
           const SizedBox(height: 12),
           ...plan.supplements.map((s) => _buildSupplementCard(colors, s)),
         ],
@@ -199,7 +202,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         // ── Recommendations ──
         if (plan.recommendations.isNotEmpty) ...[
           const SizedBox(height: 20),
-          Text('Советы по питанию', style: AppTextStyles.titleM),
+          const Text('Советы по питанию', style: AppTextStyles.titleM),
           const SizedBox(height: 12),
           ...plan.recommendations.map((rec) => Padding(
             padding: const EdgeInsets.only(bottom: 10),

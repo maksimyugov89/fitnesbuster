@@ -190,13 +190,10 @@ class UserProfile {
     return weight / (h * h);
   }
 
-  /// Harris-Benedict BMR
+  /// Mifflin-St Jeor equation
   double get bmr {
-    if (gender == Gender.male) {
-      return 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
-    } else {
-      return 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
-    }
+    final base = (10 * weight) + (6.25 * height) - (5 * age);
+    return gender == Gender.male ? base + 5 : base - 161;
   }
 
   double get tdee => bmr * activityLevel.multiplier;

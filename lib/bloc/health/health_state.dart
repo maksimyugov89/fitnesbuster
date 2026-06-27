@@ -16,7 +16,7 @@ class HealthStateLoading extends HealthState {
 class HealthStateLoaded extends HealthState {
   final int steps;
   final double caloriesBurned;
-  final int heartRate;
+  final int? heartRate;
   final double? weight;
   final int? sleepMinutes;
   final double? waterIntakeMl;

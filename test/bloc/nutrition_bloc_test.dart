@@ -12,7 +12,7 @@ import 'nutrition_bloc_test.mocks.dart';
 void main() {
   late MockNutritionService nutritionService;
 
-  final tProfile = UserProfile(
+  const tProfile = UserProfile(
     weight: 80,
     height: 175,
     age: 30,
@@ -93,7 +93,7 @@ void main() {
         when(nutritionService.generateMealPlan(any))
             .thenAnswer((_) async => '{"meals": []}');
       },
-      act: (b) => b.add(NutritionRegenerateMealPlan(profile: tProfile)),
+      act: (b) => b.add(const NutritionRegenerateMealPlan(profile: tProfile)),
       expect: () => [
         isA<NutritionStateLoaded>()
             .having((s) => s.mealPlanJson, 'mealPlanJson', '{"meals": []}')
@@ -109,7 +109,7 @@ void main() {
         when(nutritionService.generateMealPlan(any))
             .thenThrow(Exception('network error'));
       },
-      act: (b) => b.add(NutritionRegenerateMealPlan(profile: tProfile)),
+      act: (b) => b.add(const NutritionRegenerateMealPlan(profile: tProfile)),
       expect: () => [
         isA<NutritionStateLoaded>()
             .having((s) => s.mealPlanError, 'mealPlanError', isNotNull)
@@ -120,7 +120,7 @@ void main() {
     blocTest<NutritionBloc, NutritionState>(
       'does nothing when state is not Loaded',
       build: makeBloc,
-      act: (b) => b.add(NutritionRegenerateMealPlan(profile: tProfile)),
+      act: (b) => b.add(const NutritionRegenerateMealPlan(profile: tProfile)),
       expect: () => [],
     );
 

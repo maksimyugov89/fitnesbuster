@@ -45,7 +45,7 @@ void main() {
   });
 
   group('generateMealPlan', () {
-    final tProfile = UserProfile(
+    const tProfile = UserProfile(
       weight: 80,
       height: 175,
       age: 30,
@@ -76,7 +76,7 @@ void main() {
 
     test('propagates AiException from DeepSeekService', () async {
       when(mockAi.generateMealPlan(any, stepsToday: anyNamed('stepsToday')))
-          .thenThrow(AiException('API key not set'));
+          .thenThrow(const AiException('API key not set'));
 
       expect(
         () => service.generateMealPlan(tProfile),

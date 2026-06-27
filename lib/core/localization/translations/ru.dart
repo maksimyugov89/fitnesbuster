@@ -673,4 +673,47 @@ const Map<String, String> ruTranslations = {
   'levelElite': 'Элита',
   'levelMaster': 'Мастер',
   'levelTitan': 'Титан',
+
+  // ── Workout session ──
+  'loadingWorkout': 'Загружаем тренировку...',
+  'forward': 'Далее',
+  'rest': 'ОТДЫХ',
+  'secSuffix': '{n} секунд',
+  'tip': 'Совет',
+  'endWorkoutTitle': 'Завершить тренировку?',
+  'endWorkoutBody': 'Прогресс текущей сессии не будет сохранён.',
+  'exit': 'Выйти',
+
+  // ── Workout calendar ──
+  'reset': 'Сбросить',
+  'moved': 'Перенесено',
+  'workoutSchedule': 'Расписание тренировок',
+  'noWorkoutPlan': 'Нет плана тренировок',
+  'generatePlanHint': 'Сгенерируй AI-план, чтобы управлять расписанием',
+  'nearestWorkouts': 'Ближайшие тренировки',
+
+  // ── Exercise detail ──
+  'characteristics': 'Характеристики',
+  'technique': 'Техника выполнения',
+  'howToPerform': 'Как выполнять',
+  'analyzingTechnique': 'Анализирую технику...',
+  'noConnection': 'Нет соединения',
+  'exerciseNotFound': 'Упражнений не найдено',
+
+  // ── Import / correction ──
+  'correctPlan': 'Скорректировать план',
+  'pasteFromClipboard': 'Вставить из буфера обмена',
+  'clipboardEmpty': 'Буфер обмена пуст',
+  'openingFilePicker': 'Открывается файловый менеджер...',
+  'selectFileAgain': 'Выбрать файл снова',
+
+  // ── Test week ──
+  'testWeek': 'Тестовая неделя',
+  'analyzingPerformance': 'Анализируем твои показатели...',
+  'preparingTestWeek': 'Готовим тестовую неделю...',
+  'exercisesInstruction': 'Выполни упражнения и запиши комфортный вес',
+  'recordMetric': 'Записать показатель',
+  'startProgram': 'Начать программу!',
+  'programStarted': 'Программа запущена!',
+  'toHome': 'На главную',
 };

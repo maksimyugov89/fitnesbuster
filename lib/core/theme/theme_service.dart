@@ -43,7 +43,7 @@ enum AppThemeMode {
 /// Manages app theme preference.
 class ThemeService {
   static const String _key = 'app_theme';
-  static final AppThemeMode _default = AppThemeMode.neonDark;
+  static const AppThemeMode _default = AppThemeMode.neonDark;
 
   static AppThemeMode _current = _default;
   static final ValueNotifier<AppThemeMode> notifier = ValueNotifier(_default);

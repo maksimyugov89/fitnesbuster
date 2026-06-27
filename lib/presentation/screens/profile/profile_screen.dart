@@ -19,8 +19,8 @@ import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/presentation/screens/onboarding/workout_location_screen.dart';
 import 'package:fitnesbuster/presentation/screens/profile/workout_settings_sheet.dart';
 import 'package:fitnesbuster/presentation/screens/workout/workout_plan_screen.dart';
-import 'package:fitnesbuster/presentation/widgets/language_selection_sheet.dart';
-import 'package:fitnesbuster/presentation/widgets/theme_selection_sheet.dart';
+import 'package:fitnesbuster/presentation/widgets/profile/language_selection_sheet.dart';
+import 'package:fitnesbuster/presentation/widgets/profile/theme_selection_sheet.dart';
 import 'package:fitnesbuster/core/localization/language_service.dart';
 import 'package:fitnesbuster/core/theme/theme_service.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
@@ -558,9 +558,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final colors = AppTheme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: [
-          Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
-          SizedBox(width: 10),
-          Expanded(child: Text(AppLocalizations.tl('planUpdateFailed'), style: TextStyle(fontWeight: FontWeight.w600))),
+          const Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
+          const SizedBox(width: 10),
+          Expanded(child: Text(AppLocalizations.tl('planUpdateFailed'), style: const TextStyle(fontWeight: FontWeight.w600))),
         ]),
         backgroundColor: colors.error,
         behavior: SnackBarBehavior.floating,
@@ -1398,7 +1398,7 @@ class _AvatarPickerSheetState extends State<_AvatarPickerSheet> {
         // Handle
         Container(width: 40, height: 4, decoration: BoxDecoration(color: colors.surfaceLight, borderRadius: BorderRadius.circular(2))),
         const SizedBox(height: 20),
-        Text('Выбор аватарки', style: AppTextStyles.titleL),
+        const Text('Выбор аватарки', style: AppTextStyles.titleL),
         const SizedBox(height: 20),
 
         // Upload buttons
@@ -1720,7 +1720,7 @@ class _SaveButton extends StatelessWidget {
           foregroundColor: colors.textOnPrimary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
-        child: Text(label ?? l10n.save, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
+        child: Text(label ?? l10n.save, style: const TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
       ),
     );
   }

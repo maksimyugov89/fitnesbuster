@@ -1,10 +1,12 @@
-﻿import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/social_service.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 
 class ChallengesScreen extends StatefulWidget {
   const ChallengesScreen({super.key});
@@ -45,7 +47,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
             child: Icon(Icons.arrow_back_rounded, color: colors.textPrimary, size: 20),
           ),
         ),
-        title: Text('Челленджи', style: AppTextStyles.titleL),
+        title: const Text('Челленджи', style: AppTextStyles.titleL),
         actions: const [],
         bottom: TabBar(
           controller: _tabs,
@@ -73,7 +75,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
       stream: sl<SocialService>().myChallengesStream(),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: LoadingShimmer.listView(4));
         }
         final challenges = snap.data ?? [];
         if (challenges.isEmpty) {
@@ -94,12 +96,13 @@ class _ChallengesScreenState extends State<ChallengesScreen>
   }
 
   Widget _buildPublicChallenges(ThemePalette colors) {
-    final myUid = FirebaseAuth.instance.currentUser?.uid;
+    final authState = context.read<AuthBloc>().state;
+    final myUid = authState is AuthStateAuthenticated ? authState.userId : null;
     return StreamBuilder<List<Challenge>>(
       stream: sl<SocialService>().publicChallengesStream(),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: LoadingShimmer.listView(4));
         }
         final all = snap.data ?? [];
         if (all.isEmpty) {
@@ -356,7 +359,8 @@ class _LeaderboardSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final myUid = FirebaseAuth.instance.currentUser?.uid;
+    final authState = context.read<AuthBloc>().state;
+    final myUid = authState is AuthStateAuthenticated ? authState.userId : null;
     return Container(
       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
       decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
@@ -383,7 +387,7 @@ class _LeaderboardSheet extends StatelessWidget {
             stream: sl<SocialService>().challengeLeaderboardStream(challenge.id),
             builder: (context, snap) {
               if (snap.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(child: LoadingShimmer.listView(4));
               }
               final participants = snap.data ?? [];
               return ListView.separated(

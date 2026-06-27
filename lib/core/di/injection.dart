@@ -43,6 +43,7 @@ import 'package:fitnesbuster/core/services/gamification_service.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/core/services/exercise_gif_service.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
+import 'package:fitnesbuster/core/cache/offline_queue.dart';
 
 final sl = GetIt.instance;
 StreamSubscription<fb.User?>? _authFcmSub;
@@ -129,11 +130,16 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<IGamificationService>(() => gamification);
   sl.registerLazySingleton<GamificationService>(() => gamification);
 
-  sl.registerLazySingleton<WorkoutSession>(() => WorkoutSession.instance);
+  sl.registerLazySingleton<WorkoutSession>(() => WorkoutSession());
 
   final exerciseService = ExerciseGifService();
   sl.registerLazySingleton<IExerciseService>(() => exerciseService);
   sl.registerLazySingleton<ExerciseGifService>(() => exerciseService);
+
+  // Offline queue
+  final offlineQueue = OfflineQueue();
+  await offlineQueue.init();
+  sl.registerLazySingleton<OfflineQueue>(() => offlineQueue);
 
   // Blocs
   sl.registerFactory(() => AuthBloc(authRepository: sl<IAuthRepository>()));

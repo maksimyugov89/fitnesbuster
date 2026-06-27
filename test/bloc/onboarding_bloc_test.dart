@@ -1,0 +1,213 @@
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
+import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
+import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+
+import 'onboarding_bloc_test.mocks.dart';
+
+@GenerateMocks([IUserRepository, IDeepSeekService, IAuthRepository])
+void main() {
+  late MockIUserRepository mockUserRepo;
+  late MockIDeepSeekService mockAiService;
+  late MockIAuthRepository mockAuthRepo;
+  late OnboardingBloc bloc;
+
+  final tUser = UserEntity(
+    id: 'uid-1',
+    name: 'Test',
+    email: 'test@example.com',
+    createdAt: DateTime(2024),
+  );
+
+  setUp(() {
+    mockUserRepo = MockIUserRepository();
+    mockAiService = MockIDeepSeekService();
+    mockAuthRepo = MockIAuthRepository();
+    bloc = OnboardingBloc(
+      userRepo: mockUserRepo,
+      aiService: mockAiService,
+      authRepo: mockAuthRepo,
+    );
+  });
+
+  tearDown(() => bloc.close());
+
+  test('initial state is OnboardingCollecting', () {
+    expect(bloc.state, const OnboardingCollecting());
+  });
+
+  group('OnboardingSetGoal', () {
+    blocTest<OnboardingBloc, OnboardingState>(
+      'updates goal in collecting state',
+      build: () => bloc,
+      act: (b) => b.add(const OnboardingSetGoal(FitnessGoal.loseWeight)),
+      expect: () => [
+        isA<OnboardingCollecting>()
+            .having((s) => s.goal, 'goal', FitnessGoal.loseWeight),
+      ],
+    );
+  });
+
+  group('OnboardingSetIntensity', () {
+    blocTest<OnboardingBloc, OnboardingState>(
+      'updates intensity in collecting state',
+      build: () => bloc,
+      act: (b) => b.add(const OnboardingSetIntensity(IntensityLevel.balanced)),
+      expect: () => [
+        isA<OnboardingCollecting>()
+            .having((s) => s.intensity, 'intensity', IntensityLevel.balanced),
+      ],
+    );
+  });
+
+  group('OnboardingSetLocation', () {
+    blocTest<OnboardingBloc, OnboardingState>(
+      'updates location and running preference',
+      build: () => bloc,
+      act: (b) => b.add(
+        const OnboardingSetLocation(location: 'gym', running: 'treadmill'),
+      ),
+      expect: () => [
+        isA<OnboardingCollecting>()
+            .having((s) => s.location, 'location', 'gym')
+            .having((s) => s.running, 'running', 'treadmill'),
+      ],
+    );
+  });
+
+  group('OnboardingFinalize', () {
+    blocTest<OnboardingBloc, OnboardingState>(
+      'emits error when data is incomplete',
+      build: () => bloc,
+      act: (b) => b.add(const OnboardingFinalize()),
+      expect: () => [
+        isA<OnboardingError>(),
+      ],
+    );
+
+    blocTest<OnboardingBloc, OnboardingState>(
+      'emits Saving then Complete on success',
+      build: () {
+        when(mockAuthRepo.currentUser).thenReturn(tUser);
+        when(mockUserRepo.saveOnboardingData(
+          userId: anyNamed('userId'),
+          goal: anyNamed('goal'),
+          intensity: anyNamed('intensity'),
+          location: anyNamed('location'),
+          running: anyNamed('running'),
+          city: anyNamed('city'),
+          profile: anyNamed('profile'),
+        )).thenAnswer((_) async => tUser);
+        when(mockUserRepo.getUser('uid-1')).thenAnswer((_) async => tUser);
+        when(mockUserRepo.updateProfile(any)).thenAnswer((_) async => tUser);
+        when(mockAiService.generateWorkoutPlan(any))
+            .thenAnswer((_) async => '{"title":"test"}');
+        when(mockAiService.generateMealPlan(any, city: anyNamed('city')))
+            .thenAnswer((_) async => '{"meals":[]}');
+
+        final bloc = OnboardingBloc(
+          userRepo: mockUserRepo,
+          aiService: mockAiService,
+          authRepo: mockAuthRepo,
+        );
+        bloc.add(const OnboardingSetGoal(FitnessGoal.loseWeight));
+        bloc.add(const OnboardingSetIntensity(IntensityLevel.balanced));
+        bloc.add(const OnboardingSetLocation(location: 'gym', running: 'treadmill'));
+        bloc.add(const OnboardingSetProfile(
+          name: 'Test', age: 30, weight: 80, height: 180,
+          gender: Gender.male, activity: ActivityLevel.moderatelyActive,
+        ));
+        return bloc;
+      },
+      act: (b) => b.add(const OnboardingFinalize()),
+      skip: 4,
+      expect: () => [
+        const OnboardingSaving(),
+        const OnboardingGeneratingPlan(),
+        isA<OnboardingComplete>(),
+      ],
+    );
+
+    blocTest<OnboardingBloc, OnboardingState>(
+      'emits error when save fails',
+      build: () {
+        when(mockAuthRepo.currentUser).thenReturn(tUser);
+        when(mockUserRepo.saveOnboardingData(
+          userId: anyNamed('userId'),
+          goal: anyNamed('goal'),
+          intensity: anyNamed('intensity'),
+          location: anyNamed('location'),
+          running: anyNamed('running'),
+          city: anyNamed('city'),
+          profile: anyNamed('profile'),
+        )).thenThrow(Exception('Firestore error'));
+
+        final bloc = OnboardingBloc(
+          userRepo: mockUserRepo,
+          aiService: mockAiService,
+          authRepo: mockAuthRepo,
+        );
+        bloc.add(const OnboardingSetGoal(FitnessGoal.loseWeight));
+        bloc.add(const OnboardingSetIntensity(IntensityLevel.balanced));
+        bloc.add(const OnboardingSetLocation(location: 'gym', running: 'treadmill'));
+        bloc.add(const OnboardingSetProfile(
+          name: 'Test', age: 30, weight: 80, height: 180,
+          gender: Gender.male, activity: ActivityLevel.moderatelyActive,
+        ));
+        return bloc;
+      },
+      act: (b) => b.add(const OnboardingFinalize()),
+      skip: 4,
+      expect: () => [
+        const OnboardingSaving(),
+        isA<OnboardingError>(),
+      ],
+    );
+
+    blocTest<OnboardingBloc, OnboardingState>(
+      'emits error when plan generation fails',
+      build: () {
+        when(mockAuthRepo.currentUser).thenReturn(tUser);
+        when(mockUserRepo.saveOnboardingData(
+          userId: anyNamed('userId'),
+          goal: anyNamed('goal'),
+          intensity: anyNamed('intensity'),
+          location: anyNamed('location'),
+          running: anyNamed('running'),
+          city: anyNamed('city'),
+          profile: anyNamed('profile'),
+        )).thenAnswer((_) async => tUser);
+        when(mockUserRepo.getUser('uid-1')).thenAnswer((_) async => tUser);
+        when(mockUserRepo.updateProfile(any)).thenAnswer((_) async => tUser);
+        when(mockAiService.generateWorkoutPlan(any))
+            .thenThrow(Exception('AI error'));
+
+        final bloc = OnboardingBloc(
+          userRepo: mockUserRepo,
+          aiService: mockAiService,
+          authRepo: mockAuthRepo,
+        );
+        bloc.add(const OnboardingSetGoal(FitnessGoal.loseWeight));
+        bloc.add(const OnboardingSetIntensity(IntensityLevel.balanced));
+        bloc.add(const OnboardingSetLocation(location: 'gym', running: 'treadmill'));
+        bloc.add(const OnboardingSetProfile(
+          name: 'Test', age: 30, weight: 80, height: 180,
+          gender: Gender.male, activity: ActivityLevel.moderatelyActive,
+        ));
+        return bloc;
+      },
+      act: (b) => b.add(const OnboardingFinalize()),
+      skip: 4,
+      expect: () => [
+        const OnboardingSaving(),
+        const OnboardingGeneratingPlan(),
+        isA<OnboardingError>(),
+      ],
+    );
+  });
+}

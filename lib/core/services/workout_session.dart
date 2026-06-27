@@ -12,13 +12,11 @@ import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 enum WorkoutPhase { prep, exercise, rest, done }
 
-/// Singleton that survives navigation — holds active workout state so the
-/// timer continues ticking (via wall-clock) even when WorkoutExecutionScreen
-/// is off-screen. The screen syncs here on every phase change and on dispose.
+/// Holds active workout state so the timer continues ticking (via wall-clock)
+/// even when WorkoutExecutionScreen is off-screen. The screen syncs here on
+/// every phase change and on dispose. Managed as a lazy singleton through DI.
 class WorkoutSession extends ChangeNotifier {
-  static final WorkoutSession _instance = WorkoutSession._();
-  static WorkoutSession get instance => _instance;
-  WorkoutSession._();
+  WorkoutSession();
 
   // ── State ──────────────────────────────────────────────────────────────────
   bool _active = false;

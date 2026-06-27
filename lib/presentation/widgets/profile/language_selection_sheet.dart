@@ -28,7 +28,7 @@ class _LanguageSelectionSheetState extends State<LanguageSelectionSheet> {
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: EdgeInsets.only(
         top: 12, left: 20, right: 20,

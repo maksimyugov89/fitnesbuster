@@ -60,7 +60,7 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
       emit(HealthStateLoaded(
         steps: steps ?? 0,
         caloriesBurned: calories ?? 0,
-        heartRate: heartRate ?? 72,
+        heartRate: heartRate,
         weight: weight,
         sleepMinutes: sleepMinutes,
         waterIntakeMl: (water ?? 0) * 1000,
@@ -88,7 +88,7 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
       );
       for (final point in data) {
         if (point.type == HealthDataType.STEPS) {
-          add(HealthFetchRequested());
+          add(const HealthFetchRequested());
         }
       }
     } catch (e, st) {

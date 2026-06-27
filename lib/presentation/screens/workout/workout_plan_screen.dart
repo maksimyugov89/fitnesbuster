@@ -9,7 +9,7 @@ import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
-import 'package:fitnesbuster/presentation/widgets/muscle_map_3d_widget.dart';
+import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 import 'package:fitnesbuster/core/services/share_intent_service.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
@@ -1182,10 +1182,10 @@ class _Muscle3DSheet extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(children: [
-            _LegendDot(color: const Color(0xFFE84444), label: 'Основные'),
+            const _LegendDot(color: Color(0xFFE84444), label: 'Основные'),
             const SizedBox(width: 16),
             if (secondaryMuscles.isNotEmpty)
-              _LegendDot(color: const Color(0xFF4FA3E0), label: 'Вспомогательные'),
+              const _LegendDot(color: Color(0xFF4FA3E0), label: 'Вспомогательные'),
           ]),
         ),
         const SizedBox(height: 8),

@@ -3,7 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/data/models/exercise_db_model.dart';
-import 'package:fitnesbuster/presentation/widgets/muscle_map_3d_widget.dart';
+import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
+import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 
 class ExerciseBrowserScreen extends StatefulWidget {
   const ExerciseBrowserScreen({super.key});
@@ -99,7 +100,7 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
           SliverToBoxAdapter(child: _buildMapPanel(c)),
           SliverToBoxAdapter(child: _buildControls(c)),
           if (_loading)
-            const SliverFillRemaining(child: Center(child: CircularProgressIndicator()))
+            SliverFillRemaining(child: Center(child: LoadingShimmer.gridView(6)))
           else
             _buildExerciseList(c),
         ],

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:fitnesbuster/core/ai/deepseek_service.dart' show AiException;
+import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';

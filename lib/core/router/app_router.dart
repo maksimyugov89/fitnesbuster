@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
-import 'package:fitnesbuster/core/di/injection.dart';
+import 'package:fitnesbuster/core/router/auth_router_notifier.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/presentation/widgets/router/main_shell.dart';
 import 'package:fitnesbuster/presentation/screens/workout/workout_execution_screen.dart';
@@ -59,10 +58,10 @@ class AppRouter {
   static const String profile = '/profile';
   static const String healthSync = '/health-sync';
   static const String testWeek = '/test-week';
-  static const String prTracker = '/pr';
+  static const String prTracker = '/pr-tracker';
   static const String exerciseBrowser = '/exercises';
   static const String aiChat = '/chat';
-  static const String weeklyDebrief = '/debrief';
+  static const String weeklyDebrief = '/weekly-debrief';
   static const String exerciseDetail   = '/exercises/:id';
   static const String achievements      = '/achievements';
   static const String shoppingList       = '/shopping-list';
@@ -78,7 +77,7 @@ class AppRouter {
     router = GoRouter(
       initialLocation: splash,
       debugLogDiagnostics: false,
-      refreshListenable: _AuthRouterNotifier(),
+      refreshListenable: AuthRouterNotifier(),
       redirect: _redirect,
       routes: [
       GoRoute(path: splash, builder: (_, __) => const SplashScreen()),
@@ -169,25 +168,4 @@ class AppRouter {
   }
 }
 
-// ─── Auth state notifier for GoRouter refresh ────────────────────────────────
-// Слушает Firebase Auth И AuthBloc — роутер переоценивает редирект
-// когда любой из них меняется (исправляет гонку при старте).
-class _AuthRouterNotifier extends ChangeNotifier {
-  late final StreamSubscription<User?> _firebaseSub;
-  late final StreamSubscription<AuthState> _blocSub;
-
-  _AuthRouterNotifier() {
-    _firebaseSub = FirebaseAuth.instance
-        .authStateChanges()
-        .listen((_) => notifyListeners());
-    _blocSub = sl<AuthBloc>().stream.listen((_) => notifyListeners());
-  }
-
-  @override
-  void dispose() {
-    _firebaseSub.cancel();
-    _blocSub.cancel();
-    super.dispose();
-  }
-}
 

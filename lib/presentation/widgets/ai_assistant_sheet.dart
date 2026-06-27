@@ -69,7 +69,7 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
         child: Container(
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
           padding: EdgeInsets.only(
             top: 12,
@@ -305,7 +305,7 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
           children: [
             if (!msg.isUser)
               Padding(
-                padding: EdgeInsets.only(bottom: 4),
+                padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
                   'FitnesBuster AI',
                   style: TextStyle(

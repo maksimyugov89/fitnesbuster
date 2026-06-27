@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/theme_service.dart';
+import 'package:fitnesbuster/core/initialization/init_state.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -55,7 +56,24 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 300));
     _textController.forward();
     _progressController.forward();
-    await Future.delayed(const Duration(milliseconds: 2800));
+
+    const minDisplay = Duration(milliseconds: 1500);
+    final startedAt = DateTime.now();
+
+    if (initializationComplete.value) {
+      final remaining = minDisplay - DateTime.now().difference(startedAt);
+      if (remaining > Duration.zero) await Future.delayed(remaining);
+    } else {
+      await Future.any([
+        Future.delayed(const Duration(seconds: 15)),
+        () async {
+          await _waitForInit();
+          final remaining = minDisplay - DateTime.now().difference(startedAt);
+          if (remaining > Duration.zero) await Future.delayed(remaining);
+        }(),
+      ]);
+    }
+
     if (mounted) {
       final authState = context.read<AuthBloc>().state;
       if (authState is AuthStateAuthenticated) {
@@ -63,6 +81,13 @@ class _SplashScreenState extends State<SplashScreen>
       } else {
         context.go('/login');
       }
+    }
+  }
+
+  Future<void> _waitForInit() async {
+    if (initializationComplete.value) return;
+    while (!initializationComplete.value && mounted) {
+      await Future.delayed(const Duration(milliseconds: 100));
     }
   }
 

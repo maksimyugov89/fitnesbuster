@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -7,6 +8,7 @@ import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/repositories/user_repository.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
@@ -56,8 +58,9 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
 
   Future<void> _loadPlan() async {
     try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid == null) return;
+      final authState = context.read<AuthBloc>().state;
+      if (authState is! AuthStateAuthenticated) return;
+      final uid = authState.userId;
       final plans = await sl<UserRepository>().getAiPlans(uid);
       final jsonStr = plans['workoutPlan'];
       if (jsonStr == null) return;
@@ -215,7 +218,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                           side: BorderSide(color: colors.textMuted.withValues(alpha: 0.3)),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
-                        child: Text('Сбросить', style: TextStyle(color: colors.textMuted)),
+                        child: Text(AppLocalizations.tl('reset'), style: TextStyle(color: colors.textMuted)),
                       ),
                     ),
                   if (_overrides.containsKey(k)) const SizedBox(width: 12),
@@ -233,7 +236,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text('Сохранить', style: TextStyle(fontWeight: FontWeight.w700)),
+                      child: Text(AppLocalizations.tl('save'), style: const TextStyle(fontWeight: FontWeight.w700)),
                     ),
                   ),
                 ]),
@@ -263,7 +266,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             child: Icon(Icons.arrow_back_rounded, color: colors.textPrimary, size: 20),
           ),
         ),
-        title: Text('Расписание тренировок', style: AppTextStyles.titleL),
+        title: const Text('Расписание тренировок', style: AppTextStyles.titleL),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -457,7 +460,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     if (workoutDays.isEmpty) return const SizedBox.shrink();
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('Ближайшие тренировки', style: AppTextStyles.titleM),
+      const Text('Ближайшие тренировки', style: AppTextStyles.titleM),
       const SizedBox(height: 12),
       ...workoutDays.map((date) {
         final planDay = _planDayFor(date);

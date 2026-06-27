@@ -160,7 +160,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
           const SizedBox(height: 40),
           Icon(Icons.health_and_safety_rounded, size: 72, color: colors.textMuted.withValues(alpha: 0.4)),
           const SizedBox(height: 20),
-          Text('Health Connect не установлен', style: AppTextStyles.titleL, textAlign: TextAlign.center),
+          const Text('Health Connect не установлен', style: AppTextStyles.titleL, textAlign: TextAlign.center),
           const SizedBox(height: 8),
           Text(
             'Для синхронизации данных о здоровье необходимо установить приложение «Health Connect (Здоровье и спорт)» из Google Play.',
@@ -222,16 +222,16 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.85)),
           ),
           const SizedBox(height: 12),
-          Wrap(
+          const Wrap(
             spacing: 8,
             runSpacing: 6,
             children: [
               _ProviderBadge('Google Fit'),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _ProviderBadge('Samsung Health'),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _ProviderBadge('Mi Fitness'),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _ProviderBadge('и другие'),
             ],
           ),

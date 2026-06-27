@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -112,7 +113,8 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
     setState(() { _step = _ImportStep.parsing; _errorMsg = null; });
     try {
       final service = sl<DeepSeekService>();
-      final uid = FirebaseAuth.instance.currentUser?.uid;
+      final authState = context.read<AuthBloc>().state;
+      final uid = authState is AuthStateAuthenticated ? authState.userId : null;
 
       String jsonStr;
       if (uid != null) {
@@ -241,7 +243,8 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
     if (_correctedPlan == null || _saving) return;
     setState(() => _saving = true);
     try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
+      final authState = context.read<AuthBloc>().state;
+      final uid = authState is AuthStateAuthenticated ? authState.userId : null;
       if (uid == null) throw Exception(AppLocalizations.tl('notAuthorized'));
       final repo = sl<UserRepository>();
       final planData = _correctedPlan!;

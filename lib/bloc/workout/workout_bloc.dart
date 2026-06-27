@@ -67,7 +67,7 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     emit(WorkoutStateCompleted(
       sessionId: current.session!.id,
       elapsedSeconds: _elapsedSeconds,
-      completedSets: current.completedSets,
+      completedSets: List<SetLog>.from(current.completedSets),
     ));
   }
 

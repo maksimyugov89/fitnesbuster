@@ -84,7 +84,7 @@ class _PrScreenState extends State<PrScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Личные рекорды', style: AppTextStyles.displayM),
+            const Text('Личные рекорды', style: AppTextStyles.displayM),
             Text(
               totalRecords == 0
                   ? 'Нет записей'

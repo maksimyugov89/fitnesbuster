@@ -282,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         ),
         child: _loading
             ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: colors.textOnPrimary))
-            : Text(l10n.loginButton, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
+            : Text(l10n.loginButton, style: const TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
       ),
     );
   }

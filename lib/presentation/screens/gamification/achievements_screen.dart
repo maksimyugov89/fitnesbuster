@@ -60,7 +60,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Достижения', style: AppTextStyles.titleL),
+        title: const Text('Достижения', style: AppTextStyles.titleL),
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(

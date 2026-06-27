@@ -45,7 +45,7 @@ class _TestWeekScreenState extends State<TestWeekScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(color: colors.primary),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text('Анализируем твои показатели...', style: TextStyle(color: colors.textMuted)),
                 ],
               ),
@@ -314,7 +314,7 @@ class _ExerciseCard extends StatelessWidget {
               ),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Icon(Icons.check_rounded, size: 16, color: colors.primary),
-                SizedBox(width: 6),
+                const SizedBox(width: 6),
                 Text('Записать показатель', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.primary)),
               ]),
             ),

@@ -136,7 +136,7 @@ class _ProgressBodyMeasurementsDialogState extends State<ProgressBodyMeasurement
           style: FilledButton.styleFrom(backgroundColor: colors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
           onPressed: _saving ? null : _save,
           child: _saving
-              ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
               : const Text('Сохранить'),
         ),
       ],

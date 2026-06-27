@@ -10,9 +10,9 @@ class OnboardingScreen extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.go('/onboarding/goal');
     });
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Colors.transparent,
-      body: const SizedBox.shrink(),
+      body: SizedBox.shrink(),
     );
   }
 }

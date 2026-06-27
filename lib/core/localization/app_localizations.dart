@@ -653,6 +653,48 @@ class AppLocalizations {
   String daysCompletedOf(int done, int total) =>
       _tp('daysCompletedOf', {'done': done.toString(), 'total': total.toString()});
 
+  // ── Workout session ─────────────────────────────────────────────────────
+  String get loadingWorkout     => _t('loadingWorkout');
+  String get forward            => _t('forward');
+  String get rest               => _t('rest');
+  String get tip                => _t('tip');
+  String get endWorkoutTitle    => _t('endWorkoutTitle');
+  String get endWorkoutBody     => _t('endWorkoutBody');
+  String get exitLabel         => _t('exit');
+
+  // ── Workout calendar ─────────────────────────────────────────────────────
+  String get reset              => _t('reset');
+  String get moved              => _t('moved');
+  String get workoutSchedule    => _t('workoutSchedule');
+  String get noWorkoutPlan      => _t('noWorkoutPlan');
+  String get generatePlanHint   => _t('generatePlanHint');
+  String get nearestWorkouts    => _t('nearestWorkouts');
+
+  // ── Exercise detail ──────────────────────────────────────────────────────
+  String get characteristics    => _t('characteristics');
+  String get technique          => _t('technique');
+  String get howToPerform       => _t('howToPerform');
+  String get analyzingTechnique => _t('analyzingTechnique');
+  String get noConnection       => _t('noConnection');
+  String get exerciseNotFound   => _t('exerciseNotFound');
+
+  // ── Import / correction ──────────────────────────────────────────────────
+  String get correctPlan        => _t('correctPlan');
+  String get pasteFromClipboard => _t('pasteFromClipboard');
+  String get clipboardEmpty     => _t('clipboardEmpty');
+  String get openingFilePicker  => _t('openingFilePicker');
+  String get selectFileAgain    => _t('selectFileAgain');
+
+  // ── Test week ────────────────────────────────────────────────────────────
+  String get testWeek           => _t('testWeek');
+  String get analyzingPerf      => _t('analyzingPerformance');
+  String get preparingTestWeek  => _t('preparingTestWeek');
+  String get exercisesInstr     => _t('exercisesInstruction');
+  String get recordMetric       => _t('recordMetric');
+  String get startProgram       => _t('startProgram');
+  String get programStarted     => _t('programStarted');
+  String get toHome             => _t('toHome');
+
   // ── Parameterized ─────────────────────────────────────────────────────────
   String setsOf(String done, String total) =>
       _tp('setsOf', {'done': done, 'total': total});

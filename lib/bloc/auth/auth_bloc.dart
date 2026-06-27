@@ -89,8 +89,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthStateError(message: _mapFirebaseError(e.code)));
     } catch (e, st) {
       appLogger.w('[AuthBloc] googleLogin failed', error: e, stackTrace: st);
-      // Check for cancellation via platform exception code rather than message text
-      if (e is FirebaseAuthException && e.code == 'account-exists-with-different-credential' || e.toString().contains('cancelled')) {
+      if (e is FirebaseAuthException && e.code == 'account-exists-with-different-credential') {
+        emit(const AuthStateUnauthenticated());
+      } else if (e.toString().contains('cancelled')) {
         emit(const AuthStateUnauthenticated());
       } else {
         emit(AuthStateError(message: AppLocalizations.tl('googleLoginError')));

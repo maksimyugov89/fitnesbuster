@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
-import 'package:fitnesbuster/core/ai/deepseek_service.dart' show AiException;
+import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';

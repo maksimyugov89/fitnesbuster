@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:flutter/services.dart';
@@ -116,8 +117,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
   Future<void> _loadMealPlan() async {
     try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid == null) return;
+      final authState = context.read<AuthBloc>().state;
+      if (authState is! AuthStateAuthenticated) return;
+      final uid = authState.userId;
       final plans = await sl<UserRepository>().getAiPlans(uid);
       final jsonStr = plans['mealPlan'];
       if (jsonStr == null) return;
@@ -336,7 +338,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('🛒', style: const TextStyle(fontSize: 56)),
+          const Text('🛒', style: TextStyle(fontSize: 56)),
           const SizedBox(height: 16),
           Text(
             'Список пуст',

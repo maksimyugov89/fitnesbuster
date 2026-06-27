@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/domain/entities/test_day_exercise.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/domain/services/i_adaptive_training_service.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
@@ -201,16 +202,4 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
   }
 }
 
-class TestDayExercise extends Equatable {
-  final String name;
-  final MuscleGroup muscle;
-  final double baseWeight; // suggested starting weight
-  const TestDayExercise({
-    required this.name,
-    required this.muscle,
-    required this.baseWeight,
-  });
 
-  @override
-  List<Object?> get props => [name, muscle, baseWeight];
-}

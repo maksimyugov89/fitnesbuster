@@ -4,14 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'core/cache/hive_cache.dart';
 import 'firebase_options.dart';
-import 'core/theme/app_theme.dart' as old_theme;
 import 'core/router/app_router.dart';
 import 'core/di/injection.dart';
+import 'core/initialization/app_initializer.dart';
+import 'core/initialization/init_state.dart';
 import 'bloc/auth/auth_bloc.dart';
 import 'bloc/user/user_bloc.dart';
 import 'bloc/workout/workout_bloc.dart';
@@ -23,10 +20,8 @@ import 'bloc/training/test_week_bloc.dart';
 import 'core/localization/language_service.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/theme/theme_service.dart';
-import 'core/services/share_intent_service.dart';
 import 'core/theme/dynamic_theme.dart';
 import 'core/theme/animated_theme_background.dart';
-import 'data/models/exercise_db_model.dart';
 
 final _paletteNotifier = ValueNotifier<ThemePalette>(ThemePalette.neon);
 
@@ -51,21 +46,27 @@ void main() async {
     runApp(_FirebaseErrorApp(error: e.toString()));
     return;
   }
+
+  String? initError;
+  String? initStage;
+
   try {
-    final appDocDir = await getApplicationDocumentsDirectory();
-    Hive.init(appDocDir.path);
-    await HiveCache.init();
-    await initDependencies();
-    AppRouter.init();
-    await ExerciseDatabase.load();
-    await LanguageService.load();
-    await initializeDateFormatting(LanguageService.current.code, null);
-    await ThemeService.load();
-  ShareIntentService.init();
+    await AppInitializer().initialize(
+      onProgress: (stage) => initStage = stage,
+    );
+  } on AppInitException catch (e) {
+    initError = e.message;
+    initStage = e.stage;
   } catch (e) {
-    runApp(_InitErrorApp(error: e.toString()));
+    initError = e.toString();
+  }
+
+  if (initError != null) {
+    runApp(_InitErrorApp(stage: initStage, error: initError));
     return;
   }
+
+  initializationComplete.value = true;
 
   // Sync palette with saved theme
   _paletteNotifier.value = _paletteFor(ThemeService.current);
@@ -79,7 +80,7 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: old_theme.AppColors.background,
+    systemNavigationBarColor: Color(0xFF070809),
     systemNavigationBarIconBrightness: Brightness.light,
   ));
   runApp(const FitnesBusterApp());
@@ -123,7 +124,8 @@ class FitnesBusterApp extends StatelessWidget {
                   theme: _buildTheme(palette),
                   routerConfig: AppRouter.router,
                   builder: (context, child) {
-                    final dir = ui.TextDirection.ltr;
+                    final isRtl = locale.languageCode == 'ar';
+                    final dir = isRtl ? ui.TextDirection.rtl : ui.TextDirection.ltr;
                     return Directionality(
                       textDirection: dir,
                       child: MediaQuery(
@@ -162,7 +164,7 @@ class FitnesBusterApp extends StatelessWidget {
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        titleTextStyle: old_theme.AppTextStyles.titleM,
+        titleTextStyle: const TextStyle(fontFamily: 'Syne', fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF), height: 1.25),
         iconTheme: IconThemeData(color: p.textPrimary),
       ),
       cardTheme: CardThemeData(
@@ -179,8 +181,9 @@ class FitnesBusterApp extends StatelessWidget {
 ValueNotifier<ThemePalette> get paletteNotifier => _paletteNotifier;
 
 class _InitErrorApp extends StatelessWidget {
+  final String? stage;
   final String error;
-  const _InitErrorApp({required this.error});
+  const _InitErrorApp({this.stage, required this.error});
 
   @override
   Widget build(BuildContext context) {
@@ -201,6 +204,13 @@ class _InitErrorApp extends StatelessWidget {
                   style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
+                if (stage != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    stage!,
+                    style: const TextStyle(color: Colors.white38, fontSize: 14),
+                  ),
+                ],
                 const SizedBox(height: 12),
                 Text(
                   error,

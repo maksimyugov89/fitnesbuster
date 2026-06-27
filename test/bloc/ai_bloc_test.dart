@@ -13,7 +13,7 @@ import 'ai_bloc_test.mocks.dart';
 void main() {
   late MockIDeepSeekService aiService;
 
-  final tProfile = UserProfile(
+  const tProfile = UserProfile(
     weight: 80,
     height: 175,
     age: 30,
@@ -39,7 +39,7 @@ void main() {
         when(aiService.generateWorkoutPlan(any))
             .thenAnswer((_) async => '{"days": []}');
       },
-      act: (b) => b.add(AiGenerateWorkoutPlan(profile: tProfile)),
+      act: (b) => b.add(const AiGenerateWorkoutPlan(profile: tProfile)),
       expect: () => [
         const AiStateLoading(),
         isA<AiStateLoaded>()
@@ -53,9 +53,9 @@ void main() {
       build: () => AiBloc(aiService: aiService),
       setUp: () {
         when(aiService.generateWorkoutPlan(any))
-            .thenThrow(AiException('API key not set'));
+            .thenThrow(const AiException('API key not set'));
       },
-      act: (b) => b.add(AiGenerateWorkoutPlan(profile: tProfile)),
+      act: (b) => b.add(const AiGenerateWorkoutPlan(profile: tProfile)),
       expect: () => [
         const AiStateLoading(),
         const AiStateError(message: 'API key not set'),
@@ -68,7 +68,7 @@ void main() {
       setUp: () {
         when(aiService.generateWorkoutPlan(any)).thenThrow(Exception('timeout'));
       },
-      act: (b) => b.add(AiGenerateWorkoutPlan(profile: tProfile)),
+      act: (b) => b.add(const AiGenerateWorkoutPlan(profile: tProfile)),
       expect: () => [
         const AiStateLoading(),
         const AiStateError(
@@ -86,7 +86,7 @@ void main() {
         when(aiService.generateMealPlan(any))
             .thenAnswer((_) async => '{"meals": []}');
       },
-      act: (b) => b.add(AiGenerateMealPlan(profile: tProfile)),
+      act: (b) => b.add(const AiGenerateMealPlan(profile: tProfile)),
       expect: () => [
         const AiStateLoading(),
         isA<AiStateLoaded>().having((s) => s.type, 'type', AiResultType.mealPlan),

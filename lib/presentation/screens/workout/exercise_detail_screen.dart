@@ -7,7 +7,8 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/ai/deepseek_service.dart';
 import 'package:fitnesbuster/data/models/exercise_db_model.dart';
-import 'package:fitnesbuster/presentation/widgets/muscle_map_3d_widget.dart';
+import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class ExerciseDetailScreen extends StatefulWidget {
   final String exerciseId;
@@ -221,12 +222,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           ),
           const SizedBox(height: 14),
           // Legend
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _LegendDot(color: const Color(0xFFE8453C), label: 'Основные'),
-              const SizedBox(width: 16),
-              _LegendDot(color: const Color(0xFF4FA3E0), label: 'Вторичные'),
+              _LegendDot(color: Color(0xFFE8453C), label: 'Основные'),
+              SizedBox(width: 16),
+              _LegendDot(color: Color(0xFF4FA3E0), label: 'Вторичные'),
             ],
           ),
           const SizedBox(height: 12),
@@ -286,7 +287,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Характеристики', style: TextStyle(
+          Text(AppLocalizations.tl('characteristics'), style: TextStyle(
             fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary,
           )),
           const SizedBox(height: 10),
@@ -317,7 +318,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Text('Техника выполнения', style: TextStyle(
+            Text(AppLocalizations.tl('technique'), style: TextStyle(
               fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary,
             )),
             if (_instructionsLoading) ...[

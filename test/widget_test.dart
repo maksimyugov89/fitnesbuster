@@ -42,7 +42,7 @@ void main() {
   group('App Launch', () {
     testWidgets('App launches without crashing', (WidgetTester tester) async {
       // Skip: requires Firebase + Hive initialization from main()
-      await tester.pumpWidget(FitnesBusterApp());
+      await tester.pumpWidget(const FitnesBusterApp());
       await tester.pump(const Duration(seconds: 3));
       await tester.pump();
       await tester.pump(const Duration(seconds: 1));
@@ -601,7 +601,7 @@ void main() {
 
   group('WorkoutSession', () {
     test('can be created with required fields', () {
-      final session = WorkoutSession(
+      const session = WorkoutSession(
         id: 's1', title: 'Chest Day',
         primaryMuscle: MuscleGroup.chest,
         exercises: [],
@@ -616,7 +616,7 @@ void main() {
 
   group('ExerciseSet', () {
     test('can be created with sets', () {
-      final set = ExerciseSet(
+      const set = ExerciseSet(
         exercise: Exercise(
           id: 'e1', name: 'Bench Press',
           primaryMuscle: MuscleGroup.chest,
@@ -625,8 +625,8 @@ void main() {
           instructions: ['Lie down', 'Press up'],
         ),
         sets: [
-          const SetData(setNumber: 1, reps: 10, weightKg: 50),
-          const SetData(setNumber: 2, reps: 8, weightKg: 60),
+          SetData(setNumber: 1, reps: 10, weightKg: 50),
+          SetData(setNumber: 2, reps: 8, weightKg: 60),
         ],
       );
       expect(set.exercise.name, 'Bench Press');
@@ -638,7 +638,7 @@ void main() {
 
   group('NutritionPer100g', () {
     test('can be created with optional fields', () {
-      final nutrition = const NutritionPer100g(
+      const nutrition = NutritionPer100g(
         calories: 100, protein: 10, carbs: 20, fat: 5,
         fiber: 2, sugar: 3, sodium: 50,
       );
@@ -683,7 +683,7 @@ void main() {
       final log = MealLog(
         id: 'm1', userId: 'u1',
         date: DateTime(2025), mealType: MealType.breakfast,
-        foods: [FoodEntry(food: apple, grams: 200)],
+        foods: [const FoodEntry(food: apple, grams: 200)],
       );
       expect(log.totalCalories, closeTo(104, 0.1));
     });
@@ -696,7 +696,7 @@ void main() {
       final log = MealLog(
         id: 'm2', userId: 'u1',
         date: DateTime(2025), mealType: MealType.lunch,
-        foods: [FoodEntry(food: chicken, grams: 150)],
+        foods: [const FoodEntry(food: chicken, grams: 150)],
       );
       expect(log.totalProtein, closeTo(46.5, 0.1));
     });
@@ -709,7 +709,7 @@ void main() {
       final log = MealLog(
         id: 'm3', userId: 'u1',
         date: DateTime(2025), mealType: MealType.lunch,
-        foods: [FoodEntry(food: chicken, grams: 150)],
+        foods: [const FoodEntry(food: chicken, grams: 150)],
       );
       expect(log.totalCarbs, closeTo(0, 0.1));
       expect(log.totalFat, closeTo(5.4, 0.1));
@@ -722,7 +722,7 @@ void main() {
         id: 'f3', name: 'Banana',
         nutrition: NutritionPer100g(calories: 89, protein: 1.1, carbs: 23, fat: 0.3),
       );
-      final entry = FoodEntry(food: banana, grams: 120);
+      const entry = FoodEntry(food: banana, grams: 120);
       expect(entry.totalCalories, closeTo(106.8, 0.1));
       expect(entry.totalCarbs, closeTo(27.6, 0.1));
       expect(entry.totalFat, closeTo(0.36, 0.1));
@@ -876,13 +876,13 @@ void main() {
   // ==============================
   group('Screen creation', () {
     testWidgets('LoginScreen can be created', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: const LoginScreen()));
+      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
       await tester.pump(const Duration(seconds: 1));
       expect(tester.takeException(), isNull);
     }, skip: true);
 
     testWidgets('RegisterScreen can be created', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: const RegisterScreen()));
+      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
       await tester.pump(const Duration(seconds: 1));
       expect(tester.takeException(), isNull);
     }, skip: true);
@@ -903,49 +903,49 @@ void main() {
     }, skip: true);
 
     testWidgets('ProgressScreen can be created', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: const ProgressScreen()));
+      await tester.pumpWidget(const MaterialApp(home: ProgressScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
     }, skip: true); // Requires Firebase (FirebaseAuth.instance called internally
 
     testWidgets('NutritionScreen can be created', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: const NutritionScreen()));
+      await tester.pumpWidget(const MaterialApp(home: NutritionScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
     }, skip: true); // requires DI (ISettingsRepository)
 
     testWidgets('FoodDiaryScreen can be created', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: const FoodDiaryScreen()));
+      await tester.pumpWidget(const MaterialApp(home: FoodDiaryScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
     }, skip: true); // requires DI (ISettingsRepository)
 
     testWidgets('MealPlanScreen can be created', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: const MealPlanScreen()));
+      await tester.pumpWidget(const MaterialApp(home: MealPlanScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
     });
 
     testWidgets('WorkoutPlanScreen can be created', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: const WorkoutPlanScreen()));
+      await tester.pumpWidget(const MaterialApp(home: WorkoutPlanScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
     }, skip: true); // Requires real device layout - unbounded height in test
 
     testWidgets('GoalSelectionScreen can be created', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: const GoalSelectionScreen()));
+      await tester.pumpWidget(const MaterialApp(home: GoalSelectionScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
     });
 
     testWidgets('IntensitySelectionScreen can be created', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: const IntensitySelectionScreen()));
+      await tester.pumpWidget(const MaterialApp(home: IntensitySelectionScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
     });
 
     testWidgets('ProfileSetupScreen can be created', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: const ProfileSetupScreen()));
+      await tester.pumpWidget(const MaterialApp(home: ProfileSetupScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
     }, skip: true); // Requires OnboardingBloc provider (depends on Firebase)

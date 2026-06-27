@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
@@ -98,7 +97,7 @@ class _ProgressScreenState extends State<ProgressScreen>
   String? _aiAnalysis;
   bool _aiAnalyzing = false;
 
-  String? get _userId => FirebaseAuth.instance.currentUser?.uid;
+  String? get _userId => context.read<AuthBloc>().state is AuthStateAuthenticated ? (context.read<AuthBloc>().state as AuthStateAuthenticated).userId : null;
 
   @override
   void initState() {
@@ -1253,7 +1252,7 @@ class _MeasurementsDialogState extends State<_MeasurementsDialog> {
           style: FilledButton.styleFrom(backgroundColor: colors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
           onPressed: _saving ? null : _save,
           child: _saving
-              ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
               : const Text('Сохранить'),
         ),
       ],

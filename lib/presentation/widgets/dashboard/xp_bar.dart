@@ -17,7 +17,7 @@ class DashboardXpBar extends StatelessWidget {
       decoration: BoxDecoration(color: p.surfaceCard, borderRadius: BorderRadius.circular(18), border: Border.all(color: color.withValues(alpha: 0.2))),
       child: Row(children: [
         Container(width: 40, height: 40, decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(11)),
-          child: Center(child: Text(lvl.emoji, style: TextStyle(fontSize: 20)))),
+          child: Center(child: Text(lvl.emoji, style: const TextStyle(fontSize: 20)))),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
@@ -36,7 +36,7 @@ class DashboardXpBar extends StatelessWidget {
         GestureDetector(onTap: () => context.push('/achievements'),
           child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-            child: Text('🏅', style: TextStyle(fontSize: 16)))),
+            child: const Text('🏅', style: TextStyle(fontSize: 16)))),
       ]));
   }
 }

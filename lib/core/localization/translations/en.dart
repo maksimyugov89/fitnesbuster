@@ -676,4 +676,47 @@ const Map<String, String> enTranslations = {
   'levelElite': 'Elite',
   'levelMaster': 'Master',
   'levelTitan': 'Titan',
+
+  // ── Workout session ──
+  'loadingWorkout': 'Loading workout...',
+  'forward': 'Next',
+  'rest': 'REST',
+  'secSuffix': '{n} sec',
+  'tip': 'Tip',
+  'endWorkoutTitle': 'End workout?',
+  'endWorkoutBody': 'Current session progress will not be saved.',
+  'exit': 'Exit',
+
+  // ── Workout calendar ──
+  'reset': 'Reset',
+  'moved': 'Moved',
+  'workoutSchedule': 'Workout schedule',
+  'noWorkoutPlan': 'No workout plan',
+  'generatePlanHint': 'Generate an AI plan to manage your schedule',
+  'nearestWorkouts': 'Nearest workouts',
+
+  // ── Exercise detail ──
+  'characteristics': 'Characteristics',
+  'technique': 'Technique',
+  'howToPerform': 'How to perform',
+  'analyzingTechnique': 'Analyzing technique...',
+  'noConnection': 'No connection',
+  'exerciseNotFound': 'No exercises found',
+
+  // ── Import / correction ──
+  'correctPlan': 'Correct plan',
+  'pasteFromClipboard': 'Paste from clipboard',
+  'clipboardEmpty': 'Clipboard is empty',
+  'openingFilePicker': 'Opening file manager...',
+  'selectFileAgain': 'Select file again',
+
+  // ── Test week ──
+  'testWeek': 'Test week',
+  'analyzingPerformance': 'Analyzing your performance...',
+  'preparingTestWeek': 'Preparing test week...',
+  'exercisesInstruction': 'Perform exercises and record comfortable weight',
+  'recordMetric': 'Record metric',
+  'startProgram': 'Start program!',
+  'programStarted': 'Program started!',
+  'toHome': 'Home',
 };

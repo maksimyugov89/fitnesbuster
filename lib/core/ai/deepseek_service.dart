@@ -3,136 +3,19 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fitnesbuster/core/ai/ai_config.dart';
+import 'package:fitnesbuster/core/ai/ai_exception.dart';
+import 'package:fitnesbuster/core/ai/validators/json_validator.dart';
+import 'package:fitnesbuster/core/ai/network/retry_handler.dart';
 import 'package:fitnesbuster/core/localization/language_service.dart';
-import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+
+export 'package:fitnesbuster/core/ai/ai_exception.dart';
 
 class DeepSeekService implements IDeepSeekService {
   DeepSeekService({
     AiConfig? config,
   });
-
-  /// Strips markdown code fences from AI JSON responses: ```json ... ``` → raw JSON.
-  /// Handles both complete fences and orphaned opening fences (truncated responses).
-  String _extractJson(String response) {
-    final trimmed = response.trim();
-    // Strip markdown code fences
-    final full = RegExp(r'```(?:json)?\s*([\s\S]*?)\s*```').firstMatch(trimmed);
-    String body;
-    if (full != null) {
-      body = full.group(1)!.trim();
-    } else {
-      final open = RegExp(r'^```(?:json)?\s*').firstMatch(trimmed);
-      if (open != null) {
-        body = trimmed.substring(open.end).trim();
-      } else {
-        body = trimmed;
-      }
-    }
-    // Trim any trailing text after the last JSON brace/bracket
-    final objEnd = body.lastIndexOf('}');
-    final arrEnd = body.lastIndexOf(']');
-    final lastJsonChar = objEnd > arrEnd ? objEnd : arrEnd;
-    if (lastJsonChar >= 0 && lastJsonChar < body.length - 1) {
-      body = body.substring(0, lastJsonChar + 1);
-    }
-    // Validate that the extracted string is parseable JSON
-    try {
-      jsonDecode(body);
-    } catch (_) {
-      // Return raw body — caller's _validateX method will throw with proper message
-    }
-    return body;
-  }
-
-  /// Validates workout plan JSON structure and normalizes new rich format for current UI.
-  /// Ensures `plan` list exists, each day has `focus` (compat alias for `name`),
-  /// and each day has an `exercises` list. Logs + throws on malformed input.
-  String _validateWorkoutJson(String raw) {
-    Map<String, dynamic> data;
-    try {
-      data = jsonDecode(raw) as Map<String, dynamic>;
-    } catch (e) {
-      appLogger.d('[DeepSeek] Malformed workout JSON: $raw', error: e);
-      throw AiException('AI вернул некорректный JSON плана тренировок. Попробуйте ещё раз.');
-    }
-
-    final plan = data['plan'];
-    if (plan == null || plan is! List || plan.isEmpty) {
-      appLogger.d('[DeepSeek] Missing or empty "plan" in workout JSON: $raw');
-      throw AiException('AI не вернул план тренировок. Попробуйте ещё раз.');
-    }
-
-    // Normalise each day: bridge new "name" field → legacy "focus" expected by current UI
-    for (final item in plan) {
-      if (item is! Map<String, dynamic>) continue;
-      item['focus'] ??= item['name'] ?? '';
-      if (item['exercises'] is! List) item['exercises'] = <dynamic>[];
-    }
-
-    return jsonEncode(data);
-  }
-
-  /// Validates meal plan JSON structure and normalizes new rich format for current UI.
-  /// Ensures `meals` list exists. Bridges field renames:
-  ///   total_calories → calories, daily_tips → recommendations, daily_targets.water_ml → water_target_ml.
-  /// Flattens rich `foods` objects → plain strings so the current list widget doesn't crash.
-  String _validateMealJson(String raw) {
-    Map<String, dynamic> data;
-    try {
-      data = jsonDecode(raw) as Map<String, dynamic>;
-    } catch (e) {
-      appLogger.d('[DeepSeek] Malformed meal JSON: $raw', error: e);
-      throw AiException('AI вернул некорректный JSON плана питания. Попробуйте ещё раз.');
-    }
-
-    final meals = data['meals'];
-    if (meals == null || meals is! List || meals.isEmpty) {
-      appLogger.d('[DeepSeek] Missing or empty "meals" in meal JSON: $raw');
-      throw AiException('AI не вернул план питания. Попробуйте ещё раз.');
-    }
-
-    for (final item in meals) {
-      if (item is! Map<String, dynamic>) continue;
-
-      // calories compat: new format uses total_calories
-      item['calories'] ??= item['total_calories'] ?? 0;
-
-      // foods compat: new format uses list of objects → flatten to "Name (Xг)"
-      final foods = item['foods'];
-      if (foods is List) {
-        item['foods'] = foods.map((f) {
-          if (f is String) return f;
-          if (f is Map<String, dynamic>) {
-            final name = f['name'] as String? ?? '';
-            final grams = f['grams'];
-            final fn = f['function'] as String?;
-            final label = grams != null ? '$name ($gramsг)' : name;
-            return fn != null ? '$label — $fn' : label;
-          }
-          return f.toString();
-        }).toList();
-      }
-
-      // alternatives: pass through as List<String> — used by nutrition screen UI
-      final alts = item['alternatives'];
-      if (alts is List) {
-        item['alternatives'] = alts.map((a) => a.toString()).toList();
-      }
-    }
-
-    // recommendations compat: new format uses daily_tips
-    data['recommendations'] ??= data['daily_tips'] ?? <dynamic>[];
-
-    // water_target_ml compat: new format puts it inside daily_targets
-    if (data['water_target_ml'] == null) {
-      final targets = data['daily_targets'] as Map<String, dynamic>?;
-      data['water_target_ml'] = targets?['water_ml'] ?? 2500;
-    }
-
-    return jsonEncode(data);
-  }
 
   /// Generates a personalized weekly workout plan.
   /// [weekNumber] drives periodization phase (1-4 adaptation, 5-8 progress, 9-12 intensification).
@@ -224,7 +107,7 @@ ${recoveryBlock.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕН
 }
 ''';
 
-    return _validateWorkoutJson(_extractJson(await _sendMessage(prompt)));
+    return validateWorkoutJson(extractJson(await _sendMessage(prompt)));
   }
 
   /// Generates a detailed daily nutrition plan with per-meal macros and timing.
@@ -337,7 +220,7 @@ ${cityBlock.isNotEmpty ? '═══ РЕГИОН И ДОСТУПНОСТЬ ПР�
 }
 ''';
 
-    return _validateMealJson(_extractJson(await _sendMessage(prompt)));
+    return validateMealJson(extractJson(await _sendMessage(prompt)));
   }
 
   /// Refines workout plan using real test-week performance data.
@@ -424,7 +307,7 @@ ${locationBlock.isNotEmpty ? '═══ МЕСТО ТРЕНИРОВКИ ══�
 }
 ''';
 
-    return _validateWorkoutJson(_extractJson(await _sendMessage(prompt)));
+    return validateWorkoutJson(extractJson(await _sendMessage(prompt)));
   }
 
   /// Analyzes body measurement progress and generates actionable recommendations.
@@ -531,7 +414,7 @@ ${weekPrNames.isNotEmpty ? 'Личные рекорды: ${weekPrNames.join(", "
 }
 ''';
 
-    return _extractJson(await _sendMessage(prompt));
+    return extractJson(await _sendMessage(prompt));
   }
 
   /// Multi-turn chat: sends the full conversation history to the API.
@@ -839,7 +722,7 @@ $question
   }
 
   String _activityBlock(UserProfile profile, int stepsToday) {
-    final bmr = calcBmr(profile);
+    final bmr = profile.bmr.toInt();
     final stepKcal = stepsToday > 0
         ? (stepsToday * 0.04 * (profile.weight / 70)).round()
         : 0;
@@ -934,30 +817,13 @@ $question
     };
   }
 
-  /// Calculates BMR using Mifflin-St Jeor equation (used in activity block).
-  static int calcBmr(UserProfile profile) {
-    final base = (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age);
-    return (profile.gender == Gender.male ? base + 5 : base - 161).round();
-  }
-
   // ─── Сеть ────────────────────────────────────────────────────────────────
 
-  static const _maxRetries = 3;
-
-  Future<String> _sendMessage(String prompt) async {
-    AiException? lastError;
-    for (int attempt = 1; attempt <= _maxRetries; attempt++) {
-      try {
-        return await _sendOnce(prompt);
-      } on AiException catch (e) {
-        lastError = e;
-        if (e.statusCode == 401 || e.statusCode == 429) rethrow;
-        if (attempt < _maxRetries) {
-          await Future.delayed(Duration(seconds: attempt * 2));
-        }
-      }
-    }
-    throw lastError!;
+  Future<String> _sendMessage(String prompt) {
+    return withRetry(
+      () => _sendOnce(prompt),
+      shouldRethrow: (e) => e.statusCode == 401 || e.statusCode == 429,
+    );
   }
 
   Future<String> _sendOnce(String prompt) async {
@@ -973,27 +839,18 @@ $question
     });
     final content = result.data['content'] as String?;
     if (content == null || content.isEmpty) {
-      throw AiException('Пустой ответ от AI. Попробуйте ещё раз.');
+      throw const AiException('Пустой ответ от AI. Попробуйте ещё раз.');
     }
     return content;
   }
 
   // ── Multi-turn chat network helpers ──────────────────────────────────────
 
-  Future<String> _sendMessagesList(List<Map<String, String>> messages) async {
-    AiException? lastError;
-    for (int attempt = 1; attempt <= _maxRetries; attempt++) {
-      try {
-        return await _sendOnceMessages(messages);
-      } on AiException catch (e) {
-        lastError = e;
-        if (e.statusCode == 401 || e.statusCode == 429) rethrow;
-        if (attempt < _maxRetries) {
-          await Future.delayed(Duration(seconds: attempt * 2));
-        }
-      }
-    }
-    throw lastError!;
+  Future<String> _sendMessagesList(List<Map<String, String>> messages) {
+    return withRetry(
+      () => _sendOnceMessages(messages),
+      shouldRethrow: (e) => e.statusCode == 401 || e.statusCode == 429,
+    );
   }
 
   Future<String> _sendOnceMessages(List<Map<String, String>> messages) async {
@@ -1006,7 +863,7 @@ $question
     });
     final content = result.data['content'] as String?;
     if (content == null || content.isEmpty) {
-      throw AiException('Пустой ответ от AI. Попробуйте ещё раз.');
+      throw const AiException('Пустой ответ от AI. Попробуйте ещё раз.');
     }
     return content;
   }
@@ -1129,30 +986,20 @@ $taskBlock
       {'role': 'user', 'content': prompt},
     ];
 
-    AiException? lastError;
-    for (int attempt = 1; attempt <= _maxRetries; attempt++) {
-      try {
-        final callable = FirebaseFunctions.instanceFor(region: 'europe-west1')
-            .httpsCallable('deepseekProxy');
-        final result = await callable.call<Map<String, dynamic>>({
-          'messages': messages,
-          'maxTokens': 5000,
-          'temperature': 0.4,
-        });
-        final content = result.data['content'] as String?;
-        if (content == null || content.isEmpty) {
-          throw AiException('Пустой ответ от AI. Попробуйте ещё раз.');
-        }
-        return _validateWorkoutJson(_extractJson(content));
-      } on AiException catch (e) {
-        lastError = e;
-        if (e.statusCode == 401 || e.statusCode == 429) rethrow;
-        if (attempt < _maxRetries) {
-          await Future.delayed(Duration(seconds: attempt * 2));
-        }
+    return withRetry(() async {
+      final callable = FirebaseFunctions.instanceFor(region: 'europe-west1')
+          .httpsCallable('deepseekProxy');
+      final result = await callable.call<Map<String, dynamic>>({
+        'messages': messages,
+        'maxTokens': 5000,
+        'temperature': 0.4,
+      });
+      final content = result.data['content'] as String?;
+      if (content == null || content.isEmpty) {
+        throw const AiException('Пустой ответ от AI. Попробуйте ещё раз.');
       }
-    }
-    throw lastError!;
+      return validateWorkoutJson(extractJson(content));
+    }, shouldRethrow: (e) => e.statusCode == 401 || e.statusCode == 429);
   }
 
   /// Builds a compact plan summary (day + focus + exercise names) to include
@@ -1263,43 +1110,24 @@ $truncated
       {'role': 'user', 'content': prompt},
     ];
 
-    AiException? lastError;
-    for (int attempt = 1; attempt <= _maxRetries; attempt++) {
-      try {
-        final callable = FirebaseFunctions.instanceFor(region: 'europe-west1')
-            .httpsCallable('deepseekProxy');
-        final result = await callable.call<Map<String, dynamic>>({
-          'messages': messages,
-          'maxTokens': 4096,
-          'temperature': 0.3,
-        });
-        final content2 = result.data['content'] as String?;
-        if (content2 == null || content2.isEmpty) {
-          throw AiException('Пустой ответ от AI. Попробуйте ещё раз.');
-        }
-        return _validateWorkoutJson(_extractJson(content2));
-      } on AiException catch (e) {
-        lastError = e;
-        if (e.statusCode == 401 || e.statusCode == 429) rethrow;
-        if (attempt < _maxRetries) {
-          await Future.delayed(Duration(seconds: attempt * 2));
-        }
+    return withRetry(() async {
+      final callable = FirebaseFunctions.instanceFor(region: 'europe-west1')
+          .httpsCallable('deepseekProxy');
+      final result = await callable.call<Map<String, dynamic>>({
+        'messages': messages,
+        'maxTokens': 4096,
+        'temperature': 0.3,
+      });
+      final content2 = result.data['content'] as String?;
+      if (content2 == null || content2.isEmpty) {
+        throw const AiException('Пустой ответ от AI. Попробуйте ещё раз.');
       }
-    }
-    throw lastError!;
+      return validateWorkoutJson(extractJson(content2));
+    }, shouldRethrow: (e) => e.statusCode == 401 || e.statusCode == 429);
   }
 
   @override
   void dispose() {
     // Cloud Functions proxy — no HTTP client to close
   }
-}
-
-class AiException implements Exception {
-  final String message;
-  final int? statusCode;
-  const AiException(this.message, {this.statusCode});
-
-  @override
-  String toString() => 'AiException: $message';
 }

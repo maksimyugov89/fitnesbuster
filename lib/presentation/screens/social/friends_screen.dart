@@ -4,6 +4,8 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/social_service.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/data/models/user_search_result.dart';
+import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({super.key});
@@ -16,7 +18,7 @@ class _FriendsScreenState extends State<FriendsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabs;
   final _searchCtrl = TextEditingController();
-  List<Map<String, dynamic>> _searchResults = [];
+  List<UserSearchResult> _searchResults = [];
   bool _searching = false;
   String? _searchError;
 
@@ -51,7 +53,7 @@ class _FriendsScreenState extends State<FriendsScreen>
     // Optimistic update — instantly mark as sent
     setState(() {
       _searchResults = _searchResults.map((r) {
-        if (r['uid'] == uid) return {...r, 'requestSent': true};
+        if (r.uid == uid) return r.copyWith(requestSent: true);
         return r;
       }).toList();
     });
@@ -67,7 +69,7 @@ class _FriendsScreenState extends State<FriendsScreen>
       if (mounted) {
         setState(() {
           _searchResults = _searchResults.map((r) {
-            if (r['uid'] == uid) return {...r, 'requestSent': false};
+            if (r.uid == uid) return r.copyWith(requestSent: false);
             return r;
           }).toList();
         });
@@ -94,7 +96,7 @@ class _FriendsScreenState extends State<FriendsScreen>
             child: Icon(Icons.arrow_back_rounded, color: colors.textPrimary, size: 20),
           ),
         ),
-        title: Text('Друзья', style: AppTextStyles.titleL),
+        title: const Text('Друзья', style: AppTextStyles.titleL),
         bottom: TabBar(
           controller: _tabs,
           indicator: BoxDecoration(
@@ -248,7 +250,7 @@ class _FriendsScreenState extends State<FriendsScreen>
         ),
       ),
       if (_searching)
-        const Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator())
+        Padding(padding: const EdgeInsets.all(24), child: LoadingShimmer.listView(5))
       else if (_searchError != null)
         Padding(padding: const EdgeInsets.all(24), child: Text(_searchError!, style: TextStyle(color: colors.error)))
       else
@@ -259,8 +261,8 @@ class _FriendsScreenState extends State<FriendsScreen>
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (_, i) {
               final r = _searchResults[i];
-              final isFriend = r['isFriend'] as bool? ?? false;
-              final requestSent = r['requestSent'] as bool? ?? false;
+              final isFriend = r.isFriend;
+              final requestSent = r.requestSent;
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
@@ -269,15 +271,15 @@ class _FriendsScreenState extends State<FriendsScreen>
                   border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
                 ),
                 child: Row(children: [
-                  _Avatar(name: r['name'] as String? ?? '?', colors: colors),
+                  _Avatar(name: r.name.isEmpty ? '?' : r.name, colors: colors),
                   const SizedBox(width: 12),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(r['name'] as String? ?? '', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+                    Text(r.name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: colors.textPrimary)),
                     Text(
-                      (r['email'] as String? ?? '').isNotEmpty
-                          ? r['email'] as String
-                          : (r['username'] as String? ?? '').isNotEmpty
-                              ? '@${r['username']}'
+                      (r.email ?? '').isNotEmpty
+                          ? r.email!
+                          : (r.username ?? '').isNotEmpty
+                              ? '@${r.username}'
                               : '',
                       style: TextStyle(fontSize: 11, color: colors.textMuted),
                     ),
@@ -296,7 +298,7 @@ class _FriendsScreenState extends State<FriendsScreen>
                     )
                   else
                     GestureDetector(
-                      onTap: () => _addFriend(r['uid'] as String),
+                      onTap: () => _addFriend(r.uid),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(color: colors.primary, borderRadius: BorderRadius.circular(8)),

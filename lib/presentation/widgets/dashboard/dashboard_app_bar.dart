@@ -1,0 +1,165 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+
+class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String userName;
+  final int avatarPresetIndex;
+  final String avatarCustomPath;
+  final AnimationController headerCtrl;
+  final ValueNotifier<bool>? initNotifier;
+
+  const DashboardAppBar({
+    super.key,
+    required this.userName,
+    required this.avatarPresetIndex,
+    required this.avatarCustomPath,
+    required this.headerCtrl,
+    this.initNotifier,
+  });
+
+  static const presetEmoji = ['🏋️','🏃','🧘','🚴','🥊','🏊','🧗','🤸','⚡','🏆'];
+  static const presetColors = [
+    [Color(0xFF6C63FF), Color(0xFF3D5AFE)],
+    [Color(0xFF00BFA5), Color(0xFF00695C)],
+    [Color(0xFFAB47BC), Color(0xFF6A1B9A)],
+    [Color(0xFFFF7043), Color(0xFFBF360C)],
+    [Color(0xFFEF5350), Color(0xFFB71C1C)],
+    [Color(0xFF29B6F6), Color(0xFF01579B)],
+    [Color(0xFFFFCA28), Color(0xFFE65100)],
+    [Color(0xFFEC407A), Color(0xFF880E4F)],
+    [Color(0xFF26C6DA), Color(0xFF006064)],
+    [Color(0xFF66BB6A), Color(0xFF1B5E20)],
+  ];
+
+  static String greeting(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final hour = DateTime.now().hour;
+    if (hour < 12) return l10n.greetingMorning;
+    if (hour < 17) return l10n.greetingAfternoon;
+    return l10n.greetingEvening;
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    final p = AppTheme.of(context);
+    final displayName = userName.isNotEmpty ? userName : AppLocalizations.of(context).dashboardDefaultName;
+    final firstName = displayName.split(' ').first;
+
+    return SliverAppBar(
+      backgroundColor: Colors.transparent,
+      floating: true,
+      pinned: false,
+      elevation: 0,
+      expandedHeight: 0,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(color: p.background),
+      ),
+      title: FadeTransition(
+        opacity: headerCtrl,
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    greeting(context),
+                    style: TextStyle(
+                      fontSize: 12, color: p.textMuted, fontFamily: 'Inter',
+                    ),
+                  ),
+                  Text(
+                    firstName,
+                    style: TextStyle(
+                      fontFamily: 'Syne', fontSize: 20,
+                      fontWeight: FontWeight.w800, color: p.textPrimary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () => context.go('/profile'),
+              child: _buildAvatar(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatar(BuildContext context) {
+    final p = AppTheme.of(context);
+    const size = 42.0;
+
+    if (avatarCustomPath.isNotEmpty) {
+      return Container(
+        width: size, height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: p.primary.withValues(alpha: 0.5), width: 2),
+        ),
+        child: ClipOval(
+          child: Image.asset(
+            avatarCustomPath,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _buildInitialsAvatar(context, size),
+          ),
+        ),
+      );
+    }
+
+    if (avatarPresetIndex >= 0 && avatarPresetIndex < presetEmoji.length) {
+      return Container(
+        width: size, height: size,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: presetColors[avatarPresetIndex],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          shape: BoxShape.circle,
+          border: Border.all(color: presetColors[avatarPresetIndex][0].withValues(alpha: 0.6), width: 2),
+        ),
+        child: Center(
+          child: Text(presetEmoji[avatarPresetIndex], style: const TextStyle(fontSize: 20)),
+        ),
+      );
+    }
+
+    return _buildInitialsAvatar(context, size);
+  }
+
+  Widget _buildInitialsAvatar(BuildContext context, double size) {
+    final p = AppTheme.of(context);
+    final initial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
+    return Container(
+      width: size, height: size,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [p.primary, p.primaryDark],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          initial,
+          style: TextStyle(
+            fontFamily: 'Syne', fontSize: 18,
+            fontWeight: FontWeight.w800, color: p.textOnPrimary,
+          ),
+        ),
+      ),
+    );
+  }
+}

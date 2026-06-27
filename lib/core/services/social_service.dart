@@ -7,6 +7,7 @@ import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/constants/firestore_collections.dart';
+import 'package:fitnesbuster/data/models/user_search_result.dart';
 
 export 'package:fitnesbuster/core/services/social_models.dart';
 
@@ -33,7 +34,7 @@ class SocialService implements ISocialService {
       }
       // Refresh token when it rotates
       messaging.onTokenRefresh.listen((newToken) async {
-        await _db.doc('users/$uid').set({'fcmToken': newToken}, SetOptions(merge: true));
+        await _db.doc('${FirestoreCollections.users}/$uid').set({'fcmToken': newToken}, SetOptions(merge: true));
       });
     } catch (e, st) {
       appLogger.w('SocialService: FCM init failed', error: e, stackTrace: st);
@@ -118,11 +119,11 @@ class SocialService implements ISocialService {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> searchUsers(String query) async {
+  Future<List<UserSearchResult>> searchUsers(String query) async {
     try {
       final result = await _call('searchUsers', {'query': query});
       return (result.data as List? ?? [])
-          .map((e) => Map<String, dynamic>.from(e as Map))
+          .map((e) => UserSearchResult.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList();
     } catch (e, st) {
       appLogger.w('SocialService: searchUsers failed', error: e, stackTrace: st);
