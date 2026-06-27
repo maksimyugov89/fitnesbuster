@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart' as fb;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -8,12 +6,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
+import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/data/repositories/user_repository.dart';
-import 'package:fitnesbuster/data/repositories/auth_repository.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/presentation/screens/onboarding/workout_location_screen.dart';
@@ -23,9 +23,9 @@ import 'package:fitnesbuster/presentation/widgets/language_selection_sheet.dart'
 import 'package:fitnesbuster/presentation/widgets/theme_selection_sheet.dart';
 import 'package:fitnesbuster/core/localization/language_service.dart';
 import 'package:fitnesbuster/core/theme/theme_service.dart';
-import 'package:fitnesbuster/core/ai/deepseek_service.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 // ── Preset avatar definitions ────────────────────────────────────────────────
 class _AvatarPreset {
@@ -164,10 +164,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _refreshFromFirestore() async {
-    final uid = fb.FirebaseAuth.instance.currentUser?.uid;
+    final uid = (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
     if (uid == null) return;
     try {
-      final user = await sl<UserRepository>().getUser(uid);
+      final user = await sl<IUserRepository>().getUser(uid);
       if (!mounted) return;
       setState(() {
         if (user.name.isNotEmpty) _name = user.name;
@@ -195,14 +195,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
       }
     } catch (e) {
-      if (kDebugMode) debugPrint('ProfileScreen: Firestore refresh failed: $e');
+      appLogger.d('ProfileScreen: Firestore refresh failed', error: e);
     }
   }
 
   void _saveProfileToFirestore() async {
     try {
-      final repo = sl<UserRepository>();
-      final authRepo = sl<AuthRepository>();
+      final repo = sl<IUserRepository>();
+      final authRepo = sl<IAuthRepository>();
       final authState = context.read<AuthBloc>().state;
       if (authState is AuthStateAuthenticated) {
         final genderEnum = _gender == 'Мужской' ? Gender.male : Gender.female;
@@ -225,10 +225,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           context.read<AuthBloc>().add(AuthUserChanged(user: updatedUser));
         }
         // ignore: unnecessary_brace_in_string_interps — Cyrillic suffix requires braces
-        if (kDebugMode) debugPrint('Профиль сохранен в Firestore: $_name, ${_weight}кг');
+        appLogger.d('Профиль сохранен в Firestore: $_name, ${_weight}кг');
       }
     } catch (e) {
-      if (kDebugMode) debugPrint('Ошибка сохранения профиля: $e');
+      appLogger.d('Ошибка сохранения профиля', error: e);
     }
   }
 
@@ -244,27 +244,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
       s == 'noRunning' ? RunningPreference.noRunning : RunningPreference.withRunning;
 
   FitnessGoal _fitnessGoalFromLabel(String label) {
-    switch (label) {
-      case 'Набор массы': return FitnessGoal.gainWeight;
-      case 'Поддержание веса': return FitnessGoal.maintain;
-      case 'К пляжному сезону': return FitnessGoal.beachBody;
-      case 'Спортивные рекорды': return FitnessGoal.sportPerformance;
-      default: return FitnessGoal.loseWeight;
-    }
+    if (label == AppLocalizations.tl('goalMuscleMass')) return FitnessGoal.gainWeight;
+    if (label == AppLocalizations.tl('goalMaintainWeight')) return FitnessGoal.maintain;
+    if (label == AppLocalizations.tl('goalBeachSeason')) return FitnessGoal.beachBody;
+    if (label == AppLocalizations.tl('goalSportsRecords')) return FitnessGoal.sportPerformance;
+    return FitnessGoal.loseWeight;
   }
 
   String _fitnessGoalLabel(FitnessGoal goal) {
     switch (goal) {
-      case FitnessGoal.loseWeight: return 'Похудение веса';
-      case FitnessGoal.gainWeight: return 'Набор массы';
-      case FitnessGoal.maintain: return 'Поддержание веса';
-      case FitnessGoal.beachBody: return 'К пляжному сезону';
-      case FitnessGoal.sportPerformance: return 'Спортивные рекорды';
+      case FitnessGoal.loseWeight: return AppLocalizations.tl('goalWeightLoss');
+      case FitnessGoal.gainWeight: return AppLocalizations.tl('goalMuscleMass');
+      case FitnessGoal.maintain: return AppLocalizations.tl('goalMaintainWeight');
+      case FitnessGoal.beachBody: return AppLocalizations.tl('goalBeachSeason');
+      case FitnessGoal.sportPerformance: return AppLocalizations.tl('goalSportsRecords');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
 
     return Scaffold(
@@ -277,29 +276,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             _StatsRowWidget(weight: _weight, height: _height, age: _age),
             const SizedBox(height: 20),
-            _CurrentProgramWidget(goal: _goal, dataLoaded: _dataLoaded),
+            _CurrentProgramWidget(goal: _localizeGoal(l10n, _goal), dataLoaded: _dataLoaded),
             const SizedBox(height: 20),
             _AchievementsSectionWidget(profileLevel: _profileLevel, unlockedIds: _profileUnlocked),
             const SizedBox(height: 24),
-            _ProfileSection(title: 'Ваши данные', items: [
-              _MenuItem(icon: Icons.person_outline_rounded, label: 'Редактировать профиль', color: colors.primary, onTap: () => _openEditProfile(context)),
-              _MenuItem(icon: Icons.monitor_weight_outlined, label: 'Параметры тела', color: colors.accentPurple, onTap: () => _openBodyParams(context)),
-              _MenuItem(icon: Icons.flag_outlined, label: 'Цель тренировок', color: colors.accentOrange, onTap: () => _openGoalEdit(context)),
-              _MenuItem(icon: Icons.location_on_outlined, label: 'Место тренировок', color: colors.info, onTap: () => _openWorkoutSettings(context)),
+            _ProfileSection(title: l10n.yourDataLabel, items: [
+              _MenuItem(icon: Icons.person_outline_rounded, label: l10n.editProfileLabel, color: colors.primary, onTap: () => _openEditProfile(context)),
+              _MenuItem(icon: Icons.monitor_weight_outlined, label: l10n.bodyParamsLabel, color: colors.accentPurple, onTap: () => _openBodyParams(context)),
+              _MenuItem(icon: Icons.flag_outlined, label: l10n.fitnessGoalLabel, color: colors.accentOrange, onTap: () => _openGoalEdit(context)),
+              _MenuItem(icon: Icons.location_on_outlined, label: l10n.workoutLocationLabel, color: colors.info, onTap: () => _openWorkoutSettings(context)),
             ]),
             const SizedBox(height: 16),
-            _ProfileSection(title: 'Настройки', items: [
-              _MenuItem(icon: Icons.sync_rounded, label: 'Синхронизация', color: const Color(0xFF10B981), onTap: () => context.push('/health-sync')),
-              _MenuItem(icon: Icons.notifications_outlined, label: 'Уведомления', color: colors.info, onTap: () => _openNotifications(context)),
-              _MenuItem(icon: Icons.language_rounded, label: 'Язык - ${LanguageService.current.nativeName}', color: colors.accentPurple, onTap: () => _openLanguageSelection(context)),
-              _MenuItem(icon: Icons.palette_outlined, label: 'Тема - ${ThemeService.current.displayName}', color: colors.textSecondary, onTap: () => _openThemeSelection(context)),
+            _ProfileSection(title: l10n.settingsLabel, items: [
+              _MenuItem(icon: Icons.sync_rounded, label: l10n.healthConnectLabel, color: const Color(0xFF10B981), onTap: () => context.push('/health-sync')),
+              _MenuItem(icon: Icons.notifications_outlined, label: l10n.notificationsLabel, color: colors.info, onTap: () => _openNotifications(context)),
+              _MenuItem(icon: Icons.language_rounded, label: '${l10n.languageLabel} - ${LanguageService.current.nativeName}', color: colors.accentPurple, onTap: () => _openLanguageSelection(context)),
+              _MenuItem(icon: Icons.palette_outlined, label: '${l10n.themeLabel} - ${ThemeService.current.displayName}', color: colors.textSecondary, onTap: () => _openThemeSelection(context)),
             ]),
             const SizedBox(height: 16),
-            _ProfileSection(title: 'Прочее', items: [
-              _MenuItem(icon: Icons.security_rounded, label: 'Безопасность', color: colors.warning, onTap: () => _openSecurity(context)),
-              _MenuItem(icon: Icons.help_outline_rounded, label: 'Помощь и поддержка', color: colors.textMuted, onTap: () {}),
-              _MenuItem(icon: Icons.article_outlined, label: 'Лицензии', color: colors.textMuted, onTap: () => _showLicenses(context)),
-              _MenuItem(icon: Icons.info_outline_rounded, label: 'О приложении', color: colors.textMuted, onTap: () => _showAbout(context)),
+            _ProfileSection(title: l10n.otherSectionLabel, items: [
+              _MenuItem(icon: Icons.security_rounded, label: l10n.securityLabel, color: colors.warning, onTap: () => _openSecurity(context)),
+              _MenuItem(icon: Icons.help_outline_rounded, label: l10n.helpSupportLabel, color: colors.textMuted, onTap: () {}),
+              _MenuItem(icon: Icons.article_outlined, label: l10n.licensesLabel, color: colors.textMuted, onTap: () => _showLicenses(context)),
+              _MenuItem(icon: Icons.info_outline_rounded, label: l10n.aboutAppLabel, color: colors.textMuted, onTap: () => _showAbout(context)),
             ]),
             const SizedBox(height: 16),
             _LogoutButton(onTap: () => _confirmLogout(context)),
@@ -399,7 +398,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: colors.primary.withValues(alpha: 0.3)),
             ),
-            child: Text(_dataLoaded ? '12-недельный план' : '', style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.w700)),
+            child: Text(_dataLoaded ? context.l10n.activeProgram12week : '', style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.w700)),
           ),
         ])),
       ],
@@ -480,13 +479,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // Сохраняет новую цель в Firestore (точечное обновление) и запускает AI.
   void _saveGoalAndRegeneratePlans(String goalLabel) async {
-    final uid = fb.FirebaseAuth.instance.currentUser?.uid;
+    final uid = (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
     if (uid == null) return;
     try {
       final goalEnum = _fitnessGoalFromLabel(goalLabel);
-      await sl<UserRepository>().updateGoal(userId: uid, goal: goalEnum);
+      await sl<IUserRepository>().updateGoal(userId: uid, goal: goalEnum);
       // Читаем свежий профиль — в нём все поля (medicalRestrictions, location и т.д.)
-      final freshUser = await sl<UserRepository>().getUser(uid);
+      final freshUser = await sl<IUserRepository>().getUser(uid);
       if (!mounted) return;
       final profile = freshUser.profile;
       if (profile != null) {
@@ -494,30 +493,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await _regeneratePlans(profile, includeMeal: true);
       }
     } catch (e) {
-      if (kDebugMode) debugPrint('Goal save error: $e');
+      appLogger.d('Goal save error', error: e);
     }
   }
 
   // Сохраняет место/бег в Firestore и запускает AI только для тренировочного плана.
   void _saveWorkoutSettingsAndRegenerate(WorkoutLocation loc, RunningPreference run) async {
-    final uid = fb.FirebaseAuth.instance.currentUser?.uid;
+    final uid = (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
     if (uid == null) return;
     try {
-      if (kDebugMode) debugPrint('[WorkoutSettings] Saving location=${loc.name} running=${run.name}');
-      await sl<UserRepository>().updateWorkoutSettings(
+      appLogger.d('[WorkoutSettings] Saving location=${loc.name} running=${run.name}');
+      await sl<IUserRepository>().updateWorkoutSettings(
         userId: uid, location: loc.name, running: run.name,
       );
-      final freshUser = await sl<UserRepository>().getUser(uid);
+      final freshUser = await sl<IUserRepository>().getUser(uid);
       if (!mounted) return;
       final profile = freshUser.profile;
-      if (kDebugMode) debugPrint('[WorkoutSettings] Profile fetched, profile=${profile != null ? "OK" : "NULL"}');
+      appLogger.d('[WorkoutSettings] Profile fetched, profile=${profile != null ? "OK" : "NULL"}');
       if (profile != null) {
         await _regeneratePlans(profile, includeMeal: false);
       } else {
-        if (kDebugMode) debugPrint('[WorkoutSettings] SKIP regeneration: profile is null');
+        appLogger.d('[WorkoutSettings] SKIP regeneration: profile is null');
       }
     } catch (e) {
-      if (kDebugMode) debugPrint('WorkoutSettings save error: $e');
+      appLogger.d('WorkoutSettings save error', error: e);
     }
   }
 
@@ -530,10 +529,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (_) => const _AiProgressDialog(),
     );
     try {
-      final uid = fb.FirebaseAuth.instance.currentUser?.uid;
+      final uid = (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
       if (uid == null) return;
-      final aiService = sl<DeepSeekService>();
-      final repo = sl<UserRepository>();
+      final aiService = sl<IDeepSeekService>();
+      final repo = sl<IUserRepository>();
       if (includeMeal) {
         final workoutJson = await aiService.generateWorkoutPlan(profile);
         final mealJson = await aiService.generateMealPlan(profile);
@@ -542,32 +541,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       } else {
         final workoutJson = await aiService.generateWorkoutPlan(profile);
-        if (kDebugMode) debugPrint('[Regenerate] Workout plan generated, length=${workoutJson.length}');
+        appLogger.d('[Regenerate] Workout plan generated, length=${workoutJson.length}');
         await repo.updateWorkoutPlan(userId: uid, workoutPlanJson: workoutJson);
-        if (kDebugMode) debugPrint('[Regenerate] Workout plan saved to HiveCache + Firestore');
+        appLogger.d('[Regenerate] Workout plan saved to HiveCache + Firestore');
       }
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
       WorkoutPlanScreen.planVersion.value++;
       _showSuccess(
         context,
-        includeMeal ? 'Программа и питание обновлены ✓' : 'Программа тренировок обновлена ✓',
+        includeMeal ? AppLocalizations.tl('programAndMealsUpdated') : AppLocalizations.tl('workoutProgramUpdated'),
       );
     } catch (e) {
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
       final colors = AppTheme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Row(children: [
+        content: Row(children: [
           Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
           SizedBox(width: 10),
-          Expanded(child: Text('Не удалось обновить план', style: TextStyle(fontWeight: FontWeight.w600))),
+          Expanded(child: Text(AppLocalizations.tl('planUpdateFailed'), style: TextStyle(fontWeight: FontWeight.w600))),
         ]),
         backgroundColor: colors.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ));
-      if (kDebugMode) debugPrint('AI regeneration error: $e');
+      appLogger.d('AI regeneration error', error: e);
     }
   }
 
@@ -626,7 +625,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20), decoration: BoxDecoration(color: colors.textMuted.withValues(alpha: 0.4), borderRadius: BorderRadius.circular(2)))),
-            Text('Лицензии', style: TextStyle(fontFamily: 'Syne', fontSize: 22, fontWeight: FontWeight.w800, color: colors.textPrimary)),
+            Text(context.l10n.licensesLabel, style: TextStyle(fontFamily: 'Syne', fontSize: 22, fontWeight: FontWeight.w800, color: colors.textPrimary)),
             const SizedBox(height: 24),
             _LicenseBlock(
               title: 'Z-Anatomy',
@@ -711,6 +710,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _confirmLogout(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     showDialog(
       context: context,
@@ -720,28 +720,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: Text('Выйти?', style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w800, color: colors.textPrimary)),
         content: Text('Данные сохранятся и вы сможете войти снова.', style: TextStyle(color: colors.textSecondary)),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: Text('Отмена', style: TextStyle(color: colors.textMuted))),
+          TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: Text(l10n.cancel, style: TextStyle(color: colors.textMuted))),
           TextButton(onPressed: () {
               Navigator.of(context, rootNavigator: true).pop();
               context.read<AuthBloc>().add(const AuthLogoutRequested());
-            }, child: Text('Выйти', style: TextStyle(color: colors.error, fontWeight: FontWeight.w700))),
+            }, child: Text(l10n.logoutBtn, style: TextStyle(color: colors.error, fontWeight: FontWeight.w700))),
         ],
       ),
     );
   }
 
+  String _localizeGoal(AppLocalizations l10n, String goal) {
+    return switch (goal) {
+      'Похудение веса'    => l10n.goalWeightLoss,
+      'Набор массы'       => l10n.goalMuscleMass,
+      'Поддержание веса'  => l10n.goalMaintainWeight,
+      'К пляжному сезону' => l10n.goalBeachSeason,
+      'Спортивные рекорды'=> l10n.goalSportsRecords,
+      _                   => goal,
+    };
+  }
+
   void _confirmDeleteAccount(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Удалить аккаунт?', style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w800, color: colors.error)),
+        title: Text(l10n.deleteAccountConfirm, style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w800, color: colors.error)),
         content: Text('Это действие необратимо. Все данные, история и тренировки будут удалены навсегда.', style: TextStyle(color: colors.textSecondary, height: 1.5)),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: Text('Отмена', style: TextStyle(color: colors.textMuted))),
-          TextButton(onPressed: () { context.go('/login'); }, child: Text('Удалить', style: TextStyle(color: colors.error, fontWeight: FontWeight.w700))),
+          TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: Text(l10n.cancel, style: TextStyle(color: colors.textMuted))),
+          TextButton(onPressed: () { context.go('/login'); }, child: Text(l10n.delete, style: TextStyle(color: colors.error, fontWeight: FontWeight.w700))),
         ],
       ),
     );
@@ -782,14 +794,15 @@ class _StatsRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Row(children: [
-      Expanded(child: _StatBox(label: 'Вес', value: '${weight.toStringAsFixed(1)} кг')),
+      Expanded(child: _StatBox(label: l10n.weightLabel, value: '${weight.toStringAsFixed(1)} ${l10n.dashboardKg}')),
       const SizedBox(width: 10),
-      Expanded(child: _StatBox(label: 'Рост', value: '${height.toInt()} см')),
+      Expanded(child: _StatBox(label: l10n.onbHeightTitle, value: '${height.toInt()} ${l10n.cmUnit}')),
       const SizedBox(width: 10),
-      Expanded(child: _StatBox(label: 'ИМТ', value: height > 0 ? (weight / ((height / 100) * (height / 100))).toStringAsFixed(1) : '-')),
+      Expanded(child: _StatBox(label: 'BMI', value: height > 0 ? (weight / ((height / 100) * (height / 100))).toStringAsFixed(1) : '-')),
       const SizedBox(width: 10),
-      Expanded(child: _StatBox(label: 'Возраст', value: '$age лет')),
+      Expanded(child: _StatBox(label: l10n.ageLabel, value: '$age ${l10n.yearsUnit}')),
     ]);
   }
 }
@@ -814,7 +827,7 @@ class _CurrentProgramWidget extends StatelessWidget {
           Row(children: [
             Icon(Icons.bolt_rounded, color: colors.accentPurple, size: 16),
             const SizedBox(width: 6),
-            Text('Активная программа', style: TextStyle(fontSize: 12, color: colors.textMuted)),
+            Text(context.l10n.activeProgramLabel, style: TextStyle(fontSize: 12, color: colors.textMuted)),
           ]),
           const SizedBox(height: 6),
           Text(goal, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
@@ -824,7 +837,7 @@ class _CurrentProgramWidget extends StatelessWidget {
             child: LinearProgressIndicator(value: 0, backgroundColor: colors.surfaceLight, valueColor: AlwaysStoppedAnimation<Color>(colors.accentPurple), minHeight: 5),
           ),
           const SizedBox(height: 4),
-          Text(dataLoaded ? 'Заполните данные для отслеживания прогресса' : '', style: TextStyle(fontSize: 11, color: colors.textMuted)),
+          Text(dataLoaded ? context.l10n.fillProfileProgress : '', style: TextStyle(fontSize: 11, color: colors.textMuted)),
         ])),
         const SizedBox(width: 12),
         GestureDetector(
@@ -890,7 +903,7 @@ class _AchievementsSectionWidget extends StatelessWidget {
                 ),
             ])),
             Row(children: [
-              Text('Все', style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.w600)),
+              Text(context.l10n.allBadgesBtn, style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.w600)),
               Icon(Icons.chevron_right_rounded, color: colors.primary, size: 18),
             ]),
           ]),
@@ -915,7 +928,7 @@ class _AchievementsSectionWidget extends StatelessWidget {
           ] else ...[
             const SizedBox(height: 10),
             Text(
-              'Завершай тренировки, чтобы получать значки!',
+              context.l10n.earnBadgesHint,
               style: TextStyle(fontSize: 12, color: colors.textMuted),
             ),
           ],
@@ -975,6 +988,7 @@ class _LogoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return GestureDetector(
       onTap: onTap,
@@ -988,7 +1002,7 @@ class _LogoutButton extends StatelessWidget {
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Icon(Icons.logout_rounded, color: colors.error, size: 20),
           const SizedBox(width: 10),
-          Text('Выйти из аккаунта', style: TextStyle(color: colors.error, fontWeight: FontWeight.w700, fontSize: 15)),
+          Text(l10n.logoutBtn, style: TextStyle(color: colors.error, fontWeight: FontWeight.w700, fontSize: 15)),
         ]),
       ),
     );
@@ -1001,11 +1015,12 @@ class _DeleteAccountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Center(
-        child: Text('Удалить аккаунт', style: TextStyle(color: colors.textMuted, fontSize: 13, decoration: TextDecoration.underline)),
+        child: Text(l10n.deleteAccountBtn, style: TextStyle(color: colors.textMuted, fontSize: 13, decoration: TextDecoration.underline)),
       ),
     );
   }
@@ -1095,9 +1110,10 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return _SheetWrapper(
-      title: 'Редактировать профиль',
+      title: l10n.editProfileLabel,
       child: Form(
         key: _formKey,
         child: Column(children: [
@@ -1106,19 +1122,19 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
           TextButton.icon(
             onPressed: widget.onAvatarTap,
             icon: Icon(Icons.photo_camera_rounded, size: 15, color: colors.primary),
-            label: Text('Изменить аватарку', style: TextStyle(fontSize: 13, color: colors.primary, fontWeight: FontWeight.w600)),
+            label: Text(l10n.changeAvatar, style: TextStyle(fontSize: 13, color: colors.primary, fontWeight: FontWeight.w600)),
           ),
           const SizedBox(height: 16),
-          _SheetField(controller: _nameCtrl, label: 'Имя', icon: Icons.person_outline_rounded, validator: (v) => v!.trim().isEmpty ? 'Введите имя' : null),
+          _SheetField(controller: _nameCtrl, label: l10n.nameLabel, icon: Icons.person_outline_rounded, validator: (v) => v!.trim().isEmpty ? l10n.enterNameValidation : null),
           const SizedBox(height: 14),
           _SheetField(
             controller: _emailCtrl,
-            label: 'Email',
+            label: l10n.emailLabel,
             icon: Icons.mail_outline_rounded,
             keyboardType: TextInputType.emailAddress,
             validator: (v) {
-              if (v == null || v.trim().isEmpty) return 'Введите email';
-              if (!RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$').hasMatch(v.trim())) return 'Неверный формат';
+              if (v == null || v.trim().isEmpty) return l10n.enterEmailValidation;
+              if (!RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$').hasMatch(v.trim())) return l10n.invalidEmailFormat;
               return null;
             },
           ),
@@ -1127,7 +1143,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
             if (_formKey.currentState!.validate()) {
               widget.onSave(_nameCtrl.text.trim(), _emailCtrl.text.trim());
               Navigator.of(context).pop();
-              _showSuccess(context, 'Профиль обновлен');
+              _showSuccess(context, l10n.profileUpdated);
             }
           }),
         ]),
@@ -1167,15 +1183,16 @@ class _BodyParamsSheetState extends State<_BodyParamsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return _SheetWrapper(
-      title: 'Параметры тела',
+      title: l10n.bodyParamsSheetTitle,
       child: Column(children: [
         // Gender
-        Row(children: ['Мужской', 'Женский'].map((g) {
+        Row(children: [l10n.genderMale, l10n.genderFemale].map((g) {
           final sel = _gender == g;
           return Expanded(child: Padding(
-            padding: EdgeInsets.only(right: g == 'Мужской' ? 8 : 0, left: g == 'Женский' ? 8 : 0),
+            padding: EdgeInsets.only(right: g == l10n.genderMale ? 8 : 0, left: g == l10n.genderFemale ? 8 : 0),
             child: GestureDetector(
               onTap: () { HapticFeedback.selectionClick(); setState(() => _gender = g); },
               child: AnimatedContainer(
@@ -1187,7 +1204,7 @@ class _BodyParamsSheetState extends State<_BodyParamsSheet> {
                   border: Border.all(color: sel ? colors.primary : Colors.white.withValues(alpha: 0.06), width: sel ? 2 : 1),
                 ),
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Text(g == 'Мужской' ? '👨' : '👩', style: const TextStyle(fontSize: 18)),
+                  Text(g == l10n.genderMale ? '👨' : '👩', style: const TextStyle(fontSize: 18)),
                   const SizedBox(width: 8),
                   Text(g, style: TextStyle(color: sel ? colors.primary : colors.textSecondary, fontWeight: FontWeight.w600)),
                 ]),
@@ -1196,11 +1213,11 @@ class _BodyParamsSheetState extends State<_BodyParamsSheet> {
           ));
         }).toList()),
         const SizedBox(height: 20),
-        _NumSlider(label: 'Вес', value: _weight, min: 40, max: 200, unit: 'кг', onChanged: (v) => setState(() => _weight = v)),
+        _NumSlider(label: l10n.weightLabel, value: _weight, min: 40, max: 200, unit: l10n.dashboardKg, onChanged: (v) => setState(() => _weight = v)),
         const SizedBox(height: 16),
-        _NumSlider(label: 'Рост', value: _height, min: 140, max: 220, unit: 'см', onChanged: (v) => setState(() => _height = v)),
+        _NumSlider(label: l10n.onbHeightTitle, value: _height, min: 140, max: 220, unit: l10n.cmUnit, onChanged: (v) => setState(() => _height = v)),
         const SizedBox(height: 16),
-        _NumSlider(label: 'Возраст', value: _age.toDouble(), min: 14, max: 80, unit: 'лет', decimals: 0, onChanged: (v) => setState(() => _age = v.round())),
+        _NumSlider(label: l10n.ageLabel, value: _age.toDouble(), min: 14, max: 80, unit: l10n.yearsUnit, decimals: 0, onChanged: (v) => setState(() => _age = v.round())),
         const SizedBox(height: 16),
         // BMI live
         Container(
@@ -1211,9 +1228,9 @@ class _BodyParamsSheetState extends State<_BodyParamsSheet> {
             border: Border.all(color: _bmiColor(_bmi).withValues(alpha: 0.3)),
           ),
           child: Row(children: [
-            Text('ИМТ: ${_bmi.toStringAsFixed(1)}', style: TextStyle(fontFamily: 'Syne', fontSize: 18, fontWeight: FontWeight.w800, color: _bmiColor(_bmi))),
+            Text('BMI: ${_bmi.toStringAsFixed(1)}', style: TextStyle(fontFamily: 'Syne', fontSize: 18, fontWeight: FontWeight.w800, color: _bmiColor(_bmi))),
             const SizedBox(width: 12),
-            Text(_bmiLabel(_bmi), style: TextStyle(color: _bmiColor(_bmi), fontSize: 13, fontWeight: FontWeight.w600)),
+            Text(_bmiLabel(l10n, _bmi), style: TextStyle(color: _bmiColor(_bmi), fontSize: 13, fontWeight: FontWeight.w600)),
           ]),
         ),
         const SizedBox(height: 24),
@@ -1234,11 +1251,11 @@ class _BodyParamsSheetState extends State<_BodyParamsSheet> {
     return colors.error;
   }
 
-  String _bmiLabel(double bmi) {
-    if (bmi < 18.5) return 'Недостаточный вес';
-    if (bmi < 25) return 'Норма 💪';
-    if (bmi < 30) return 'Избыточный вес';
-    return 'Ожирение';
+  String _bmiLabel(AppLocalizations l10n, double bmi) {
+    if (bmi < 18.5) return l10n.bmiUnderweight;
+    if (bmi < 25) return '${l10n.bmiNormal} 💪';
+    if (bmi < 30) return l10n.bmiOverweight;
+    return l10n.bmiObese;
   }
 }
 
@@ -1252,6 +1269,7 @@ class _GoalEditSheet extends StatefulWidget {
 
 class _GoalEditSheetState extends State<_GoalEditSheet> {
   late String _selected;
+  // label — русский ключ, используется для сохранения в Firestore
   final List<Map<String, String>> _goals = [
     {'label': 'Похудение веса', 'emoji': '🔥'},
     {'label': 'Набор массы', 'emoji': '💪'},
@@ -1259,12 +1277,25 @@ class _GoalEditSheetState extends State<_GoalEditSheet> {
     {'label': 'К пляжному сезону', 'emoji': '🏖️'},
     {'label': 'Спортивные рекорды', 'emoji': '🏆'},
   ];
+
+  String _localizeGoal(AppLocalizations l10n, String goal) {
+    return switch (goal) {
+      'Похудение веса'    => l10n.goalWeightLoss,
+      'Набор массы'       => l10n.goalMuscleMass,
+      'Поддержание веса'  => l10n.goalMaintainWeight,
+      'К пляжному сезону' => l10n.goalBeachSeason,
+      'Спортивные рекорды'=> l10n.goalSportsRecords,
+      _                   => goal,
+    };
+  }
+
   @override void initState() { super.initState(); _selected = widget.currentGoal; }
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return _SheetWrapper(
-      title: 'Цель тренировок',
+      title: l10n.fitnessGoalSheetTitle,
       child: Column(children: [
         ..._goals.map((g) {
           final sel = _selected == g['label'];
@@ -1283,7 +1314,7 @@ class _GoalEditSheetState extends State<_GoalEditSheet> {
                 child: Row(children: [
                   Text(g['emoji']!, style: const TextStyle(fontSize: 24)),
                   const SizedBox(width: 14),
-                  Expanded(child: Text(g['label']!, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: sel ? colors.primary : colors.textPrimary))),
+                  Expanded(child: Text(_localizeGoal(l10n, g['label']!), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: sel ? colors.primary : colors.textPrimary))),
                   if (sel) Icon(Icons.check_circle_rounded, color: colors.primary, size: 22),
                 ]),
               ),
@@ -1291,7 +1322,7 @@ class _GoalEditSheetState extends State<_GoalEditSheet> {
           );
         }),
         const SizedBox(height: 16),
-        _SaveButton(onTap: () { widget.onSave(_selected); Navigator.of(context).pop(); _showSuccess(context, 'Цель обновлена'); }),
+        _SaveButton(onTap: () { widget.onSave(_selected); Navigator.of(context).pop(); _showSuccess(context, l10n.save); }),
       ]),
     );
   }
@@ -1541,9 +1572,10 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return _SheetWrapper(
-      title: 'Уведомления',
+      title: l10n.notificationsLabel,
       child: Column(children: [
         _NotifToggle(label: 'Напоминание о тренировке', subtitle: 'За 30 минут до начала', value: _workoutReminder, onChanged: (v) => setState(() => _workoutReminder = v)),
         Divider(color: colors.surfaceLight),
@@ -1578,7 +1610,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
     return _SheetWrapper(
-      title: 'Безопасность',
+      title: context.l10n.securityLabel,
       child: Form(
         key: _formKey,
         child: Column(children: [
@@ -1673,10 +1705,11 @@ class _SheetField extends StatelessWidget {
 
 class _SaveButton extends StatelessWidget {
   final VoidCallback onTap;
-  final String label;
-  const _SaveButton({required this.onTap, this.label = 'Сохранить'});
+  final String? label;
+  const _SaveButton({required this.onTap, this.label});
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return SizedBox(
       width: double.infinity, height: 54,
@@ -1687,7 +1720,7 @@ class _SaveButton extends StatelessWidget {
           foregroundColor: colors.textOnPrimary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
-        child: Text(label, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
+        child: Text(label ?? l10n.save, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
       ),
     );
   }
@@ -1807,6 +1840,7 @@ class _AiProgressDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return Dialog(
       backgroundColor: colors.surface,
@@ -1823,7 +1857,7 @@ class _AiProgressDialog extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'AI обновляет план...',
+            l10n.generatingPlan,
             style: TextStyle(fontFamily: 'Syne', fontSize: 17, fontWeight: FontWeight.w700, color: colors.textPrimary),
           ),
           const SizedBox(height: 8),

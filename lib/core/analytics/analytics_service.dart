@@ -1,18 +1,19 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 
-/// Centralized Firebase Analytics service.
-/// Logs user interactions across the app for product analytics.
-class AnalyticsService {
+class AnalyticsService implements IAnalyticsService {
   final FirebaseAnalytics _analytics;
 
   AnalyticsService({FirebaseAnalytics? analytics})
       : _analytics = analytics ?? FirebaseAnalytics.instance;
 
   FirebaseAnalytics get analytics => _analytics;
+  @override
   FirebaseAnalyticsObserver get observer => FirebaseAnalyticsObserver(analytics: _analytics);
 
   // ─── Screen tracking ─────────────────────────────────────────────
 
+  @override
   Future<void> logScreenView({required String screenName}) async {
     await _analytics.logScreenView(
       screenName: screenName,
@@ -22,21 +23,25 @@ class AnalyticsService {
 
   // ─── Authentication ───────────────────────────────────────────────
 
+  @override
   Future<void> logLogin({required String method}) async {
     await _analytics.logEvent(name: 'login', parameters: {'method': method});
     await _analytics.setAnalyticsCollectionEnabled(true);
   }
 
+  @override
   Future<void> logSignUp({required String method}) async {
     await _analytics.logEvent(name: 'sign_up', parameters: {'method': method});
   }
 
+  @override
   Future<void> setUserId(String? userId) async {
     await _analytics.setUserId(id: userId);
   }
 
   // ─── Workout events ───────────────────────────────────────────────
 
+  @override
   Future<void> logWorkoutStarted({required String sessionId}) async {
     await _analytics.logEvent(
       name: 'workout_started',
@@ -44,6 +49,7 @@ class AnalyticsService {
     );
   }
 
+  @override
   Future<void> logWorkoutCompleted({
     required String sessionId,
     required int durationSeconds,
@@ -59,6 +65,7 @@ class AnalyticsService {
     );
   }
 
+  @override
   Future<void> logWorkoutPaused({required String sessionId}) async {
     await _analytics.logEvent(
       name: 'workout_paused',
@@ -68,6 +75,7 @@ class AnalyticsService {
 
   // ─── Onboarding events ────────────────────────────────────────────
 
+  @override
   Future<void> logOnboardingStep({
     required int step,
     required String stepName,
@@ -78,6 +86,7 @@ class AnalyticsService {
     );
   }
 
+  @override
   Future<void> logOnboardingCompleted({required String goal}) async {
     await _analytics.logEvent(
       name: 'onboarding_completed',
@@ -87,6 +96,7 @@ class AnalyticsService {
 
   // ─── Nutrition events ─────────────────────────────────────────────
 
+  @override
   Future<void> logFoodLogged({
     required String foodName,
     required double calories,
@@ -104,6 +114,7 @@ class AnalyticsService {
 
   // ─── Health / BLE events ──────────────────────────────────────────
 
+  @override
   Future<void> logDeviceConnected({required String deviceName}) async {
     await _analytics.logEvent(
       name: 'device_connected',
@@ -111,6 +122,7 @@ class AnalyticsService {
     );
   }
 
+  @override
   Future<void> logHealthDataSynced({required String source}) async {
     await _analytics.logEvent(
       name: 'health_data_synced',
@@ -120,6 +132,7 @@ class AnalyticsService {
 
   // ─── General events ───────────────────────────────────────────────
 
+  @override
   Future<void> logShare({required String contentType}) async {
     await _analytics.logEvent(
       name: 'share',
@@ -127,6 +140,7 @@ class AnalyticsService {
     );
   }
 
+  @override
   Future<void> logEvent({
     required String name,
     Map<String, Object>? parameters,
@@ -136,6 +150,7 @@ class AnalyticsService {
 
   // ─── User properties ──────────────────────────────────────────────
 
+  @override
   Future<void> setUserProperty({
     required String name,
     required String value,
@@ -143,6 +158,7 @@ class AnalyticsService {
     await _analytics.setUserProperty(name: name, value: value);
   }
 
+  @override
   Future<void> setAnalyticsEnabled(bool enabled) async {
     await _analytics.setAnalyticsCollectionEnabled(enabled);
   }

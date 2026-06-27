@@ -3,6 +3,7 @@ import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/social_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({super.key});
@@ -71,7 +72,7 @@ class _FriendsScreenState extends State<FriendsScreen>
           }).toList();
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка: $e')),
+          SnackBar(content: Text(AppLocalizations.tl('genericErrorMsg').replaceAll('{error}', e.toString()))),
         );
       }
     }

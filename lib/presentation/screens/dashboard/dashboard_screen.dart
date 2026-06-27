@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/health/health_connect_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/repositories/user_repository.dart';
@@ -308,6 +309,7 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   Future<void> _loadGamificationData() async {
     try {
+      final l10n = context.l10n;
       final xp = await sl<IGamificationService>().getTotalXp();
       final settings = sl<ISettingsRepository>();
       final k = todayKey();
@@ -322,10 +324,10 @@ class _DashboardScreenState extends State<DashboardScreen>
       final allMealsDone  = mealsRaw.isNotEmpty && eatenCal > 0;
 
       final tasks = [
-        _DailyTask(text: 'Выполни тренировку',      xp: 100, done: workoutDone),
-        _DailyTask(text: 'Выпей норму воды (2 л)',  xp: 20,  done: waterMl >= 2000),
-        _DailyTask(text: 'Запиши все приёмы пищи',  xp: 30,  done: allMealsDone),
-        _DailyTask(text: 'Пройди 8 000 шагов',      xp: 40,  done: steps >= 8000),
+        _DailyTask(text: l10n.taskWorkout,      xp: 100, done: workoutDone),
+        _DailyTask(text: l10n.taskWater,  xp: 20,  done: waterMl >= 2000),
+        _DailyTask(text: l10n.taskMeals,  xp: 30,  done: allMealsDone),
+        _DailyTask(text: AppLocalizations.tl('dashboardWalkSteps'),      xp: 40,  done: steps >= 8000),
       ];
 
       if (mounted) {
@@ -364,7 +366,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Вес обновлён (${newWeight.toStringAsFixed(1)} кг) → цель: $target ккал/день',
+              context.l10n.dashboardWeightUpdated(newWeight.toStringAsFixed(1), '$target'),
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: const Color(0xFF131619),
@@ -403,9 +405,9 @@ class _DashboardScreenState extends State<DashboardScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _ManualInputSheet(
-        title: isPulse ? 'Пульс' : 'Шаги',
-        unit: isPulse ? 'уд/мин' : 'шагов',
+      builder: (ctx) => _ManualInputSheet(
+        title: isPulse ? ctx.l10n.heartRateLabel : ctx.l10n.stepsLabel,
+        unit: isPulse ? ctx.l10n.dashboardBpm : '',
         hint: isPulse ? '72' : '8000',
         ctrl: ctrl,
       ),
@@ -604,7 +606,7 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   SliverAppBar _buildAppBar() {
     final p = AppTheme.of(context);
-    final displayName = _userName.isNotEmpty ? _userName : 'Атлет';
+    final displayName = _userName.isNotEmpty ? _userName : context.l10n.dashboardDefaultName;
     // Show only first name
     final firstName = displayName.split(' ').first;
 
@@ -657,10 +659,11 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   String _greeting() {
+    final l10n = context.l10n;
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Доброе утро';
-    if (hour < 17) return 'Добрый день';
-    return 'Добрый вечер';
+    if (hour < 12) return l10n.greetingMorning;
+    if (hour < 17) return l10n.greetingAfternoon;
+    return l10n.greetingEvening;
   }
 
 }
@@ -698,7 +701,7 @@ class _XpBarWidget extends StatelessWidget {
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Text(
-              'Ур. ${lvl.level} · ${lvl.name}',
+              '${context.l10n.levelLabel} ${lvl.level} · ${lvl.name}',
               style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: p.textPrimary),
             ),
             const Spacer(),
@@ -762,6 +765,7 @@ class _ActivityRingsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
@@ -776,12 +780,12 @@ class _ActivityRingsWidget extends StatelessWidget {
       ),
       child: Column(children: [
         Row(children: [
-          Text('Активность сегодня', style: AppTextStyles.titleM),
+          Text(AppLocalizations.tl('dashboardActivatedToday'), style: AppTextStyles.titleM),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(color: p.surfaceLight, borderRadius: BorderRadius.circular(8)),
-            child: Text('Сегодня', style: TextStyle(fontSize: 11, color: p.textMuted, fontWeight: FontWeight.w600)),
+            child: Text(l10n.today, style: TextStyle(fontSize: 11, color: p.textMuted, fontWeight: FontWeight.w600)),
           ),
         ]),
         const SizedBox(height: 20),
@@ -810,7 +814,7 @@ class _ActivityRingsWidget extends StatelessWidget {
                 onTap: onStepsTap,
                 child: _RingLegend(
                   color: p.accentOrange,
-                  label: 'Шаги',
+                  label: l10n.stepsLabel,
                   value: hasSyncedData ? '$steps' : '—',
                   total: '/$targetSteps',
                   unit: '',
@@ -818,9 +822,9 @@ class _ActivityRingsWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              _RingLegend(color: p.primary, label: 'Калории', value: hasSyncedData ? '${caloriesBurned.toInt()}' : '—', total: '/${targetCalories.toInt()}', unit: ' ккал'),
+              _RingLegend(color: p.primary, label: l10n.caloriesLabel, value: hasSyncedData ? '${caloriesBurned.toInt()}' : '—', total: '/${targetCalories.toInt()}', unit: ' ${l10n.kcalShort}'),
               const SizedBox(height: 14),
-              _RingLegend(color: p.accent, label: 'Вода', value: hasSyncedData ? '${waterMl.toInt()}' : '—', total: '/${targetWater.toInt()}', unit: ' мл'),
+              _RingLegend(color: p.accent, label: l10n.waterLabel, value: hasSyncedData ? '${waterMl.toInt()}' : '—', total: '/${targetWater.toInt()}', unit: ' мл'),
             ]),
           ),
         ]),
@@ -844,6 +848,7 @@ class _QuickStatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
     return Row(children: [
       Expanded(child: GestureDetector(
@@ -851,30 +856,30 @@ class _QuickStatsWidget extends StatelessWidget {
         child: _StatCard(
           icon: Icons.favorite_rounded,
           iconColor: const Color(0xFFEF4444),
-          label: 'Пульс',
+          label: l10n.heartRateLabel,
           value: heartRate > 0 ? '$heartRate' : '—',
-          unit: heartRate > 0 ? 'уд/мин' : '',
-          subtitle: heartRate > 0 ? 'В норме' : '✏️ Ввести',
+          unit: heartRate > 0 ? l10n.dashboardBpm : '',
+          subtitle: heartRate > 0 ? l10n.dashboardNormal : l10n.dashboardTapToEnter,
         ),
       )),
       const SizedBox(width: 12),
       Expanded(child: _StatCard(
         icon: Icons.monitor_weight_outlined,
         iconColor: p.accentPurple,
-        label: 'Вес',
+        label: l10n.weightLabel,
         value: weight > 0 ? '$weight' : '—',
-        unit: weight > 0 ? 'кг' : '',
-        subtitle: weight > 0 ? 'Обновлено' : 'Нет данных',
+        unit: weight > 0 ? l10n.dashboardKg : '',
+        subtitle: weight > 0 ? l10n.dashboardUpdated : l10n.dashboardNoData,
         subtitleColor: p.textMuted,
       )),
       const SizedBox(width: 12),
       Expanded(child: _StatCard(
         icon: Icons.local_fire_department_rounded,
         iconColor: p.accentOrange,
-        label: 'Стрик',
+        label: l10n.dashboardStreak,
         value: streak > 0 ? '$streak' : '—',
-        unit: streak > 0 ? 'дней' : '',
-        subtitle: streak > 0 ? '🔥 Продолжай!' : 'Нет данных',
+        unit: streak > 0 ? l10n.dashboardDays : '',
+        subtitle: streak > 0 ? l10n.dashboardKeepGoing : l10n.dashboardNoData,
         subtitleColor: streak > 0 ? p.accentOrange : p.textMuted,
       )),
     ]);
@@ -886,6 +891,7 @@ class _TestWeekBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
     return GestureDetector(
       onTap: () => context.push('/test-week'),
@@ -910,23 +916,23 @@ class _TestWeekBanner extends StatelessWidget {
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Flexible(child: Text('Тестовая неделя', overflow: TextOverflow.ellipsis, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: p.textPrimary))),
+              Flexible(child: Text(l10n.testWeekTitle, overflow: TextOverflow.ellipsis, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: p.textPrimary))),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(color: p.info, borderRadius: BorderRadius.circular(6)),
-                child: Text('СТАРТ', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 1)),
+                child: Text(context.l10n.dashboardStartProgram, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 1)),
               ),
             ]),
             const SizedBox(height: 4),
-            Text('Заполни показатели для составления твоей программы', style: TextStyle(fontSize: 12, color: p.textSecondary)),
+            Text(l10n.testWeekSubtitle, style: TextStyle(fontSize: 12, color: p.textSecondary)),
             const SizedBox(height: 8),
             Row(children: [
-              Flexible(child: _InfoPill('Индивидуально', p.info)),
+              Flexible(child: _InfoPill(context.l10n.dashboardIndividualLabel, p.info)),
               const SizedBox(width: 6),
-              Flexible(child: _InfoPill('Под ваш график', p.info)),
+              Flexible(child: _InfoPill(context.l10n.dashboardYourSchedule, p.info)),
               const SizedBox(width: 6),
-              Flexible(child: _InfoPill('Без спешки', p.info)),
+              Flexible(child: _InfoPill(context.l10n.dashboardNoRush, p.info)),
             ]),
           ])),
           const SizedBox(width: 8),
@@ -950,6 +956,7 @@ class _NutritionSummaryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
     int bmr = 0;
     final userState = context.read<UserBloc>().state;
@@ -975,30 +982,30 @@ class _NutritionSummaryWidget extends StatelessWidget {
       ),
       child: Column(children: [
         Row(children: [
-          Text('Питание', style: AppTextStyles.titleM),
+          Text(l10n.navNutrition, style: AppTextStyles.titleM),
           const Spacer(),
           GestureDetector(
             onTap: () => context.push('/nutrition'),
-            child: Text('Открыть →', style: TextStyle(color: p.primary, fontSize: 13, fontWeight: FontWeight.w600)),
+            child: Text(l10n.openArrow, style: TextStyle(color: p.primary, fontSize: 13, fontWeight: FontWeight.w600)),
           ),
         ]),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _CalStat(label: 'Цель', value: hasTarget ? '${target.toInt()}' : '—', color: p.textSecondary),
+            _CalStat(label: l10n.dashboardTarget, value: hasTarget ? '${target.toInt()}' : '—', color: p.textSecondary),
             _CalDivider(),
-            _CalStat(label: 'Съедено', value: '${eaten.toInt()}', color: overLimit ? p.error : p.accentOrange),
+            _CalStat(label: l10n.eatenLabel, value: '${eaten.toInt()}', color: overLimit ? p.error : p.accentOrange),
             _CalDivider(),
             _CalStat(
-              label: 'Сожжено',
+              label: l10n.burnedLabel,
               value: totalBurned > 0 ? '${totalBurned.toInt()}' : '—',
               color: p.primary,
-              subtitle: bmr > 0 ? 'обмен + актив.' : null,
+              subtitle: bmr > 0 ? l10n.dashboardMetabolismPlusActivity : null,
             ),
             _CalDivider(),
             _CalStat(
-              label: deficit >= 0 ? 'Дефицит' : 'Профицит',
+              label: deficit >= 0 ? l10n.dashboardDeficit : l10n.dashboardSurplus,
               value: totalBurned > 0 ? '${deficit.abs()}' : '—',
               color: deficit >= 0 ? p.accent : p.error,
             ),
@@ -1009,11 +1016,10 @@ class _NutritionSummaryWidget extends StatelessWidget {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Icon(Icons.info_outline_rounded, size: 12, color: p.textMuted),
             const SizedBox(width: 4),
-            Text(
-              'Базовый обмен: $bmr ккал'
-              '${activity > 0 ? ' + ${activity.toInt()} актив.' : ''}',
+            Flexible(child: Text(
+              l10n.dashboardBmr('$bmr') + (activity > 0 ? ' ${l10n.dashboardActivityPlus('${activity.toInt()}')}' : ''),
               style: TextStyle(fontSize: 10, color: p.textMuted),
-            ),
+            )),
           ]),
         ],
         if (hasTarget) ...[
@@ -1033,16 +1039,16 @@ class _NutritionSummaryWidget extends StatelessWidget {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Icon(Icons.warning_rounded, size: 13, color: p.error),
             const SizedBox(width: 4),
-            Text('Превышение цели на ${(eaten - target).toInt()} ккал',
-              style: TextStyle(fontSize: 11, color: p.error, fontWeight: FontWeight.w600)),
+            Flexible(child: Text(l10n.dashboardCalExceeded('${(eaten - target).toInt()}'),
+              style: TextStyle(fontSize: 11, color: p.error, fontWeight: FontWeight.w600))),
           ]),
         ] else if (deficit > 0 && eaten > 0) ...[
           const SizedBox(height: 8),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Icon(Icons.local_fire_department_rounded, size: 13, color: p.primary),
             const SizedBox(width: 4),
-            Text('Дефицит калорий за день: $deficit ккал',
-              style: TextStyle(fontSize: 11, color: p.primary, fontWeight: FontWeight.w600)),
+            Flexible(child: Text(l10n.dashboardCalDeficit('$deficit'),
+              style: TextStyle(fontSize: 11, color: p.primary, fontWeight: FontWeight.w600))),
           ]),
         ],
       ]),
@@ -1063,8 +1069,9 @@ class _WeeklyChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
-    const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    final days = [l10n.monShort, l10n.tueShort, l10n.wedShort, l10n.thuShort, l10n.friShort, l10n.satShort, l10n.sunShort];
     final todayIndex = DateTime.now().weekday - 1;
     final doneCount = weekWorkouts.where((v) => v).length;
 
@@ -1077,9 +1084,9 @@ class _WeeklyChartWidget extends StatelessWidget {
       ),
       child: Column(children: [
         Row(children: [
-          Text('Неделя', style: AppTextStyles.titleM),
+          Text(l10n.weekLabel, style: AppTextStyles.titleM),
           const Spacer(),
-          Text('$doneCount/7 тренировок',
+          Text(l10n.workoutsWeekCount(doneCount),
               style: TextStyle(
                 fontSize: 12,
                 color: doneCount > 0 ? p.primary : p.textMuted,
@@ -1148,8 +1155,8 @@ class _WeeklyChartWidget extends StatelessWidget {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Icon(Icons.local_fire_department_rounded, size: 13, color: p.accentOrange),
             const SizedBox(width: 4),
-            Text('Сегодня сожжено за тренировку: $workoutKcalToday ккал',
-                style: TextStyle(fontSize: 11, color: p.accentOrange, fontWeight: FontWeight.w600)),
+            Flexible(child: Text('${l10n.today} ${l10n.workoutCalBurned}: $workoutKcalToday ${l10n.kcalShort}',
+                style: TextStyle(fontSize: 11, color: p.accentOrange, fontWeight: FontWeight.w600))),
           ]),
         ],
       ]),
@@ -1162,6 +1169,7 @@ class _AiChatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
     return GestureDetector(
       onTap: () => context.push('/chat'),
@@ -1197,9 +1205,9 @@ class _AiChatCard extends StatelessWidget {
           const SizedBox(width: 14),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Спроси AI-тренера', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: p.textPrimary)),
+              Text(l10n.askAiLabel, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: p.textPrimary)),
               SizedBox(height: 4),
-              Text('Вопросы о тренировках, питании и прогрессе', style: TextStyle(fontSize: 12, color: p.textSecondary)),
+              Text(l10n.askAiSubtitle, style: TextStyle(fontSize: 12, color: p.textSecondary)),
             ]),
           ),
           Icon(Icons.arrow_forward_ios_rounded, color: p.primary, size: 16),
@@ -1215,6 +1223,7 @@ class _SocialCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
     final colors = AppTheme.of(context);
     return Container(
@@ -1225,14 +1234,14 @@ class _SocialCardWidget extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Социальное', style: AppTextStyles.titleM),
+        Text(l10n.socialSection, style: AppTextStyles.titleM),
         const SizedBox(height: 14),
         Row(children: [
-          Expanded(child: _SocialBtn(emoji: '👥', label: 'Лента', onTap: () => context.push(AppRouter.feed), colors: colors)),
+          Expanded(child: _SocialBtn(emoji: '👥', label: l10n.feedTitle, onTap: () => context.push(AppRouter.feed), colors: colors)),
           const SizedBox(width: 10),
-          Expanded(child: _SocialBtn(emoji: '🤝', label: 'Друзья', badge: pendingRequests, onTap: () => context.push(AppRouter.friends), colors: colors)),
+          Expanded(child: _SocialBtn(emoji: '🤝', label: l10n.friendsTitle, badge: pendingRequests, onTap: () => context.push(AppRouter.friends), colors: colors)),
           const SizedBox(width: 10),
-          Expanded(child: _SocialBtn(emoji: '⚡', label: 'Челленджи', onTap: () => context.push(AppRouter.challenges), colors: colors)),
+          Expanded(child: _SocialBtn(emoji: '⚡', label: l10n.challengesTitle, onTap: () => context.push(AppRouter.challenges), colors: colors)),
         ]),
       ]),
     );
@@ -1245,6 +1254,7 @@ class _DailyTasksWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
     final done = tasks.where((t) => t.done).length;
     return Container(
@@ -1256,7 +1266,7 @@ class _DailyTasksWidget extends StatelessWidget {
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Text('Задания на сегодня', style: AppTextStyles.titleM),
+          Text(l10n.dailyGoals, style: AppTextStyles.titleM),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
@@ -1305,6 +1315,7 @@ class _RecoveryCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
     final r = recoveryScore;
     final color = r.color;
@@ -1317,7 +1328,7 @@ class _RecoveryCardWidget extends StatelessWidget {
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Text('Восстановление', style: AppTextStyles.titleM),
+          Text(l10n.recoveryTitle, style: AppTextStyles.titleM),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -1375,11 +1386,11 @@ class _RecoveryCardWidget extends StatelessWidget {
               Text(r.advice, style: TextStyle(fontSize: 13, color: p.textSecondary, height: 1.4)),
               const SizedBox(height: 10),
               Row(children: [
-                _RecoveryStat(icon: '😴', label: 'Сон', value: RecoveryScoreService.formatSleep(r.sleepMinutes)),
-                const SizedBox(width: 14),
-                _RecoveryStat(icon: '💓', label: 'HRV', value: r.hrv != null ? '${r.hrv!.toStringAsFixed(0)} мс' : '—'),
-                const SizedBox(width: 14),
-                _RecoveryStat(icon: '❤️', label: 'ЧСС', value: r.restingHr != null ? '${r.restingHr} уд' : '—'),
+                Flexible(child: _RecoveryStat(icon: '😴', label: l10n.sleepLabel, value: RecoveryScoreService.formatSleep(r.sleepMinutes))),
+                const SizedBox(width: 10),
+                Flexible(child: _RecoveryStat(icon: '💓', label: 'HRV', value: r.hrv != null ? '${r.hrv!.toStringAsFixed(0)} ms' : '—')),
+                const SizedBox(width: 10),
+                Flexible(child: _RecoveryStat(icon: '❤️', label: l10n.heartRateLabel, value: r.restingHr != null ? '${r.restingHr} ${l10n.dashboardBpm}' : '—')),
               ]),
             ]),
           ),
@@ -1415,14 +1426,12 @@ class _AdaptationBanner extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(
-            isLow ? 'AI: рекомендован отдых' : 'AI: снижаем интенсивность',
+            isLow ? context.l10n.recoveryAiRest : context.l10n.recoveryAiReduce,
             style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: bannerColor),
           ),
           const SizedBox(height: 2),
           Text(
-            isLow
-                ? 'Показатели восстановления низкие. Замените тренировку растяжкой или прогулкой.'
-                : 'Сон или HRV ниже нормы. Сегодняшняя нагрузка снижена на 15–20%.',
+            isLow ? context.l10n.recoveryLowMsg2 : context.l10n.recoveryHRVLowMsg2,
             style: TextStyle(fontSize: 11, color: p.textSecondary, height: 1.4),
           ),
         ])),
@@ -1438,9 +1447,10 @@ class _AiPlansWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('Ваш AI-план', style: AppTextStyles.titleM),
+      Text(l10n.aiPlanSection, style: AppTextStyles.titleM),
       const SizedBox(height: 12),
       if (workoutPlanJson != null) ...[
         Container(
@@ -1451,18 +1461,37 @@ class _AiPlansWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             border: Border.all(color: p.primary.withValues(alpha: 0.2)),
           ),
-          child: Row(children: [
-            Container(
-              width: 36, height: 36,
-              decoration: BoxDecoration(color: p.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-              child: Icon(Icons.fitness_center_rounded, color: p.primary, size: 20),
-            ),
-            const SizedBox(width: 10),
-            Text('План тренировок', style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: p.textPrimary)),
-            const Spacer(),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Container(
+                width: 36, height: 36,
+                decoration: BoxDecoration(color: p.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+                child: Icon(Icons.fitness_center_rounded, color: p.primary, size: 20),
+              ),
+              const SizedBox(width: 10),
+              Text(l10n.workoutPlanTitle, style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: p.textPrimary)),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => context.push('/workout'),
+                child: Text(l10n.openArrow, style: TextStyle(fontSize: 12, color: p.primary, fontWeight: FontWeight.w600)),
+              ),
+            ]),
+            const SizedBox(height: 12),
             GestureDetector(
-              onTap: () => context.push('/workout'),
-              child: Text('Открыть →', style: TextStyle(fontSize: 12, color: p.primary, fontWeight: FontWeight.w600)),
+              onTap: () => context.push('/workout/session/today'),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [p.primary, p.primary.withValues(alpha: 0.75)],
+                      begin: Alignment.centerLeft, end: Alignment.centerRight),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Icon(Icons.play_arrow_rounded, color: p.textOnPrimary, size: 16),
+                  const SizedBox(width: 6),
+                  Text(l10n.startTodayBtn, style: TextStyle(fontFamily: 'Syne', fontSize: 12, fontWeight: FontWeight.w700, color: p.textOnPrimary)),
+                ]),
+              ),
             ),
           ]),
         ),
@@ -1484,11 +1513,11 @@ class _AiPlansWidget extends StatelessWidget {
               child: Icon(Icons.restaurant_rounded, color: p.accentOrange, size: 20),
             ),
             const SizedBox(width: 10),
-            Text('План питания', style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: p.textPrimary)),
+            Text(l10n.mealPlanLabel, style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: p.textPrimary)),
             const Spacer(),
             GestureDetector(
               onTap: () => context.push('/nutrition/meal-plan'),
-              child: Text('Открыть →', style: TextStyle(fontSize: 12, color: p.accentOrange, fontWeight: FontWeight.w600)),
+              child: Text(l10n.openArrow, style: TextStyle(fontSize: 12, color: p.accentOrange, fontWeight: FontWeight.w600)),
             ),
           ]),
         ),
@@ -1725,6 +1754,7 @@ class _ManualInputSheet extends StatefulWidget {
 class _ManualInputSheetState extends State<_ManualInputSheet> {
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final p = AppTheme.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     return Container(
@@ -1743,7 +1773,7 @@ class _ManualInputSheetState extends State<_ManualInputSheet> {
           ),
         ]),
         const SizedBox(height: 6),
-        Text('Введите значение вручную (${widget.unit})', style: TextStyle(fontSize: 13, color: p.textMuted)),
+        Text(l10n.enterValueManualHint(widget.unit), style: TextStyle(fontSize: 13, color: p.textMuted)),
         const SizedBox(height: 20),
         TextField(
           controller: widget.ctrl,
@@ -1775,7 +1805,7 @@ class _ManualInputSheetState extends State<_ManualInputSheet> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
-            child: Text('Сохранить', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
+            child: Text(l10n.save, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
           ),
         ),
       ]),

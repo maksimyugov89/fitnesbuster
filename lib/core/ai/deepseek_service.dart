@@ -1,9 +1,10 @@
 // cspell:disable
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fitnesbuster/core/ai/ai_config.dart';
+import 'package:fitnesbuster/core/localization/language_service.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 
@@ -53,13 +54,13 @@ class DeepSeekService implements IDeepSeekService {
     try {
       data = jsonDecode(raw) as Map<String, dynamic>;
     } catch (e) {
-      if (kDebugMode) debugPrint('[DeepSeek] Malformed workout JSON: $raw');
+      appLogger.d('[DeepSeek] Malformed workout JSON: $raw', error: e);
       throw AiException('AI вернул некорректный JSON плана тренировок. Попробуйте ещё раз.');
     }
 
     final plan = data['plan'];
     if (plan == null || plan is! List || plan.isEmpty) {
-      if (kDebugMode) debugPrint('[DeepSeek] Missing or empty "plan" in workout JSON: $raw');
+      appLogger.d('[DeepSeek] Missing or empty "plan" in workout JSON: $raw');
       throw AiException('AI не вернул план тренировок. Попробуйте ещё раз.');
     }
 
@@ -82,13 +83,13 @@ class DeepSeekService implements IDeepSeekService {
     try {
       data = jsonDecode(raw) as Map<String, dynamic>;
     } catch (e) {
-      if (kDebugMode) debugPrint('[DeepSeek] Malformed meal JSON: $raw');
+      appLogger.d('[DeepSeek] Malformed meal JSON: $raw', error: e);
       throw AiException('AI вернул некорректный JSON плана питания. Попробуйте ещё раз.');
     }
 
     final meals = data['meals'];
     if (meals == null || meals is! List || meals.isEmpty) {
-      if (kDebugMode) debugPrint('[DeepSeek] Missing or empty "meals" in meal JSON: $raw');
+      appLogger.d('[DeepSeek] Missing or empty "meals" in meal JSON: $raw');
       throw AiException('AI не вернул план питания. Попробуйте ещё раз.');
     }
 
@@ -281,7 +282,7 @@ ${cityBlock.isNotEmpty ? '═══ РЕГИОН И ДОСТУПНОСТЬ ПР�
 4. До тренировки — сложные углеводы; сразу после — быстрые углеводы + белок
 5. Клетчатка: 25-35г/день
 6. Для каждого продукта укажи функцию (например: "источник лейцина", "медленный углевод")
-7. ВСЕ названия продуктов, блюд, добавок и описания выводи СТРОГО на русском языке
+7. ${_productLanguageInstruction()}
 8. ОБЯЗАТЕЛЬНО: для каждого приёма пищи укажи 2-3 альтернативы в поле "alternatives" — чем можно заменить основные продукты при их отсутствии в продаже
 9. Добавь в ответ поле "basket_estimate" с оценкой НЕДЕЛЬНОЙ стоимости продуктов из плана: min_rub (нижняя граница), max_rub (верхняя граница), note (краткая заметка об оценке с учётом города пользователя). Умножь дневную стоимость на 7 для недельного расчёта.
 
@@ -475,7 +476,7 @@ ${buf.toString()}${changesBlock.isNotEmpty ? '\n$changesBlock' : ''}${hasPhotos 
 2. **Корректировка тренировок** (2-3 конкретных совета с числами)
 3. **Корректировка питания** (2-3 конкретных совета с числами)
 
-Отвечай на русском языке. Будь конкретным, ссылайся на данные из замеров.
+${_languageInstruction()} Будь конкретным, ссылайся на данные из замеров.
 ''';
 
     return _sendMessage(prompt);
@@ -547,7 +548,7 @@ ${weekPrNames.isNotEmpty ? 'Личные рекорды: ${weekPrNames.join(", "
     final systemContent = profile != null
         ? 'Ты — персональный фитнес-эксперт и нутрициолог FitnesBuster с 15-летним опытом.\n'
             'Ты сертифицирован NSCA, ISSN, обладаешь знаниями в спортивной физиологии и диетологии.\n'
-            'Отвечай на русском языке, будь конкретным, используй цифры и факты.\n\n'
+            '${_languageInstruction()} Будь конкретным, используй цифры и факты.\n\n'
             '━━━ ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ━━━\n'
             'Пол: ${profile.gender == Gender.male ? "Мужской" : "Женский"} | Возраст: ${profile.age} лет\n'
             'Вес: ${profile.weight} кг | Рост: ${profile.height} см | ИМТ: ${profile.bmi.toStringAsFixed(1)}\n'
@@ -557,7 +558,7 @@ ${weekPrNames.isNotEmpty ? 'Личные рекорды: ${weekPrNames.join(", "
             '${profile.medicalRestrictions.isNotEmpty ? "\nОграничения: ${profile.medicalRestrictions.join(", ")}" : ""}'
         : 'Ты — персональный фитнес-эксперт и нутрициолог FitnesBuster с 15-летним опытом.\n'
             'Ты сертифицирован NSCA, ISSN, обладаешь знаниями в спортивной физиологии и диетологии.\n'
-            'Отвечай на русском языке, будь конкретным, используй цифры и факты.';
+            '${_languageInstruction()} Будь конкретным, используй цифры и факты.';
 
     final recentHistory =
         history.length > 20 ? history.sublist(history.length - 20) : history;
@@ -611,7 +612,7 @@ $question
 6. Если вопрос требует консультации врача — прямо скажи об этом
 7. Структурируй: Краткий ответ (1-2 предложения) → Детали → Практическое действие
 
-Максимум 5-6 предложений или 3 пункта. Отвечай на русском языке.
+Максимум 5-6 предложений или 3 пункта. ${_languageInstruction()}
 ''';
 
     return _sendMessage(prompt);
@@ -891,6 +892,48 @@ $question
     }
   }
 
+  /// Returns a language instruction for AI responses based on the current app language.
+  static String _languageInstruction() {
+    return switch (LanguageService.current) {
+      AppLanguage.russian    => 'Отвечай на русском языке.',
+      AppLanguage.english    => 'Respond in English.',
+      AppLanguage.spanish    => 'Responde en español.',
+      AppLanguage.german     => 'Antworte auf Deutsch.',
+      AppLanguage.french     => 'Réponds en français.',
+      AppLanguage.italian    => 'Rispondi in italiano.',
+      AppLanguage.portuguese => 'Responda em português.',
+      AppLanguage.turkish    => 'Türkçe cevap ver.',
+      AppLanguage.arabic     => 'أجب باللغة العربية.',
+      AppLanguage.chinese    => '用中文回答。',
+      AppLanguage.japanese   => '日本語で答えてください。',
+      AppLanguage.korean     => '한국어로 답변하세요.',
+      AppLanguage.hindi      => 'हिंदी में उत्तर दें।',
+      AppLanguage.ukrainian  => 'Відповідай українською мовою.',
+      AppLanguage.belarusian => 'Адказвай на беларускай мове.',
+    };
+  }
+
+  /// Returns a product-names language instruction for meal plan generation.
+  static String _productLanguageInstruction() {
+    return switch (LanguageService.current) {
+      AppLanguage.russian    => 'ВСЕ названия продуктов, блюд, добавок и описания выводи СТРОГО на русском языке',
+      AppLanguage.english    => 'ALL product, dish, supplement names and descriptions MUST be output in English',
+      AppLanguage.spanish    => 'TODOS los nombres de productos, platos, suplementos y descripciones DEBEN estar en español',
+      AppLanguage.german     => 'ALLE Produkt-, Gerichts-, Supplementnamen und Beschreibungen MÜSSEN auf Deutsch ausgegeben werden',
+      AppLanguage.french     => 'TOUS les noms de produits, plats, suppléments et descriptions DOIVENT être en français',
+      AppLanguage.italian    => 'TUTTI i nomi di prodotti, piatti, integratori e descrizioni DEVONO essere in italiano',
+      AppLanguage.portuguese => 'TODOS os nomes de produtos, pratos, suplementos e descrições DEVEM estar em português',
+      AppLanguage.turkish    => 'TÜM ürün, yemek, takviye adları ve açıklamalar KESİNLİKLE Türkçe olmalıdır',
+      AppLanguage.arabic     => 'جميع أسماء المنتجات والأطباق والمكملات والأوصاف يجب أن تكون باللغة العربية',
+      AppLanguage.chinese    => '所有产品、菜肴、补充剂名称和描述必须使用中文',
+      AppLanguage.japanese   => 'すべての製品、料理、サプリメント名と説明は日本語で出力すること',
+      AppLanguage.korean     => '모든 제품, 요리, 보충제 이름과 설명은 한국어로 출력해야 합니다',
+      AppLanguage.hindi      => 'सभी उत्पाद, व्यंजन, सप्लीमेंट के नाम और विवरण हिंदी में होने चाहिए',
+      AppLanguage.ukrainian  => 'ВСІ назви продуктів, страв, добавок та описи виводь СТРОГО українською мовою',
+      AppLanguage.belarusian => 'УСЕ назвы прадуктаў, страў, дабавак і апісанні выводзь СТРОГА на беларускай мове',
+    };
+  }
+
   /// Calculates BMR using Mifflin-St Jeor equation (used in activity block).
   static int calcBmr(UserProfile profile) {
     final base = (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age);
@@ -922,7 +965,7 @@ $question
         .httpsCallable('deepseekProxy');
     final result = await callable.call<Map<String, dynamic>>({
       'messages': [
-        {'role': 'system', 'content': 'Ты — профессиональный персональный тренер и диетолог. Отвечай строго на русском языке.'},
+        {'role': 'system', 'content': 'Ты — профессиональный персональный тренер и диетолог. ${_languageInstruction()}'},
         {'role': 'user', 'content': prompt},
       ],
       'maxTokens': 8192,
@@ -966,6 +1009,284 @@ $question
       throw AiException('Пустой ответ от AI. Попробуйте ещё раз.');
     }
     return content;
+  }
+
+  /// Corrects an existing workout plan based on user input.
+  /// Three modes:
+  ///   'merge'        — integrates an imported external workout into the plan.
+  ///   'preference'   — applies user-stated preferences/changes to the plan.
+  ///   'post_workout' — adjusts remaining days based on completed workout data.
+  @override
+  Future<String> correctWorkoutPlan({
+    required String currentPlanJson,
+    required String userInput,
+    String correctionType = 'merge',
+    String sourceHint = '',
+  }) async {
+    final truncatedInput = userInput.length > 6000
+        ? userInput.substring(0, 6000)
+        : userInput;
+
+    // Build a compact plan summary to avoid huge prompts
+    final planSummary = _buildPlanSummary(currentPlanJson);
+
+    final taskBlock = switch (correctionType) {
+      'post_workout' =>
+        '''Пользователь только что завершил тренировку (данные ниже). Задача:
+1. Оцени нагрузку: была ли тренировка лёгкой, нормальной или тяжёлой?
+2. При необходимости скорректируй следующие тренировочные дни (не текущий):
+   — если перегрузка → снизь интенсивность следующего дня на 10-15%
+   — если недогрузка → добавь 1-2 подхода к ключевым упражнениям
+   — если пропущены упражнения → перенеси их на следующий подходящий день
+3. НЕ меняй уже выполненные тренировки — только будущие.''',
+      'preference' =>
+        '''Пользователь хочет скорректировать план по личным предпочтениям. Задача:
+1. Учти пожелание пользователя и внеси МИНИМАЛЬНЫЕ необходимые изменения.
+2. Заменяй упражнения только на аналогичные по нагрузке и группе мышц.
+3. Сохрани общий объём тренировок (±10% подходов).
+4. Объясни каждое изменение в "changes".''',
+      _ =>
+        '''Пользователь добавил тренировку из внешнего источника. Задача:
+1. Проанализируй добавляемую тренировку и найди подходящий день в плане.
+2. Интегрируй новые упражнения: заменяй дублирующиеся, добавляй недостающие.
+3. Если добавляемая тренировка на другие мышечные группы — создай/замени подходящий день.
+4. Сохрани баланс плана (не перегружай одну группу мышц).
+5. Объясни каждое изменение в "changes".''',
+    };
+
+    final prompt = '''
+Ты — персональный AI-тренер FitnesBuster. Твоя задача — скорректировать тренировочный план пользователя.
+
+═══ ТЕКУЩИЙ ПЛАН (структура) ═══
+$planSummary
+
+═══ ЗАПРОС НА КОРРЕКЦИЮ ═══
+Тип: $correctionType
+${sourceHint.isNotEmpty ? 'Источник: $sourceHint' : ''}
+
+$truncatedInput
+
+═══ ЗАДАЧА ═══
+$taskBlock
+
+ВАЖНО:
+— Возвращай ПОЛНЫЙ обновлённый план (все 7 дней, даже если изменился только один)
+— В поле "changes" перечисли ВСЕ изменения (каждое изменение = отдельная строка)
+— В "correction_reasoning" — 1-2 предложения об общей логике коррекции
+— Сохрани формат плана точно как в текущем
+
+Ответь СТРОГО в JSON без markdown:
+{
+  "week_number": 1,
+  "phase": "...",
+  "weekly_volume_sets": 0,
+  "plan": [
+    {
+      "day": 1,
+      "name": "...",
+      "focus": "...",
+      "type": "strength",
+      "duration_minutes": 60,
+      "warmup": [],
+      "exercises": [
+        {
+          "name": "Название упражнения",
+          "muscle_primary": "группа мышц",
+          "muscle_secondary": [],
+          "sets": 3,
+          "reps": "10",
+          "weight_guideline": "",
+          "rest_seconds": 90,
+          "rpe": 7,
+          "tempo": "",
+          "technique_cue": "",
+          "progression": ""
+        }
+      ],
+      "cooldown": [],
+      "cardio_minutes": 0,
+      "estimated_calories_burned": 0,
+      "notes": ""
+    }
+  ],
+  "changes": [
+    "День X: [что изменено] — [причина]"
+  ],
+  "correction_reasoning": "Краткое объяснение логики коррекции",
+  "recommendations": [],
+  "next_week_preview": "",
+  "weekly_summary": ""
+}
+''';
+
+    final messages = <Map<String, String>>[
+      {
+        'role': 'system',
+        'content': 'Ты — персональный AI-тренер FitnesBuster. '
+            'Корректируй планы тренировок профессионально и с обоснованием. '
+            '${_languageInstruction()} Формат ответа — JSON.',
+      },
+      {'role': 'user', 'content': prompt},
+    ];
+
+    AiException? lastError;
+    for (int attempt = 1; attempt <= _maxRetries; attempt++) {
+      try {
+        final callable = FirebaseFunctions.instanceFor(region: 'europe-west1')
+            .httpsCallable('deepseekProxy');
+        final result = await callable.call<Map<String, dynamic>>({
+          'messages': messages,
+          'maxTokens': 5000,
+          'temperature': 0.4,
+        });
+        final content = result.data['content'] as String?;
+        if (content == null || content.isEmpty) {
+          throw AiException('Пустой ответ от AI. Попробуйте ещё раз.');
+        }
+        return _validateWorkoutJson(_extractJson(content));
+      } on AiException catch (e) {
+        lastError = e;
+        if (e.statusCode == 401 || e.statusCode == 429) rethrow;
+        if (attempt < _maxRetries) {
+          await Future.delayed(Duration(seconds: attempt * 2));
+        }
+      }
+    }
+    throw lastError!;
+  }
+
+  /// Builds a compact plan summary (day + focus + exercise names) to include
+  /// in the correction prompt without blowing the token budget.
+  String _buildPlanSummary(String planJson) {
+    try {
+      final data = jsonDecode(planJson) as Map<String, dynamic>;
+      final plan = data['plan'] as List? ?? [];
+      final buf = StringBuffer();
+      const dayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+      for (int i = 0; i < plan.length; i++) {
+        final day = plan[i] as Map<String, dynamic>;
+        final label = i < dayLabels.length ? dayLabels[i] : 'День ${i + 1}';
+        final focus = day['focus'] as String? ?? day['name'] as String? ?? 'Отдых';
+        final exercises = (day['exercises'] as List? ?? [])
+            .cast<Map<String, dynamic>>();
+        if (exercises.isEmpty) {
+          buf.writeln('$label: ОТДЫХ ($focus)');
+        } else {
+          final names = exercises
+              .map((e) => '${e['name']} ${e['sets']}×${e['reps']}')
+              .take(6)
+              .join(', ');
+          buf.writeln('$label — $focus: $names');
+        }
+      }
+      final phase = data['phase'] as String? ?? '';
+      final vol = data['weekly_volume_sets'] ?? 0;
+      return '${phase.isNotEmpty ? 'Фаза: $phase | ' : ''}Объём: $vol подходов\n${buf.toString().trim()}';
+    } catch (_) {
+      return planJson.length > 2000 ? planJson.substring(0, 2000) : planJson;
+    }
+  }
+
+  /// Parses any workout content (text, URL body, file text, QR payload) into
+  /// the app's standard 7-day JSON plan format using DeepSeek AI.
+  @override
+  Future<String> parseWorkoutFromContent(
+    String content, {
+    String sourceHint = 'текст',
+  }) async {
+    final truncated = content.length > 8000 ? content.substring(0, 8000) : content;
+
+    final prompt = '''
+Ты — AI-тренер FitnesBuster. Пользователь импортирует тренировочную программу.
+
+ИСТОЧНИК: $sourceHint
+
+СОДЕРЖИМОЕ:
+$truncated
+
+Задача: извлечь все тренировки и преобразовать их в JSON-формат приложения.
+
+Правила:
+1. Если найдено несколько дней — создай отдельный элемент в "plan" для каждого.
+2. Если день не указан — все упражнения объедини в 1 тренировочный день.
+3. Названия упражнений переводи на РУССКИЙ язык.
+4. Если подходы/повторения не указаны — ставь 3×10.
+5. Если тип тренировки неизвестен — ставь "strength".
+6. muscle_primary на русском: "грудь", "спина", "ноги", "плечи", "бицепс" и т.д.
+7. Если данных недостаточно — сгенерируй разумный план на основе того, что есть.
+
+Ответь СТРОГО в формате JSON без markdown и пояснений:
+{
+  "week_number": 1,
+  "phase": "Импорт",
+  "weekly_volume_sets": 0,
+  "plan": [
+    {
+      "day": 1,
+      "name": "Название тренировки",
+      "focus": "Группа мышц",
+      "type": "strength",
+      "duration_minutes": 60,
+      "warmup": [],
+      "exercises": [
+        {
+          "name": "Название упражнения",
+          "muscle_primary": "группа мышц",
+          "muscle_secondary": [],
+          "sets": 3,
+          "reps": "10",
+          "weight_guideline": "",
+          "rest_seconds": 90,
+          "rpe": 7,
+          "tempo": "",
+          "technique_cue": "",
+          "progression": ""
+        }
+      ],
+      "cooldown": [],
+      "cardio_minutes": 0,
+      "estimated_calories_burned": 0,
+      "notes": ""
+    }
+  ],
+  "recommendations": ["Импортировано из внешнего источника"],
+  "next_week_preview": "",
+  "weekly_summary": "Импортированная программа"
+}
+''';
+
+    final messages = <Map<String, String>>[
+      {
+        'role': 'system',
+        'content': 'Ты — профессиональный AI-тренер. Преобразуй любой формат описания тренировок в структурированный JSON. ${_languageInstruction()}',
+      },
+      {'role': 'user', 'content': prompt},
+    ];
+
+    AiException? lastError;
+    for (int attempt = 1; attempt <= _maxRetries; attempt++) {
+      try {
+        final callable = FirebaseFunctions.instanceFor(region: 'europe-west1')
+            .httpsCallable('deepseekProxy');
+        final result = await callable.call<Map<String, dynamic>>({
+          'messages': messages,
+          'maxTokens': 4096,
+          'temperature': 0.3,
+        });
+        final content2 = result.data['content'] as String?;
+        if (content2 == null || content2.isEmpty) {
+          throw AiException('Пустой ответ от AI. Попробуйте ещё раз.');
+        }
+        return _validateWorkoutJson(_extractJson(content2));
+      } on AiException catch (e) {
+        lastError = e;
+        if (e.statusCode == 401 || e.statusCode == 429) rethrow;
+        if (attempt < _maxRetries) {
+          await Future.delayed(Duration(seconds: attempt * 2));
+        }
+      }
+    }
+    throw lastError!;
   }
 
   @override

@@ -3,12 +3,13 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
-import 'package:fitnesbuster/core/services/nutrition_service.dart' as _i2;
-import 'package:fitnesbuster/domain/entities/entities.dart' as _i4;
+import 'package:fitnesbuster/core/services/nutrition_service.dart' as _i3;
+import 'package:fitnesbuster/domain/entities/entities.dart' as _i5;
+import 'package:fitnesbuster/domain/services/i_nutrition_service.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i5;
+import 'package:mockito/src/dummies.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -23,10 +24,20 @@ import 'package:mockito/src/dummies.dart' as _i5;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeMacros_0 extends _i1.SmartFake implements _i2.Macros {
+  _FakeMacros_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [NutritionService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockNutritionService extends _i1.Mock implements _i2.NutritionService {
+class MockNutritionService extends _i1.Mock implements _i3.NutritionService {
   MockNutritionService() {
     _i1.throwOnMissingStub(this);
   }
@@ -41,8 +52,8 @@ class MockNutritionService extends _i1.Mock implements _i2.NutritionService {
       ) as bool);
 
   @override
-  _i3.Future<String> generateMealPlan(
-    _i4.UserProfile? profile, {
+  _i4.Future<String> generateMealPlan(
+    _i5.UserProfile? profile, {
     int? stepsToday = 0,
   }) =>
       (super.noSuchMethod(
@@ -51,7 +62,7 @@ class MockNutritionService extends _i1.Mock implements _i2.NutritionService {
           [profile],
           {#stepsToday: stepsToday},
         ),
-        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+        returnValue: _i4.Future<String>.value(_i6.dummyValue<String>(
           this,
           Invocation.method(
             #generateMealPlan,
@@ -59,5 +70,20 @@ class MockNutritionService extends _i1.Mock implements _i2.NutritionService {
             {#stepsToday: stepsToday},
           ),
         )),
-      ) as _i3.Future<String>);
+      ) as _i4.Future<String>);
+
+  @override
+  _i2.Macros calculateMacros(_i5.UserProfile? profile) => (super.noSuchMethod(
+        Invocation.method(
+          #calculateMacros,
+          [profile],
+        ),
+        returnValue: _FakeMacros_0(
+          this,
+          Invocation.method(
+            #calculateMacros,
+            [profile],
+          ),
+        ),
+      ) as _i2.Macros);
 }

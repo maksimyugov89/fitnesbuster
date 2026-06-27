@@ -8,4 +8,5 @@ abstract interface class IAuthRepository {
   Future<UserEntity> signInWithGoogle();
   Future<void> resetPassword(String email);
   Future<void> logout();
+  Future<void> updateProfile({String? name, String? photoUrl});
 }

@@ -3,25 +3,28 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/domain/services/i_notification_service.dart';
 
-class NotificationService {
+class NotificationService implements INotificationService {
   final FlutterLocalNotificationsPlugin _plugin;
 
   NotificationService({FlutterLocalNotificationsPlugin? plugin})
       : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   static const _workoutChannelId = 'fitnesbuster_workout';
-  static const _workoutChannelName = 'Тренировки';
-  static const _workoutChannelDesc = 'Напоминания о тренировках';
+  static final _workoutChannelName = AppLocalizations.tl('notifWorkoutChannel');
+  static final _workoutChannelDesc = AppLocalizations.tl('notifWorkoutDesc');
 
   static const _waterChannelId = 'fitnesbuster_water';
-  static const _waterChannelName = 'Вода';
-  static const _waterChannelDesc = 'Напоминания выпить воду';
+  static final _waterChannelName = AppLocalizations.tl('notifWaterChannel');
+  static final _waterChannelDesc = AppLocalizations.tl('notifWaterDesc');
 
   static const _workoutReminderId = 1000;
   static const _waterReminderBaseId = 2000;
   static const _waterReminderHours = [9, 11, 13, 15, 17, 19];
 
+  @override
   Future<void> initialize() async {
     tz_data.initializeTimeZones();
     await _plugin.initialize(
@@ -40,14 +43,14 @@ class NotificationService {
   Future<void> _createChannels() async {
     final android = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
-    await android?.createNotificationChannel(const AndroidNotificationChannel(
+    await android?.createNotificationChannel(AndroidNotificationChannel(
       _workoutChannelId, _workoutChannelName,
       description: _workoutChannelDesc,
       importance: Importance.high,
       playSound: true,
       enableVibration: true,
     ));
-    await android?.createNotificationChannel(const AndroidNotificationChannel(
+    await android?.createNotificationChannel(AndroidNotificationChannel(
       _waterChannelId, _waterChannelName,
       description: _waterChannelDesc,
       importance: Importance.defaultImportance,
@@ -57,16 +60,17 @@ class NotificationService {
 
   // ── Workout reminder ─────────────────────────────────────────────────────────
 
+  @override
   Future<void> scheduleWorkoutReminder({
     TimeOfDay time = const TimeOfDay(hour: 8, minute: 0),
   }) async {
     await _plugin.cancel(id: _workoutReminderId);
     await _plugin.zonedSchedule(
       id: _workoutReminderId,
-      title: '💪 Время тренироваться!',
-      body: 'Не пропусти тренировку сегодня — ты уже близко к цели.',
+      title: AppLocalizations.tl('notifWorkoutTime'),
+      body: AppLocalizations.tl('notifWorkoutBody'),
       scheduledDate: _nextInstanceOf(time.hour, time.minute),
-      notificationDetails: const NotificationDetails(
+      notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           _workoutChannelId, _workoutChannelName,
           channelDescription: _workoutChannelDesc,
@@ -81,21 +85,23 @@ class NotificationService {
     );
   }
 
+  @override
   Future<void> cancelWorkoutReminder() async {
     await _plugin.cancel(id: _workoutReminderId);
   }
 
   // ── Water reminders ──────────────────────────────────────────────────────────
 
+  @override
   Future<void> scheduleWaterReminders() async {
     await cancelWaterReminders();
     for (int i = 0; i < _waterReminderHours.length; i++) {
       await _plugin.zonedSchedule(
         id: _waterReminderBaseId + i + 1,
-        title: '💧 Выпей воды!',
+        title: AppLocalizations.tl('notifWaterTitle'),
         body: _waterMessages[i % _waterMessages.length],
         scheduledDate: _nextInstanceOf(_waterReminderHours[i], 0),
-        notificationDetails: const NotificationDetails(
+        notificationDetails: NotificationDetails(
           android: AndroidNotificationDetails(
             _waterChannelId, _waterChannelName,
             channelDescription: _waterChannelDesc,
@@ -111,15 +117,16 @@ class NotificationService {
     }
   }
 
-  static const _waterMessages = [
-    'Стакан воды сейчас — и тело скажет спасибо 🌊',
-    'Пора пить воду! Держи уровень гидратации в норме.',
-    'Не забывай про воду — она нужна для восстановления мышц.',
-    'Выпей стакан воды прямо сейчас ☀️',
-    'Гидратация = энергия. Выпей воды!',
-    'Завершай день правильно — ещё один стакан воды 🌙',
+  static final _waterMessages = [
+    AppLocalizations.tl('notifWaterBody1'),
+    AppLocalizations.tl('notifWaterBody2'),
+    AppLocalizations.tl('notifWaterBody3'),
+    AppLocalizations.tl('notifWaterBody4'),
+    AppLocalizations.tl('notifWaterBody5'),
+    AppLocalizations.tl('notifWaterBody6'),
   ];
 
+  @override
   Future<void> cancelWaterReminders() async {
     for (int i = 0; i < _waterReminderHours.length; i++) {
       await _plugin.cancel(id: _waterReminderBaseId + i + 1);
@@ -128,6 +135,7 @@ class NotificationService {
 
   // ── Instant notification ─────────────────────────────────────────────────────
 
+  @override
   Future<void> showInstant({
     int id = 9999,
     required String title,
@@ -156,6 +164,7 @@ class NotificationService {
   /// Reads workout completion times from the last 21 days, computes the
   /// average, and schedules the reminder 30 min before that window.
   /// Falls back to 08:00 if fewer than 3 data points exist.
+  @override
   Future<void> scheduleSmartWorkoutReminder() async {
     final prefs = await SharedPreferences.getInstance();
     final now = DateTime.now();
@@ -186,7 +195,9 @@ class NotificationService {
     );
   }
 
+  @override
   Future<void> cancel(int id) async => _plugin.cancel(id: id);
+  @override
   Future<void> cancelAll() async => _plugin.cancelAll();
 
   tz.TZDateTime _nextInstanceOf(int hour, int minute) {

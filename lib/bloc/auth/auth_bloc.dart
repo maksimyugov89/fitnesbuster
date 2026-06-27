@@ -4,6 +4,8 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -51,9 +53,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       emit(AuthStateAuthenticated(user: user));
     } on FirebaseAuthException catch (e) {
+      appLogger.w('[AuthBloc] login error', error: e);
       emit(AuthStateError(message: _mapFirebaseError(e.code)));
-    } catch (e) {
-      emit(AuthStateError(message: 'Произошла ошибка. Попробуйте снова.'));
+    } catch (e, st) {
+      appLogger.w('[AuthBloc] login failed', error: e, stackTrace: st);
+      emit(AuthStateError(message: AppLocalizations.tl('genericError')));
     }
   }
 
@@ -67,9 +71,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       emit(AuthStateAuthenticated(user: user));
     } on FirebaseAuthException catch (e) {
+      appLogger.w('[AuthBloc] register error', error: e);
       emit(AuthStateError(message: _mapFirebaseError(e.code)));
-    } catch (e) {
-      emit(AuthStateError(message: 'Произошла ошибка. Попробуйте снова.'));
+    } catch (e, st) {
+      appLogger.w('[AuthBloc] register failed', error: e, stackTrace: st);
+      emit(AuthStateError(message: AppLocalizations.tl('genericError')));
     }
   }
 
@@ -79,19 +85,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await _authRepository.signInWithGoogle();
       emit(AuthStateAuthenticated(user: user));
     } on FirebaseAuthException catch (e) {
+      appLogger.w('[AuthBloc] googleLogin error', error: e);
       emit(AuthStateError(message: _mapFirebaseError(e.code)));
-    } catch (e) {
-      final msg = e.toString();
-      if (msg.contains('отменён')) {
+    } catch (e, st) {
+      appLogger.w('[AuthBloc] googleLogin failed', error: e, stackTrace: st);
+      // Check for cancellation via platform exception code rather than message text
+      if (e is FirebaseAuthException && e.code == 'account-exists-with-different-credential' || e.toString().contains('cancelled')) {
         emit(const AuthStateUnauthenticated());
       } else {
-        emit(AuthStateError(message: 'Ошибка входа через Google. Попробуйте снова.'));
+        emit(AuthStateError(message: AppLocalizations.tl('googleLoginError')));
       }
     }
   }
 
   Future<void> _onLogoutRequested(AuthLogoutRequested event, Emitter<AuthState> emit) async {
-    await _authRepository.logout();
+    try {
+      await _authRepository.logout();
+    } catch (e, st) {
+      appLogger.w('[AuthBloc] logout failed', error: e, stackTrace: st);
+    }
     emit(const AuthStateUnauthenticated());
   }
 
@@ -105,15 +117,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   String _mapFirebaseError(String code) {
     switch (code) {
-      case 'user-not-found': return 'Пользователь не найден';
-      case 'wrong-password': return 'Неверный пароль';
-      case 'invalid-email': return 'Неверный формат email';
-      case 'user-disabled': return 'Пользователь заблокирован';
-      case 'email-already-in-use': return 'Email уже используется';
-      case 'weak-password': return 'Слишком слабый пароль (минимум 6 символов)';
-      case 'operation-not-allowed': return 'Вход через email выключен';
-      case 'too-many-requests': return 'Слишком много попыток. Попробуйте позже.';
-      default: return 'Произошла ошибка входа. Попробуйте снова.';
+      case 'user-not-found': return AppLocalizations.tl('userNotFound');
+      case 'wrong-password': return AppLocalizations.tl('wrongPassword');
+      case 'invalid-email': return AppLocalizations.tl('invalidEmail');
+      case 'user-disabled': return AppLocalizations.tl('userDisabled');
+      case 'email-already-in-use': return AppLocalizations.tl('emailAlreadyInUse');
+      case 'weak-password': return AppLocalizations.tl('weakPassword');
+      case 'operation-not-allowed': return AppLocalizations.tl('operationNotAllowed');
+      case 'too-many-requests': return AppLocalizations.tl('tooManyRequests');
+      default: return AppLocalizations.tl('loginError');
     }
   }
 }

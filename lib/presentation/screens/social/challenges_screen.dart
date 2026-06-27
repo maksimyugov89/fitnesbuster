@@ -4,6 +4,7 @@ import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/social_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class ChallengesScreen extends StatefulWidget {
   const ChallengesScreen({super.key});
@@ -172,7 +173,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка: $e')),
+          SnackBar(content: Text(AppLocalizations.tl('genericErrorMsg').replaceAll('{error}', e.toString()))),
         );
       }
     }
@@ -340,7 +341,7 @@ class _JoinButtonState extends State<_JoinButton> {
     } catch (e) {
       if (mounted) {
         setState(() => _loading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.tl('genericErrorMsg').replaceAll('{error}', e.toString()))));
       }
     }
   }

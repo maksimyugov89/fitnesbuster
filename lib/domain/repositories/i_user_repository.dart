@@ -1,5 +1,5 @@
 import 'package:fitnesbuster/domain/entities/entities.dart';
-import 'package:fitnesbuster/data/models/body_measurement.dart';
+import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 
 abstract interface class IUserRepository {
   Future<UserEntity> getUser(String userId);

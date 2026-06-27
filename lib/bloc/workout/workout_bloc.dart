@@ -97,7 +97,9 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       _elapsedSeconds++;
-      if (!isClosed) add(const WorkoutTick());
+      if (_elapsedSeconds == 1 || _elapsedSeconds % 5 == 0) {
+        if (!isClosed) add(const WorkoutTick());
+      }
     });
   }
 }

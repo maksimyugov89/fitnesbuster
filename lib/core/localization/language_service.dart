@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Supported language with display name, native name and flag emoji.
@@ -26,34 +27,39 @@ enum AppLanguage {
 
   const AppLanguage(this.nativeName, this.englishName, this.flag, this.code);
 
-  static AppLanguage fromCode(String code) {
-    return AppLanguage.values.firstWhere(
-      (l) => l.code == code,
-      orElse: () => AppLanguage.russian,
-    );
-  }
+  Locale get locale => Locale(code);
+
+  bool get isRtl => code == 'ar';
+
+  static AppLanguage fromCode(String code) => AppLanguage.values.firstWhere(
+        (l) => l.code == code,
+        orElse: () => AppLanguage.russian,
+      );
 }
 
-/// Manages app language preference using SharedPreferences.
+/// Manages app language preference. Exposes [localeNotifier] for reactive
+/// MaterialApp.locale binding and triggers full UI rebuild on change.
 class LanguageService {
   static const String _key = 'app_language';
-  static final AppLanguage _default = AppLanguage.russian;
 
-  static AppLanguage _current = _default;
-
+  static AppLanguage _current = AppLanguage.russian;
   static AppLanguage get current => _current;
-  static bool get isInitialized => _current != _default;
+
+  /// Reactive locale — bind to MaterialApp.locale.
+  static final localeNotifier = ValueNotifier<Locale>(AppLanguage.russian.locale);
 
   /// Load saved language from SharedPreferences.
   static Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    final code = prefs.getString(_key) ?? _default.code;
+    final code = prefs.getString(_key) ?? AppLanguage.russian.code;
     _current = AppLanguage.fromCode(code);
+    localeNotifier.value = _current.locale;
   }
 
-  /// Save selected language to SharedPreferences.
+  /// Save selected language and trigger UI rebuild across the app.
   static Future<void> setLanguage(AppLanguage language) async {
     _current = language;
+    localeNotifier.value = language.locale;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, language.code);
   }

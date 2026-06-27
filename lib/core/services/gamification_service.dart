@@ -1,5 +1,6 @@
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 // ── Achievement model ──────────────────────────────────────────────────────────
 
@@ -57,52 +58,52 @@ class GamificationService implements IGamificationService {
 
   // ── Level table ─────────────────────────────────────────────────────────────
 
-  static const _levels = [
-    (xp: 0,     name: 'Новичок',    emoji: '🌱'),
-    (xp: 500,   name: 'Энтузиаст',  emoji: '💪'),
-    (xp: 1500,  name: 'Атлет',      emoji: '🔥'),
-    (xp: 3000,  name: 'Воин',       emoji: '🏋️'),
-    (xp: 5000,  name: 'Чемпион',    emoji: '⚡'),
-    (xp: 8000,  name: 'Легенда',    emoji: '🚀'),
-    (xp: 12000, name: 'Elite',      emoji: '👑'),
-    (xp: 18000, name: 'Master',     emoji: '🧬'),
-    (xp: 25000, name: 'Titan',      emoji: '🌟'),
+  static final _levels = [
+    (xp: 0,     name: AppLocalizations.tl('levelNewbie'),    emoji: '🌱'),
+    (xp: 500,   name: AppLocalizations.tl('levelEnthusiast'),  emoji: '💪'),
+    (xp: 1500,  name: AppLocalizations.tl('levelAthlete'),      emoji: '🔥'),
+    (xp: 3000,  name: AppLocalizations.tl('levelWarrior'),       emoji: '🏋️'),
+    (xp: 5000,  name: AppLocalizations.tl('levelChampion'),    emoji: '⚡'),
+    (xp: 8000,  name: AppLocalizations.tl('levelLegend'),    emoji: '🚀'),
+    (xp: 12000, name: AppLocalizations.tl('levelElite'),      emoji: '👑'),
+    (xp: 18000, name: AppLocalizations.tl('levelMaster'),     emoji: '🧬'),
+    (xp: 25000, name: AppLocalizations.tl('levelTitan'),      emoji: '🌟'),
   ];
 
   // ── Achievement catalogue (static const — pure data) ────────────────────────
 
-  static const List<Achievement> allAchievements = [
-    Achievement(id: 'first_workout', name: 'Первый шаг',    desc: 'Завершил первую тренировку',  emoji: '🎯', xpReward: 150, category: 'workout'),
-    Achievement(id: 'workout_10',    name: 'На разгоне',    desc: '10 тренировок завершено',     emoji: '🏃', xpReward: 100, category: 'workout'),
-    Achievement(id: 'workout_50',    name: 'Полста',        desc: '50 тренировок завершено',     emoji: '💪', xpReward: 250, category: 'workout'),
-    Achievement(id: 'workout_100',   name: 'Сотник',        desc: '100 тренировок завершено',    emoji: '🏆', xpReward: 500, category: 'workout'),
-    Achievement(id: 'workout_200',   name: 'Машина',        desc: '200 тренировок завершено',    emoji: '🤖', xpReward: 1000, category: 'workout'),
-    Achievement(id: 'streak_3',   name: '3 дня подряд',    desc: '3-дневная серия тренировок',  emoji: '🔥', xpReward: 50,   category: 'streak'),
-    Achievement(id: 'streak_7',   name: 'Неделя без пауз', desc: '7-дневная серия',             emoji: '🔥', xpReward: 200,  category: 'streak'),
-    Achievement(id: 'streak_14',  name: 'Две недели!',     desc: '14-дневная серия',            emoji: '🚀', xpReward: 300,  category: 'streak'),
-    Achievement(id: 'streak_30',  name: 'Железная воля',   desc: '30-дневная серия',            emoji: '⚡', xpReward: 500,  category: 'streak'),
-    Achievement(id: 'streak_100', name: 'Легенда стрика',  desc: '100-дневная серия',           emoji: '👑', xpReward: 1000, category: 'streak'),
-    Achievement(id: 'first_pr', name: 'Личный рекорд!',   desc: 'Установил первый PR',    emoji: '🏅', xpReward: 100, category: 'pr'),
-    Achievement(id: 'pr_5',     name: 'Серия рекордов',   desc: '5 PR установлено',       emoji: '🥈', xpReward: 150, category: 'pr'),
-    Achievement(id: 'pr_10',    name: 'Рекордсмен',       desc: '10 PR установлено',      emoji: '🥇', xpReward: 250, category: 'pr'),
-    Achievement(id: 'pr_25',    name: 'Машина прогресса', desc: '25 PR установлено',      emoji: '🏆', xpReward: 500, category: 'pr'),
-    Achievement(id: 'first_meal',     name: 'Первый приём',       desc: 'Отметил первый приём пищи',       emoji: '🥗', xpReward: 50,  category: 'nutrition'),
-    Achievement(id: 'full_day_meals', name: 'День без нарушений', desc: 'Все приёмы пищи выполнены',      emoji: '🍽️', xpReward: 100, category: 'nutrition'),
-    Achievement(id: 'week_nutrition', name: 'Чистая неделя',      desc: '7 дней — все приёмы выполнены', emoji: '🥦', xpReward: 300, category: 'nutrition'),
-    Achievement(id: 'water_goal',  name: 'Водный баланс',  desc: 'Достиг нормы воды за день',        emoji: '💧', xpReward: 50,  category: 'water'),
-    Achievement(id: 'water_3l',    name: 'Океан',          desc: 'Выпил 3000+ мл за день',           emoji: '🌊', xpReward: 100, category: 'water'),
-    Achievement(id: 'water_7days', name: '7 дней гидрации',desc: '7 дней подряд выполнена норма воды',emoji: '💦', xpReward: 200, category: 'water'),
-    Achievement(id: 'steps_10k',   name: '10 000 шагов', desc: 'Прошёл 10 000 шагов за день',      emoji: '👟', xpReward: 75,  category: 'health'),
-    Achievement(id: 'steps_10k_7', name: 'Марафонец',    desc: '7 дней подряд 10 000+ шагов',      emoji: '🏃', xpReward: 300, category: 'health'),
-    Achievement(id: 'profile_complete', name: 'Профиль заполнен', desc: 'Заполнил все данные профиля',       emoji: '📋', xpReward: 100, category: 'app'),
-    Achievement(id: 'test_week_done',   name: 'Тест пройден',     desc: 'Завершил тестовую неделю',          emoji: '🎓', xpReward: 200, category: 'app'),
-    Achievement(id: 'ai_plan_created',  name: 'AI-план активен',  desc: 'Получил персональный AI-план',      emoji: '🤖', xpReward: 100, category: 'app'),
-    Achievement(id: 'first_debrief',    name: 'Анализ недели',    desc: 'Получил первый еженедельный анализ',emoji: '📊', xpReward: 100, category: 'app'),
-    Achievement(id: 'level_3', name: 'Уровень Атлет',   desc: 'Достиг 3-го уровня', emoji: '🔥', xpReward: 100, category: 'level'),
-    Achievement(id: 'level_5', name: 'Уровень Чемпион', desc: 'Достиг 5-го уровня', emoji: '⚡', xpReward: 200, category: 'level'),
-    Achievement(id: 'level_7', name: 'Уровень Elite',   desc: 'Достиг 7-го уровня', emoji: '👑', xpReward: 500, category: 'level'),
-    Achievement(id: 'early_bird', name: 'Ранняя птица', desc: 'Тренировка завершена до 8 утра',  emoji: '🌅', xpReward: 100, category: 'special'),
-    Achievement(id: 'night_owl',  name: 'Ночная сова',  desc: 'Тренировка после 22:00',          emoji: '🦉', xpReward: 100, category: 'special'),
+  static final List<Achievement> allAchievements = [
+    Achievement(id: 'first_workout', name: AppLocalizations.tl('achFirstStep'),    desc: AppLocalizations.tl('achFirstStepDesc'),  emoji: '🎯', xpReward: 150, category: 'workout'),
+    Achievement(id: 'workout_10',    name: AppLocalizations.tl('achOnRise'),    desc: AppLocalizations.tl('achOnRiseDesc'),     emoji: '🏃', xpReward: 100, category: 'workout'),
+    Achievement(id: 'workout_50',    name: AppLocalizations.tl('achFifty'),        desc: AppLocalizations.tl('achFiftyDesc'),     emoji: '💪', xpReward: 250, category: 'workout'),
+    Achievement(id: 'workout_100',   name: AppLocalizations.tl('achCenturion'),        desc: AppLocalizations.tl('achCenturionDesc'),    emoji: '🏆', xpReward: 500, category: 'workout'),
+    Achievement(id: 'workout_200',   name: AppLocalizations.tl('achMachine'),        desc: AppLocalizations.tl('achMachineDesc'),    emoji: '🤖', xpReward: 1000, category: 'workout'),
+    Achievement(id: 'streak_3',   name: AppLocalizations.tl('achStreak3'),    desc: AppLocalizations.tl('achStreak3Desc'),  emoji: '🔥', xpReward: 50,   category: 'streak'),
+    Achievement(id: 'streak_7',   name: AppLocalizations.tl('achStreak7'), desc: AppLocalizations.tl('achStreak7Desc'),             emoji: '🔥', xpReward: 200,  category: 'streak'),
+    Achievement(id: 'streak_14',  name: AppLocalizations.tl('achStreak14'),     desc: AppLocalizations.tl('achStreak14Desc'),            emoji: '🚀', xpReward: 300,  category: 'streak'),
+    Achievement(id: 'streak_30',  name: AppLocalizations.tl('achStreak30'),   desc: AppLocalizations.tl('achStreak30Desc'),            emoji: '⚡', xpReward: 500,  category: 'streak'),
+    Achievement(id: 'streak_100', name: AppLocalizations.tl('achStreak100'),  desc: AppLocalizations.tl('achStreak100Desc'),           emoji: '👑', xpReward: 1000, category: 'streak'),
+    Achievement(id: 'first_pr', name: AppLocalizations.tl('achFirstPr'),   desc: AppLocalizations.tl('achFirstPrDesc'),    emoji: '🏅', xpReward: 100, category: 'pr'),
+    Achievement(id: 'pr_5',     name: AppLocalizations.tl('achPrStreak'),   desc: AppLocalizations.tl('achPrStreakDesc'),       emoji: '🥈', xpReward: 150, category: 'pr'),
+    Achievement(id: 'pr_10',    name: AppLocalizations.tl('achRecordman'),       desc: AppLocalizations.tl('achRecordmanDesc'),      emoji: '🥇', xpReward: 250, category: 'pr'),
+    Achievement(id: 'pr_25',    name: AppLocalizations.tl('achProgressMachine'), desc: AppLocalizations.tl('achProgressMachineDesc'),      emoji: '🏆', xpReward: 500, category: 'pr'),
+    Achievement(id: 'first_meal',     name: AppLocalizations.tl('achFirstMeal'),       desc: AppLocalizations.tl('achFirstMealDesc'),       emoji: '🥗', xpReward: 50,  category: 'nutrition'),
+    Achievement(id: 'full_day_meals', name: AppLocalizations.tl('achCleanDay'), desc: AppLocalizations.tl('achCleanDayDesc'),      emoji: '🍽️', xpReward: 100, category: 'nutrition'),
+    Achievement(id: 'week_nutrition', name: AppLocalizations.tl('achCleanWeek'),      desc: AppLocalizations.tl('achCleanWeekDesc'), emoji: '🥦', xpReward: 300, category: 'nutrition'),
+    Achievement(id: 'water_goal',  name: AppLocalizations.tl('achWaterBalance'),  desc: AppLocalizations.tl('achWaterBalanceDesc'),        emoji: '💧', xpReward: 50,  category: 'water'),
+    Achievement(id: 'water_3l',    name: AppLocalizations.tl('achOcean'),          desc: AppLocalizations.tl('achOceanDesc'),           emoji: '🌊', xpReward: 100, category: 'water'),
+    Achievement(id: 'water_7days', name: AppLocalizations.tl('achHydrate7'),desc: AppLocalizations.tl('achHydrate7Desc'),emoji: '💦', xpReward: 200, category: 'water'),
+    Achievement(id: 'steps_10k',   name: AppLocalizations.tl('ach10kSteps'), desc: AppLocalizations.tl('ach10kStepsDesc'),      emoji: '👟', xpReward: 75,  category: 'health'),
+    Achievement(id: 'steps_10k_7', name: AppLocalizations.tl('achMarathoner'),    desc: AppLocalizations.tl('achMarathonerDesc'),      emoji: '🏃', xpReward: 300, category: 'health'),
+    Achievement(id: 'profile_complete', name: AppLocalizations.tl('achProfileFilled'), desc: AppLocalizations.tl('achProfileFilledDesc'),       emoji: '📋', xpReward: 100, category: 'app'),
+    Achievement(id: 'test_week_done',   name: AppLocalizations.tl('achTestDone'),     desc: AppLocalizations.tl('achTestDoneDesc'),          emoji: '🎓', xpReward: 200, category: 'app'),
+    Achievement(id: 'ai_plan_created',  name: AppLocalizations.tl('achAiPlan'),  desc: AppLocalizations.tl('achAiPlanDesc'),      emoji: '🤖', xpReward: 100, category: 'app'),
+    Achievement(id: 'first_debrief',    name: AppLocalizations.tl('achWeekAnalysis'),    desc: AppLocalizations.tl('achWeekAnalysisDesc'),emoji: '📊', xpReward: 100, category: 'app'),
+    Achievement(id: 'level_3', name: AppLocalizations.tl('achLevelAthlete'),   desc: AppLocalizations.tl('achLevelAthleteDesc'), emoji: '🔥', xpReward: 100, category: 'level'),
+    Achievement(id: 'level_5', name: AppLocalizations.tl('achLevelChampion'), desc: AppLocalizations.tl('achLevelChampionDesc'), emoji: '⚡', xpReward: 200, category: 'level'),
+    Achievement(id: 'level_7', name: AppLocalizations.tl('achLevelElite'),   desc: AppLocalizations.tl('achLevelEliteDesc'), emoji: '👑', xpReward: 500, category: 'level'),
+    Achievement(id: 'early_bird', name: AppLocalizations.tl('achEarlyBird'), desc: AppLocalizations.tl('achEarlyBirdDesc'),  emoji: '🌅', xpReward: 100, category: 'special'),
+    Achievement(id: 'night_owl',  name: AppLocalizations.tl('achNightOwl'),  desc: AppLocalizations.tl('achNightOwlDesc'),          emoji: '🦉', xpReward: 100, category: 'special'),
   ];
 
   // ── XP methods ───────────────────────────────────────────────────────────────

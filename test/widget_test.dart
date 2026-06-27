@@ -8,6 +8,7 @@ import 'package:fitnesbuster/core/router/app_router.dart';
 import 'package:fitnesbuster/bloc/workout/workout_bloc.dart';
 import 'package:fitnesbuster/bloc/nutrition/nutrition_bloc.dart';
 import 'package:fitnesbuster/bloc/health/health_bloc.dart';
+import 'package:fitnesbuster/core/health/health_analytics_service.dart';
 import 'package:fitnesbuster/presentation/screens/auth/login_screen.dart';
 import 'package:fitnesbuster/presentation/screens/auth/register_screen.dart';
 import 'package:fitnesbuster/presentation/screens/dashboard/dashboard_screen.dart';
@@ -865,7 +866,7 @@ void main() {
   group('HealthBloc', () {
     blocTest<HealthBloc, HealthState>(
       'starts in initial state',
-      build: () => HealthBloc(),
+      build: () => HealthBloc(analytics: HealthAnalyticsService()),
       verify: (bloc) => expect(bloc.state, const HealthStateInitial()),
     );
   });

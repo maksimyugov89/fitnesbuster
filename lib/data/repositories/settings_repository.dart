@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 class SettingsRepository implements ISettingsRepository {
   // ── Key factories ─────────────────────────────────────────────────
@@ -32,66 +33,88 @@ class SettingsRepository implements ISettingsRepository {
 
   Future<SharedPreferences> get _p => SharedPreferences.getInstance();
 
+  // ── Safe helpers ──────────────────────────────────────────────────
+
+  Future<T> _getOr<T>(T? Function(SharedPreferences) fn, T fallback) async {
+    try { return fn(await _p) ?? fallback; }
+    catch (e, st) { appLogger.w('[SettingsRepository] read failed', error: e, stackTrace: st); return fallback; }
+  }
+
+  Future<String?> _getStr(String? Function(SharedPreferences) fn) async {
+    try { return fn(await _p); }
+    catch (e, st) { appLogger.w('[SettingsRepository] read failed', error: e, stackTrace: st); return null; }
+  }
+
+  Future<int?> _getIntOrNull(int? Function(SharedPreferences) fn) async {
+    try { return fn(await _p); }
+    catch (e, st) { appLogger.w('[SettingsRepository] read failed', error: e, stackTrace: st); return null; }
+  }
+
+  Future<void> _set(void Function(SharedPreferences) fn) async {
+    try { fn(await _p); }
+    catch (e, st) { appLogger.w('[SettingsRepository] write failed', error: e, stackTrace: st); }
+  }
+
   // ── Workout stats ─────────────────────────────────────────────────
-  @override Future<bool>    getWorkoutDone(String k)       async => (await _p).getBool(_wDone(k))   ?? false;
-  @override Future<void>    setWorkoutDone(String k, bool v)      async => (await _p).setBool(_wDone(k), v);
-  @override Future<int>     getWorkoutKcal(String k)       async => (await _p).getInt(_wKcal(k))    ?? 0;
-  @override Future<void>    setWorkoutKcal(String k, int v)       async => (await _p).setInt(_wKcal(k), v);
-  @override Future<int>     getWorkoutSets(String k)       async => (await _p).getInt(_wSets(k))    ?? 0;
-  @override Future<void>    setWorkoutSets(String k, int v)       async => (await _p).setInt(_wSets(k), v);
-  @override Future<int>     getWorkoutTime(String k)       async => (await _p).getInt(_wTime(k))    ?? 0;
-  @override Future<void>    setWorkoutTime(String k, int v)       async => (await _p).setInt(_wTime(k), v);
-  @override Future<int>     getWorkoutRating(String k)     async => (await _p).getInt(_wRating(k))  ?? 0;
-  @override Future<void>    setWorkoutRating(String k, int v)     async => (await _p).setInt(_wRating(k), v);
-  @override Future<String?> getWorkoutLogDetail(String k)  async => (await _p).getString(_wLog(k));
-  @override Future<void>    setWorkoutLogDetail(String k, String v) async => (await _p).setString(_wLog(k), v);
-  @override Future<int>     getWorkoutStreak()             async => (await _p).getInt(_streak)      ?? 0;
-  @override Future<void>    setWorkoutStreak(int v)                async => (await _p).setInt(_streak, v);
-  @override Future<String?> getLastWorkoutDate()           async => (await _p).getString(_lastDate);
-  @override Future<void>    setLastWorkoutDate(String v)           async => (await _p).setString(_lastDate, v);
+  @override Future<bool>    getWorkoutDone(String k)       async => _getOr((p) => p.getBool(_wDone(k)), false);
+  @override Future<void>    setWorkoutDone(String k, bool v)      async => _set((p) => p.setBool(_wDone(k), v));
+  @override Future<int>     getWorkoutKcal(String k)       async => _getOr((p) => p.getInt(_wKcal(k)), 0);
+  @override Future<void>    setWorkoutKcal(String k, int v)       async => _set((p) => p.setInt(_wKcal(k), v));
+  @override Future<int>     getWorkoutSets(String k)       async => _getOr((p) => p.getInt(_wSets(k)), 0);
+  @override Future<void>    setWorkoutSets(String k, int v)       async => _set((p) => p.setInt(_wSets(k), v));
+  @override Future<int>     getWorkoutTime(String k)       async => _getOr((p) => p.getInt(_wTime(k)), 0);
+  @override Future<void>    setWorkoutTime(String k, int v)       async => _set((p) => p.setInt(_wTime(k), v));
+  @override Future<int>     getWorkoutRating(String k)     async => _getOr((p) => p.getInt(_wRating(k)), 0);
+  @override Future<void>    setWorkoutRating(String k, int v)     async => _set((p) => p.setInt(_wRating(k), v));
+  @override Future<String?> getWorkoutLogDetail(String k)  async => _getStr((p) => p.getString(_wLog(k)));
+  @override Future<void>    setWorkoutLogDetail(String k, String v) async => _set((p) => p.setString(_wLog(k), v));
+  @override Future<int>     getWorkoutStreak()             async => _getOr((p) => p.getInt(_streak), 0);
+  @override Future<void>    setWorkoutStreak(int v)                async => _set((p) => p.setInt(_streak, v));
+  @override Future<String?> getLastWorkoutDate()           async => _getStr((p) => p.getString(_lastDate));
+  @override Future<void>    setLastWorkoutDate(String v)           async => _set((p) => p.setString(_lastDate, v));
 
   // ── Nutrition ─────────────────────────────────────────────────────
-  @override Future<int>          getEatenCal(String k)     async => (await _p).getInt(_eaten(k))   ?? 0;
-  @override Future<void>         setEatenCal(String k, int v)     async => (await _p).setInt(_eaten(k), v);
-  @override Future<int>          getTargetCal(String k)    async => (await _p).getInt(_target(k))  ?? 0;
-  @override Future<void>         setTargetCal(String k, int v)    async => (await _p).setInt(_target(k), v);
-  @override Future<int>          getWaterMl(String k)      async => (await _p).getInt(_water(k))   ?? 0;
-  @override Future<void>         setWaterMl(String k, int v)      async => (await _p).setInt(_water(k), v);
-  @override Future<int>          getWaterGlasses(String k) async => (await _p).getInt(_glasses(k)) ?? 0;
-  @override Future<void>         setWaterGlasses(String k, int v) async => (await _p).setInt(_glasses(k), v);
-  @override Future<List<String>> getMealsDone(String k)    async => (await _p).getStringList(_meals(k)) ?? [];
-  @override Future<void>         setMealsDone(String k, List<String> v) async => (await _p).setStringList(_meals(k), v);
-  @override Future<List<String>> getManualFoods(String k)  async => (await _p).getStringList(_foods(k)) ?? [];
-  @override Future<void>         setManualFoods(String k, List<String> v) async => (await _p).setStringList(_foods(k), v);
+  @override Future<int>          getEatenCal(String k)     async => _getOr((p) => p.getInt(_eaten(k)), 0);
+  @override Future<void>         setEatenCal(String k, int v)     async => _set((p) => p.setInt(_eaten(k), v));
+  @override Future<int>          getTargetCal(String k)    async => _getOr((p) => p.getInt(_target(k)), 0);
+  @override Future<void>         setTargetCal(String k, int v)    async => _set((p) => p.setInt(_target(k), v));
+  @override Future<int>          getWaterMl(String k)      async => _getOr((p) => p.getInt(_water(k)), 0);
+  @override Future<void>         setWaterMl(String k, int v)      async => _set((p) => p.setInt(_water(k), v));
+  @override Future<int>          getWaterGlasses(String k) async => _getOr((p) => p.getInt(_glasses(k)), 0);
+  @override Future<void>         setWaterGlasses(String k, int v) async => _set((p) => p.setInt(_glasses(k), v));
+  @override Future<List<String>> getMealsDone(String k)    async => _getOr((p) => p.getStringList(_meals(k)), <String>[]);
+  @override Future<void>         setMealsDone(String k, List<String> v) async => _set((p) => p.setStringList(_meals(k), v));
+  @override Future<List<String>> getManualFoods(String k)  async => _getOr((p) => p.getStringList(_foods(k)), <String>[]);
+  @override Future<void>         setManualFoods(String k, List<String> v) async => _set((p) => p.setStringList(_foods(k), v));
 
   // ── Health ────────────────────────────────────────────────────────
-  @override Future<int>  getManualSteps(String k)     async => (await _p).getInt(_steps(k)) ?? 0;
-  @override Future<void> setManualSteps(String k, int v)     async => (await _p).setInt(_steps(k), v);
-  @override Future<int>  getManualHeartRate(String k)  async => (await _p).getInt(_bpm(k))   ?? 0;
-  @override Future<void> setManualHeartRate(String k, int v) async => (await _p).setInt(_bpm(k), v);
+  @override Future<int>  getManualSteps(String k)     async => _getOr((p) => p.getInt(_steps(k)), 0);
+  @override Future<void> setManualSteps(String k, int v)     async => _set((p) => p.setInt(_steps(k), v));
+  @override Future<int>  getManualHeartRate(String k)  async => _getOr((p) => p.getInt(_bpm(k)), 0);
+  @override Future<void> setManualHeartRate(String k, int v) async => _set((p) => p.setInt(_bpm(k), v));
 
   // ── Avatar ────────────────────────────────────────────────────────
-  @override Future<String?> getAvatarMode()            async => (await _p).getString(_avatarMode);
-  @override Future<void>    setAvatarMode(String v)            async => (await _p).setString(_avatarMode, v);
-  @override Future<int?>    getAvatarPresetIndex()     async => (await _p).getInt(_avatarPreset);
-  @override Future<void>    setAvatarPresetIndex(int v)        async => (await _p).setInt(_avatarPreset, v);
-  @override Future<String?> getAvatarCustomPath()      async => (await _p).getString(_avatarCustom);
-  @override Future<void>    setAvatarCustomPath(String v)      async => (await _p).setString(_avatarCustom, v);
-  @override Future<void>    removeAvatarCustomPath()   async => (await _p).remove(_avatarCustom);
+  @override Future<String?> getAvatarMode()            async => _getStr((p) => p.getString(_avatarMode));
+  @override Future<void>    setAvatarMode(String v)            async => _set((p) => p.setString(_avatarMode, v));
+  @override Future<int?>    getAvatarPresetIndex()     async => _getIntOrNull((p) => p.getInt(_avatarPreset));
+  @override Future<void>    setAvatarPresetIndex(int v)        async => _set((p) => p.setInt(_avatarPreset, v));
+  @override Future<String?> getAvatarCustomPath()      async => _getStr((p) => p.getString(_avatarCustom));
+  @override Future<void>    setAvatarCustomPath(String v)      async => _set((p) => p.setString(_avatarCustom, v));
+  @override Future<void>    removeAvatarCustomPath()   async => _set((p) => p.remove(_avatarCustom));
 
   // ── Persisted lists ───────────────────────────────────────────────
-  @override Future<List<String>> getShoppingListChecked()     async => (await _p).getStringList(_shopChecked) ?? [];
-  @override Future<void>         setShoppingListChecked(List<String> v) async => (await _p).setStringList(_shopChecked, v);
-  @override Future<String?>      getCalendarOverrides()       async => (await _p).getString(_calOverrides);
-  @override Future<void>         setCalendarOverrides(String v)       async => (await _p).setString(_calOverrides, v);
+  @override Future<List<String>> getShoppingListChecked()     async => _getOr((p) => p.getStringList(_shopChecked), <String>[]);
+  @override Future<void>         setShoppingListChecked(List<String> v) async => _set((p) => p.setStringList(_shopChecked, v));
+  @override Future<String?>      getCalendarOverrides()       async => _getStr((p) => p.getString(_calOverrides));
+  @override Future<void>         setCalendarOverrides(String v)       async => _set((p) => p.setString(_calOverrides, v));
 
   // ── Gamification ─────────────────────────────────────────────────
-  @override Future<int>          getGamificationXp()          async => (await _p).getInt(_gamXp)       ?? 0;
-  @override Future<void>         setGamificationXp(int v)             async => (await _p).setInt(_gamXp, v);
-  @override Future<List<String>> getGamificationUnlocked()    async => (await _p).getStringList(_gamUnlocked) ?? [];
-  @override Future<void>         setGamificationUnlocked(List<String> v) async => (await _p).setStringList(_gamUnlocked, v);
-  @override Future<int>          getGamificationTotalWorkouts() async => (await _p).getInt(_gamWorkouts) ?? 0;
-  @override Future<void>         setGamificationTotalWorkouts(int v)   async => (await _p).setInt(_gamWorkouts, v);
-  @override Future<int>          getGamificationTotalPr()     async => (await _p).getInt(_gamPr)        ?? 0;
-  @override Future<void>         setGamificationTotalPr(int v)         async => (await _p).setInt(_gamPr, v);
+  @override Future<int>          getGamificationXp()          async => _getOr((p) => p.getInt(_gamXp), 0);
+  @override Future<void>         setGamificationXp(int v)             async => _set((p) => p.setInt(_gamXp, v));
+  @override Future<List<String>> getGamificationUnlocked()    async => _getOr((p) => p.getStringList(_gamUnlocked), <String>[]);
+  @override Future<void>         setGamificationUnlocked(List<String> v) async => _set((p) => p.setStringList(_gamUnlocked, v));
+  @override Future<int>          getGamificationTotalWorkouts() async => _getOr((p) => p.getInt(_gamWorkouts), 0);
+  @override Future<void>         setGamificationTotalWorkouts(int v)   async => _set((p) => p.setInt(_gamWorkouts, v));
+  @override Future<int>          getGamificationTotalPr()     async => _getOr((p) => p.getInt(_gamPr), 0);
+  @override Future<void>         setGamificationTotalPr(int v)         async => _set((p) => p.setInt(_gamPr, v));
 }

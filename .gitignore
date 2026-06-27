@@ -77,9 +77,11 @@ assets/animations/Z-Anatomy/
 
 # Editor-specific configs
 .kilo/
+.vscode/
 
 # Project analysis documents
 FITNESBUSTER_FULL_REPORT.md
+REFACTORING_REPORT.md
 
 # Compiled Cloud Functions output (build artifact)
 functions/lib/

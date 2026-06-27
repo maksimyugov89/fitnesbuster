@@ -6,6 +6,7 @@ import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class IntensitySelectionScreen extends StatefulWidget {
   const IntensitySelectionScreen({super.key});
@@ -18,33 +19,33 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
   IntensityLevel? _selected;
   late AnimationController _ctrl;
 
-  final List<_IntOption> _options = const [
+  final List<_IntOption> _options = [
     _IntOption(
       level: IntensityLevel.hardcore,
-      label: 'ХАРДКОР',
+      label: AppLocalizations.tl('intensityHardcore'),
       weeks: '8-12 недель',
       daysPerWeek: '6 дн/нед',
-      description: 'Максимальная интенсивность. Только для преданных делу.',
+      description: AppLocalizations.tl('intensityHardcoreDesc'),
       emoji: '💀',
       colorVariant: 0,
-      tags: ['Тяжёлые веса', 'Фулбади', 'HIIT'],
+      tags: [AppLocalizations.tl('intensityTagHeavy'), AppLocalizations.tl('intensityTagFullbody'), AppLocalizations.tl('intensityTagHIIT')],
     ),
     _IntOption(
       level: IntensityLevel.intensive,
-      label: 'ИНТЕНСИВ',
+      label: AppLocalizations.tl('intensityIntense'),
       weeks: '12-16 недель',
       daysPerWeek: '5 дн/нед',
-      description: 'Серьёзный режим с прогрессивной нагрузкой.',
+      description: AppLocalizations.tl('intensityIntenseDesc'),
       emoji: '🚀',
       colorVariant: 1,
-      tags: ['Тяжёлые веса', 'Круговая', 'Умеренное кардио'],
+      tags: [AppLocalizations.tl('intensityTagHeavy'), 'Круговая', 'Умеренное кардио'],
     ),
     _IntOption(
       level: IntensityLevel.balanced,
-      label: 'СБАЛАНС',
+      label: AppLocalizations.tl('intensityBalanced'),
       weeks: '16-20 недель',
       daysPerWeek: '4 дн/нед',
-      description: 'Оптимальный баланс весов и кардио.',
+      description: AppLocalizations.tl('intensityBalancedDesc'),
       emoji: '⚖️',
       colorVariant: 2,
       tags: ['Гибкость', 'Сплит', 'Постоянство'],
@@ -52,20 +53,20 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
     ),
     _IntOption(
       level: IntensityLevel.gradual,
-      label: 'ПЛАВНЫЙ',
+      label: AppLocalizations.tl('intensityGradual'),
       weeks: '20-26 недель',
       daysPerWeek: '3 дн/нед',
-      description: 'Плавный старт без лишней нагрузки.',
+      description: AppLocalizations.tl('intensityGradualDesc'),
       emoji: '🌱',
       colorVariant: 3,
       tags: ['Для новичков', 'Без перетрена', 'Стабильно'],
     ),
     _IntOption(
       level: IntensityLevel.relaxed,
-      label: 'ЛЁГКИЙ',
+      label: AppLocalizations.tl('intensityLight'),
       weeks: '26-52 недель',
       daysPerWeek: '2-3 дн/нед',
-      description: 'Лёгкий режим. Тренировка как бонус.',
+      description: AppLocalizations.tl('intensityLightDesc'),
       emoji: '🧘',
       colorVariant: 4,
       tags: ['По выходным', 'Легко', 'Чилл'],

@@ -259,6 +259,60 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
       ) as _i3.Future<String>);
 
   @override
+  _i3.Future<String> parseWorkoutFromContent(
+    String? content, {
+    String? sourceHint,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #parseWorkoutFromContent,
+          [content],
+          {#sourceHint: sourceHint},
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #parseWorkoutFromContent,
+            [content],
+            {#sourceHint: sourceHint},
+          ),
+        )),
+      ) as _i3.Future<String>);
+
+  @override
+  _i3.Future<String> correctWorkoutPlan({
+    required String? currentPlanJson,
+    required String? userInput,
+    String? correctionType,
+    String? sourceHint,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #correctWorkoutPlan,
+          [],
+          {
+            #currentPlanJson: currentPlanJson,
+            #userInput: userInput,
+            #correctionType: correctionType,
+            #sourceHint: sourceHint,
+          },
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #correctWorkoutPlan,
+            [],
+            {
+              #currentPlanJson: currentPlanJson,
+              #userInput: userInput,
+              #correctionType: correctionType,
+              #sourceHint: sourceHint,
+            },
+          ),
+        )),
+      ) as _i3.Future<String>);
+
+  @override
   void dispose() => super.noSuchMethod(
         Invocation.method(
           #dispose,

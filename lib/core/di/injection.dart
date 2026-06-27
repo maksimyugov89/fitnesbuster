@@ -17,15 +17,24 @@ import 'package:fitnesbuster/data/repositories/user_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/notifications/notification_service.dart';
+import 'package:fitnesbuster/domain/services/i_notification_service.dart';
 import 'package:fitnesbuster/core/ai/deepseek_service.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/core/analytics/analytics_service.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 import 'package:fitnesbuster/core/training/adaptive_training_service.dart';
+import 'package:fitnesbuster/domain/services/i_adaptive_training_service.dart';
 import 'package:fitnesbuster/core/health/health_connect_service.dart';
+import 'package:fitnesbuster/core/health/health_analytics_service.dart';
+import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
+import 'package:fitnesbuster/domain/services/i_health_analytics_service.dart';
 import 'package:fitnesbuster/core/services/social_service.dart';
 import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/nutrition_service.dart';
+import 'package:fitnesbuster/domain/services/i_nutrition_service.dart';
 import 'package:fitnesbuster/core/services/fcm_service.dart';
+import 'package:fitnesbuster/core/services/workout_session.dart';
+import 'package:fitnesbuster/domain/services/i_fcm_service.dart';
 import 'package:fitnesbuster/data/repositories/pr_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_pr_repository.dart';
 import 'package:fitnesbuster/data/repositories/settings_repository.dart';
@@ -33,6 +42,7 @@ import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/core/services/exercise_gif_service.dart';
+import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 
 final sl = GetIt.instance;
 StreamSubscription<fb.User?>? _authFcmSub;
@@ -42,83 +52,107 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => fb.FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseFirestore.instanceFor(app: Firebase.app(), databaseId: 'fitnesbuster'));
 
-  // Services
+  // Notifications
   final notificationService = NotificationService();
   await notificationService.initialize();
-  // Water reminders at fixed hours; workout reminder auto-adjusts to usage pattern
   await notificationService.scheduleWaterReminders();
   await notificationService.scheduleSmartWorkoutReminder();
-  sl.registerLazySingleton(() => notificationService);
+  sl.registerLazySingleton<INotificationService>(() => notificationService);
+  sl.registerLazySingleton<NotificationService>(() => notificationService);
 
-  // AI — same instance under both the interface and concrete type.
-  // Blocs/services depend on IDeepSeekService; screens use sl<DeepSeekService>().
+  // AI
   final deepSeek = DeepSeekService();
   sl.registerLazySingleton<IDeepSeekService>(() => deepSeek);
   sl.registerLazySingleton<DeepSeekService>(() => deepSeek);
 
   // Analytics
-  sl.registerLazySingleton<AnalyticsService>(() => AnalyticsService());
+  final analytics = AnalyticsService();
+  sl.registerLazySingleton<IAnalyticsService>(() => analytics);
+  sl.registerLazySingleton<AnalyticsService>(() => analytics);
 
   // Training
-  sl.registerLazySingleton<AdaptiveTrainingService>(
-    () => AdaptiveTrainingService(ai: sl()),
-  );
+  final adaptiveTraining = AdaptiveTrainingService(ai: sl());
+  sl.registerLazySingleton<IAdaptiveTrainingService>(() => adaptiveTraining);
+  sl.registerLazySingleton<AdaptiveTrainingService>(() => adaptiveTraining);
 
   // Health Connect
-  sl.registerLazySingleton<HealthConnectService>(() => HealthConnectService());
+  final healthConnect = HealthConnectService();
+  sl.registerLazySingleton<IHealthConnectService>(() => healthConnect);
+  sl.registerLazySingleton<HealthConnectService>(() => healthConnect);
+
+  // Health data analytics — aggregation helpers
+  final healthAnalytics = HealthAnalyticsService();
+  sl.registerLazySingleton<IHealthAnalyticsService>(() => healthAnalytics);
+  sl.registerLazySingleton<HealthAnalyticsService>(() => healthAnalytics);
 
   // Social — same instance under both types (screens use concrete, tests use interface)
   final socialService = SocialService();
   sl.registerLazySingleton<ISocialService>(() => socialService);
   sl.registerLazySingleton<SocialService>(() => socialService);
 
-  // FCM token init on sign-in; subscription stored for clean disposal
+  // FCM token init on sign-in — cancelled and recreated on each call to stay idempotent
+  _authFcmSub?.cancel();
   _authFcmSub = fb.FirebaseAuth.instance.authStateChanges().listen((user) {
     if (user != null) sl<SocialService>().initFcm();
   });
 
   // FCM deeplink routing
-  sl.registerLazySingleton<FcmService>(() => FcmService());
-  await sl<FcmService>().init();
+  final fcmService = FcmService();
+  sl.registerLazySingleton<IFcmService>(() => fcmService);
+  sl.registerLazySingleton<FcmService>(() => fcmService);
+  await sl<IFcmService>().init();
 
-  // Nutrition — encapsulates DeepSeekService + regeneration policy
-  sl.registerLazySingleton<NutritionService>(
-    () => NutritionService(ai: sl()),
-  );
+  // Nutrition
+  final nutritionService = NutritionService(ai: sl());
+  sl.registerLazySingleton<INutritionService>(() => nutritionService);
+  sl.registerLazySingleton<NutritionService>(() => nutritionService);
 
   // Repositories — registered against interfaces for testability.
-  // Concrete types are also registered for call sites that resolve the
-  // implementation directly (e.g. AuthRepository.updateProfile).
+  // Concrete types also registered for call sites that resolve the implementation directly.
   final authRepo = AuthRepository(auth: sl(), firestore: sl());
   sl.registerLazySingleton<IAuthRepository>(() => authRepo);
   sl.registerLazySingleton<AuthRepository>(() => authRepo);
+
   final userRepo = UserRepository(auth: sl(), firestore: sl());
   sl.registerLazySingleton<IUserRepository>(() => userRepo);
   sl.registerLazySingleton<UserRepository>(() => userRepo);
+
   final prRepo = PrRepository();
   sl.registerLazySingleton<IPrRepository>(() => prRepo);
   sl.registerLazySingleton<PrRepository>(() => prRepo);
+
   final settingsRepo = SettingsRepository();
   sl.registerLazySingleton<ISettingsRepository>(() => settingsRepo);
   sl.registerLazySingleton<SettingsRepository>(() => settingsRepo);
+
   final gamification = GamificationService(settings: settingsRepo);
   sl.registerLazySingleton<IGamificationService>(() => gamification);
   sl.registerLazySingleton<GamificationService>(() => gamification);
-  sl.registerLazySingleton<ExerciseGifService>(() => ExerciseGifService());
+
+  sl.registerLazySingleton<WorkoutSession>(() => WorkoutSession.instance);
+
+  final exerciseService = ExerciseGifService();
+  sl.registerLazySingleton<IExerciseService>(() => exerciseService);
+  sl.registerLazySingleton<ExerciseGifService>(() => exerciseService);
 
   // Blocs
   sl.registerFactory(() => AuthBloc(authRepository: sl<IAuthRepository>()));
   sl.registerFactory(() => UserBloc(userRepository: sl<IUserRepository>()));
   sl.registerFactory(() => WorkoutBloc());
   sl.registerFactory(() => NutritionBloc(nutritionService: sl()));
-  sl.registerFactory(() => HealthBloc());
+  sl.registerFactory(() => HealthBloc(analytics: sl<IHealthAnalyticsService>()));
   sl.registerFactory(() => HealthSyncBloc(hcService: sl()));
   sl.registerFactory(() => AiBloc(aiService: sl()));
-  sl.registerFactory(() => OnboardingBloc(userRepo: sl(), aiService: sl()));
+  sl.registerFactory(() => OnboardingBloc(
+    userRepo: sl(),
+    aiService: sl(),
+    authRepo: sl<IAuthRepository>(),
+  ));
   sl.registerFactory(() => TestWeekBloc(
     trainingService: sl(),
     aiService: sl(),
     userRepo: sl(),
+    authRepo: sl<IAuthRepository>(),
   ));
 }
 

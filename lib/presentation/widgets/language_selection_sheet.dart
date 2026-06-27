@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/language_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 /// Bottom sheet for selecting app language from 15 popular languages.
 class LanguageSelectionSheet extends StatefulWidget {
@@ -44,9 +45,9 @@ class _LanguageSelectionSheetState extends State<LanguageSelectionSheet> {
             ),
           ),
           const SizedBox(height: 20),
-          const Text('Выбери язык', style: AppTextStyles.titleL),
+          Text(context.l10n.selectLanguageTitle, style: AppTextStyles.titleL),
           const SizedBox(height: 4),
-          Text('15 ??? ???????? ??? ???',
+          Text(context.l10n.selectLanguageSubtitle,
             style: TextStyle(fontSize: 13, color: colors.textMuted),
           ),
           const SizedBox(height: 20),
@@ -66,7 +67,7 @@ class _LanguageSelectionSheetState extends State<LanguageSelectionSheet> {
                       await LanguageService.setLanguage(lang);
                       if (context.mounted) {
                         Navigator.of(context).pop();
-                        _showSnack(context, 'Язык изменён на ${lang.nativeName}');
+                        _showSnack(context, context.l10n.languageChanged(lang.nativeName));
                       }
                     },
                     child: AnimatedContainer(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
@@ -13,13 +14,13 @@ import 'package:fitnesbuster/core/utils/app_logger.dart';
 // ── Category helpers ──────────────────────────────────────────────────────────
 
 const _categoryOrder = [
-  'Белки',
-  'Молочные',
-  'Крупы и злаки',
-  'Овощи',
-  'Фрукты',
-  'Жиры и орехи',
-  'Прочее',
+  'proteins',
+  'dairy',
+  'grains',
+  'vegetables',
+  'fruits',
+  'fats',
+  'other',
 ];
 
 String _categorize(String ingredient) {
@@ -38,24 +39,37 @@ String _categorize(String ingredient) {
   const fats = ['масло', 'авокадо', 'орех', 'семена', 'миндаль', 'кешью', 'арахис',
     'грецк', 'фундук', 'оливк', 'льняно'];
 
-  for (final kw in proteins) { if (lc.contains(kw)) return 'Белки'; }
-  for (final kw in dairy)    { if (lc.contains(kw)) return 'Молочные'; }
-  for (final kw in grains)   { if (lc.contains(kw)) return 'Крупы и злаки'; }
-  for (final kw in vegetables) { if (lc.contains(kw)) return 'Овощи'; }
-  for (final kw in fruits)   { if (lc.contains(kw)) return 'Фрукты'; }
-  for (final kw in fats)     { if (lc.contains(kw)) return 'Жиры и орехи'; }
-  return 'Прочее';
+  for (final kw in proteins)   { if (lc.contains(kw)) return 'proteins'; }
+  for (final kw in dairy)      { if (lc.contains(kw)) return 'dairy'; }
+  for (final kw in grains)     { if (lc.contains(kw)) return 'grains'; }
+  for (final kw in vegetables) { if (lc.contains(kw)) return 'vegetables'; }
+  for (final kw in fruits)     { if (lc.contains(kw)) return 'fruits'; }
+  for (final kw in fats)       { if (lc.contains(kw)) return 'fats'; }
+  return 'other';
 }
 
 const _categoryEmoji = {
-  'Белки':        '🥩',
-  'Молочные':     '🥛',
-  'Крупы и злаки': '🌾',
-  'Овощи':        '🥦',
-  'Фрукты':       '🍎',
-  'Жиры и орехи': '🥑',
-  'Прочее':       '🧂',
+  'proteins':   '🥩',
+  'dairy':      '🥛',
+  'grains':     '🌾',
+  'vegetables': '🥦',
+  'fruits':     '🍎',
+  'fats':       '🥑',
+  'other':      '🧂',
 };
+
+String _categoryLabel(BuildContext context, String key) {
+  final l = context.l10n;
+  return switch (key) {
+    'proteins'   => l.catProteins,
+    'dairy'      => l.catDairy,
+    'grains'     => l.catGrains,
+    'vegetables' => l.catVegetables,
+    'fruits'     => l.catFruits,
+    'fats'       => l.catFatsNuts,
+    _            => l.catOther,
+  };
+}
 
 // ── Purchase group ─────────────────────────────────────────────────────────────
 
@@ -254,7 +268,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     for (final cat in _categoryOrder) {
       final groups = _grouped[cat];
       if (groups == null || groups.isEmpty) continue;
-      lines.add('${_categoryEmoji[cat] ?? ''} $cat:');
+      lines.add('${_categoryEmoji[cat] ?? ''} ${_categoryLabel(context, cat)}:');
       for (final group in groups) {
         final bought = _isGroupBought(group);
         lines.add('  ${bought ? '✓' : '○'} ${group.mainItem}');
@@ -291,7 +305,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           ),
         ),
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Список покупок', style: AppTextStyles.titleL),
+          Text(context.l10n.shoppingListTitle, style: AppTextStyles.titleL),
           if (!_loading && _totalItems > 0)
             Text('$_checkedCount / $_totalItems куплено', style: TextStyle(fontSize: 11, color: colors.textMuted)),
         ]),
@@ -353,16 +367,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(
-              'Примерная стоимость корзины',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: colors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              'от $_costMin ₽ до $_costMax ₽ / неделю',
+              context.l10n.costEstimateLabel(_costMin!, _costMax!),
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -432,7 +437,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         for (final cat in orderedCats) ...[
           _CategoryHeader(
             emoji: _categoryEmoji[cat] ?? '🍽️',
-            label: cat,
+            label: _categoryLabel(context, cat),
             count: _grouped[cat]!.length,
             checkedCount: _grouped[cat]!.where(_isGroupBought).length,
             colors: colors,
@@ -756,7 +761,7 @@ class _SubstitutionSheetState extends State<_SubstitutionSheet> {
       );
       if (mounted) setState(() { _loading = false; _result = answer.trim(); });
     } catch (e) {
-      if (mounted) setState(() { _loading = false; _error = 'Ошибка AI: $e'; });
+      if (mounted) setState(() { _loading = false; _error = AppLocalizations.tl('aiErrorMsg').replaceAll('{error}', e.toString()); });
     }
   }
 

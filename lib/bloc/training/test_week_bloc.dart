@@ -1,12 +1,13 @@
-import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
-import 'package:fitnesbuster/core/training/adaptive_training_service.dart';
+import 'package:fitnesbuster/domain/services/i_adaptive_training_service.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/data/test_week_exercises.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 part 'test_week_event.dart';
 part 'test_week_state.dart';
@@ -17,20 +18,20 @@ part 'test_week_state.dart';
 /// 3. After completion, calculates adjustment and checks feasibility
 /// 4. If unrealistic, offers alternatives
 class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
-  final AdaptiveTrainingService _trainingService;
+  final IAdaptiveTrainingService _trainingService;
   final IDeepSeekService _aiService;
   final IUserRepository _userRepo;
-  final fb.FirebaseAuth _auth;
+  final IAuthRepository _authRepo;
 
   TestWeekBloc({
-    required AdaptiveTrainingService trainingService,
+    required IAdaptiveTrainingService trainingService,
     required IDeepSeekService aiService,
     required IUserRepository userRepo,
-    fb.FirebaseAuth? auth,
+    required IAuthRepository authRepo,
   })  : _trainingService = trainingService,
         _aiService = aiService,
         _userRepo = userRepo,
-        _auth = auth ?? fb.FirebaseAuth.instance,
+        _authRepo = authRepo,
         super(const TestWeekStateInitial()) {
     on<TestWeekStartDay>(_onStartDay);
     on<TestWeekRecordExercise>(_onRecordExercise);
@@ -111,12 +112,7 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
     );
 
     // Calculate adjustment
-    final effectiveProfile = profile ?? UserProfile(
-      weight: 80, height: 175, age: 30,
-      gender: Gender.male, goal: FitnessGoal.loseWeight,
-      intensity: IntensityLevel.balanced,
-      activityLevel: ActivityLevel.moderatelyActive,
-    );
+    final effectiveProfile = profile ?? const UserProfile.defaults();
 
     final adjustment = _trainingService.calculateAdjustment(
       testResult: testResult,
@@ -131,10 +127,10 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
         adjustment: adjustment,
       );
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[TestWeekBloc] feasibility check failed: $e\n$st');
+      appLogger.w('[TestWeekBloc] feasibility check failed', error: e, stackTrace: st);
       feasibility = FeasibilityResult(
         isFeasible: true,
-        reason: 'План готов. ✅',
+        reason: AppLocalizations.tl('testWeekPlanReady'),
         suggestedActions: [],
       );
     }
@@ -165,14 +161,14 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
     emit(const TestWeekStateCalculating());
 
     try {
-      final uid = _auth.currentUser?.uid;
+      final uid = _authRepo.currentUser?.id;
       if (uid != null) {
         UserProfile? profile;
         try {
           final user = await _userRepo.getUser(uid);
           profile = user.profile;
         } catch (e, st) {
-          if (kDebugMode) debugPrint('[TestWeekBloc] getUser failed: $e\n$st');
+          appLogger.w('[TestWeekBloc] getUser failed', error: e, stackTrace: st);
         }
 
         if (testResult != null && profile != null) {
@@ -180,18 +176,18 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
             final refined = await _aiService.refineWorkoutPlan(profile, testResult.exercises);
             await _userRepo.updateWorkoutPlan(userId: uid, workoutPlanJson: refined);
           } catch (e, st) {
-            if (kDebugMode) debugPrint('[TestWeekBloc] AI refinement failed: $e\n$st');
+            appLogger.w('[TestWeekBloc] AI refinement failed', error: e, stackTrace: st);
           }
         }
 
         try {
           await _userRepo.saveTestWeekCompleted(userId: uid);
         } catch (e, st) {
-          if (kDebugMode) debugPrint('[TestWeekBloc] saveTestWeekCompleted failed: $e\n$st');
+          appLogger.w('[TestWeekBloc] saveTestWeekCompleted failed', error: e, stackTrace: st);
         }
       }
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[TestWeekBloc] _onAcceptPlan failed: $e\n$st');
+      appLogger.w('[TestWeekBloc] _onAcceptPlan failed', error: e, stackTrace: st);
     }
 
     emit(const TestWeekStatePlanAccepted());

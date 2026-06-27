@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/bloc/training/test_week_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
-import 'package:fitnesbuster/core/training/adaptive_training_service.dart';
+import 'package:fitnesbuster/domain/services/i_adaptive_training_service.dart';
 
 /// Full screen flow for the test week.
 /// Shows day by day exercise recording, then plan + feasibility.

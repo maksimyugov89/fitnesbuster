@@ -5,6 +5,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class WorkoutLogScreen extends StatefulWidget {
   final String logId; // date key "YYYY_M_D" or workout id
@@ -133,11 +134,15 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
         int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
     final now   = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    if (d == today) return 'Сегодня';
-    if (d == today.subtract(const Duration(days: 1))) return 'Вчера';
-    const months = [
-      '', 'янв', 'фев', 'мар', 'апр', 'май', 'июн',
-      'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'
+    if (d == today) return AppLocalizations.tl('today');
+    if (d == today.subtract(const Duration(days: 1))) return AppLocalizations.tl('yesterday');
+    final months = [
+      '', AppLocalizations.tl('janShort'), AppLocalizations.tl('febShort'),
+      AppLocalizations.tl('marShort'), AppLocalizations.tl('aprShort'),
+      AppLocalizations.tl('mayShort'), AppLocalizations.tl('junShort'),
+      AppLocalizations.tl('julShort'), AppLocalizations.tl('augShort'),
+      AppLocalizations.tl('sepShort'), AppLocalizations.tl('octShort'),
+      AppLocalizations.tl('novShort'), AppLocalizations.tl('decShort'),
     ];
     return '${d.day} ${months[d.month]}';
   }
@@ -155,7 +160,7 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Журнал тренировки', style: AppTextStyles.titleL),
+        title: Text(context.l10n.workoutLogTitle, style: AppTextStyles.titleL),
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
@@ -196,7 +201,7 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(
-              _workoutDone ? 'Тренировка завершена!' : 'Тренировка не выполнена',
+              _workoutDone ? context.l10n.workoutDoneStatus3 : context.l10n.workoutNotDoneStatus,
               style: TextStyle(
                   fontFamily: 'Syne',
                   fontSize: 18,
@@ -211,24 +216,24 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
             const SizedBox(height: 16),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               _HeroStat(
-                  label: 'Ккал',
+                  label: context.l10n.kcalShort,
                   value: _kcal > 0 ? '$_kcal' : '—',
                   onPrimary: _workoutDone,
                   colors: colors),
               _HeroStat(
-                  label: 'Подходов',
+                  label: context.l10n.setsLabel,
                   value: _totalSets > 0 ? '$_totalSets' : '—',
                   onPrimary: _workoutDone,
                   colors: colors),
               _HeroStat(
-                  label: 'Упражнений',
+                  label: context.l10n.exercisesLabel,
                   value: _exerciseLogs.isNotEmpty
                       ? '${_exerciseLogs.length}'
                       : '—',
                   onPrimary: _workoutDone,
                   colors: colors),
               _HeroStat(
-                  label: 'Статус',
+                  label: context.l10n.setsCompletedLabel,
                   value: _workoutDone ? '✓' : '✗',
                   onPrimary: _workoutDone,
                   colors: colors),
@@ -239,7 +244,7 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
         // ── Rating ────────────────────────────────────────────────────────────
         if (_workoutDone) ...[
           const SizedBox(height: 20),
-          Text('Оценить тренировку', style: AppTextStyles.titleM),
+          Text(context.l10n.rateWorkoutTitle, style: AppTextStyles.titleM),
           const SizedBox(height: 10),
           Row(
             children: List.generate(5, (i) {
@@ -279,7 +284,7 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
         if (_exerciseLogs.isNotEmpty) ...[
           const SizedBox(height: 24),
           Row(children: [
-            Text('Упражнения', style: AppTextStyles.titleM),
+            Text(context.l10n.exercisesLabel, style: AppTextStyles.titleM),
             const Spacer(),
             GestureDetector(
               onTap: () => setState(() {
@@ -291,8 +296,8 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
               }),
               child: Text(
                 _expanded.length == _exerciseLogs.length
-                    ? 'Свернуть все'
-                    : 'Развернуть все',
+                    ? context.l10n.collapseAll
+                    : context.l10n.expandAll,
                 style: TextStyle(
                     fontSize: 12,
                     color: colors.primary,
@@ -329,8 +334,7 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Детальный журнал доступен для тренировок, '
-                  'начатых после обновления приложения.',
+                  context.l10n.detailLogNote,
                   style:
                       TextStyle(fontSize: 12, color: colors.textSecondary),
                 ),
@@ -350,27 +354,26 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
                 color: colors.textPrimary.withValues(alpha: 0.06)),
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('За последние 7 дней', style: AppTextStyles.titleM),
+            Text(context.l10n.last7DaysTitle, style: AppTextStyles.titleM),
             const SizedBox(height: 14),
             Row(children: [
               Expanded(
                   child: _WeekStat(
                       icon: '💪',
-                      label: 'Тренировок',
+                      label: context.l10n.taskWorkout,
                       value: '$_weekDone / 7',
                       colors: colors)),
               Expanded(
                   child: _WeekStat(
                       icon: '🔥',
-                      label: 'Ккал',
+                      label: context.l10n.kcalShort,
                       value: '$_weekKcal',
                       colors: colors)),
               Expanded(
                   child: _WeekStat(
                       icon: '📊',
-                      label: 'Выполнено',
-                      value:
-                          '${(_weekDone / 7 * 100).round()}%',
+                      label: context.l10n.setsCompletedLabel,
+                      value: '${(_weekDone / 7 * 100).round()}%',
                       colors: colors)),
             ]),
           ]),
@@ -392,8 +395,8 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
             Expanded(
               child: Text(
                 _workoutDone
-                    ? 'Отлично! Постоянство — ключ к результату. Не забудьте выпить воду.'
-                    : 'Ничего страшного! Завтра — новый шанс. Даже короткая прогулка полезна.',
+                    ? context.l10n.greatJobMsg
+                    : context.l10n.noWorryMsg,
                 style: TextStyle(
                     fontSize: 12,
                     color: colors.textSecondary,
@@ -465,7 +468,7 @@ class _ExerciseLogCard extends StatelessWidget {
                               color: colors.textPrimary),
                         ),
                         Text(
-                          '${log.sets.length} подх.',
+                          '${log.sets.length} ${context.l10n.setsLabel}',
                           style: TextStyle(
                               fontSize: 11, color: colors.textMuted),
                         ),
@@ -473,7 +476,7 @@ class _ExerciseLogCard extends StatelessWidget {
                     ),
                   ),
                   // Summary: max weight or reps
-                  _buildSummaryBadge(),
+                  _buildSummaryBadge(context),
                   const SizedBox(width: 8),
                   Icon(
                     isExpanded
@@ -498,11 +501,11 @@ class _ExerciseLogCard extends StatelessWidget {
                     // Table header
                     Row(
                       children: [
-                        _TableCell('Подход', colors.textMuted,
+                        _TableCell(context.l10n.setHeader, colors.textMuted,
                             flex: 1, bold: true),
-                        _TableCell('Повт.', colors.textMuted,
+                        _TableCell(context.l10n.repsHeader, colors.textMuted,
                             flex: 2, bold: true),
-                        _TableCell('Вес (кг)', colors.textMuted,
+                        _TableCell(context.l10n.weightKgHeader, colors.textMuted,
                             flex: 2, bold: true, align: TextAlign.right),
                       ],
                     ),
@@ -553,7 +556,7 @@ class _ExerciseLogCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryBadge() {
+  Widget _buildSummaryBadge(BuildContext context) {
     final hasWeight = log.sets.any((s) => s.weight != null);
     if (!hasWeight) {
       return Container(
@@ -579,7 +582,7 @@ class _ExerciseLogCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        'макс ${maxWeight.toStringAsFixed(maxWeight % 1 == 0 ? 0 : 1)} кг',
+        context.l10n.maxWeightLabel(maxWeight.toStringAsFixed(maxWeight % 1 == 0 ? 0 : 1)),
         style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w700,

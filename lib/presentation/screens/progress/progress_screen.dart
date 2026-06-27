@@ -9,7 +9,7 @@ import 'package:fitnesbuster/core/health/health_connect_service.dart';
 import 'package:fitnesbuster/core/ai/deepseek_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/repositories/user_repository.dart';
-import 'package:fitnesbuster/data/models/body_measurement.dart';
+import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 import 'package:fitnesbuster/bloc/user/user_bloc.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart' hide WorkoutDay;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,17 +18,20 @@ import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 // Ракурсы для фото прогресса
 enum _PhotoAngle {
-  front('Спереди', 'Встаньте прямо лицом к камере, ноги на ширине плеч, руки вдоль тела', Icons.person_rounded),
-  side('Сбоку', 'Встаньте боком, руки опущены. Снимайте правый профиль', Icons.person_outline_rounded),
-  back('Сзади', 'Встаньте спиной к камере, ноги на ширине плеч, руки вдоль тела', Icons.accessibility_new_rounded);
+  front('photoFront', 'photoFrontInstr', Icons.person_rounded),
+  side('photoSide', 'photoSideInstr', Icons.person_outline_rounded),
+  back('photoBack', 'photoBackInstr', Icons.accessibility_new_rounded);
 
-  final String label;
-  final String instruction;
+  final String labelKey;
+  final String instrKey;
   final IconData icon;
-  const _PhotoAngle(this.label, this.instruction, this.icon);
+  const _PhotoAngle(this.labelKey, this.instrKey, this.icon);
+  String label(AppLocalizations l10n) => AppLocalizations.tl(labelKey);
+  String instruction(AppLocalizations l10n) => AppLocalizations.tl(instrKey);
 }
 
 enum _StatPeriod { today, week, month, year }
@@ -202,10 +205,10 @@ class _ProgressScreenState extends State<ProgressScreen>
     switch (_selectedPeriod) {
       case _StatPeriod.today:
         final s = _yearlyStats[0];
-        return [(label: 'Сег', done: s.workoutDone ? 1 : 0, total: 1, kcal: s.workoutKcal.toDouble())];
+        return [(label: context.l10n.todayShort, done: s.workoutDone ? 1 : 0, total: 1, kcal: s.workoutKcal.toDouble())];
 
       case _StatPeriod.week:
-        const labels = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+        final labels = [context.l10n.monShort, context.l10n.tueShort, context.l10n.wedShort, context.l10n.thuShort, context.l10n.friShort, context.l10n.satShort, context.l10n.sunShort];
         final weekday = now.weekday;
         final weekStart = now.subtract(Duration(days: weekday - 1));
         return List.generate(7, (i) {
@@ -237,14 +240,14 @@ class _ProgressScreenState extends State<ProgressScreen>
               k += s.workoutKcal;
             }
           }
-          bars.add((label: 'Нед $weekNum', done: d, total: wEnd - wStart, kcal: k));
+          bars.add((label: context.l10n.weekNumShort(weekNum), done: d, total: wEnd - wStart, kcal: k));
           wStart = wEnd; weekNum++;
         }
         return bars;
 
       case _StatPeriod.year:
         // 12 monthly bars (oldest first = 11 months ago → current)
-        const mLabels = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+        final mLabels = [context.l10n.janShort, context.l10n.febShort, context.l10n.marShort, context.l10n.aprShort, context.l10n.mayShort, context.l10n.junShort, context.l10n.julShort, context.l10n.augShort, context.l10n.sepShort, context.l10n.octShort, context.l10n.novShort, context.l10n.decShort];
         return List.generate(12, (i) {
           final offset = 11 - i; // 11=oldest, 0=current
           final dt = DateTime(now.year, now.month - offset, 1);
@@ -281,7 +284,7 @@ class _ProgressScreenState extends State<ProgressScreen>
           if (data.weight != null && data.weight! > 0) {
             _weight = data.weight;
             _weightData = [data.weight!];
-            _weightLabels = ['Сейчас'];
+            _weightLabels = [context.l10n.todayShort];
           }
           if (data.height != null && data.height! > 0) {
             _height = data.height;
@@ -329,27 +332,27 @@ class _ProgressScreenState extends State<ProgressScreen>
         return AlertDialog(
           backgroundColor: colors.surfaceCard,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text('Фото: ${angle.label}', style: TextStyle(color: colors.textPrimary, fontFamily: 'Syne', fontWeight: FontWeight.w700)),
+          title: Text(ctx.l10n.photoPickTitle(angle.label(ctx.l10n)), style: TextStyle(color: colors.textPrimary, fontFamily: 'Syne', fontWeight: FontWeight.w700)),
           content: Column(mainAxisSize: MainAxisSize.min, children: [
             Icon(angle.icon, size: 48, color: colors.primary),
             const SizedBox(height: 12),
-            Text(angle.instruction, style: TextStyle(color: colors.textSecondary, fontSize: 14, height: 1.5)),
+            Text(angle.instruction(ctx.l10n), style: TextStyle(color: colors.textSecondary, fontSize: 14, height: 1.5)),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(color: colors.info.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
               child: Text(
-                'Рекомендации:\n• Минимум одежды (шорты/купальник)\n• Хорошее освещение, нейтральный фон\n• Одно и то же место каждый раз',
+                ctx.l10n.photoTips,
                 style: TextStyle(fontSize: 12, color: colors.textMuted, height: 1.5),
               ),
             ),
           ]),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Отмена', style: TextStyle(color: colors.textMuted))),
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(ctx.l10n.cancel, style: TextStyle(color: colors.textMuted))),
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: colors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Выбрать фото'),
+              child: Text(ctx.l10n.selectPhotoBtn),
             ),
           ],
         );
@@ -368,12 +371,12 @@ class _ProgressScreenState extends State<ProgressScreen>
             const SizedBox(height: 8),
             ListTile(
               leading: Icon(Icons.camera_alt_rounded, color: colors.primary),
-              title: Text('Сделать фото', style: TextStyle(color: colors.textPrimary)),
+              title: Text(ctx.l10n.takeCameraBtn, style: TextStyle(color: colors.textPrimary)),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
               leading: Icon(Icons.photo_library_rounded, color: colors.primary),
-              title: Text('Выбрать из галереи', style: TextStyle(color: colors.textPrimary)),
+              title: Text(ctx.l10n.chooseGalleryBtn, style: TextStyle(color: colors.textPrimary)),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
             const SizedBox(height: 8),
@@ -427,7 +430,7 @@ class _ProgressScreenState extends State<ProgressScreen>
         setState(() => _aiAnalyzing = false);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Заполните профиль (вес, рост, возраст) для AI анализа')),
+            SnackBar(content: Text(context.l10n.fillProfileForAi)),
           );
         }
         return;
@@ -454,7 +457,7 @@ class _ProgressScreenState extends State<ProgressScreen>
 
       if (mounted) setState(() { _aiAnalysis = result; _aiAnalyzing = false; });
     } catch (e) {
-      if (mounted) setState(() { _aiAnalysis = 'Ошибка: $e'; _aiAnalyzing = false; });
+      if (mounted) setState(() { _aiAnalysis = '${context.l10n.error}: $e'; _aiAnalyzing = false; });
     }
   }
 
@@ -495,7 +498,7 @@ class _ProgressScreenState extends State<ProgressScreen>
             labelColor: colors.primary,
             unselectedLabelColor: colors.textMuted,
             labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Inter'),
-            tabs: const [Tab(text: 'Вес и тело'), Tab(text: 'Тренировки'), Tab(text: 'Здоровье')],
+            tabs: [Tab(text: context.l10n.weightBodyTab), Tab(text: context.l10n.workoutsStatTab), Tab(text: context.l10n.healthTabLabel)],
             padding: const EdgeInsets.symmetric(horizontal: 20),
           ),
           const SizedBox(height: 4),
@@ -514,7 +517,8 @@ class _ProgressScreenState extends State<ProgressScreen>
 
   Widget _buildBodyTab() {
     final colors = AppTheme.of(context);
-    final weightText = _weight != null ? '${_weight!.toStringAsFixed(1)} кг' : '— кг';
+    final l10n = context.l10n;
+    final weightText = _weight != null ? '${_weight!.toStringAsFixed(1)} ${l10n.dashboardKg}' : '— ${l10n.dashboardKg}';
     final currentWeight = _weight ?? (_weightData.isNotEmpty ? _weightData.last : 0.0);
 
     return ListView(
@@ -529,28 +533,28 @@ class _ProgressScreenState extends State<ProgressScreen>
           ),
           child: Row(children: [
             Flexible(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Текущий вес', style: TextStyle(fontSize: 12, color: colors.primaryDark)),
+              Text(l10n.currentWeightTitle, style: TextStyle(fontSize: 12, color: colors.primaryDark)),
               const SizedBox(height: 4),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
                 child: Text(weightText, style: TextStyle(fontFamily: 'Syne', fontSize: 36, fontWeight: FontWeight.w800, color: colors.textOnPrimary)),
               ),
-              if (_height != null) Text('Рост: ${(_height! * 100).toInt()} см', style: TextStyle(fontSize: 12, color: colors.primaryDark)),
+              if (_height != null) Text('${l10n.onbHeightTitle}: ${(_height! * 100).toInt()} ${l10n.cmUnit}', style: TextStyle(fontSize: 12, color: colors.primaryDark)),
             ])),
             const SizedBox(width: 12),
             Flexible(child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Text('Калории сожжено', style: TextStyle(fontSize: 11, color: colors.primaryDark)),
+              Text(l10n.burnedLabel, style: TextStyle(fontSize: 11, color: colors.primaryDark)),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerRight,
                 child: Text(
-                  _caloriesBurned > 0 ? '${_caloriesBurned.toInt()} ккал' : '— ккал',
+                  _caloriesBurned > 0 ? '${_caloriesBurned.toInt()} ${l10n.kcalShort}' : '— ${l10n.kcalShort}',
                   style: TextStyle(fontFamily: 'Syne', fontSize: 20, fontWeight: FontWeight.w800, color: colors.textOnPrimary),
                 ),
               ),
               const SizedBox(height: 4),
-              Text('Шаги: ${_steps > 0 ? _steps : '—'}', style: TextStyle(fontSize: 11, color: colors.primaryDark)),
+              Text('${l10n.stepsLabel}: ${_steps > 0 ? _steps : '—'}', style: TextStyle(fontSize: 11, color: colors.primaryDark)),
             ])),
           ]),
         ),
@@ -562,7 +566,7 @@ class _ProgressScreenState extends State<ProgressScreen>
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: BorderRadius.circular(24), border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06))),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('График веса', style: AppTextStyles.titleM),
+            Text(l10n.weightChartTitle, style: AppTextStyles.titleM),
             const SizedBox(height: 20),
             SizedBox(
               height: 160,
@@ -576,7 +580,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                         painter: _LineChartPainter(data: _weightData, progress: v, colors: colors),
                       ),
                     )
-                  : Center(child: Text('Данные веса появятся после синхронизации\nс Health Connect', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: colors.textMuted))),
+                  : Center(child: Text(l10n.noWeightData, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: colors.textMuted))),
             ),
             const SizedBox(height: 8),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: _weightLabels.map((l) => Text(l, style: TextStyle(fontSize: 9, color: colors.textMuted))).toList()),
@@ -587,7 +591,7 @@ class _ProgressScreenState extends State<ProgressScreen>
 
         // Замеры тела
         Row(children: [
-          const Text('Замеры тела', style: AppTextStyles.titleM),
+          Text(l10n.bodyMeasTitle, style: AppTextStyles.titleM),
           const Spacer(),
           GestureDetector(
             onTap: _openMeasurementsDialog,
@@ -597,7 +601,7 @@ class _ProgressScreenState extends State<ProgressScreen>
               child: Row(children: [
                 Icon(Icons.add_rounded, size: 16, color: colors.primary),
                 const SizedBox(width: 4),
-                Text('Добавить', style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.w700)),
+                Text(l10n.add, style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.w700)),
               ]),
             ),
           ),
@@ -614,17 +618,17 @@ class _ProgressScreenState extends State<ProgressScreen>
             shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
             childAspectRatio: 1.8,
             children: [
-              _buildMeasurementCard('Грудь', _measurements.isNotEmpty ? _measurements.first.chestCm : null, 'см', colors),
-              _buildMeasurementCard('Талия', _measurements.isNotEmpty ? _measurements.first.waistCm : null, 'см', colors),
-              _buildMeasurementCard('Бёдра', _measurements.isNotEmpty ? _measurements.first.hipsCm : null, 'см', colors),
-              _buildMeasurementCard('Жир тела', _measurements.isNotEmpty ? _measurements.first.bodyFatPercent : null, '%', colors),
+              _buildMeasurementCard('chest', l10n.chestMeasureLabel, _measurements.isNotEmpty ? _measurements.first.chestCm : null, l10n.cmUnit, colors),
+              _buildMeasurementCard('waist', l10n.waistLabel, _measurements.isNotEmpty ? _measurements.first.waistCm : null, l10n.cmUnit, colors),
+              _buildMeasurementCard('hips', l10n.hipsLabel, _measurements.isNotEmpty ? _measurements.first.hipsCm : null, l10n.cmUnit, colors),
+              _buildMeasurementCard('fat', l10n.bodyFatLabel, _measurements.isNotEmpty ? _measurements.first.bodyFatPercent : null, '%', colors),
             ],
           ),
 
         if (_measurements.length >= 2) ...[
           const SizedBox(height: 8),
           Text(
-            'Предыдущий замер: ${_formatDate(_measurements[1].date)}',
+            l10n.prevMeasLabel(_formatDate(_measurements[1].date)),
             style: TextStyle(fontSize: 11, color: colors.textMuted),
           ),
         ],
@@ -643,25 +647,25 @@ class _ProgressScreenState extends State<ProgressScreen>
     );
   }
 
-  Widget _buildMeasurementCard(String label, double? value, String unit, ThemePalette colors) {
+  Widget _buildMeasurementCard(String key, String displayLabel, double? value, String unit, ThemePalette colors) {
     // Разница с предыдущим замером
     double? prevValue;
     if (_measurements.length >= 2) {
       final prev = _measurements[1];
-      prevValue = label == 'Грудь' ? prev.chestCm
-          : label == 'Талия' ? prev.waistCm
-          : label == 'Бёдра' ? prev.hipsCm
+      prevValue = key == 'chest' ? prev.chestCm
+          : key == 'waist' ? prev.waistCm
+          : key == 'hips' ? prev.hipsCm
           : prev.bodyFatPercent;
     }
     final diff = (value != null && prevValue != null) ? value - prevValue : null;
     final diffStr = diff != null ? '${diff >= 0 ? '+' : ''}${diff.toStringAsFixed(1)}' : '';
-    final isPositiveDiff = diff != null && (label == 'Жир тела' ? diff < 0 : diff < 0);
+    final isPositiveDiff = diff != null && (key == 'fat' ? diff < 0 : diff < 0);
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: BorderRadius.circular(16), border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: TextStyle(fontSize: 11, color: colors.textMuted)),
+        Text(displayLabel, style: TextStyle(fontSize: 11, color: colors.textMuted)),
         const SizedBox(height: 6),
         Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
           Flexible(child: FittedBox(
@@ -694,16 +698,16 @@ class _ProgressScreenState extends State<ProgressScreen>
       decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: BorderRadius.circular(20), border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          const Text('Фото прогресс', style: AppTextStyles.titleM),
+          Text(context.l10n.photoProgressTitle2, style: AppTextStyles.titleM),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(color: colors.info.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
-            child: Text('3 ракурса', style: TextStyle(fontSize: 11, color: colors.info, fontWeight: FontWeight.w600)),
+            child: Text(context.l10n.anglesLabel, style: TextStyle(fontSize: 11, color: colors.info, fontWeight: FontWeight.w600)),
           ),
         ]),
         const SizedBox(height: 6),
-        Text('Снимайте в одном месте, при одном освещении для точного сравнения', style: TextStyle(fontSize: 12, color: colors.textMuted)),
+        Text(context.l10n.photoNote, style: TextStyle(fontSize: 12, color: colors.textMuted)),
         const SizedBox(height: 14),
         Row(children: _PhotoAngle.values.map((angle) {
           final file = _photos[angle];
@@ -723,9 +727,9 @@ class _ProgressScreenState extends State<ProgressScreen>
                     ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                         Icon(angle.icon, color: colors.textMuted, size: 28),
                         const SizedBox(height: 6),
-                        Text(angle.label, style: TextStyle(fontSize: 10, color: colors.textMuted, fontWeight: FontWeight.w600)),
+                        Text(angle.label(context.l10n), style: TextStyle(fontSize: 10, color: colors.textMuted, fontWeight: FontWeight.w600)),
                         const SizedBox(height: 2),
-                        Text('Нажмите', style: TextStyle(fontSize: 9, color: colors.textMuted)),
+                        Text(context.l10n.tapHint, style: TextStyle(fontSize: 9, color: colors.textMuted)),
                       ])
                     : Align(
                         alignment: Alignment.bottomCenter,
@@ -736,7 +740,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                             color: colors.primary,
                             borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),
                           ),
-                          child: Text(angle.label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.w700)),
+                          child: Text(angle.label(context.l10n), textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.w700)),
                         ),
                       ),
               ),
@@ -757,7 +761,7 @@ class _ProgressScreenState extends State<ProgressScreen>
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Text('🤖 AI Анализ прогресса', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+          Text(context.l10n.aiProgressTitle, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
           const Spacer(),
           if (!_aiAnalyzing)
             GestureDetector(
@@ -765,7 +769,7 @@ class _ProgressScreenState extends State<ProgressScreen>
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(color: colors.primary, borderRadius: BorderRadius.circular(10)),
-                child: Text(_aiAnalysis != null ? 'Обновить' : 'Анализ', style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w700)),
+                child: Text(_aiAnalysis != null ? context.l10n.updateBtn : context.l10n.analyzeBtn, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w700)),
               ),
             )
           else
@@ -776,7 +780,7 @@ class _ProgressScreenState extends State<ProgressScreen>
           Text(_aiAnalysis!, style: TextStyle(fontSize: 13, color: colors.textSecondary, height: 1.6)),
         ] else ...[
           Text(
-            'На основе ${_measurements.length} замер(ов) тела${_photos.values.any((f) => f != null) ? ' и фото прогресса' : ''} AI подготовит индивидуальные рекомендации по тренировкам и питанию.',
+            context.l10n.aiAnalysisHintText(_measurements.length, _photos.values.any((f) => f != null) ? context.l10n.photoProgressTitle2 : ''),
             style: TextStyle(fontSize: 13, color: colors.textMuted, height: 1.5),
           ),
         ],
@@ -790,7 +794,7 @@ class _ProgressScreenState extends State<ProgressScreen>
     final colors = AppTheme.of(context);
     final now = DateTime.now();
     final weekday = now.weekday;
-    const dayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    final dayLabels = [context.l10n.monShort, context.l10n.tueShort, context.l10n.wedShort, context.l10n.thuShort, context.l10n.friShort, context.l10n.satShort, context.l10n.sunShort];
     final summary = _periodSummary;
     final bars = _chartBars;
 
@@ -814,10 +818,10 @@ class _ProgressScreenState extends State<ProgressScreen>
           child: Row(children: _StatPeriod.values.map((p) {
             final sel = p == _selectedPeriod;
             final label = switch (p) {
-              _StatPeriod.today => 'Сегодня',
-              _StatPeriod.week  => 'Неделя',
-              _StatPeriod.month => 'Месяц',
-              _StatPeriod.year  => 'Год',
+              _StatPeriod.today => context.l10n.periodTodayLabel,
+              _StatPeriod.week  => context.l10n.periodWeekLabel,
+              _StatPeriod.month => context.l10n.periodMonthLabel,
+              _StatPeriod.year  => context.l10n.periodYearLabel,
             };
             return Expanded(
               child: GestureDetector(
@@ -860,13 +864,13 @@ class _ProgressScreenState extends State<ProgressScreen>
                 ),
             ]),
             const SizedBox(height: 4),
-            Text('${summary.done} тренировок выполнено', style: TextStyle(fontSize: 11, color: colors.textMuted)),
+            Text(context.l10n.workoutsDoneCountLabel(summary.done), style: TextStyle(fontSize: 11, color: colors.textMuted)),
             const SizedBox(height: 14),
             Row(children: [
-              Expanded(child: _PeriodStatCell(icon: '💪', label: 'Тренировки', value: '${summary.done}/${summary.total}', color: colors.primary)),
-              Expanded(child: _PeriodStatCell(icon: '🔥', label: 'Ккал', value: summary.kcal > 0 ? '${summary.kcal.toInt()}' : '0', color: colors.accent)),
-              Expanded(child: _PeriodStatCell(icon: '💧', label: 'Вода', value: summary.waterMl > 0 ? '${(summary.waterMl / 1000).toStringAsFixed(1)}л' : '0л', color: colors.info)),
-              Expanded(child: _PeriodStatCell(icon: '🍽️', label: 'Съедено', value: summary.eatenCal > 0 ? '${summary.eatenCal}кк' : '0', color: colors.accentOrange)),
+              Expanded(child: _PeriodStatCell(icon: '💪', label: context.l10n.taskWorkout, value: '${summary.done}/${summary.total}', color: colors.primary)),
+              Expanded(child: _PeriodStatCell(icon: '🔥', label: context.l10n.kcalShort, value: summary.kcal > 0 ? '${summary.kcal.toInt()}' : '0', color: colors.accent)),
+              Expanded(child: _PeriodStatCell(icon: '💧', label: context.l10n.waterLabel, value: summary.waterMl > 0 ? '${(summary.waterMl / 1000).toStringAsFixed(1)}л' : '0л', color: colors.info)),
+              Expanded(child: _PeriodStatCell(icon: '🍽️', label: context.l10n.eatenLabel, value: summary.eatenCal > 0 ? '${summary.eatenCal}кк' : '0', color: colors.accentOrange)),
             ]),
           ]),
         ),
@@ -880,7 +884,7 @@ class _ProgressScreenState extends State<ProgressScreen>
             decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06))),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Тренировки по $_chartPeriodLabel', style: AppTextStyles.titleM),
+              Text(context.l10n.workoutsChartTitle(_chartPeriodLabel), style: AppTextStyles.titleM),
               const SizedBox(height: 16),
               SizedBox(height: 120, child: _PeriodBarChart(bars: bars, colors: colors)),
               const SizedBox(height: 4),
@@ -901,9 +905,9 @@ class _ProgressScreenState extends State<ProgressScreen>
               const Text('🔥', style: TextStyle(fontSize: 22)),
               const SizedBox(width: 10),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Серия: $_currentStreak ${_currentStreak == 1 ? 'день' : _currentStreak < 5 ? 'дня' : 'дней'}',
+                Text('${context.l10n.dashboardStreak}: $_currentStreak ${context.l10n.dashboardDays}',
                     style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-                Text('Не прерывай серию тренировок!', style: TextStyle(fontSize: 11, color: colors.textMuted)),
+                Text(context.l10n.noBreakStreak, style: TextStyle(fontSize: 11, color: colors.textMuted)),
               ]),
             ]),
           ),
@@ -918,12 +922,12 @@ class _ProgressScreenState extends State<ProgressScreen>
             decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06))),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Активность сегодня', style: AppTextStyles.titleM),
+              Text(context.l10n.today, style: AppTextStyles.titleM),
               const SizedBox(height: 14),
               Row(children: [
-                Expanded(child: _ActivityStat(icon: Icons.directions_walk_rounded, color: colors.accentOrange, label: 'Шаги', value: _steps > 0 ? '$_steps' : '—')),
-                Expanded(child: _ActivityStat(icon: Icons.local_fire_department_rounded, color: colors.error, label: 'Калории', value: todayKcal > 0 ? '$todayKcal кк' : '—')),
-                Expanded(child: _ActivityStat(icon: Icons.water_drop_rounded, color: colors.info, label: 'Вода', value: todayWater > 0 ? '$todayWater мл' : '—')),
+                Expanded(child: _ActivityStat(icon: Icons.directions_walk_rounded, color: colors.accentOrange, label: context.l10n.stepsLabel, value: _steps > 0 ? '$_steps' : '—')),
+                Expanded(child: _ActivityStat(icon: Icons.local_fire_department_rounded, color: colors.error, label: context.l10n.burnedLabel, value: todayKcal > 0 ? '$todayKcal ${context.l10n.kcalShort}' : '—')),
+                Expanded(child: _ActivityStat(icon: Icons.water_drop_rounded, color: colors.info, label: context.l10n.waterLabel, value: todayWater > 0 ? '$todayWater мл' : '—')),
               ]),
             ]),
           ),
@@ -937,7 +941,7 @@ class _ProgressScreenState extends State<ProgressScreen>
               border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06))),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              const Text('Эта неделя', style: AppTextStyles.titleM),
+              Text(context.l10n.thisWeekLabel, style: AppTextStyles.titleM),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -946,7 +950,7 @@ class _ProgressScreenState extends State<ProgressScreen>
               ),
             ]),
             const SizedBox(height: 4),
-            Text('$doneCount из $weekday ${weekday == 1 ? 'дня' : 'дней'} выполнено',
+            Text(context.l10n.daysCompletedOf(doneCount, weekday),
                 style: TextStyle(fontSize: 11, color: colors.textMuted)),
             const SizedBox(height: 16),
             Row(
@@ -984,17 +988,17 @@ class _ProgressScreenState extends State<ProgressScreen>
   }
 
   String get _periodTitle => switch (_selectedPeriod) {
-    _StatPeriod.today => 'За сегодня',
-    _StatPeriod.week  => 'За неделю',
-    _StatPeriod.month => 'За месяц',
-    _StatPeriod.year  => 'За год',
+    _StatPeriod.today => context.l10n.periodTodayLabel,
+    _StatPeriod.week  => context.l10n.periodWeekLabel,
+    _StatPeriod.month => context.l10n.periodMonthLabel,
+    _StatPeriod.year  => context.l10n.periodYearLabel,
   };
 
   String get _chartPeriodLabel => switch (_selectedPeriod) {
-    _StatPeriod.today => 'дням',
-    _StatPeriod.week  => 'дням',
-    _StatPeriod.month => 'неделям',
-    _StatPeriod.year  => 'месяцам',
+    _StatPeriod.today => context.l10n.periodTodayLabel,
+    _StatPeriod.week  => context.l10n.periodWeekLabel,
+    _StatPeriod.month => context.l10n.periodMonthLabel,
+    _StatPeriod.year  => context.l10n.periodYearLabel,
   };
 
   // ─── Здоровье ─────────────────────────────────────────────────────────────────
@@ -1008,34 +1012,34 @@ class _ProgressScreenState extends State<ProgressScreen>
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 80),
       children: [
-        _HealthCard(label: 'Средний пульс', value: _heartRateAvg != null ? '$_heartRateAvg' : '—', unit: 'уд/мин', icon: Icons.favorite_rounded, color: colors.error, trend: _heartRateAvg != null ? 'норма' : '', positive: true),
+        _HealthCard(label: context.l10n.avgHeartRateLabel, value: _heartRateAvg != null ? '$_heartRateAvg' : '—', unit: context.l10n.bpmUnit, icon: Icons.favorite_rounded, color: colors.error, trend: _heartRateAvg != null ? context.l10n.normalBadge : '', positive: true),
         const SizedBox(height: 12),
-        _HealthCard(label: 'Пульс в покое', value: _restingHeartRate != null ? '$_restingHeartRate' : '—', unit: 'уд/мин', icon: Icons.monitor_heart_outlined, color: colors.accentPurple,
-          trend: _restingHeartRate != null ? (_restingHeartRate! <= 60 ? 'отлично' : _restingHeartRate! <= 80 ? 'норма' : 'высокий') : '',
+        _HealthCard(label: context.l10n.restingHrLabel, value: _restingHeartRate != null ? '$_restingHeartRate' : '—', unit: context.l10n.bpmUnit, icon: Icons.monitor_heart_outlined, color: colors.accentPurple,
+          trend: _restingHeartRate != null ? (_restingHeartRate! <= 60 ? 'отлично' : _restingHeartRate! <= 80 ? context.l10n.normalBadge : 'высокий') : '',
           positive: _restingHeartRate != null && _restingHeartRate! <= 80),
         const SizedBox(height: 12),
-        _HealthCard(label: 'ВСР (RMSSD)', value: _heartRateVariability != null ? _heartRateVariability!.toStringAsFixed(1) : '—', unit: 'мс', icon: Icons.show_chart_rounded, color: colors.accent,
+        _HealthCard(label: context.l10n.hrvLabel, value: _heartRateVariability != null ? _heartRateVariability!.toStringAsFixed(1) : '—', unit: context.l10n.msUnit, icon: Icons.show_chart_rounded, color: colors.accent,
           trend: _heartRateVariability != null ? (_heartRateVariability! >= 40 ? 'хорошо' : 'низкая') : '',
           positive: _heartRateVariability != null && _heartRateVariability! >= 40),
         const SizedBox(height: 12),
-        _HealthCard(label: 'Частота дыхания', value: _respiratoryRate != null ? _respiratoryRate!.toStringAsFixed(1) : '—', unit: 'вд/мин', icon: Icons.air_rounded, color: colors.info,
-          trend: _respiratoryRate != null ? (_respiratoryRate! <= 20 ? 'норма' : 'высокая') : '',
+        _HealthCard(label: context.l10n.respiratoryRateLabel, value: _respiratoryRate != null ? _respiratoryRate!.toStringAsFixed(1) : '—', unit: context.l10n.bpmRespUnit, icon: Icons.air_rounded, color: colors.info,
+          trend: _respiratoryRate != null ? (_respiratoryRate! <= 20 ? context.l10n.normalBadge : 'высокая') : '',
           positive: _respiratoryRate != null && _respiratoryRate! <= 20),
         const SizedBox(height: 12),
-        _HealthCard(label: 'Шаги сегодня', value: _steps > 0 ? '$_steps' : '—', unit: 'шаг', icon: Icons.directions_walk_rounded, color: colors.primary,
+        _HealthCard(label: context.l10n.stepsTodayLabel, value: _steps > 0 ? '$_steps' : '—', unit: context.l10n.stepsUnit, icon: Icons.directions_walk_rounded, color: colors.primary,
           trend: _steps >= 10000 ? 'цель!' : _steps > 0 ? '-${10000 - _steps}' : '', positive: _steps >= 10000),
         const SizedBox(height: 12),
-        _HealthCard(label: 'Сон', value: sleepHours, unit: 'ч/ночь', icon: Icons.bedtime_outlined, color: colors.accentPurple,
-          trend: (_sleepMinutes ?? 0) >= 420 ? 'норма' : '', positive: (_sleepMinutes ?? 0) >= 420),
+        _HealthCard(label: context.l10n.sleepLabel2, value: sleepHours, unit: context.l10n.hoursNightUnit, icon: Icons.bedtime_outlined, color: colors.accentPurple,
+          trend: (_sleepMinutes ?? 0) >= 420 ? context.l10n.normalBadge : '', positive: (_sleepMinutes ?? 0) >= 420),
         const SizedBox(height: 12),
-        _HealthCard(label: 'Вода', value: (_waterIntakeMl ?? 0) > 0 ? '${_waterIntakeMl!.toInt()}' : '—', unit: 'мл', icon: Icons.water_drop_rounded, color: colors.info,
-          trend: (_waterIntakeMl ?? 0) >= 2000 ? 'норма' : '', positive: (_waterIntakeMl ?? 0) >= 2000),
+        _HealthCard(label: context.l10n.waterHealthLabel, value: (_waterIntakeMl ?? 0) > 0 ? '${_waterIntakeMl!.toInt()}' : '—', unit: context.l10n.mlHealthUnit, icon: Icons.water_drop_rounded, color: colors.info,
+          trend: (_waterIntakeMl ?? 0) >= 2000 ? context.l10n.normalBadge : '', positive: (_waterIntakeMl ?? 0) >= 2000),
         const SizedBox(height: 20),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(color: colors.info.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(18), border: Border.all(color: colors.info.withValues(alpha: 0.25))),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('🤖 AI совет', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+            Text('🤖 ${context.l10n.aiAdviceLabel}', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
             const SizedBox(height: 10),
             Text(
               hasData ? _buildAiAdvice() : 'Синхронизируйте Health Connect для получения AI рекомендаций.',
@@ -1081,7 +1085,7 @@ class _ProgressHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
       child: Row(children: [
-        const Text('Прогресс', style: AppTextStyles.displayM),
+        Text(context.l10n.navProgress, style: AppTextStyles.displayM),
         const Spacer(),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -1089,7 +1093,7 @@ class _ProgressHeader extends StatelessWidget {
           child: Row(children: [
             Icon(Icons.sync_rounded, size: 14, color: colors.textMuted),
             const SizedBox(width: 6),
-            Text('Сегодня', style: TextStyle(fontSize: 13, color: colors.textSecondary, fontWeight: FontWeight.w600)),
+            Text(context.l10n.syncTodayBtn, style: TextStyle(fontSize: 13, color: colors.textSecondary, fontWeight: FontWeight.w600)),
           ]),
         ),
       ]),
@@ -1125,9 +1129,9 @@ class _DebriefCard extends StatelessWidget {
           ),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Дебриф недели', style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w800, color: colors.textPrimary)),
+            Text(context.l10n.weeklyDebriefTitle, style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w800, color: colors.textPrimary)),
             const SizedBox(height: 3),
-            Text('AI-анализ твоей недели', style: TextStyle(fontSize: 12, color: colors.textSecondary)),
+            Text(context.l10n.weeklyDebriefSubtitle, style: TextStyle(fontSize: 12, color: colors.textSecondary)),
           ])),
           Icon(Icons.arrow_forward_ios_rounded, color: colors.primary, size: 15),
         ]),

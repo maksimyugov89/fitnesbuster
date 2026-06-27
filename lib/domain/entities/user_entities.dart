@@ -1,3 +1,5 @@
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+
 enum Gender { male, female }
 
 enum FitnessGoal {
@@ -17,15 +19,24 @@ enum IntensityLevel {
 }
 
 enum ActivityLevel {
-  sedentary(1.2, 'Сидячий образ жизни'),
-  lightlyActive(1.375, 'Лёгкая активность 1-3 дня/нед'),
-  moderatelyActive(1.55, 'Умеренная активность 3-5 дней/нед'),
-  veryActive(1.725, 'Высокая активность 6-7 дней/нед'),
-  extraActive(1.9, 'Очень высокая активность');
+  sedentary(1.2),
+  lightlyActive(1.375),
+  moderatelyActive(1.55),
+  veryActive(1.725),
+  extraActive(1.9);
 
-  const ActivityLevel(this.multiplier, this.label);
+  const ActivityLevel(this.multiplier);
   final double multiplier;
-  final String label;
+
+  String get label {
+    switch (this) {
+      case ActivityLevel.sedentary: return AppLocalizations.tl('activitySedentaryLabel');
+      case ActivityLevel.lightlyActive: return AppLocalizations.tl('activityLightLabel');
+      case ActivityLevel.moderatelyActive: return AppLocalizations.tl('activityModerateLabel');
+      case ActivityLevel.veryActive: return AppLocalizations.tl('activityHighLabel');
+      case ActivityLevel.extraActive: return AppLocalizations.tl('activityVeryHighLabel');
+    }
+  }
 }
 
 class UserEntity {
@@ -102,6 +113,24 @@ class UserProfile {
     this.runningPreference,
     this.city,
   });
+
+  const UserProfile.defaults()
+      : weight = 80,
+        height = 175,
+        age = 30,
+        gender = Gender.male,
+        goal = FitnessGoal.loseWeight,
+        intensity = IntensityLevel.balanced,
+        activityLevel = ActivityLevel.moderatelyActive,
+        medicalRestrictions = const [],
+        exerciseRestrictions = const [],
+        targetWeight = null,
+        targetDate = null,
+        testWeekCompleted = false,
+        testResults = const [],
+        workoutLocation = null,
+        runningPreference = null,
+        city = null;
 
   UserProfile copyWith({
     double? weight,

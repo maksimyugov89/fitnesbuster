@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fitnesbuster/data/models/personal_record.dart';
+import 'package:fitnesbuster/domain/entities/personal_record.dart';
 import 'package:fitnesbuster/domain/repositories/i_pr_repository.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:uuid/uuid.dart';
 
 class PrRepository implements IPrRepository {
@@ -9,23 +10,32 @@ class PrRepository implements IPrRepository {
 
   @override
   Future<List<PersonalRecord>> getAll() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_key);
-    if (raw == null) return [];
-    return PersonalRecord.decodeList(raw);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_key);
+      if (raw == null) return [];
+      return PersonalRecord.decodeList(raw);
+    } catch (e, st) {
+      appLogger.w('[PrRepository] getAll failed', error: e, stackTrace: st);
+      return [];
+    }
   }
 
   @override
   Future<void> save(PersonalRecord record) async {
-    final all = await getAll();
-    final idx = all.indexWhere((r) => r.id == record.id);
-    if (idx >= 0) {
-      all[idx] = record;
-    } else {
-      all.add(record);
+    try {
+      final all = await getAll();
+      final idx = all.indexWhere((r) => r.id == record.id);
+      if (idx >= 0) {
+        all[idx] = record;
+      } else {
+        all.add(record);
+      }
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_key, PersonalRecord.encodeList(all));
+    } catch (e, st) {
+      appLogger.w('[PrRepository] save failed', error: e, stackTrace: st);
     }
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_key, PersonalRecord.encodeList(all));
   }
 
   @override
@@ -52,10 +62,14 @@ class PrRepository implements IPrRepository {
 
   @override
   Future<void> delete(String id) async {
-    final all = await getAll();
-    all.removeWhere((r) => r.id == id);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_key, PersonalRecord.encodeList(all));
+    try {
+      final all = await getAll();
+      all.removeWhere((r) => r.id == id);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_key, PersonalRecord.encodeList(all));
+    } catch (e, st) {
+      appLogger.w('[PrRepository] delete failed', error: e, stackTrace: st);
+    }
   }
 
   // Returns records sorted newest first

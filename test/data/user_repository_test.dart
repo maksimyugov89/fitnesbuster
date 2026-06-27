@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:fitnesbuster/data/repositories/user_repository.dart';
-import 'package:fitnesbuster/data/models/body_measurement.dart';
+import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 
 import 'user_repository_test.mocks.dart';

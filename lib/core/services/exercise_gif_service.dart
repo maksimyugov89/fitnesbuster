@@ -1,16 +1,20 @@
 import 'dart:io';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/core/services/exercise_matcher.dart';
+import 'package:fitnesbuster/data/models/exercise_db_model.dart';
+import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 
-/// Downloads exercise GIFs from ExerciseDB (via Firebase Cloud Function proxy)
-/// and caches them locally in ApplicationDocumentsDirectory/exercise_gifs/.
-///
-/// The RapidAPI key never leaves the server — all API calls go through
-/// the `exerciseDbProxy` Cloud Function, identical to how DeepSeek is handled.
-class ExerciseGifService {
+class ExerciseGifService implements IExerciseService {
   ExerciseGifService();
+
+  @override
+  ExerciseDbModel? findByRuName(String ruName) => ExerciseMatcher.instance.findByRuName(ruName);
+
+  @override
+  Future<void> init() => ExerciseMatcher.instance.init();
 
   // Popular exercises to pre-cache after onboarding for a smooth first run.
   static const preloadExercises = <({String id, String name})>[
@@ -38,6 +42,7 @@ class ExerciseGifService {
 
   /// Returns the local file path to the GIF, downloading it on first access.
   /// Returns null if the API is unavailable or the exercise is not in ExerciseDB.
+  @override
   Future<String?> getGifPath(String exerciseId, String exerciseName) async {
     final dir = await _gifsDir();
     final file = _gifFile(dir, exerciseId);
@@ -51,12 +56,14 @@ class ExerciseGifService {
   }
 
   /// Deletes all cached GIFs (used in settings → "Очистить кэш").
+  @override
   Future<void> clearCache() async {
     final dir = await _gifsDir();
     if (dir.existsSync()) dir.deleteSync(recursive: true);
   }
 
   /// Pre-downloads popular exercises in the background (called after onboarding).
+  @override
   Future<void> preloadPopular() async {
     for (final ex in preloadExercises) {
       await getGifPath(ex.id, ex.name);
@@ -73,7 +80,7 @@ class ExerciseGifService {
           await callable.call<Map<String, dynamic>>({'exerciseName': exerciseName});
       return result.data['gifUrl'] as String?;
     } catch (e) {
-      if (kDebugMode) debugPrint('[ExerciseGifService] API error: $e');
+      appLogger.d('[ExerciseGifService] API error: $e');
       return null;
     }
   }
@@ -85,7 +92,7 @@ class ExerciseGifService {
       target.writeAsBytesSync(response.bodyBytes);
       return target.path;
     } catch (e) {
-      if (kDebugMode) debugPrint('[ExerciseGifService] Download error: $e');
+      appLogger.d('[ExerciseGifService] Download error: $e');
       return null;
     }
   }

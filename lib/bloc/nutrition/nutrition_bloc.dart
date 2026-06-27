@@ -1,17 +1,18 @@
-import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
-import 'package:fitnesbuster/core/services/nutrition_service.dart';
+import 'package:fitnesbuster/domain/services/i_nutrition_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 part 'nutrition_event.dart';
 part 'nutrition_state.dart';
 
 class NutritionBloc extends Bloc<NutritionEvent, NutritionState> {
-  final NutritionService _nutritionService;
+  final INutritionService _nutritionService;
   DateTime? _lastMealPlanGenerated;
 
-  NutritionBloc({required NutritionService nutritionService})
+  NutritionBloc({required INutritionService nutritionService})
       : _nutritionService = nutritionService,
         super(const NutritionStateInitial()) {
     on<NutritionLoadRequested>(_onLoad);
@@ -24,18 +25,14 @@ class NutritionBloc extends Bloc<NutritionEvent, NutritionState> {
     emit(const NutritionStateLoading());
 
     final profile = event.profile;
-    final targetCalories = profile?.dailyCalorieTarget.round() ?? 0;
-    // Macro split: protein 30%, carbs 40%, fat 30%
-    final targetProtein = profile != null ? ((targetCalories * 0.30) / 4).round() : 0;
-    final targetCarbs   = profile != null ? ((targetCalories * 0.40) / 4).round() : 0;
-    final targetFat     = profile != null ? ((targetCalories * 0.30) / 9).round() : 0;
+    final macros = profile != null ? _nutritionService.calculateMacros(profile) : const Macros(protein: 0, carbs: 0, fat: 0, totalCalories: 0);
 
     emit(NutritionStateLoaded(
       logs: [],
-      targetCalories: targetCalories.toDouble(),
-      targetProtein: targetProtein.toDouble(),
-      targetCarbs: targetCarbs.toDouble(),
-      targetFat: targetFat.toDouble(),
+      targetCalories: macros.totalCalories.toDouble(),
+      targetProtein: macros.protein.toDouble(),
+      targetCarbs: macros.carbs.toDouble(),
+      targetFat: macros.fat.toDouble(),
     ));
 
     if (profile != null && _nutritionService.shouldRegenerate(_lastMealPlanGenerated)) {
@@ -90,8 +87,8 @@ class NutritionBloc extends Bloc<NutritionEvent, NutritionState> {
       _lastMealPlanGenerated = DateTime.now();
       emit(current.copyWith(mealPlanJson: mealPlan, clearMealPlanError: true));
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[NutritionBloc] generateMealPlan failed: $e\n$st');
-      emit(current.copyWith(mealPlanError: 'Не удалось обновить план питания. Попробуйте снова.'));
+      appLogger.w('[NutritionBloc] generateMealPlan failed', error: e, stackTrace: st);
+      emit(current.copyWith(mealPlanError: AppLocalizations.tl('mealPlanUpdateFailed')));
     }
   }
 }

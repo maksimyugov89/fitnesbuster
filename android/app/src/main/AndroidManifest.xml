@@ -57,6 +57,34 @@
             <intent-filter>
                 <action android:name="android.health.connect.action.MANAGE_HEALTH_PERMISSIONS" />
             </intent-filter>
+
+            <!-- Получение тренировок из других приложений (поделиться текстом) -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+            <!-- Получение JSON-файлов тренировок -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/json" />
+            </intent-filter>
+
+            <!-- Открытие JSON-файлов тренировок из файловых менеджеров -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/json" />
+            </intent-filter>
+
+            <!-- Открытие .txt файлов с тренировками -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
 
         <!-- Health Connect permissions activity alias -->

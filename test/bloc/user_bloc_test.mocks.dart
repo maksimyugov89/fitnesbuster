@@ -5,7 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
 
-import 'package:fitnesbuster/data/models/body_measurement.dart' as _i5;
+import 'package:fitnesbuster/domain/entities/body_measurement.dart' as _i5;
 import 'package:fitnesbuster/domain/entities/entities.dart' as _i2;
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;

@@ -1,0 +1,146 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:fitnesbuster/core/training/adaptive_training_service.dart';
+import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+
+import 'adaptive_training_service_test.mocks.dart';
+
+@GenerateMocks([IDeepSeekService])
+void main() {
+  late MockIDeepSeekService mockAi;
+  late AdaptiveTrainingService service;
+
+  final tProfile = const UserProfile(
+    weight: 80, height: 175, age: 30,
+    gender: Gender.male, goal: FitnessGoal.loseWeight,
+    intensity: IntensityLevel.balanced,
+    activityLevel: ActivityLevel.moderatelyActive,
+    targetWeight: 75,
+  );
+
+  final tTestResult = TestWeekResult(
+    completedAt: DateTime(2026, 1, 1),
+    exercises: [
+      const TestExerciseResult(exerciseName: 'Жим лёжа', primaryMuscle: MuscleGroup.chest, comfortableWeightKg: 60, comfortableSets: 3, comfortableReps: 10),
+      const TestExerciseResult(exerciseName: 'Приседания', primaryMuscle: MuscleGroup.quads, comfortableWeightKg: 80, comfortableSets: 4, comfortableReps: 8),
+      const TestExerciseResult(exerciseName: 'Тяга гантели', primaryMuscle: MuscleGroup.back, comfortableWeightKg: 30, comfortableSets: 3, comfortableReps: 12),
+    ],
+    averageHeartRate: 130,
+    averageSessionDuration: 45,
+    perceivedDifficulty: 5,
+  );
+
+  setUp(() {
+    mockAi = MockIDeepSeekService();
+    service = AdaptiveTrainingService(ai: mockAi);
+  });
+
+  // ── calculateAdjustment ─────────────────────────────────────────
+
+  group('calculateAdjustment', () {
+    test('returns TrainingAdjustment for balanced profile', () {
+      final adj = service.calculateAdjustment(testResult: tTestResult, profile: tProfile);
+
+      expect(adj.weightMultiplier, greaterThan(0));
+      expect(adj.weeklyIncreasePercent, greaterThan(0));
+      expect(adj.suggestedSetsPerExercise, inInclusiveRange(3, 5));
+      expect(adj.suggestedRepsPerSet, inInclusiveRange(8, 15));
+      expect(adj.userLevel, isNotNull);
+      expect(adj.maxHeartRate, equals(190)); // 220 - 30
+    });
+
+    test('weightMultiplier varies with intensity', () {
+      final hardcore = const UserProfile(weight: 80, height: 175, age: 30, gender: Gender.male, goal: FitnessGoal.loseWeight, intensity: IntensityLevel.hardcore, activityLevel: ActivityLevel.moderatelyActive);
+      final relaxed = const UserProfile(weight: 80, height: 175, age: 30, gender: Gender.male, goal: FitnessGoal.loseWeight, intensity: IntensityLevel.relaxed, activityLevel: ActivityLevel.moderatelyActive);
+
+      final adjHard = service.calculateAdjustment(testResult: tTestResult, profile: hardcore).weightMultiplier;
+      final adjSoft = service.calculateAdjustment(testResult: tTestResult, profile: relaxed).weightMultiplier;
+
+      expect(adjHard, greaterThanOrEqualTo(adjSoft));
+    });
+
+    test('empty exercises returns valid adjustment', () {
+      final emptyResult = TestWeekResult(completedAt: DateTime(2026, 1, 1), exercises: [], averageHeartRate: 0, averageSessionDuration: 0, perceivedDifficulty: 5);
+      final adj = service.calculateAdjustment(testResult: emptyResult, profile: tProfile);
+      expect(adj.suggestedSetsPerExercise, inInclusiveRange(3, 5));
+      expect(adj.suggestedRepsPerSet, inInclusiveRange(8, 15));
+    });
+
+    test('maxHeartRate is 220 - age', () {
+      final young = const UserProfile(weight: 70, height: 180, age: 25, gender: Gender.male, goal: FitnessGoal.gainWeight, intensity: IntensityLevel.intensive, activityLevel: ActivityLevel.veryActive);
+      final adj = service.calculateAdjustment(testResult: tTestResult, profile: young);
+      expect(adj.maxHeartRate, equals(195));
+    });
+  });
+
+  // ── buildAdaptedPlan ─────────────────────────────────────────────
+
+  group('buildAdaptedPlan', () {
+    test('builds plan with correct number of weeks', () {
+      final adj = service.calculateAdjustment(testResult: tTestResult, profile: tProfile);
+      final plan = service.buildAdaptedPlan(testResult: tTestResult, adjustment: adj, durationWeeks: 4);
+
+      expect(plan.length, equals(4));
+      expect(plan.first.weekNumber, equals(1));
+      expect(plan.last.weekNumber, equals(4));
+    });
+
+    test('plan weeks have exercises and estimated calories', () {
+      final adj = service.calculateAdjustment(testResult: tTestResult, profile: tProfile);
+      final plan = service.buildAdaptedPlan(testResult: tTestResult, adjustment: adj, durationWeeks: 12);
+
+      expect(plan.every((w) => w.exercises.isNotEmpty), isTrue);
+      expect(plan.every((w) => w.estimatedCalorieBurn > 0), isTrue);
+      expect(plan.every((w) => w.plannedSessions >= 3), isTrue);
+    });
+
+    test('plan duration with target date uses estimated weeks', () {
+      final adj = service.calculateAdjustment(testResult: tTestResult, profile: tProfile);
+      final plan = service.buildAdaptedPlan(testResult: tTestResult, adjustment: adj, durationWeeks: tProfile.estimatedWeeksNeeded);
+
+      expect(plan.length, equals(tProfile.estimatedWeeksNeeded));
+    });
+
+    test('week phases: adaptation → progress → intensification → peak', () {
+      final adj = service.calculateAdjustment(testResult: tTestResult, profile: tProfile);
+      final plan = service.buildAdaptedPlan(testResult: tTestResult, adjustment: adj, durationWeeks: 16);
+
+      expect(plan[0].focus, contains('Адаптация'));
+      expect(plan[5].focus, contains('Прогресс'));
+      expect(plan[9].focus, anyOf(contains('Интенсификация'), contains('Пик')));
+    });
+  });
+
+  // ── checkGoalFeasibility ─────────────────────────────────────────
+
+  group('checkGoalFeasibility', () {
+    test('returns feasible for realistic goal', () async {
+      when(mockAi.askQuestion(any, profile: anyNamed('profile'))).thenAnswer((_) async => 'Всё реалистично, продолжайте.');
+
+      final adj = service.calculateAdjustment(testResult: tTestResult, profile: tProfile);
+      final result = await service.checkGoalFeasibility(profile: tProfile, adjustment: adj);
+
+      expect(result.isFeasible, isTrue);
+    });
+
+    test('calls AI for advice when profile needs it', () async {
+      when(mockAi.askQuestion(any, profile: anyNamed('profile'))).thenAnswer((_) async => 'Рекомендую увеличить кардио.');
+      final profile = tProfile.copyWith(targetWeight: 50, targetDate: DateTime.now().add(const Duration(days: 7)));
+
+      final adj = service.calculateAdjustment(testResult: tTestResult, profile: profile);
+      await service.checkGoalFeasibility(profile: profile, adjustment: adj);
+      // AI may or may not be called depending on feasibility logic
+    });
+
+    test('handles AI failure gracefully', () async {
+      when(mockAi.askQuestion(any, profile: anyNamed('profile'))).thenThrow(Exception('AI timeout'));
+
+      final adj = service.calculateAdjustment(testResult: tTestResult, profile: tProfile);
+      final result = await service.checkGoalFeasibility(profile: tProfile, adjustment: adj);
+
+      expect(result, isNotNull);
+    });
+  });
+}

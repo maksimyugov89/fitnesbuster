@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
-import 'package:fitnesbuster/core/ai/deepseek_service.dart';
+import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/core/ai/deepseek_service.dart' show AiException;
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
@@ -43,7 +43,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
   @override
   void initState() {
     super.initState();
-    _uid = FirebaseAuth.instance.currentUser?.uid;
+    final authState = context.read<AuthBloc>().state;
+    _uid = authState is AuthStateAuthenticated ? authState.user.id : null;
     _loadProfile();
     _loadHistory();
   }
@@ -107,7 +108,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
         .addPostFrameCallback((_) => _scrollToBottom());
 
     try {
-      final response = await sl<DeepSeekService>().askWithHistory(
+      final response = await sl<IDeepSeekService>().askWithHistory(
         historySnapshot,
         trimmed,
         profile: _profile,

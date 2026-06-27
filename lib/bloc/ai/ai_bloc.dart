@@ -1,9 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/core/ai/deepseek_service.dart' show AiException;
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 part 'ai_event.dart';
 part 'ai_state.dart';
@@ -31,8 +32,8 @@ class AiBloc extends Bloc<AiEvent, AiState> {
     } on AiException catch (e) {
       emit(AiStateError(message: e.message));
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[AiBloc] generateWorkoutPlan failed: $e\n$st');
-      emit(const AiStateError(message: 'Не удалось сгенерировать программу. Попробуйте снова.'));
+      appLogger.w('[AiBloc] generateWorkoutPlan failed', error: e, stackTrace: st);
+      emit(AiStateError(message: AppLocalizations.tl('aiGenerateWorkoutFailed')));
     }
   }
 
@@ -47,8 +48,8 @@ class AiBloc extends Bloc<AiEvent, AiState> {
     } on AiException catch (e) {
       emit(AiStateError(message: e.message));
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[AiBloc] generateMealPlan failed: $e\n$st');
-      emit(const AiStateError(message: 'Не удалось сгенерировать план питания. Попробуйте снова.'));
+      appLogger.d('[AiBloc] generateMealPlan failed', error: e, stackTrace: st);
+      emit(AiStateError(message: AppLocalizations.tl('aiGenerateMealFailed')));
     }
   }
 
@@ -66,8 +67,8 @@ class AiBloc extends Bloc<AiEvent, AiState> {
     } on AiException catch (e) {
       emit(AiStateError(message: e.message));
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[AiBloc] askQuestion failed: $e\n$st');
-      emit(const AiStateError(message: 'Не удалось получить ответ. Попробуйте снова.'));
+      appLogger.w('[AiBloc] askQuestion failed', error: e, stackTrace: st);
+      emit(AiStateError(message: AppLocalizations.tl('aiAskFailed')));
     }
   }
 

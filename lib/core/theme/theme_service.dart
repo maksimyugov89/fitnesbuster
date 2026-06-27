@@ -1,22 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' as app_theme;
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 /// Available app themes.
 enum AppThemeMode {
-  neonDark('Неоновый тёмный', '⚡', 'Чёрный + лайм'),
-  oceanBlue('Глубокий океан', '🌊', 'Синий + бирюзовый'),
-  sunsetWarm('Тёплый закат', '🌅', 'Оранжевый + розовый'),
-  forestGreen('Лесная свежесть', '🌿', 'Зелёный + изумрудный'),
-  midnightPurple('Ночной фиолет', '🌙', 'Фиолетовый + розовый'),
-  cyberPunk('Киберпанк', '🤖', 'Розовый + голубой'),
-  ;
+  neonDark,
+  oceanBlue,
+  sunsetWarm,
+  forestGreen,
+  midnightPurple,
+  cyberPunk;
 
-  final String displayName;
-  final String emoji;
-  final String description;
+  String get displayName => switch (this) {
+    AppThemeMode.neonDark => AppLocalizations.tl('themeNeonName'),
+    AppThemeMode.oceanBlue => AppLocalizations.tl('themeOceanName'),
+    AppThemeMode.sunsetWarm => AppLocalizations.tl('themeSunsetName'),
+    AppThemeMode.forestGreen => AppLocalizations.tl('themeForestName'),
+    AppThemeMode.midnightPurple => AppLocalizations.tl('themePurpleName'),
+    AppThemeMode.cyberPunk => AppLocalizations.tl('themeCyberName'),
+  };
 
-  const AppThemeMode(this.displayName, this.emoji, this.description);
+  String get emoji => switch (this) {
+    AppThemeMode.neonDark => '⚡',
+    AppThemeMode.oceanBlue => '🌊',
+    AppThemeMode.sunsetWarm => '🌅',
+    AppThemeMode.forestGreen => '🌿',
+    AppThemeMode.midnightPurple => '🌙',
+    AppThemeMode.cyberPunk => '🤖',
+  };
+
+  String get description => switch (this) {
+    AppThemeMode.neonDark => AppLocalizations.tl('themeNeonDesc'),
+    AppThemeMode.oceanBlue => AppLocalizations.tl('themeOceanDesc'),
+    AppThemeMode.sunsetWarm => AppLocalizations.tl('themeSunsetDesc'),
+    AppThemeMode.forestGreen => AppLocalizations.tl('themeForestDesc'),
+    AppThemeMode.midnightPurple => AppLocalizations.tl('themePurpleDesc'),
+    AppThemeMode.cyberPunk => AppLocalizations.tl('themeCyberDesc'),
+  };
 }
 
 /// Manages app theme preference.

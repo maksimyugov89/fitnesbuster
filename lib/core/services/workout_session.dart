@@ -8,6 +8,7 @@ import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/core/services/social_service.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 enum WorkoutPhase { prep, exercise, rest, done }
 
@@ -15,7 +16,8 @@ enum WorkoutPhase { prep, exercise, rest, done }
 /// timer continues ticking (via wall-clock) even when WorkoutExecutionScreen
 /// is off-screen. The screen syncs here on every phase change and on dispose.
 class WorkoutSession extends ChangeNotifier {
-  static final WorkoutSession instance = WorkoutSession._();
+  static final WorkoutSession _instance = WorkoutSession._();
+  static WorkoutSession get instance => _instance;
   WorkoutSession._();
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -60,7 +62,7 @@ class WorkoutSession extends ChangeNotifier {
   String get progressText {
     final w = _workout;
     if (w == null) return '';
-    return '$_completedSets / ${w.totalSets} подходов';
+    return '$_completedSets / ${w.totalSets} ${AppLocalizations.tl('socialSetsOf')}';
   }
 
   int get elapsedMinutes =>

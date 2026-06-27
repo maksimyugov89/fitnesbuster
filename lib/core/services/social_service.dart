@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/core/constants/firestore_collections.dart';
 
 export 'package:fitnesbuster/core/services/social_models.dart';
 
@@ -28,7 +29,7 @@ class SocialService implements ISocialService {
       await messaging.requestPermission(alert: true, badge: true, sound: true);
       final token = await messaging.getToken();
       if (token != null) {
-        await _db.doc('users/$uid').set({'fcmToken': token}, SetOptions(merge: true));
+        await _db.doc('${FirestoreCollections.users}/$uid').set({'fcmToken': token}, SetOptions(merge: true));
       }
       // Refresh token when it rotates
       messaging.onTokenRefresh.listen((newToken) async {
@@ -45,12 +46,16 @@ class SocialService implements ISocialService {
   Future<void> setUsername(String username) async {
     final uid = _uid;
     if (uid == null) return;
-    await _db.doc('users/$uid').set({
-      'username': username,
-      'usernameLower': username.toLowerCase(),
-    }, SetOptions(merge: true));
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('social_username', username);
+    try {
+      await _db.doc('${FirestoreCollections.users}/$uid').set({
+        'username': username,
+        'usernameLower': username.toLowerCase(),
+      }, SetOptions(merge: true));
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('social_username', username);
+    } catch (e, st) {
+      appLogger.w('SocialService: setUsername failed', error: e, stackTrace: st);
+    }
   }
 
   // ── Publish activity event (fanout via Cloud Function) ────────────────────
@@ -60,7 +65,7 @@ class SocialService implements ISocialService {
     final uid = _uid;
     if (uid == null) return;
     try {
-      await _db.collection('activity_events/$uid/items').add({
+      await _db.collection(FirestoreCollections.activityEvents(uid)).add({
         'type': type,
         'data': data,
         'timestamp': FieldValue.serverTimestamp(),
@@ -74,30 +79,55 @@ class SocialService implements ISocialService {
 
   @override
   Future<void> sendFriendRequest(String toUid) async {
-    await _call('sendFriendRequest', {'toUid': toUid});
+    try {
+      await _call('sendFriendRequest', {'toUid': toUid});
+    } catch (e, st) {
+      appLogger.w('SocialService: sendFriendRequest failed', error: e, stackTrace: st);
+      rethrow;
+    }
   }
 
   @override
   Future<void> acceptFriendRequest(String requestId) async {
-    await _call('acceptFriendRequest', {'requestId': requestId});
+    try {
+      await _call('acceptFriendRequest', {'requestId': requestId});
+    } catch (e, st) {
+      appLogger.w('SocialService: acceptFriendRequest failed', error: e, stackTrace: st);
+      rethrow;
+    }
   }
 
   @override
   Future<void> declineFriendRequest(String requestId) async {
-    await _call('declineFriendRequest', {'requestId': requestId});
+    try {
+      await _call('declineFriendRequest', {'requestId': requestId});
+    } catch (e, st) {
+      appLogger.w('SocialService: declineFriendRequest failed', error: e, stackTrace: st);
+      rethrow;
+    }
   }
 
   @override
   Future<void> removeFriend(String friendUid) async {
-    await _call('removeFriend', {'friendUid': friendUid});
+    try {
+      await _call('removeFriend', {'friendUid': friendUid});
+    } catch (e, st) {
+      appLogger.w('SocialService: removeFriend failed', error: e, stackTrace: st);
+      rethrow;
+    }
   }
 
   @override
   Future<List<Map<String, dynamic>>> searchUsers(String query) async {
-    final result = await _call('searchUsers', {'query': query});
-    return (result.data as List? ?? [])
-        .map((e) => Map<String, dynamic>.from(e as Map))
-        .toList();
+    try {
+      final result = await _call('searchUsers', {'query': query});
+      return (result.data as List? ?? [])
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList();
+    } catch (e, st) {
+      appLogger.w('SocialService: searchUsers failed', error: e, stackTrace: st);
+      rethrow;
+    }
   }
 
   @override
@@ -105,7 +135,7 @@ class SocialService implements ISocialService {
     final uid = _uid;
     if (uid == null) return const Stream.empty();
     return _db
-        .collection('friends/$uid/list')
+        .collection(FirestoreCollections.friendsList(uid))
         .orderBy('addedAt', descending: true)
         .snapshots()
         .map((s) => s.docs.map(FriendUser.fromDoc).toList());
@@ -116,7 +146,7 @@ class SocialService implements ISocialService {
     final uid = _uid;
     if (uid == null) return const Stream.empty();
     return _db
-        .collection('friend_requests')
+        .collection(FirestoreCollections.friendRequests)
         .where('toUid', isEqualTo: uid)
         .where('status', isEqualTo: 'pending')
         .orderBy('createdAt', descending: true)
@@ -131,7 +161,7 @@ class SocialService implements ISocialService {
     final uid = _uid;
     if (uid == null) return const Stream.empty();
     return _db
-        .collection('feed/$uid/events')
+        .collection(FirestoreCollections.feed(uid))
         .orderBy('timestamp', descending: true)
         .limit(limit)
         .snapshots()
@@ -142,12 +172,22 @@ class SocialService implements ISocialService {
 
   @override
   Future<void> joinChallenge(String challengeId) async {
-    await _call('joinChallenge', {'challengeId': challengeId});
+    try {
+      await _call('joinChallenge', {'challengeId': challengeId});
+    } catch (e, st) {
+      appLogger.w('SocialService: joinChallenge failed', error: e, stackTrace: st);
+      rethrow;
+    }
   }
 
   @override
   Future<void> seedChallenges() async {
-    await _call('seedChallenges', {});
+    try {
+      await _call('seedChallenges', {});
+    } catch (e, st) {
+      appLogger.w('SocialService: seedChallenges failed', error: e, stackTrace: st);
+      rethrow;
+    }
   }
 
   @override
@@ -157,20 +197,25 @@ class SocialService implements ISocialService {
     required int cardioMinutes,
     required int streak,
   }) async {
-    final result = await _call('recordWorkout', {
-      'durationMinutes': durationMinutes,
-      'caloriesBurned': caloriesBurned,
-      'cardioMinutes': cardioMinutes,
-      'streak': streak,
-    });
-    final data = result.data as Map<String, dynamic>?;
-    return ((data?['completed'] as List?) ?? []).cast<String>();
+    try {
+      final result = await _call('recordWorkout', {
+        'durationMinutes': durationMinutes,
+        'caloriesBurned': caloriesBurned,
+        'cardioMinutes': cardioMinutes,
+        'streak': streak,
+      });
+      final data = result.data as Map<String, dynamic>?;
+      return ((data?['completed'] as List?) ?? []).cast<String>();
+    } catch (e, st) {
+      appLogger.w('SocialService: recordWorkout failed', error: e, stackTrace: st);
+      rethrow;
+    }
   }
 
   @override
   Stream<List<Challenge>> publicChallengesStream() {
     return _db
-        .collection('challenges')
+        .collection(FirestoreCollections.challenges)
         .where('isPublic', isEqualTo: true)
         .orderBy('endDate', descending: true)
         .limit(30)
@@ -183,7 +228,7 @@ class SocialService implements ISocialService {
     final uid = _uid;
     if (uid == null) return const Stream.empty();
     return _db
-        .collection('challenges')
+        .collection(FirestoreCollections.challenges)
         .where('participants', arrayContains: uid)
         .orderBy('endDate', descending: true)
         .snapshots()
@@ -193,7 +238,7 @@ class SocialService implements ISocialService {
   @override
   Stream<List<ChallengeParticipant>> challengeLeaderboardStream(String challengeId) {
     return _db
-        .collection('challenge_progress/$challengeId/participants')
+        .collection(FirestoreCollections.challengeProgress(challengeId))
         .orderBy('currentValue', descending: true)
         .snapshots()
         .map((s) => s.docs.map(ChallengeParticipant.fromDoc).toList());

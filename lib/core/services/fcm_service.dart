@@ -1,13 +1,11 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
+import 'package:fitnesbuster/domain/services/i_fcm_service.dart';
 
-/// Handles FCM push notification routing:
-/// - foreground: silently ignored (local notification could be shown)
-/// - background / notification tap → navigate via GoRouter
-/// - app launched from terminated state via notification
-class FcmService {
+class FcmService implements IFcmService {
   FcmService();
 
+  @override
   Future<void> init() async {
     FirebaseMessaging.onMessage.listen(_onForeground);
     FirebaseMessaging.onMessageOpenedApp.listen(_onTap);

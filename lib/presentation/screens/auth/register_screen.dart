@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -45,23 +46,23 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
   }
 
   String? _validateEmail(String? v) {
-    if (v == null || v.trim().isEmpty) return 'Введите email';
+    if (v == null || v.trim().isEmpty) return AppLocalizations.tl('enterEmailValidation');
     final re = RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
-    if (!re.hasMatch(v.trim())) return 'Неверный формат email';
+    if (!re.hasMatch(v.trim())) return AppLocalizations.tl('invalidEmailFormat');
     return null;
   }
 
   String? _validatePassword(String? v) {
-    if (v == null || v.isEmpty) return 'Введите пароль';
-    if (v.length < 6) return 'Минимум 6 символов';
-    if (!RegExp(r'[A-Za-z]').hasMatch(v)) return 'Пароль должен содержать букву';
-    if (!RegExp(r'[0-9]').hasMatch(v)) return 'Пароль должен содержать цифру';
+    if (v == null || v.isEmpty) return AppLocalizations.tl('enterPasswordValidation');
+    if (v.length < 6) return AppLocalizations.tl('passwordMinLength');
+    if (!RegExp(r'[A-Za-z]').hasMatch(v)) return AppLocalizations.tl('passwordNeedLetter');
+    if (!RegExp(r'[0-9]').hasMatch(v)) return AppLocalizations.tl('passwordNeedNumber');
     return null;
   }
 
   String? _validateConfirm(String? v) {
-    if (v == null || v.isEmpty) return 'Введите пароль';
-    if (v != _passCtrl.text) return 'Пароли не совпадают';
+    if (v == null || v.isEmpty) return AppLocalizations.tl('enterPasswordValidation');
+    if (v != _passCtrl.text) return AppLocalizations.tl('passwordsDontMatch');
     return null;
   }
 
@@ -119,6 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     final passStrength = _passwordStrength(_passCtrl.text);
 
@@ -176,23 +178,23 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                           ),
                         ),
                         const SizedBox(height: 28),
-                        const Text('Создать\nаккаунт', style: AppTextStyles.displayL),
+                        Text(l10n.registerTitle, style: AppTextStyles.displayL),
                         const SizedBox(height: 8),
-                        const Text('Начни свой путь к здоровью прямо сейчас', style: AppTextStyles.bodyL),
+                        Text(l10n.registerSubtitle, style: AppTextStyles.bodyL),
                         const SizedBox(height: 32),
 
                         // Email
-                        _buildLabel('Email'),
+                        _buildLabel(l10n.emailLabel),
                         const SizedBox(height: 8),
-                        _buildField(controller: _emailCtrl, hint: 'example@mail.com', icon: Icons.mail_outline_rounded, keyboardType: TextInputType.emailAddress, validator: _validateEmail, textInputAction: TextInputAction.next),
+                        _buildField(controller: _emailCtrl, hint: l10n.emailHint, icon: Icons.mail_outline_rounded, keyboardType: TextInputType.emailAddress, validator: _validateEmail, textInputAction: TextInputAction.next),
                         const SizedBox(height: 16),
 
                         // Password
-                        _buildLabel('Пароль'),
+                        _buildLabel(l10n.passwordLabel),
                         const SizedBox(height: 8),
                         _buildField(
                           controller: _passCtrl,
-                          hint: 'Минимум 6 символов',
+                          hint: l10n.passwordHint,
                           icon: Icons.lock_outline_rounded,
                           obscure: _obscurePass,
                           validator: _validatePassword,
@@ -227,11 +229,11 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                         const SizedBox(height: 16),
 
                         // Confirm password
-                        _buildLabel('Повтор пароля'),
+                        _buildLabel(l10n.confirmPasswordLabel),
                         const SizedBox(height: 8),
                         _buildField(
                           controller: _confirmCtrl,
-                          hint: 'Повтор пароля',
+                          hint: l10n.confirmPasswordLabel,
                           icon: Icons.lock_outline_rounded,
                           obscure: _obscureConfirm,
                           validator: _validateConfirm,
@@ -283,7 +285,7 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                             ),
                             child: _loading
                                 ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: colors.textOnPrimary))
-                                : Text('Зарегистрироваться', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
+                                : Text(l10n.registerButton, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
                           ),
                         ),
 
@@ -314,17 +316,17 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                                       child: const Center(child: Text('G', style: TextStyle(fontFamily: 'Arial', fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF4285F4)))),
                                     ),
                                     const SizedBox(width: 12),
-                                    Text('Продолжить через Google', style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.w600, fontSize: 15)),
+                                    Text(l10n.orContinueWith, style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.w600, fontSize: 15)),
                                   ]),
                           ),
                         ),
 
                         const SizedBox(height: 24),
                         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Text('Уже есть аккаунт? ', style: TextStyle(color: colors.textSecondary, fontSize: 14)),
+                          Text(l10n.alreadyHaveAccount, style: TextStyle(color: colors.textSecondary, fontSize: 14)),
                           GestureDetector(
                           onTap: () => context.go('/login'),
-                            child: Text('Войти', style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700, fontSize: 14)),
+                            child: Text(l10n.loginButton, style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700, fontSize: 14)),
                           ),
                         ]),
                         const SizedBox(height: 40),

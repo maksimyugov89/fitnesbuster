@@ -21,7 +21,6 @@ class PersonalRecord {
 
   bool get isBodyweight => weightKg == null || weightKg == 0;
 
-  // Volume score for comparing records: weight × reps (bodyweight = reps only)
   double get score {
     final w = weightKg ?? 1.0;
     final r = reps ?? 0;

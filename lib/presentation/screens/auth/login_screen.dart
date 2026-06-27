@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -43,15 +44,15 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   String? _validateEmail(String? v) {
-    if (v == null || v.trim().isEmpty) return 'Введите email';
+    if (v == null || v.trim().isEmpty) return AppLocalizations.tl('enterEmailValidation');
     final re = RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
-    if (!re.hasMatch(v.trim())) return 'Неверный формат email';
+    if (!re.hasMatch(v.trim())) return AppLocalizations.tl('invalidEmailFormat');
     return null;
   }
 
   String? _validatePassword(String? v) {
-    if (v == null || v.isEmpty) return 'Введите пароль';
-    if (v.length < 6) return 'Минимум 6 символов';
+    if (v == null || v.isEmpty) return AppLocalizations.tl('enterPasswordValidation');
+    if (v.length < 6) return AppLocalizations.tl('passwordMinLength');
     return null;
   }
 
@@ -72,6 +73,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
 
     return BlocListener<AuthBloc, AuthState>(
@@ -117,17 +119,17 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         const SizedBox(height: 60),
                         _buildLogo(),
                         const SizedBox(height: 32),
-                        const Text('Вход\nв аккаунт', style: AppTextStyles.displayL),
+                        Text(l10n.loginTitle, style: AppTextStyles.displayL),
                         const SizedBox(height: 8),
-                        const Text('Войдите в систему для начала тренировок', style: AppTextStyles.bodyL),
+                        Text(l10n.loginSubtitle, style: AppTextStyles.bodyL),
                         const SizedBox(height: 40),
 
                         // Email
-                        _buildLabel('Email'),
+                        _buildLabel(l10n.emailLabel),
                         const SizedBox(height: 8),
                         _buildField(
                           controller: _emailCtrl,
-                          hint: 'example@mail.com',
+                          hint: l10n.emailHint,
                           icon: Icons.mail_outline_rounded,
                           keyboardType: TextInputType.emailAddress,
                           validator: _validateEmail,
@@ -136,11 +138,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         const SizedBox(height: 16),
 
                         // Password
-                        _buildLabel('Пароль'),
+                        _buildLabel(l10n.passwordLabel),
                         const SizedBox(height: 8),
                         _buildField(
                           controller: _passCtrl,
-                          hint: '••••••••',
+                          hint: l10n.passwordHint,
                           icon: Icons.lock_outline_rounded,
                           obscure: _obscure,
                           validator: _validatePassword,
@@ -177,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {},
-                            child: Text('Забыли пароль?', style: TextStyle(color: colors.primary, fontWeight: FontWeight.w600, fontSize: 13)),
+                            child: Text(l10n.forgotPassword, style: TextStyle(color: colors.primary, fontWeight: FontWeight.w600, fontSize: 13)),
                           ),
                         ),
 
@@ -266,6 +268,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   Widget _buildLoginButton() {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return SizedBox(
       width: double.infinity, height: 56,
@@ -279,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         ),
         child: _loading
             ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: colors.textOnPrimary))
-            : Text('Войти', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
+            : Text(l10n.loginButton, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
       ),
     );
   }
@@ -294,6 +297,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   Widget _buildGoogleButton() {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return SizedBox(
       width: double.infinity, height: 52,
@@ -309,22 +313,24 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 _GoogleIcon(),
                 const SizedBox(width: 12),
-                Text('Войти через Google', style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.w600, fontSize: 15)),
+                Text(l10n.signInWithGoogle, style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.w600, fontSize: 15)),
               ]),
       ),
     );
   }
 
   Widget _buildRegisterLink() {
+    final l10n = context.l10n;
     final colors = AppTheme.of(context);
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text('Нет аккаунта? ', style: TextStyle(color: colors.textSecondary, fontSize: 14)),
+      Flexible(child: Text(l10n.dontHaveAccount, style: TextStyle(color: colors.textSecondary, fontSize: 14), overflow: TextOverflow.ellipsis)),
       GestureDetector(
         onTap: () => context.push('/register'),
-        child: Text('Зарегистрироваться', style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700, fontSize: 14)),
+        child: Text(l10n.registerButton, style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700, fontSize: 14)),
       ),
     ]);
   }
+
 }
 
 class _GoogleIcon extends StatelessWidget {

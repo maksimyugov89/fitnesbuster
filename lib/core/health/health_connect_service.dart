@@ -1,5 +1,6 @@
 import 'package:health/health.dart' as hc;
 import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
 
 /// Aggregated health data from Google Health Connect / Apple Health.
 class SyncedHealthData {
@@ -37,13 +38,14 @@ class SyncedHealthData {
 }
 
 /// Reads health data from Google Health Connect (Android) or Apple Health (iOS).
-class HealthConnectService {
+class HealthConnectService implements IHealthConnectService {
   final hc.Health _health;
   bool _initialized = false;
   bool _available = false;
 
   HealthConnectService() : _health = hc.Health();
 
+  @override
   bool get isAvailable => _available;
 
   static const _types = [
@@ -62,6 +64,7 @@ class HealthConnectService {
     hc.HealthDataType.WORKOUT,
   ];
 
+  @override
   Future<bool> isHealthConnectAvailable() async {
     try {
       return await _health.isHealthConnectAvailable();
@@ -71,6 +74,7 @@ class HealthConnectService {
     }
   }
 
+  @override
   Future<bool> initialize() async {
     if (_initialized && _available) return true;
 
@@ -95,6 +99,7 @@ class HealthConnectService {
     }
   }
 
+  @override
   Future<SyncedHealthData> readAllToday() async {
     if (!_initialized) {
       final ok = await initialize();
@@ -153,6 +158,7 @@ class HealthConnectService {
     }
   }
 
+  @override
   Future<SyncedHealthData> readDateRange({
     required DateTime start,
     required DateTime end,
@@ -281,5 +287,6 @@ class HealthConnectService {
     }
   }
 
+  @override
   void dispose() {}
 }

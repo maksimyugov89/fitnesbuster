@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
@@ -55,7 +56,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         setState(() { _loading = false; _plan = plan; });
       }
     } catch (e) {
-      if (mounted) setState(() { _loading = false; _error = 'Ошибка загрузки: $e'; });
+      if (mounted) setState(() { _loading = false; _error = AppLocalizations.tl('loadErrorMsg').replaceAll('{error}', e.toString()); });
     }
   }
 

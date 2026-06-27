@@ -1,4 +1,4 @@
-import 'package:fitnesbuster/data/models/personal_record.dart';
+import 'package:fitnesbuster/domain/entities/personal_record.dart';
 
 abstract interface class IPrRepository {
   Future<List<PersonalRecord>> getAll();

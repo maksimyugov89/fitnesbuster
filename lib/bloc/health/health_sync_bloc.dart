@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/core/health/health_connect_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 part 'health_sync_event.dart';
 part 'health_sync_state.dart';
@@ -30,18 +32,19 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       } else {
         final installed = await _hcService.isHealthConnectAvailable();
         if (!installed) {
-          emit(const HealthSyncStateError(
-            message: 'Health Connect не установлен. Установите из Google Play.',
+          emit(HealthSyncStateError(
+            message: AppLocalizations.tl('healthConnectNotInstalled'),
           ));
         } else {
-          emit(const HealthSyncStateError(
-            message: 'Не удалось получить доступ к Health Connect. Проверьте разрешения.',
+          emit(HealthSyncStateError(
+            message: AppLocalizations.tl('healthConnectAccessDenied'),
           ));
         }
       }
-    } catch (e) {
+    } catch (e, st) {
+      appLogger.w('[HealthSyncBloc] init failed', error: e, stackTrace: st);
       emit(HealthSyncStateError(
-        message: 'Ошибка инициализации Health Connect: $e',
+        message: AppLocalizations.tl('healthConnectInitError'),
       ));
     }
   }
@@ -57,8 +60,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         data: data,
         lastSyncAt: DateTime.now(),
       ));
-    } catch (e) {
-      emit(HealthSyncStateError(message: 'Ошибка чтения данных: $e'));
+    } catch (e, st) {
+      appLogger.w('[HealthSyncBloc] read today failed', error: e, stackTrace: st);
+      emit(HealthSyncStateError(message: AppLocalizations.tl('healthSyncReadError')));
     }
   }
 
@@ -76,8 +80,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         data: data,
         lastSyncAt: DateTime.now(),
       ));
-    } catch (e) {
-      emit(HealthSyncStateError(message: 'Ошибка: $e'));
+    } catch (e, st) {
+      appLogger.w('[HealthSyncBloc] read range failed', error: e, stackTrace: st);
+      emit(HealthSyncStateError(message: AppLocalizations.tl('healthSyncRangeError')));
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 enum RecoveryLevel { excellent, good, fair, low }
 
@@ -88,17 +89,17 @@ class RecoveryScoreService {
                 : RecoveryLevel.low;
 
     final label = switch (level) {
-      RecoveryLevel.excellent => 'Отличное',
-      RecoveryLevel.good      => 'Хорошее',
-      RecoveryLevel.fair      => 'Среднее',
-      RecoveryLevel.low       => 'Низкое',
+      RecoveryLevel.excellent => AppLocalizations.tl('recoveryExcellent'),
+      RecoveryLevel.good      => AppLocalizations.tl('recoveryGood'),
+      RecoveryLevel.fair      => AppLocalizations.tl('recoveryAverage'),
+      RecoveryLevel.low       => AppLocalizations.tl('recoveryLow2'),
     };
 
     final advice = switch (level) {
-      RecoveryLevel.excellent => 'Готов к максимальной нагрузке',
-      RecoveryLevel.good      => 'Тренируйся в штатном режиме',
-      RecoveryLevel.fair      => 'Снизи интенсивность на 15–20%',
-      RecoveryLevel.low       => 'День отдыха или лёгкая растяжка',
+      RecoveryLevel.excellent => AppLocalizations.tl('recoveryReadyMax'),
+      RecoveryLevel.good      => AppLocalizations.tl('recoveryReadyNormal'),
+      RecoveryLevel.fair      => AppLocalizations.tl('recoveryReduce'),
+      RecoveryLevel.low       => AppLocalizations.tl('recoveryRestDay'),
     };
 
     return RecoveryScore(
@@ -118,6 +119,6 @@ class RecoveryScoreService {
     if (minutes == null) return '—';
     final h = minutes ~/ 60;
     final m = minutes % 60;
-    return m > 0 ? '$hч $mм' : '$hч';
+    return m > 0 ? AppLocalizations.tlp('recoveryTime', {'h': h.toString(), 'm': m.toString()}) : '$hч';
   }
 }

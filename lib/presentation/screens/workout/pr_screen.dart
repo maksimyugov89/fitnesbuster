@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
-import 'package:fitnesbuster/data/models/personal_record.dart';
+import 'package:fitnesbuster/domain/entities/personal_record.dart';
 import 'package:fitnesbuster/data/repositories/pr_repository.dart';
 
 class PrScreen extends StatefulWidget {

@@ -2,15 +2,20 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:health/health.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/domain/services/i_health_analytics_service.dart';
 
 part 'health_event.dart';
 part 'health_state.dart';
 
 class HealthBloc extends Bloc<HealthEvent, HealthState> {
   final Health _health;
+  final IHealthAnalyticsService _analytics;
 
-  HealthBloc({Health? health})
+  HealthBloc({Health? health, required IHealthAnalyticsService analytics})
       : _health = health ?? Health(),
+        _analytics = analytics,
         super(const HealthStateInitial()) {
     on<HealthFetchRequested>(_onFetchRequested);
     on<HealthWatchRequested>(_onWatchRequested);
@@ -31,7 +36,7 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
 
       final granted = await _health.requestAuthorization(types);
       if (!granted) {
-        emit(const HealthStateError(message: 'Нет доступа к данным здоровья. Предоставьте разрешения в настройках.'));
+        emit(HealthStateError(message: AppLocalizations.tl('healthNoAccess')));
         return;
       }
 
@@ -44,13 +49,13 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
         types: types,
       );
 
-      final steps = _sumValue(data, HealthDataType.STEPS)?.toInt();
-      final calories = _sumValue(data, HealthDataType.ACTIVE_ENERGY_BURNED);
-      final heartRate = _avgValue(data, HealthDataType.HEART_RATE)?.toInt();
-      final weight = _lastValue(data, HealthDataType.WEIGHT);
-      final sleepMinutes = _sumSleepMinutes(data);
-      final water = _sumValue(data, HealthDataType.WATER);
-      final distance = _sumValue(data, HealthDataType.DISTANCE_DELTA);
+      final steps = _analytics.sumValue(data, HealthDataType.STEPS)?.toInt();
+      final calories = _analytics.sumValue(data, HealthDataType.ACTIVE_ENERGY_BURNED);
+      final heartRate = _analytics.avgValue(data, HealthDataType.HEART_RATE)?.toInt();
+      final weight = _analytics.lastValue(data, HealthDataType.WEIGHT);
+      final sleepMinutes = _analytics.sumSleepMinutes(data);
+      final water = _analytics.sumValue(data, HealthDataType.WATER);
+      final distance = _analytics.sumValue(data, HealthDataType.DISTANCE_DELTA);
 
       emit(HealthStateLoaded(
         steps: steps ?? 0,
@@ -61,8 +66,9 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
         waterIntakeMl: (water ?? 0) * 1000,
         distanceKm: distance ?? 0,
       ));
-    } catch (e) {
-      emit(HealthStateError(message: 'Не удалось загрузить данные: $e'));
+    } catch (e, st) {
+      appLogger.w('[HealthBloc] fetch failed', error: e, stackTrace: st);
+      emit(HealthStateError(message: AppLocalizations.tl('healthLoadFailed')));
     }
   }
 
@@ -71,7 +77,7 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
       final types = [HealthDataType.STEPS, HealthDataType.HEART_RATE, HealthDataType.DISTANCE_DELTA];
       final granted = await _health.requestAuthorization(types);
       if (!granted) {
-        emit(const HealthStateError(message: 'Разрешения Health не предоставлены'));
+        emit(HealthStateError(message: AppLocalizations.tl('healthPermissionsDenied')));
         return;
       }
       final now = DateTime.now();
@@ -85,39 +91,9 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
           add(HealthFetchRequested());
         }
       }
-    } catch (e) {
-      emit(HealthStateError(message: 'Ошибка Health: $e'));
+    } catch (e, st) {
+      appLogger.w('[HealthBloc] watch failed', error: e, stackTrace: st);
+      emit(HealthStateError(message: AppLocalizations.tl('healthWatchError')));
     }
-  }
-
-  int _sumSleepMinutes(List<HealthDataPoint> data) {
-    return data
-        .where((p) => p.type == HealthDataType.SLEEP_SESSION)
-        .fold(0, (sum, p) => sum + p.dateTo.difference(p.dateFrom).inMinutes);
-  }
-
-  double? _sumValue(List<HealthDataPoint> data, HealthDataType type) {
-    final filtered = data.where((p) => p.type == type);
-    if (filtered.isEmpty) return null;
-    return filtered.fold<double>(0, (sum, p) {
-      final v = double.tryParse(p.value.toString());
-      return sum + (v ?? 0);
-    });
-  }
-
-  double? _avgValue(List<HealthDataPoint> data, HealthDataType type) {
-    final filtered = data.where((p) => p.type == type).toList();
-    if (filtered.isEmpty) return null;
-    final sum = filtered.fold<double>(0, (s, p) {
-      final v = double.tryParse(p.value.toString());
-      return s + (v ?? 0);
-    });
-    return sum / filtered.length;
-  }
-
-  double? _lastValue(List<HealthDataPoint> data, HealthDataType type) {
-    final filtered = data.where((p) => p.type == type).toList();
-    if (filtered.isEmpty) return null;
-    return double.tryParse(filtered.last.value.toString());
   }
 }

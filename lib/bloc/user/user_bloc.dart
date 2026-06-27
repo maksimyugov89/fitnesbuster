@@ -1,8 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 part 'user_event.dart';
 part 'user_state.dart';
@@ -26,8 +27,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final user = await _userRepository.getUser(event.userId);
       emit(UserStateLoaded(user: user));
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[UserBloc] getUser failed: $e\n$st');
-      emit(const UserStateError(message: 'Не удалось загрузить профиль. Попробуйте снова.'));
+      appLogger.w('[UserBloc] getUser failed', error: e, stackTrace: st);
+      emit(UserStateError(message: AppLocalizations.tl('userLoadFailed')));
     }
   }
 
@@ -40,8 +41,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
       emit(UserStateLoaded(user: updated));
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[UserBloc] updateProfile failed: $e\n$st');
-      emit(const UserStateError(message: 'Не удалось сохранить профиль. Попробуйте снова.'));
+      appLogger.w('[UserBloc] updateProfile failed', error: e, stackTrace: st);
+      emit(UserStateError(message: AppLocalizations.tl('userSaveFailed')));
     }
   }
 
@@ -64,8 +65,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
       emit(UserStateLoaded(user: updated));
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[UserBloc] updateBodyParams failed: $e\n$st');
-      emit(const UserStateError(message: 'Не удалось сохранить параметры. Попробуйте снова.'));
+      appLogger.w('[UserBloc] updateBodyParams failed', error: e, stackTrace: st);
+      emit(UserStateError(message: AppLocalizations.tl('userParamsFailed')));
     }
   }
 
@@ -83,8 +84,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
       emit(UserStateLoaded(user: updated));
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[UserBloc] updateGoal failed: $e\n$st');
-      emit(const UserStateError(message: 'Не удалось сохранить цель. Попробуйте снова.'));
+      appLogger.w('[UserBloc] updateGoal failed', error: e, stackTrace: st);
+      emit(UserStateError(message: AppLocalizations.tl('userGoalFailed')));
     }
   }
 
@@ -99,8 +100,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
       emit(UserStateLoaded(user: updated));
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[UserBloc] updateSettings failed: $e\n$st');
-      emit(const UserStateError(message: 'Не удалось сохранить настройки. Попробуйте снова.'));
+      appLogger.w('[UserBloc] updateSettings failed', error: e, stackTrace: st);
+      emit(UserStateError(message: AppLocalizations.tl('userSettingsFailed')));
     }
   }
 }

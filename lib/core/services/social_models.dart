@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class FriendRequest {
   final String id;
@@ -22,7 +23,7 @@ class FriendRequest {
     return FriendRequest(
       id: doc.id,
       fromUid: d['fromUid'] as String? ?? '',
-      fromName: d['fromName'] as String? ?? 'Пользователь',
+      fromName: d['fromName'] as String? ?? AppLocalizations.tl('socialDefaultUser'),
       toUid: d['toUid'] as String? ?? '',
       status: d['status'] as String? ?? 'pending',
       createdAt: (d['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -41,7 +42,7 @@ class FriendUser {
     final d = doc.data() as Map<String, dynamic>;
     return FriendUser(
       uid: doc.id,
-      name: d['name'] as String? ?? 'Пользователь',
+      name: d['name'] as String? ?? AppLocalizations.tl('socialDefaultUser'),
       addedAt: (d['addedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -70,7 +71,7 @@ class FeedEvent {
       id: doc.id,
       type: d['type'] as String? ?? '',
       fromUid: d['fromUid'] as String? ?? '',
-      fromName: d['fromName'] as String? ?? 'Пользователь',
+      fromName: d['fromName'] as String? ?? AppLocalizations.tl('socialDefaultUser'),
       data: (d['data'] as Map<String, dynamic>?) ?? {},
       timestamp: (d['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
@@ -88,17 +89,17 @@ class FeedEvent {
 
   String get description {
     switch (type) {
-      case 'workout_done': return 'завершил(а) тренировку';
+      case 'workout_done': return AppLocalizations.tl('socialDidWorkout');
       case 'pr_set':
         final ex = data['exerciseName'] as String? ?? '';
-        return ex.isNotEmpty ? 'установил(а) личный рекорд в «$ex»' : 'установил(а) личный рекорд';
+        return ex.isNotEmpty ? AppLocalizations.tlp('socialDidPr', {'ex': ex}) : AppLocalizations.tl('socialDidPrShort');
       case 'achievement':
         final name = data['achievementName'] as String? ?? '';
-        return name.isNotEmpty ? 'получил(а) значок «$name»' : 'получил(а) новый значок';
+        return name.isNotEmpty ? AppLocalizations.tlp('socialGotBadge', {'name': name}) : AppLocalizations.tl('socialGotBadgeShort');
       case 'challenge_won':
         final title = data['challengeTitle'] as String? ?? '';
-        return title.isNotEmpty ? 'выполнил(а) челлендж «$title»' : 'выполнил(а) челлендж';
-      default: return 'что-то сделал(а)';
+        return title.isNotEmpty ? AppLocalizations.tlp('socialDidChallenge', {'title': title}) : AppLocalizations.tl('socialDidChallengeShort');
+      default: return AppLocalizations.tl('socialDidSomething');
     }
   }
 }
@@ -160,10 +161,10 @@ class Challenge {
 
   String get goalLabel {
     switch (goalType) {
-      case 'workout_count':   return 'тренировок';
-      case 'calories_burned': return 'ккал';
-      case 'cardio_minutes':  return 'мин кардио';
-      case 'workout_streak':  return 'дней подряд';
+      case 'workout_count':   return AppLocalizations.tl('socialWorkouts');
+      case 'calories_burned': return AppLocalizations.tl('socialKcal');
+      case 'cardio_minutes':  return AppLocalizations.tl('socialCardioMin');
+      case 'workout_streak':  return AppLocalizations.tl('socialDayStreak');
       default:                return '';
     }
   }
@@ -184,7 +185,7 @@ class ChallengeParticipant {
     final d = doc.data() as Map<String, dynamic>;
     return ChallengeParticipant(
       uid: doc.id,
-      name: d['name'] as String? ?? 'Пользователь',
+      name: d['name'] as String? ?? AppLocalizations.tl('socialDefaultUser'),
       currentValue: (d['currentValue'] as num?)?.toInt() ?? 0,
     );
   }

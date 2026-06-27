@@ -1,6 +1,8 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,7 +21,9 @@ import 'bloc/ai/ai_bloc.dart';
 import 'bloc/onboarding/onboarding_bloc.dart';
 import 'bloc/training/test_week_bloc.dart';
 import 'core/localization/language_service.dart';
+import 'core/localization/app_localizations.dart';
 import 'core/theme/theme_service.dart';
+import 'core/services/share_intent_service.dart';
 import 'core/theme/dynamic_theme.dart';
 import 'core/theme/animated_theme_background.dart';
 import 'data/models/exercise_db_model.dart';
@@ -57,6 +61,7 @@ void main() async {
     await LanguageService.load();
     await initializeDateFormatting(LanguageService.current.code, null);
     await ThemeService.load();
+  ShareIntentService.init();
   } catch (e) {
     runApp(_InitErrorApp(error: e.toString()));
     return;
@@ -96,26 +101,43 @@ class FitnesBusterApp extends StatelessWidget {
         BlocProvider<OnboardingBloc>(create: (_) => sl<OnboardingBloc>()),
         BlocProvider<TestWeekBloc>(create: (_) => sl<TestWeekBloc>()),
       ],
-      child: ValueListenableBuilder<ThemePalette>(
-        valueListenable: _paletteNotifier,
-        builder: (context, palette, child) {
-          return AppTheme(
-            palette: palette,
-            child: MaterialApp.router(
-              title: 'FitnesBuster',
-              debugShowCheckedModeBanner: false,
-              theme: _buildTheme(palette),
-              routerConfig: AppRouter.router,
-              builder: (context, child) {
-                return MediaQuery(
-                  data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
-                  child: AnimatedThemeBackground(
-                    palette: palette,
-                    child: child!,
-                  ),
-                );
-              },
-            ),
+      child: ValueListenableBuilder<Locale>(
+        valueListenable: LanguageService.localeNotifier,
+        builder: (context, locale, _) {
+          return ValueListenableBuilder<ThemePalette>(
+            valueListenable: _paletteNotifier,
+            builder: (context, palette, child) {
+              return AppTheme(
+                palette: palette,
+                child: MaterialApp.router(
+                  title: 'FitnesBuster',
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  theme: _buildTheme(palette),
+                  routerConfig: AppRouter.router,
+                  builder: (context, child) {
+                    final dir = ui.TextDirection.ltr;
+                    return Directionality(
+                      textDirection: dir,
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+                        child: AnimatedThemeBackground(
+                          palette: palette,
+                          child: child!,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           );
         },
       ),
@@ -174,9 +196,9 @@ class _InitErrorApp extends StatelessWidget {
               children: [
                 const Icon(Icons.error_outline_rounded, color: Colors.orangeAccent, size: 64),
                 const SizedBox(height: 24),
-                const Text(
-                  'Ошибка запуска приложения',
-                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  AppLocalizations.tl('appInitError'),
+                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
@@ -186,9 +208,9 @@ class _InitErrorApp extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Перезапустите приложение',
-                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                Text(
+                  AppLocalizations.tl('appRestartMessage'),
+                  style: const TextStyle(color: Colors.white38, fontSize: 12),
                 ),
               ],
             ),
@@ -217,9 +239,9 @@ class _FirebaseErrorApp extends StatelessWidget {
               children: [
                 const Icon(Icons.cloud_off_rounded, color: Colors.redAccent, size: 64),
                 const SizedBox(height: 24),
-                const Text(
-                  'Ошибка подключения к Firebase',
-                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  AppLocalizations.tl('appFirebaseError'),
+                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/screens/onboarding/workout_location_screen.dart';
 
 class WorkoutSettingsSheet extends StatefulWidget {
@@ -35,6 +36,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.surface,
@@ -48,26 +50,26 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.surfaceLight, borderRadius: BorderRadius.circular(2))),
           const SizedBox(height: 20),
-          const Text('Настройки тренировок', style: AppTextStyles.titleL),
+          Text(l10n.workoutSettingsTitle, style: AppTextStyles.titleL),
           const SizedBox(height: 6),
-          const Text('Изменение перестроит твою программу', style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
+          Text(l10n.workoutSettingsSubtitle, style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
           const SizedBox(height: 24),
 
           // Location selector
-          const Align(alignment: Alignment.centerLeft, child: Text('Место тренировок', style: AppTextStyles.labelL)),
+          Align(alignment: Alignment.centerLeft, child: Text(l10n.locationSectionLabel, style: AppTextStyles.labelL)),
           const SizedBox(height: 12),
-          ..._locationOptions().map((opt) => _buildLocationRow(opt)),
+          ..._locationOptions(context).map((opt) => _buildLocationRow(opt)),
 
           const SizedBox(height: 24),
-          const Align(alignment: Alignment.centerLeft, child: Text('Беговые упражнения', style: AppTextStyles.labelL)),
+          Align(alignment: Alignment.centerLeft, child: Text(l10n.runningExercisesLabel, style: AppTextStyles.labelL)),
           const SizedBox(height: 12),
           Row(children: [
             Expanded(child: _buildRunOption(
-              RunningPreference.withRunning, '🏃‍♂️', 'С бегом', AppColors.success,
+              RunningPreference.withRunning, '🏃‍♂️', l10n.withRunningLabel, AppColors.success,
             )),
             const SizedBox(width: 12),
             Expanded(child: _buildRunOption(
-              RunningPreference.noRunning, '🚫', 'Без бега', AppColors.accentOrange,
+              RunningPreference.noRunning, '🚫', l10n.withoutRunningLabel, AppColors.accentOrange,
             )),
           ]),
 
@@ -120,7 +122,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               child: Text(
-                _hasChanges ? 'Применить изменения' : 'Изменений нет',
+                _hasChanges ? l10n.applyChangesBtn : l10n.noChangesLabel,
                 style: const TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700),
               ),
             ),
@@ -194,11 +196,14 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
     ));
   }
 
-  List<_LocOpt> _locationOptions() => [
-    _LocOpt(WorkoutLocation.gym, '🏋️', 'Тренажёрный зал', 'Штанги, тренажёры, гантели', AppColors.accentPurple),
-    _LocOpt(WorkoutLocation.outdoor, '🏃', 'Спортплощадка / стадион', 'Турники, брусья, открытое пространство', AppColors.success),
-    _LocOpt(WorkoutLocation.home, '🏠', 'Дома', 'Без оборудования или минимальный инвентарь', AppColors.accentOrange),
-  ];
+  List<_LocOpt> _locationOptions(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      _LocOpt(WorkoutLocation.gym, '🏋️', l10n.gymLocation, l10n.gymLocationSub, AppColors.accentPurple),
+      _LocOpt(WorkoutLocation.outdoor, '🏃', l10n.stadiumLocation, l10n.stadiumLocationSub, AppColors.success),
+      _LocOpt(WorkoutLocation.home, '🏠', l10n.homeLocation, l10n.homeLocationSub, AppColors.accentOrange),
+    ];
+  }
 }
 
 class _LocOpt {

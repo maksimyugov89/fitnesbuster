@@ -10,6 +10,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -155,7 +156,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   }
 
   Widget _topBar(dynamic colors) {
-    final titles = ['О себе', 'Параметры', 'Активность', 'Ограничения', 'Местоположение'];
+    final l10n = context.l10n;
+    final titles = [l10n.step1About, l10n.step2Params, l10n.step3Activity, l10n.step4Restrictions, l10n.step5Location];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Column(
@@ -195,7 +197,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   }
 
   Widget _bottomArea(dynamic colors) {
-    final labels = ['Далее', 'Далее', 'Далее', 'Далее', 'Начать программу 🚀'];
+    final l10n = context.l10n;
+    final labels = [l10n.continueLabel, l10n.continueLabel, l10n.continueLabel, l10n.continueLabel, l10n.startProgramBtn];
     return Padding(
       padding: const EdgeInsets.all(24),
       child: SizedBox(
@@ -236,8 +239,8 @@ class _PageBasicInfo extends StatelessWidget {
         children: [
           const SizedBox(height: 8),
           _InputField(
-            label: 'Имя',
-            hint: 'Ваше имя?',
+            label: context.l10n.nameFieldLabel,
+            hint: context.l10n.nameHint,
             icon: Icons.person_outline_rounded,
             onChanged: onNameChanged,
           ),
@@ -298,13 +301,13 @@ class _GenderSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Пол', style: AppTextStyles.labelL),
+        Text(context.l10n.onbGenderTitle, style: AppTextStyles.labelL),
         const SizedBox(height: 10),
         Row(
           children: [
-            _GenderCard(label: 'Мужской', emoji: '♂', gender: Gender.male, selected: selected, onTap: onChanged),
+            _GenderCard(label: context.l10n.genderMale, emoji: '♂', gender: Gender.male, selected: selected, onTap: onChanged),
             const SizedBox(width: 12),
-            _GenderCard(label: 'Женский', emoji: '♀', gender: Gender.female, selected: selected, onTap: onChanged),
+            _GenderCard(label: context.l10n.genderFemale, emoji: '♀', gender: Gender.female, selected: selected, onTap: onChanged),
           ],
         ),
       ],
@@ -357,7 +360,7 @@ class _AgeSlider extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(children: [
-          const Text('Возраст', style: AppTextStyles.labelL),
+          Text(context.l10n.onbAgeTitle, style: AppTextStyles.labelL),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -398,9 +401,9 @@ class _PageBodyStats extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          _NumericSlider(label: 'Ваш вес', value: weight, min: 40, max: 200, unit: 'kg', onChanged: onWeightChanged),
+          _NumericSlider(label: context.l10n.onbWeightTitle, value: weight, min: 40, max: 200, unit: 'kg', onChanged: onWeightChanged),
           const SizedBox(height: 28),
-          _NumericSlider(label: 'Рост', value: height, min: 140, max: 220, unit: 'cm', onChanged: onHeightChanged),
+          _NumericSlider(label: context.l10n.onbHeightTitle, value: height, min: 140, max: 220, unit: 'cm', onChanged: onHeightChanged),
           const SizedBox(height: 28),
           _BmiCard(weight: weight, height: height),
         ],
@@ -461,10 +464,11 @@ class _BmiCard extends StatelessWidget {
     final colors = AppTheme.of(context);
     final bmi = height > 0 ? weight / ((height / 100) * (height / 100)) : 0;
     String category; Color bmiColor;
-    if (bmi < 18.5) { category = 'Недостаточный'; bmiColor = colors.info; }
-    else if (bmi < 25) { category = 'Норма'; bmiColor = colors.success; }
-    else if (bmi < 30) { category = 'Избыточный'; bmiColor = colors.warning; }
-    else { category = 'Ожирение'; bmiColor = colors.error; }
+    final l10n = context.l10n;
+    if (bmi < 18.5) { category = l10n.bmiUnderweight; bmiColor = colors.info; }
+    else if (bmi < 25) { category = l10n.bmiNormal; bmiColor = colors.success; }
+    else if (bmi < 30) { category = l10n.bmiOverweight; bmiColor = colors.warning; }
+    else { category = l10n.bmiObese; bmiColor = colors.error; }
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -475,7 +479,7 @@ class _BmiCard extends StatelessWidget {
       ),
       child: Row(children: [
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Индекс массы тела (ИМТ)', style: TextStyle(color: colors.textSecondary, fontSize: 12)),
+          Text(l10n.bmiTitle, style: TextStyle(color: colors.textSecondary, fontSize: 12)),
           const SizedBox(height: 4),
           Text(bmi.toStringAsFixed(1), style: TextStyle(
             fontFamily: 'Syne', fontSize: 36, fontWeight: FontWeight.w800, color: bmiColor)),
@@ -579,7 +583,7 @@ class _PageCityState extends State<_PageCity> {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        setState(() { _errorMsg = 'Геолокация отключена. Введите город вручную.'; _detecting = false; });
+        setState(() { _errorMsg = context.l10n.geoDisabledMsg; _detecting = false; });
         return;
       }
       var permission = await Geolocator.checkPermission();
@@ -587,7 +591,7 @@ class _PageCityState extends State<_PageCity> {
         permission = await Geolocator.requestPermission();
       }
       if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-        setState(() { _errorMsg = 'Доступ к геолокации запрещён. Введите город вручную.'; _detecting = false; });
+        setState(() { _errorMsg = context.l10n.geoPermissionDeniedMsg; _detecting = false; });
         return;
       }
       final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.low, timeLimit: Duration(seconds: 10)));
@@ -608,22 +612,23 @@ class _PageCityState extends State<_PageCity> {
           return;
         }
       }
-      setState(() { _errorMsg = 'Не удалось определить город. Введите вручную.'; _detecting = false; });
+      setState(() { _errorMsg = context.l10n.geoCityNotFoundMsg; _detecting = false; });
     } catch (_) {
-      setState(() { _errorMsg = 'Ошибка определения. Введите город вручную.'; _detecting = false; });
+      setState(() { _errorMsg = context.l10n.geoErrorMsg; _detecting = false; });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
+    final l10n = context.l10n;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Укажите ваш город или населённый пункт, чтобы AI подобрал продукты, которые реально купить в вашем регионе.',
+            l10n.locationNote,
             style: TextStyle(color: colors.textSecondary, fontSize: 13, height: 1.55),
           ),
           const SizedBox(height: 20),
@@ -637,7 +642,7 @@ class _PageCityState extends State<_PageCity> {
                   ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: colors.primary))
                   : Icon(Icons.my_location_rounded, size: 18, color: colors.primary),
               label: Text(
-                _detecting ? 'Определяем...' : 'Определить автоматически',
+                _detecting ? l10n.detectingLabel : l10n.detectAutoBtn,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.primary),
               ),
               style: OutlinedButton.styleFrom(
@@ -670,7 +675,7 @@ class _PageCityState extends State<_PageCity> {
             Expanded(child: Divider(color: colors.textPrimary.withValues(alpha: 0.1))),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text('или введите вручную', style: TextStyle(fontSize: 11, color: colors.textMuted)),
+              child: Text(l10n.enterManuallyLabel, style: TextStyle(fontSize: 11, color: colors.textMuted)),
             ),
             Expanded(child: Divider(color: colors.textPrimary.withValues(alpha: 0.1))),
           ]),
@@ -687,7 +692,7 @@ class _PageCityState extends State<_PageCity> {
               controller: _ctrl,
               style: TextStyle(color: colors.textPrimary, fontSize: 16),
               decoration: InputDecoration(
-                hintText: 'Например: Москва, Орёл, Усть-Кут',
+                hintText: l10n.locationHint,
                 hintStyle: TextStyle(color: colors.textMuted),
                 prefixIcon: Icon(Icons.location_city_rounded, color: colors.textMuted, size: 20),
                 border: InputBorder.none,
@@ -709,7 +714,7 @@ class _PageCityState extends State<_PageCity> {
               Icon(Icons.info_outline_rounded, color: colors.info, size: 18),
               const SizedBox(width: 10),
               Expanded(child: Text(
-                'AI учтёт доступность продуктов в вашем регионе: в крупных городах — широкий ассортимент, в малых населённых пунктах — только самые распространённые продукты. Для каждого приёма пищи будут предложены альтернативы.',
+                l10n.locationNote,
                 style: TextStyle(fontSize: 12, color: colors.info, height: 1.45),
               )),
             ]),
@@ -717,7 +722,7 @@ class _PageCityState extends State<_PageCity> {
 
           const SizedBox(height: 12),
           Text(
-            'Можно пропустить — в этом случае AI составит универсальный план.',
+            l10n.locationSkipNote,
             style: TextStyle(color: colors.textMuted, fontSize: 11, height: 1.5),
           ),
         ],
@@ -736,12 +741,18 @@ class _PageRestrictions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
+    final l10n = context.l10n;
+    final displayLabels = [
+      l10n.dietNutsAllergy, l10n.dietLactose, l10n.dietGlutenFree,
+      l10n.dietVegetarian, l10n.dietNoRedMeat, l10n.dietDiabetic,
+      l10n.dietLowSalt, l10n.dietVegan, l10n.dietKeto,
+    ];
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Отметьте ограничения в питании или тренировках',
+          Text(l10n.restrictionsNote1,
             style: TextStyle(color: colors.textSecondary, fontSize: 13, height: 1.5)),
           const SizedBox(height: 16),
           Container(
@@ -755,7 +766,7 @@ class _PageRestrictions extends StatelessWidget {
               Icon(Icons.info_outline_rounded, color: colors.info, size: 18),
               const SizedBox(width: 10),
               Expanded(child: Text(
-                'Мы исключим запрещённые продукты из вашего плана',
+                l10n.restrictionsNote2,
                 style: TextStyle(fontSize: 12, color: colors.info, height: 1.4),
               )),
             ]),
@@ -763,7 +774,9 @@ class _PageRestrictions extends StatelessWidget {
           const SizedBox(height: 20),
           Wrap(
             spacing: 8, runSpacing: 8,
-            children: commonRestrictions.map((r) {
+            children: List.generate(commonRestrictions.length, (index) {
+              final r = commonRestrictions[index];
+              final displayLabel = index < displayLabels.length ? displayLabels[index] : r;
               final isSel = restrictions.contains(r);
               return GestureDetector(
                 onTap: () { HapticFeedback.selectionClick(); onToggle(r); },
@@ -783,18 +796,18 @@ class _PageRestrictions extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 6),
                       child: Icon(Icons.close_rounded, size: 14, color: colors.accentOrange),
                     ),
-                    Text(r, style: TextStyle(
+                    Text(displayLabel, style: TextStyle(
                       fontSize: 13, fontWeight: FontWeight.w500,
                       color: isSel ? colors.accentOrange : colors.textSecondary,
                     )),
                   ]),
                 ),
               );
-            }).toList(),
+            }),
           ),
           const SizedBox(height: 16),
           if (restrictions.isEmpty)
-            Text('Если ограничений нет — нажмите «Начать программу» 🚀',
+            Text(l10n.restrictionsNote3,
               style: TextStyle(color: colors.textMuted, fontSize: 12, height: 1.5)),
         ],
       ),
@@ -831,21 +844,8 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
   final List<int> _stepState = [1, 0, 0, 0];
   final List<Timer?> _stepTimers = [null, null, null, null];
 
-  static const _steps = [
-    'Анализируем профиль...',
-    'Составляем программу тренировок...',
-    'Разрабатываем план питания...',
-    'Финализируем план...',
-  ];
-
-  static const _facts = [
-    '💡 Силовые тренировки ускоряют метаболизм на 15-20%',
-    '💡 Оптимальное время для роста мышц — 8-9 часов сна',
-    '💡 Белок после тренировки усваивается в 3× быстрее',
-    '💡 30 минут ходьбы = -150 ккал',
-    '💡 Вода ускоряет синтез протеина в клетках',
-    '💡 Правильное питание = 70% результата',
-  ];
+  List<String> _steps = const [];
+  List<String> _facts = const [];
 
   @override
   void initState() {
@@ -867,7 +867,7 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
     _factCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
     _factTimer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (!mounted) return;
-      setState(() => _factIndex = (_factIndex + 1) % _facts.length);
+      if (_facts.isNotEmpty) setState(() => _factIndex = (_factIndex + 1) % _facts.length);
     });
 
     // Step progression schedule
@@ -986,6 +986,17 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
+    final l10n = context.l10n;
+    _steps = [
+      l10n.generatingAnalyzing,
+      l10n.generatingWorkout,
+      l10n.generatingMeal,
+      l10n.generatingFinalizing,
+    ];
+    _facts = [
+      l10n.funFact1, l10n.funFact2, l10n.funFact3,
+      l10n.funFact4, l10n.funFact5, l10n.funFact6,
+    ];
 
     return AnimatedBuilder(
       animation: _bgAnim,
@@ -1039,9 +1050,9 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
               const SizedBox(height: 32),
 
               // ── Title ──
-              const Text(
-                'AI составляет ваш план',
-                style: TextStyle(
+              Text(
+                l10n.aiPlanCreating,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -1051,7 +1062,7 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
               ),
               const SizedBox(height: 6),
               Text(
-                'Это займёт около 30 секунд',
+                l10n.about30sec,
                 style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
               ),
 
@@ -1077,6 +1088,7 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
               const Spacer(flex: 2),
 
               // ── Facts ticker ──
+              if (_facts.isNotEmpty)
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
                 transitionBuilder: (child, animation) => FadeTransition(
@@ -1084,7 +1096,7 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
                   child: child,
                 ),
                 child: Text(
-                  _facts[_factIndex],
+                  _facts[_factIndex % _facts.length],
                   key: ValueKey<int>(_factIndex),
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.55),

@@ -1,19 +1,23 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
-import 'package:fitnesbuster/data/repositories/user_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
 import 'package:fitnesbuster/presentation/widgets/muscle_map_3d_widget.dart';
-import 'package:fitnesbuster/core/services/exercise_matcher.dart';
+import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
+import 'package:fitnesbuster/core/services/share_intent_service.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/presentation/screens/workout/import_workout_sheet.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 
 class WorkoutPlanScreen extends StatefulWidget {
   const WorkoutPlanScreen({super.key});
@@ -37,58 +41,81 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
   bool _todayWorkoutDone = false;
   bool _matcherReady = false;
 
-  static const _weekLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+  List<String> _getWeekLabels(AppLocalizations l10n) => [
+    l10n.monShort, l10n.tueShort, l10n.wedShort, l10n.thuShort,
+    l10n.friShort, l10n.satShort, l10n.sunShort,
+  ];
 
   @override
   void initState() {
     super.initState();
-    if (kDebugMode) debugPrint('[WorkoutPlan] initState');
+    appLogger.d('[WorkoutPlan] initState');
     _tabCtrl = TabController(length: 2, vsync: this);
     _selectedDay = (DateTime.now().weekday - 1).clamp(0, 6);
     _load();
     WorkoutPlanScreen.planVersion.addListener(_onPlanVersionChanged);
+    ShareIntentService.pendingShare.addListener(_onPendingShare);
+    ShareIntentService.checkInitialShare();
   }
 
   @override
   void dispose() {
     WorkoutPlanScreen.planVersion.removeListener(_onPlanVersionChanged);
+    ShareIntentService.pendingShare.removeListener(_onPendingShare);
     _tabCtrl.dispose();
     super.dispose();
   }
 
+  void _onPendingShare() {
+    final content = ShareIntentService.consume();
+    if (content == null || content.isEmpty) return;
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ImportWorkoutSheet(initialContent: content),
+    );
+  }
+
+  void _openImport() {
+    showImportWorkoutSheet(context);
+  }
+
   void _onPlanVersionChanged() {
-    if (kDebugMode) debugPrint('[WorkoutPlan] planVersion changed, calling _load');
+    appLogger.d('[WorkoutPlan] planVersion changed, calling _load');
     _load();
   }
 
   Future<void> _load() async {
     try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
+      final authState = context.read<AuthBloc>().state;
+      final uid = authState is AuthStateAuthenticated ? authState.user.id : null;
       if (uid == null) {
-        if (kDebugMode) debugPrint('[WorkoutPlan] _load: uid is null');
+        appLogger.d('[WorkoutPlan] _load: uid is null');
         if (mounted) {
-          setState(() { _loading = false; _error = 'Войдите в аккаунт'; });
+          setState(() { _loading = false; _error = AppLocalizations.tl('loginRequired'); });
         }
         return;
       }
-      final repo = sl<UserRepository>();
-      if (kDebugMode) debugPrint('[WorkoutPlan] _load: calling getAiPlans for $uid');
+      final repo = sl<IUserRepository>();
+      appLogger.d('[WorkoutPlan] _load: calling getAiPlans for $uid');
       final plans = await repo.getAiPlans(uid);
       final jsonStr = plans['workoutPlan'];
-      if (kDebugMode) debugPrint('[WorkoutPlan] _load: workoutPlan=${jsonStr != null ? "OK len=${jsonStr.length}" : "NULL"} mealPlan=${plans['mealPlan'] != null ? "OK" : "NULL"}');
+      appLogger.d('[WorkoutPlan] _load: workoutPlan=${jsonStr != null ? "OK len=${jsonStr.length}" : "NULL"} mealPlan=${plans["mealPlan"] != null ? "OK" : "NULL"}');
       if (jsonStr == null) {
         if (mounted) {
-          setState(() { _loading = false; _error = 'План тренировок ещё не сгенерирован.\nПройдите онбординг.'; });
+          setState(() { _loading = false; _error = AppLocalizations.tl('planNotGeneratedMsg'); });
         }
         return;
       }
       final data = jsonDecode(jsonStr) as Map<String, dynamic>;
-      if (kDebugMode) debugPrint('[WorkoutPlan] _load: jsonDecode OK, keys=${data.keys.join(",")}');
+      appLogger.d('[WorkoutPlan] _load: jsonDecode OK, keys=${data.keys.join(",")}');
       final rawPlan = data['plan'];
       final planList = rawPlan is List
           ? rawPlan.map((e) => e is Map<String, dynamic> ? e : <String, dynamic>{}).toList()
           : <Map<String, dynamic>>[];
-      if (kDebugMode) debugPrint('[WorkoutPlan] _load: planList length=${planList.length}');
+      appLogger.d('[WorkoutPlan] _load: planList length=${planList.length}');
       final meta = WorkoutPlanMeta.fromPlanJson(data);
       int completed = 0;
       try {
@@ -100,7 +127,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
       try {
         todayDone = await sl<ISettingsRepository>().getWorkoutDone(todayKey());
       } catch (_) {}
-      ExerciseMatcher.instance.init().then((_) {
+      sl<IExerciseService>().init().then((_) {
         if (mounted) setState(() => _matcherReady = true);
       });
       if (mounted) {
@@ -113,14 +140,14 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
         });
       }
     } on FormatException catch (e) {
-      if (kDebugMode) debugPrint('[WorkoutPlan] _load: FormatException: $e');
+      appLogger.d('[WorkoutPlan] _load: FormatException', error: e);
       if (mounted) {
-        setState(() { _loading = false; _error = 'План повреждён.\nПопробуйте повторить.'; });
+        setState(() { _loading = false; _error = AppLocalizations.tl('planDamagedMsg'); });
       }
     } catch (e) {
-      if (kDebugMode) debugPrint('[WorkoutPlan] _load: Exception: $e');
+      appLogger.d('[WorkoutPlan] _load: Exception', error: e);
       if (mounted) {
-        setState(() { _loading = false; _error = 'Не удалось загрузить план.\nПопробуйте повторить.'; });
+        setState(() { _loading = false; _error = AppLocalizations.tl('planLoadFailMsg'); });
       }
     }
   }
@@ -307,7 +334,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
                       labelColor: colors.primary,
                       unselectedLabelColor: colors.textMuted,
                       labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Inter'),
-                      tabs: const [Tab(text: 'Неделя'), Tab(text: 'Весь план')],
+                      tabs: [Tab(text: context.l10n.weekTab), Tab(text: context.l10n.fullPlanTab)],
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                     ),
                     Expanded(
@@ -333,7 +360,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
           ElevatedButton.icon(
             onPressed: () { setState(() { _loading = true; _error = null; }); _load(); },
             icon: const Icon(Icons.refresh_rounded, size: 18),
-            label: const Text('Повторить'),
+            label: Text(context.l10n.retry),
             style: ElevatedButton.styleFrom(backgroundColor: colors.primary, foregroundColor: colors.textOnPrimary),
           ),
         ]),
@@ -359,7 +386,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Icon(Icons.emoji_events_rounded, color: colors.primary, size: 18),
                   const SizedBox(width: 6),
-                  Text('Личные рекорды', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.primary)),
+                  Text(context.l10n.prTitle, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.primary)),
                 ]),
               ),
             ),
@@ -377,7 +404,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Icon(Icons.calendar_month_rounded, color: colors.accentPurple, size: 18),
                   const SizedBox(width: 6),
-                  Text('Календарь', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.accentPurple)),
+                  Text(context.l10n.calendarBtn, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.accentPurple)),
                 ]),
               ),
             ),
@@ -388,8 +415,8 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
         Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Тренировки', style: AppTextStyles.displayM),
-              Text('AI-план на 7 дней', style: TextStyle(fontSize: 13, color: colors.textMuted)),
+              Text(context.l10n.workoutsTitle, style: AppTextStyles.displayM),
+              Text(context.l10n.aiPlanSubtitle, style: TextStyle(fontSize: 13, color: colors.textMuted)),
             ]),
           ),
           const SizedBox(width: 10),
@@ -404,7 +431,23 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.search_rounded, color: colors.accent, size: 18),
                 const SizedBox(width: 6),
-                Text('База', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: colors.accent)),
+                Text(context.l10n.baseShort, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: colors.accent)),
+              ]),
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: _openImport,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Icon(Icons.auto_fix_high_rounded, color: colors.primary, size: 18),
+                const SizedBox(width: 6),
+                Text(context.l10n.aiCorrShort, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: colors.primary)),
               ]),
             ),
           ),
@@ -428,13 +471,13 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
           const Text('🎯', style: TextStyle(fontSize: 20)),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Тестовая неделя', style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-            Text('Заполни показатели → получи точную программу', style: TextStyle(fontSize: 11, color: colors.textMuted)),
+            Text(context.l10n.testWeekTitle, style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w800, color: colors.textPrimary)),
+            Text(context.l10n.testWeekSubtitle, style: TextStyle(fontSize: 11, color: colors.textMuted)),
           ])),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(color: colors.info, borderRadius: BorderRadius.circular(8)),
-            child: Text('Начать', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.textOnPrimary)),
+            child: Text(context.l10n.startTestBtn, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.textOnPrimary)),
           ),
         ]),
       ),
@@ -443,7 +486,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
 
   Widget _buildWeekView(dynamic colors) {
     if (_days.isEmpty) {
-      return Center(child: Text('Нет данных', style: TextStyle(color: colors.textMuted)));
+      return Center(child: Text(context.l10n.noData, style: TextStyle(color: colors.textMuted)));
     }
     final todayIdx = (DateTime.now().weekday - 1).clamp(0, 6);
     final count = _days.length.clamp(0, 7);
@@ -481,7 +524,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
                     ),
                     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                       Text(
-                        i < _weekLabels.length ? _weekLabels[i] : '${i+1}',
+                        _getWeekLabels(context.l10n)[i],
                         style: TextStyle(fontSize: 10, color: isSelected ? colors.textOnPrimary : colors.textMuted, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 4),
@@ -500,13 +543,13 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
           _buildDayDetail(
             colors,
             _days[_selectedDay],
-            _selectedDay < _weekLabels.length ? _weekLabels[_selectedDay] : 'День ${_selectedDay + 1}',
+            context.l10n.dayLabel(_selectedDay + 1),
           ),
 
         // ── Recommendations ──
         if (_meta.recommendations.isNotEmpty) ...[
           const SizedBox(height: 24),
-          Text('Рекомендации', style: AppTextStyles.titleM),
+          Text(context.l10n.weeklyRecsTitle, style: AppTextStyles.titleM),
           const SizedBox(height: 12),
           ..._meta.recommendations.map((rec) => Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -532,7 +575,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
               const Text('🔮', style: TextStyle(fontSize: 18)),
               const SizedBox(width: 10),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Следующая неделя', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.accentPurple)),
+                Text(context.l10n.nextWeekTitle, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.accentPurple)),
                 const SizedBox(height: 4),
                 Text(_meta.nextWeekPreview, style: TextStyle(fontSize: 12, color: colors.textSecondary, height: 1.4)),
               ])),
@@ -571,7 +614,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(color: colors.accentOrange.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
-            child: Text('🏃 $cardio мин', style: TextStyle(fontSize: 12, color: colors.accentOrange, fontWeight: FontWeight.w600)),
+            child: Text('🏃 ${context.l10n.minSuffix(cardio)}', style: TextStyle(fontSize: 12, color: colors.accentOrange, fontWeight: FontWeight.w600)),
           ),
         ],
       ]),
@@ -580,9 +623,9 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
       if (duration > 0 || estCal > 0) ...[
         const SizedBox(height: 6),
         Row(children: [
-          if (duration > 0) _MetaChip(icon: Icons.timer_outlined, label: '$duration мин', colors: colors),
+          if (duration > 0) _MetaChip(icon: Icons.timer_outlined, label: context.l10n.minSuffix(duration), colors: colors),
           if (duration > 0 && estCal > 0) const SizedBox(width: 8),
-          if (estCal > 0) _MetaChip(icon: Icons.local_fire_department_outlined, label: '~$estCal ккал', colors: colors),
+          if (estCal > 0) _MetaChip(icon: Icons.local_fire_department_outlined, label: context.l10n.kcalSuffix(estCal), colors: colors),
         ]),
       ],
       const SizedBox(height: 12),
@@ -611,8 +654,8 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
               const SizedBox(width: 14),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Тренировка выполнена', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: colors.success)),
-                  Text('Отличная работа! До следующей тренировки.', style: TextStyle(fontSize: 11, color: colors.success.withValues(alpha: 0.8))),
+                  Text(context.l10n.workoutDoneStatus, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: colors.success)),
+                  Text(context.l10n.workoutDoneSubtitleNext, style: TextStyle(fontSize: 11, color: colors.success.withValues(alpha: 0.8))),
                 ]),
               ),
               Icon(Icons.emoji_events_rounded, color: colors.success.withValues(alpha: 0.7), size: 20),
@@ -651,8 +694,8 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        const Text('Начать тренировку', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-                        Text('${exercises.length} упр. · ${workoutDay!.totalSets} подходов${cardio > 0 ? ' · $cardio мин кардио' : ''}',
+                        Text(context.l10n.startWorkoutBtn, style: const TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
+                        Text(cardio > 0 ? context.l10n.startWorkoutWithCardio(exercises.length, workoutDay!.totalSets, cardio) : context.l10n.startWorkoutDetails(exercises.length, workoutDay!.totalSets),
                           style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.8))),
                       ]),
                     ),
@@ -667,7 +710,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
 
       // ── Разминка ──
       if (warmup.isNotEmpty) ...[
-        _SectionList(title: '🔥 Разминка', items: warmup, color: colors.accentOrange, colors: colors),
+        _SectionList(title: context.l10n.warmupTitle, items: warmup, color: colors.accentOrange, colors: colors),
         const SizedBox(height: 12),
       ],
 
@@ -684,9 +727,9 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
             const Text('😴', style: TextStyle(fontSize: 32)),
             const SizedBox(width: 16),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('День отдыха', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+              Text(context.l10n.restDayTitle, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
               const SizedBox(height: 4),
-              Text(notes.isNotEmpty ? notes : 'Восстановление — важная часть прогресса', style: TextStyle(fontSize: 12, color: colors.textMuted, height: 1.4)),
+              Text(notes.isNotEmpty ? notes : context.l10n.restDayNote, style: TextStyle(fontSize: 12, color: colors.textMuted, height: 1.4)),
             ])),
           ]),
         )
@@ -696,7 +739,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
       // ── Заминка ──
       if (cooldown.isNotEmpty && !isRest) ...[
         const SizedBox(height: 12),
-        _SectionList(title: '🧊 Заминка', items: cooldown, color: colors.info, colors: colors),
+        _SectionList(title: context.l10n.cooldownTitle, items: cooldown, color: colors.info, colors: colors),
       ],
 
       // ── Заметки ──
@@ -731,7 +774,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
     if (primary.isEmpty && secondary.isEmpty) return const SizedBox.shrink();
 
     return GestureDetector(
-      onTap: () => _showExercise3D('Мышцы тренировки', primary, secondary),
+      onTap: () => _showExercise3D(context.l10n.musclesWorkoutTitle, primary, secondary),
       child: Container(
         margin: const EdgeInsets.only(bottom: 14),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -751,8 +794,8 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
           ),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Мышцы тренировки', style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-            Text('Посмотреть в 3D', style: TextStyle(fontSize: 11, color: colors.textMuted)),
+            Text(context.l10n.musclesWorkoutTitle, style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+            Text(context.l10n.view3D, style: TextStyle(fontSize: 11, color: colors.textMuted)),
           ])),
           Row(mainAxisSize: MainAxisSize.min, children: [
             Container(
@@ -773,7 +816,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
   }
 
   Widget _buildExerciseCard(dynamic colors, Map<String, dynamic> ex) {
-    final name = _s(ex['name']).isNotEmpty ? _s(ex['name']) : 'Упражнение';
+    final name = _s(ex['name']).isNotEmpty ? _s(ex['name']) : context.l10n.exerciseDefault;
     final sets = ex['sets']?.toString() ?? '3';
     final reps = ex['reps']?.toString() ?? '';
     final rest = (ex['rest_seconds'] as num?)?.toInt() ?? 60;
@@ -798,7 +841,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
         Row(children: [
           _ExerciseGifThumb(
             name: name,
-            gifUrl: _matcherReady ? ExerciseMatcher.instance.findByRuName(name)?.gifUrl : null,
+            gifUrl: _matcherReady ? sl<IExerciseService>().findByRuName(name)?.gifUrl : null,
             accentColor: colors.primary,
           ),
           const SizedBox(width: 12),
@@ -891,7 +934,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
 
   Widget _buildFullPlan(dynamic colors) {
     if (_days.isEmpty) {
-      return Center(child: Text('Нет данных', style: TextStyle(color: colors.textMuted)));
+      return Center(child: Text(context.l10n.noData, style: TextStyle(color: colors.textMuted)));
     }
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 80),
@@ -902,7 +945,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
         final exercises = (day['exercises'] as List? ?? []).cast<Map<String, dynamic>>();
         final cardio = (day['cardio_minutes'] as num?)?.toInt() ?? 0;
         final isRest = _isRest(day);
-        final label = i < _weekLabels.length ? _weekLabels[i] : 'День ${i+1}';
+        final label = context.l10n.dayLabel(i + 1);
 
         return Container(
           margin: const EdgeInsets.only(bottom: 10),
@@ -928,11 +971,11 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
               overflow: TextOverflow.ellipsis,
             ),
             subtitle: Text(
-              isRest ? 'Отдых' : '${exercises.length} упражнений${cardio > 0 ? ' · $cardio мин кардио' : ''}',
+              isRest ? context.l10n.restDayTitle : (cardio > 0 ? '${context.l10n.exercisesCount(exercises.length)} · ${context.l10n.cardioMinutes(cardio)}' : context.l10n.exercisesCount(exercises.length)),
               style: TextStyle(fontSize: 11, color: colors.textMuted),
             ),
             children: isRest
-                ? [Text(day['notes'] as String? ?? 'День отдыха', style: TextStyle(fontSize: 13, color: colors.textMuted))]
+                ? [Text(day['notes'] as String? ?? context.l10n.restDayTitle, style: TextStyle(fontSize: 13, color: colors.textMuted))]
                 : exercises.map((ex) {
                     final rpe = (ex['rpe'] as num?)?.toInt() ?? 0;
                     return Padding(
@@ -1204,9 +1247,9 @@ class _TechniqueSheetState extends State<_TechniqueSheet> {
   }
 
   Future<void> _loadGif() async {
-    final matcher = ExerciseMatcher.instance;
-    await matcher.init();
-    final model = matcher.findByRuName(widget.title);
+    final exService = sl<IExerciseService>();
+    await exService.init();
+    final model = exService.findByRuName(widget.title);
     if (mounted && model?.gifUrl != null) setState(() => _gifUrl = model!.gifUrl);
   }
 

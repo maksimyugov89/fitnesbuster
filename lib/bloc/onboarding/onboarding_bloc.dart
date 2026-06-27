@@ -1,11 +1,12 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 part 'onboarding_event.dart';
 part 'onboarding_state.dart';
@@ -14,12 +15,15 @@ part 'onboarding_state.dart';
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final IUserRepository _userRepo;
   final IDeepSeekService _aiService;
+  final IAuthRepository _authRepo;
 
   OnboardingBloc({
     required IUserRepository userRepo,
     required IDeepSeekService aiService,
+    required IAuthRepository authRepo,
   })  : _userRepo = userRepo,
         _aiService = aiService,
+        _authRepo = authRepo,
         super(const OnboardingCollecting()) {
     on<OnboardingSetGoal>(_onSetGoal);
     on<OnboardingSetIntensity>(_onSetIntensity);
@@ -63,11 +67,11 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   ) async {
     final data = _collecting();
     if (!data.isComplete) {
-      emit(const OnboardingError('Не все данные заполнены'));
+      emit(OnboardingError(AppLocalizations.tl('onboardingIncomplete')));
       return;
     }
 
-    final userId = fb.FirebaseAuth.instance.currentUser?.uid ?? 'local';
+    final userId = _authRepo.currentUser?.id ?? 'local';
     final profile = data.toUserProfile();
 
     // Step 1: Save onboarding + profile to Firestore
@@ -86,8 +90,9 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       await _userRepo.updateProfile(
         (await _userRepo.getUser(userId)).copyWith(name: data.name!),
       );
-    } catch (e) {
-      emit(OnboardingError('Не удалось сохранить данные: $e'));
+    } catch (e, st) {
+      appLogger.w('[OnboardingBloc] save failed', error: e, stackTrace: st);
+      emit(OnboardingError(AppLocalizations.tl('onboardingSaveFailed')));
       return;
     }
 
@@ -108,15 +113,16 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           mealPlanJson: mealPlan,
         );
       } catch (e, st) {
-        if (kDebugMode) debugPrint('[OnboardingBloc] AI plans save failed: $e\n$st');
+        appLogger.w('[OnboardingBloc] AI plans save failed', error: e, stackTrace: st);
       }
 
       emit(OnboardingComplete(
         workoutPlanJson: workoutPlan,
         mealPlanJson: mealPlan,
       ));
-    } catch (e) {
-      emit(OnboardingError('Не удалось сгенерировать планы: $e'));
+    } catch (e, st) {
+      appLogger.w('[OnboardingBloc] plan generation failed', error: e, stackTrace: st);
+      emit(OnboardingError(AppLocalizations.tl('onboardingPlanFailed')));
     }
   }
 }

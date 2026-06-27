@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/services/workout_session.dart';
-import 'package:fitnesbuster/core/services/exercise_matcher.dart';
+import 'package:fitnesbuster/core/di/injection.dart';
+import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 import 'package:fitnesbuster/data/models/exercise_db_model.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/presentation/screens/workout/pr_screen.dart';
+import 'package:fitnesbuster/presentation/screens/workout/import_workout_sheet.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 class WorkoutExecutionScreen extends StatefulWidget {
@@ -94,7 +97,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
       if (mounted) setState(() => _currentExModel = _exModelCache[exIdx]);
       return;
     }
-    final matcher = ExerciseMatcher.instance;
+    final matcher = sl<IExerciseService>();
     await matcher.init();
     final ex = widget.workout.exercises[exIdx];
     final model = matcher.findByRuName(ex.name);
@@ -105,7 +108,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
   /// Reconnect to an in-progress session (user navigated away and came back)
   /// or start a fresh session.
   void _tryReconnectOrStart() {
-    final session = WorkoutSession.instance;
+    final session = sl<WorkoutSession>();
     // Match by workout focus name as identity check
     if (session.isActive && session.workout?.focus == widget.workout.focus) {
       // Restore state from the singleton
@@ -119,11 +122,11 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
 
       if (_phase != WorkoutPhase.done) {
         _startCountdown();
-        _speak('Продолжаем! ${_ex.name}');
+        _speak('${AppLocalizations.tl('continueLabel')}! ${_ex.name}');
       }
       if (mounted) setState(() {});
     } else {
-      WorkoutSession.instance.startSession(widget.workout,
+      sl<WorkoutSession>().startSession(widget.workout,
           prepSeconds: _prepSec);
       _enterPhase(WorkoutPhase.prep);
     }
@@ -164,7 +167,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
         _loadExModel(_exIdx);
         _startCountdown();
         Future.delayed(const Duration(milliseconds: 300), () {
-          _speak('Подготовьтесь! ${_ex.name}. '
+          _speak('${AppLocalizations.tl("ttsGetReady")} ${_ex.name}. '
               '${_ex.sets} подходов по ${_ex.reps}');
         });
 
@@ -172,7 +175,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
         _timeLeft = _estimatedSetSec;
         _totalTime = _estimatedSetSec;
         _startCountdown();
-        _speak('Начинай! Подход ${_setIdx + 1}');
+        _speak('${AppLocalizations.tl("ttsGo")} Подход ${_setIdx + 1}');
 
       case WorkoutPhase.rest:
         _timeLeft = _ex.restSeconds;
@@ -183,21 +186,21 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
           final nextName = _exIdx < _totalEx - 1
               ? widget.workout.exercises[_exIdx + 1].name
               : '';
-          _speak('Отдых! Следующее упражнение: $nextName');
+          _speak(AppLocalizations.tlp('ttsRestNextExercise', {'name': nextName}));
         } else {
-          _speak('Отдых! Следующий подход: ${_setIdx + 1}');
+          _speak(AppLocalizations.tlp('ttsRestNextSet', {'n': '${_setIdx + 1}'}));
         }
 
       case WorkoutPhase.done:
-        _endSessionFuture = WorkoutSession.instance.endSession(completed: true);
+        _endSessionFuture = sl<WorkoutSession>().endSession(completed: true);
         WakelockPlus.disable();
-        _speak('Тренировка завершена! Отличная работа!');
+        _speak(AppLocalizations.tl('ttsWorkoutDone'));
         HapticFeedback.vibrate();
     }
 
     // Sync to singleton on every non-done phase
     if (phase != WorkoutPhase.done) {
-      WorkoutSession.instance.syncState(
+      sl<WorkoutSession>().syncState(
         exIdx: _exIdx,
         setIdx: _setIdx,
         phase: phase,
@@ -249,7 +252,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
   void _completeSet() {
     HapticFeedback.mediumImpact();
     // Log the completed set with optional weight
-    WorkoutSession.instance.logSet(
+    sl<WorkoutSession>().logSet(
       exerciseName: _ex.name,
       setNumber: _setIdx + 1,
       plannedReps: _ex.reps,
@@ -283,7 +286,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
   void dispose() {
     // Sync final state so session stays accurate while screen is gone
     if (_phase != WorkoutPhase.done) {
-      WorkoutSession.instance.syncState(
+      sl<WorkoutSession>().syncState(
         exIdx: _exIdx,
         setIdx: _setIdx,
         phase: _phase,
@@ -345,7 +348,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                     color: colors.textPrimary),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis),
-            Text('Упражнение ${_exIdx + 1} из $_totalEx',
+            Text(context.l10n.exerciseXofY((_exIdx+1).toString(), _totalEx.toString()),
                 style: TextStyle(fontSize: 11, color: colors.textMuted)),
           ]),
         ),
@@ -384,7 +387,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
           ),
         ),
         const SizedBox(height: 4),
-        Text('$_completedSets / $totalSets подходов',
+        Text(context.l10n.setsOf(_completedSets.toString(), totalSets.toString()),
             style: TextStyle(fontSize: 10, color: colors.textMuted)),
       ]),
     );
@@ -418,7 +421,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _PhaseLabel('ПОДГОТОВЬТЕСЬ', color),
+          _PhaseLabel(AppLocalizations.tl('phasePrep'), color),
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -431,10 +434,10 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                 textAlign: TextAlign.center),
           ),
           const SizedBox(height: 8),
-          Text('${_ex.sets} подх. × ${_ex.reps}',
+          Text(context.l10n.setsTimesReps(_ex.sets.toString(), _ex.reps),
               style: TextStyle(fontSize: 15, color: colors.textSecondary)),
           const SizedBox(height: 8),
-          Text('Отдых между подходами: ${_ex.restSeconds} сек',
+          Text(context.l10n.restBetweenSets(_ex.restSeconds.toString()),
               style: TextStyle(fontSize: 12, color: colors.textMuted)),
           const SizedBox(height: 40),
           ScaleTransition(
@@ -468,11 +471,11 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
               ),
             ),
           const SizedBox(height: 14),
-          Text('секунд до начала',
+          Text(context.l10n.secondsToStart,
               style: TextStyle(fontSize: 13, color: colors.textMuted)),
           if (_timeLeft <= 5) ...[
             const SizedBox(height: 12),
-            Text('🔔 ПРИГОТОВЬТЕСЬ!',
+            Text(context.l10n.getReadyAlert,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -495,7 +498,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _PhaseLabel('ВЫПОЛНЕНИЕ', color),
+          _PhaseLabel(AppLocalizations.tl('phaseExercise'), color),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -515,7 +518,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                 color: color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20)),
             child: Text(
-                'Подход ${_setIdx + 1} из ${_ex.sets}${isLastSet ? '  🏁' : ''}',
+                '${context.l10n.setsLabel} ${_setIdx + 1} / ${_ex.sets}${isLastSet ? '  🏁' : ''}',
                 style: TextStyle(
                     fontSize: 13,
                     color: color,
@@ -529,7 +532,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
               children: [
                 Icon(Icons.fitness_center_rounded, size: 16, color: colors.textMuted),
                 const SizedBox(width: 8),
-                Text('Вес:', style: TextStyle(fontSize: 13, color: colors.textMuted)),
+                Text('${context.l10n.weightLabel}:', style: TextStyle(fontSize: 13, color: colors.textMuted)),
                 const SizedBox(width: 8),
                 SizedBox(
                   width: 72,
@@ -564,7 +567,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text('кг', style: TextStyle(fontSize: 13, color: colors.textMuted)),
+                Text(context.l10n.kgUnit, style: TextStyle(fontSize: 13, color: colors.textMuted)),
               ],
             ),
           ),
@@ -579,17 +582,17 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
               color: color,
               size: 150,
               centerLabel: isRep ? _ex.reps : null,
-              centerSub: isRep ? 'повт.' : 'сек',
+              centerSub: isRep ? context.l10n.repsShort : AppLocalizations.tl('seconds'),
             ),
           ),
           const SizedBox(height: 8),
           if (isRep)
-            Text('Ориентировочное время: ~$estSec с',
+            Text(context.l10n.estimatedTimeSec(estSec.toString()),
                 style:
                     TextStyle(fontSize: 12, color: colors.textMuted)),
           if (_timeLeft <= 5 && _timeLeft > 0) ...[
             const SizedBox(height: 6),
-            Text('⚡ ФИНИШИРУЙ!',
+            Text(context.l10n.finishNow,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -634,10 +637,10 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _PhaseLabel('ОТДЫХ', color),
+          _PhaseLabel(AppLocalizations.tl('phaseRest'), color),
           const SizedBox(height: 16),
           if (isLastSet && nextExName != null) ...[
-            Text('Следующее упражнение:',
+            Text(context.l10n.nextLabel,
                 style: TextStyle(fontSize: 13, color: colors.textMuted)),
             const SizedBox(height: 6),
             Padding(
@@ -651,7 +654,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                   textAlign: TextAlign.center),
             ),
           ] else ...[
-            Text('Следующий подход: $_setIdx из ${_ex.sets}',
+            Text('${context.l10n.setsLabel} $_setIdx / ${_ex.sets}',
                 style: TextStyle(fontSize: 13, color: colors.textMuted)),
             const SizedBox(height: 6),
             Padding(
@@ -677,11 +680,11 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                 size: 190),
           ),
           const SizedBox(height: 14),
-          Text('секунд отдыха',
+          Text(context.l10n.secondsRest,
               style: TextStyle(fontSize: 13, color: colors.textMuted)),
           if (_timeLeft <= 5 && _timeLeft > 0) ...[
             const SizedBox(height: 12),
-            Text('⚡ ГОТОВЬСЯ К СЛЕДУЮЩЕМУ ПОДХОДУ!',
+            Text(context.l10n.getReadyNextSet,
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -711,8 +714,8 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                     _completeSet();
                   },
                   icon: const Icon(Icons.check_rounded, size: 18),
-                  label: const Text('Подход выполнен',
-                      style: TextStyle(
+                  label: Text(context.l10n.readyLabel,
+                      style: const TextStyle(
                           fontSize: 14, fontWeight: FontWeight.w700)),
                   style: FilledButton.styleFrom(
                     backgroundColor: colors.primary,
@@ -728,8 +731,8 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                     foregroundColor: colors.textMuted,
                     padding:
                         const EdgeInsets.symmetric(vertical: 4)),
-                child: const Text('Пропустить подход',
-                    style: TextStyle(fontSize: 13)),
+                child: Text(context.l10n.skip,
+                    style: const TextStyle(fontSize: 13)),
               ),
             ])
           : Row(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -739,10 +742,36 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                     foregroundColor: colors.textMuted,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 14)),
-                child: const Text('Пропустить',
-                    style: TextStyle(fontSize: 14)),
+                child: Text(context.l10n.skipRestBtn,
+                    style: const TextStyle(fontSize: 14)),
               ),
             ]),
+    );
+  }
+
+  // ── Post-workout summary for AI correction ─────────────────────────────────
+
+  String _buildPostWorkoutSummary() {
+    final buf = StringBuffer();
+    buf.writeln('Завершённая тренировка: ${widget.workout.focus}');
+    buf.writeln('Дата: ${DateTime.now().toLocal().toString().substring(0, 10)}');
+    buf.writeln('Выполнено подходов: $_completedSets из ${widget.workout.totalSets}');
+    buf.writeln();
+    buf.writeln('Упражнения:');
+    for (final ex in widget.workout.exercises) {
+      buf.writeln('- ${ex.name}: ${ex.sets}×${ex.reps}');
+    }
+    if (widget.workout.cardioMinutes > 0) {
+      buf.writeln('Кардио: ${widget.workout.cardioMinutes} мин');
+    }
+    return buf.toString();
+  }
+
+  void _openPostWorkoutCorrection() {
+    showPlanCorrectionSheet(
+      context,
+      initialContent: _buildPostWorkoutSummary(),
+      correctionType: 'post_workout',
     );
   }
 
@@ -774,7 +803,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                         size: 70, color: colors.primary),
                   ),
                   const SizedBox(height: 32),
-                  Text('Тренировка завершена!',
+                  Text(context.l10n.workoutDoneTitle,
                       style: TextStyle(
                           fontFamily: 'Syne',
                           fontSize: 26,
@@ -787,13 +816,13 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                           fontSize: 16, color: colors.textSecondary)),
                   const SizedBox(height: 6),
                   Text(
-                      '$_totalEx упражнений · ${widget.workout.totalSets} подходов',
+                      context.l10n.exercisesAndSets(_totalEx.toString(), widget.workout.totalSets.toString()),
                       style: TextStyle(
                           fontSize: 14, color: colors.textMuted)),
                   if (widget.workout.cardioMinutes > 0) ...[
                     const SizedBox(height: 6),
                     Text(
-                        '+ ${widget.workout.cardioMinutes} мин кардио',
+                        '+ ${context.l10n.cardioMinutes(widget.workout.cardioMinutes)}',
                         style: TextStyle(
                             fontSize: 13, color: colors.textMuted)),
                   ],
@@ -817,7 +846,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                               SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: colors.primary)),
                               const SizedBox(width: 8),
-                              Text('Обновляем прогресс челленджей...', style: TextStyle(fontSize: 12, color: colors.textMuted)),
+                              Text(context.l10n.updatingChallenges, style: TextStyle(fontSize: 12, color: colors.textMuted)),
                             ]),
                           );
                         }
@@ -832,7 +861,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                             border: Border.all(color: colors.success.withValues(alpha: 0.3)),
                           ),
                           child: Column(children: [
-                            Text('🏆 Челлендж выполнен!', style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: colors.success)),
+                            Text(context.l10n.challengeCompleted, style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: colors.success)),
                             const SizedBox(height: 4),
                             ...completed.map((name) => Text(name, style: TextStyle(fontSize: 12, color: colors.success))),
                           ]),
@@ -840,6 +869,28 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                       },
                     ),
                   const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: GestureDetector(
+                      onTap: _openPostWorkoutCorrection,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: colors.accentPurple.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: colors.accentPurple.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                          Icon(Icons.auto_fix_high_rounded, color: colors.accentPurple, size: 18),
+                          const SizedBox(width: 8),
+                          Text(context.l10n.correctPlanBtn,
+                              style: TextStyle(fontFamily: 'Syne', fontSize: 14,
+                                  fontWeight: FontWeight.w700, color: colors.accentPurple)),
+                        ]),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   FilledButton(
                     onPressed: () => Navigator.pop(context),
                     style: FilledButton.styleFrom(
@@ -849,8 +900,8 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18)),
                     ),
-                    child: const Text('Готово',
-                        style: TextStyle(
+                    child: Text(context.l10n.done,
+                        style: const TextStyle(
                             fontSize: 17, fontWeight: FontWeight.w700)),
                   ),
                 ]),
@@ -871,14 +922,14 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
         backgroundColor: colors.surfaceCard,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Завершить тренировку?',
+        title: Text(context.l10n.exitWorkoutTitle,
             style: TextStyle(
                 color: colors.textPrimary,
                 fontFamily: 'Syne',
                 fontWeight: FontWeight.w700,
                 fontSize: 18)),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('Прогресс текущей тренировки будет частично засчитан.',
+          Text(context.l10n.exitWorkoutMsg,
               style: TextStyle(
                   color: colors.textSecondary, fontSize: 14)),
           if (_completedSets > 0) ...[
@@ -891,7 +942,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                  'Выполнено: $_completedSets / ${widget.workout.totalSets} подходов',
+                  context.l10n.completedSetsOf(_completedSets.toString(), widget.workout.totalSets.toString()),
                   style: TextStyle(
                       fontSize: 13,
                       color: colors.primary,
@@ -906,7 +957,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
               // Resume with fresh countdown for current phase
               _startCountdown();
             },
-            child: Text('Продолжить',
+            child: Text(context.l10n.keepGoingBtn,
                 style: TextStyle(
                     color: colors.primary,
                     fontWeight: FontWeight.w700)),
@@ -915,11 +966,11 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
             onPressed: () {
               Navigator.pop(ctx);
               // Save partial workout (calories + sets done so far)
-              WorkoutSession.instance.endSession(completed: false);
+              sl<WorkoutSession>().endSession(completed: false);
               WakelockPlus.disable();
               Navigator.pop(context);
             },
-            child: Text('Завершить',
+            child: Text(context.l10n.exitBtn,
                 style: TextStyle(color: colors.error)),
           ),
         ],
@@ -937,10 +988,10 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
       };
 
   String _phaseName() => switch (_phase) {
-        WorkoutPhase.prep     => 'ПОДГОТОВКА',
-        WorkoutPhase.exercise => 'ВЫПОЛНЕНИЕ',
-        WorkoutPhase.rest     => 'ОТДЫХ',
-        WorkoutPhase.done     => 'ГОТОВО',
+        WorkoutPhase.prep     => AppLocalizations.tl('phasePrep'),
+        WorkoutPhase.exercise => AppLocalizations.tl('phaseExercise'),
+        WorkoutPhase.rest     => AppLocalizations.tl('phaseRest'),
+        WorkoutPhase.done     => AppLocalizations.tl('phaseDone'),
       };
 }
 
@@ -1037,7 +1088,7 @@ class _CircleTimer extends StatelessWidget {
                   Text(centerSub ?? '',
                       style: TextStyle(fontSize: 12, color: colors.textMuted)),
                   const SizedBox(height: 4),
-                  Text('$timeLeft с',
+                  Text('$timeLeft ${AppLocalizations.tl('seconds')}',
                       style: TextStyle(
                           fontFamily: 'Syne',
                           fontSize: size * 0.12,
@@ -1049,7 +1100,7 @@ class _CircleTimer extends StatelessWidget {
                           fontSize: size * 0.36,
                           fontWeight: FontWeight.w800,
                           color: isDanger ? colors.error : colors.textPrimary)),
-                  Text(centerSub ?? 'сек',
+                  Text(centerSub ?? AppLocalizations.tl('seconds'),
                       style: TextStyle(fontSize: 13, color: colors.textMuted)),
                 ],
               ],

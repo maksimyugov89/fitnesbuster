@@ -1,5 +1,7 @@
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/domain/services/i_adaptive_training_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 /// Results of an adaptive training calculation.
 class AdaptiveTrainingResult {
@@ -16,30 +18,14 @@ class AdaptiveTrainingResult {
   });
 }
 
-/// A single week in the adjusted training plan.
-class AdaptiveWeek {
-  final int weekNumber;
-  final String focus;
-  final List<String> exercises;
-  final int plannedSessions;
-  final double estimatedCalorieBurn;
-
-  const AdaptiveWeek({
-    required this.weekNumber,
-    required this.focus,
-    required this.exercises,
-    required this.plannedSessions,
-    required this.estimatedCalorieBurn,
-  });
-}
-
 /// Service that processes test week results and builds an adaptive training plan.
-class AdaptiveTrainingService {
+class AdaptiveTrainingService implements IAdaptiveTrainingService {
   final IDeepSeekService _ai;
 
   AdaptiveTrainingService({required IDeepSeekService ai}) : _ai = ai;
 
   /// Calculates adjusted training parameters based on test week results.
+  @override
   TrainingAdjustment calculateAdjustment({
     required TestWeekResult testResult,
     required UserProfile profile,
@@ -81,6 +67,7 @@ class AdaptiveTrainingService {
   }
 
   /// Checks if the user's goal is feasible within the chosen timeframe.
+  @override
   Future<FeasibilityResult> checkGoalFeasibility({
     required UserProfile profile,
     required TrainingAdjustment adjustment,
@@ -146,6 +133,7 @@ class AdaptiveTrainingService {
   }
 
   /// Builds the adapted weekly plan from test results.
+  @override
   List<AdaptiveWeek> buildAdaptedPlan({
     required TestWeekResult testResult,
     required TrainingAdjustment adjustment,
@@ -307,28 +295,26 @@ class AdaptiveTrainingService {
 
   String _fitnessGoalLabel(FitnessGoal g) {
     switch (g) {
-      case FitnessGoal.loseWeight: return 'Снижение веса';
-      case FitnessGoal.gainWeight: return 'Набор массы';
-      case FitnessGoal.maintain: return 'Поддержание';
-      case FitnessGoal.beachBody: return 'К сезону';
-      case FitnessGoal.sportPerformance: return 'Спорт';
+      case FitnessGoal.loseWeight: return AppLocalizations.tl('trainingWeightLoss');
+      case FitnessGoal.gainWeight: return AppLocalizations.tl('trainingMuscleGain');
+      case FitnessGoal.maintain: return AppLocalizations.tl('trainingMaintenance');
+      case FitnessGoal.beachBody: return AppLocalizations.tl('trainingBeachSeason');
+      case FitnessGoal.sportPerformance: return AppLocalizations.tl('trainingSport');
     }
   }
 
   String _intensityLabel(IntensityLevel i) {
     switch (i) {
-      case IntensityLevel.hardcore: return 'Хардкор';
-      case IntensityLevel.intensive: return 'Интенсив';
-      case IntensityLevel.balanced: return 'Баланс';
-      case IntensityLevel.gradual: return 'Постепенный';
-      case IntensityLevel.relaxed: return 'Лайт';
+      case IntensityLevel.hardcore: return AppLocalizations.tl('trainingHardcore');
+      case IntensityLevel.intensive: return AppLocalizations.tl('trainingIntense');
+      case IntensityLevel.balanced: return AppLocalizations.tl('trainingBalanced');
+      case IntensityLevel.gradual: return AppLocalizations.tl('trainingGradual');
+      case IntensityLevel.relaxed: return AppLocalizations.tl('trainingLight');
     }
   }
 }
 
 // ─── Supporting types ────────────────────────────────────────────
-
-enum UserLevel { beginner, intermediate, advanced }
 
 class _ProgressionSpeed {
   final double weightMultiplier;
@@ -336,37 +322,5 @@ class _ProgressionSpeed {
   const _ProgressionSpeed({
     required this.weightMultiplier,
     required this.weeklyIncreasePercent,
-  });
-}
-
-class TrainingAdjustment {
-  final double weightMultiplier;
-  final double weeklyIncreasePercent;
-  final int suggestedSetsPerExercise;
-  final int suggestedRepsPerSet;
-  final UserLevel userLevel;
-  final int maxHeartRate;
-  final String adaptedIntensityLabel;
-
-  const TrainingAdjustment({
-    required this.weightMultiplier,
-    required this.weeklyIncreasePercent,
-    required this.suggestedSetsPerExercise,
-    required this.suggestedRepsPerSet,
-    required this.userLevel,
-    required this.maxHeartRate,
-    required this.adaptedIntensityLabel,
-  });
-}
-
-class FeasibilityResult {
-  final bool isFeasible;
-  final String reason;
-  final List<String> suggestedActions;
-
-  const FeasibilityResult({
-    required this.isFeasible,
-    required this.reason,
-    required this.suggestedActions,
   });
 }
