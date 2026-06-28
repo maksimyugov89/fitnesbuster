@@ -117,35 +117,28 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 60),
-                        Align(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _buildLogo(),
-                              const SizedBox(height: 32),
-                              Text(
-                                l10n.loginTitle,
-                                style: AppTextStyles.displayL.copyWith(
-                                  color: colors.primary,
-                                  shadows: [
-                                    Shadow(color: colors.primary.withValues(alpha: 0.7), blurRadius: 16),
-                                    Shadow(color: colors.primary.withValues(alpha: 0.35), blurRadius: 36),
-                                  ],
-                                ),
-                              ),
-                              Text(
-                                'AI-fitness',
-                                style: TextStyle(
-                                  fontFamily: AppTextStyles.fontDisplay,
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.italic,
-                                  color: colors.textSecondary,
-                                  height: 1.15,
-                                  letterSpacing: -1.0,
-                                ),
-                              ),
+                        _buildLogo(),
+                        const SizedBox(height: 32),
+                        Text(
+                          l10n.loginTitle,
+                          style: AppTextStyles.displayL.copyWith(
+                            color: colors.primary,
+                            shadows: [
+                              Shadow(color: colors.primary.withValues(alpha: 0.7), blurRadius: 16),
+                              Shadow(color: colors.primary.withValues(alpha: 0.35), blurRadius: 36),
                             ],
+                          ),
+                        ),
+                        Text(
+                          'AI-fitness',
+                          style: TextStyle(
+                            fontFamily: AppTextStyles.fontDisplay,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w700,
+                            fontStyle: FontStyle.italic,
+                            color: colors.textSecondary,
+                            height: 1.15,
+                            letterSpacing: -1.0,
                           ),
                         ),
                         const SizedBox(height: 8),
