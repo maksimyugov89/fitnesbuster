@@ -1,4 +1,5 @@
-# FitnesBuster
+# <img width="74" height="74" alt="icon" src="https://github.com/user-attachments/assets/5a957948-623c-4b6f-adc5-425abb7945a1" />
+ FitnesBuster
 
 **Персональный AI-фитнес-тренер в кармане.**
 
