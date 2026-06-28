@@ -119,7 +119,28 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         const SizedBox(height: 60),
                         _buildLogo(),
                         const SizedBox(height: 32),
-                        Text(l10n.loginTitle, style: AppTextStyles.displayL),
+                        Text(
+                          l10n.loginTitle,
+                          style: AppTextStyles.displayL.copyWith(
+                            color: colors.primary,
+                            shadows: [
+                              Shadow(color: colors.primary.withValues(alpha: 0.7), blurRadius: 16),
+                              Shadow(color: colors.primary.withValues(alpha: 0.35), blurRadius: 36),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          'AI-fitness',
+                          style: TextStyle(
+                            fontFamily: AppTextStyles.fontDisplay,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w700,
+                            fontStyle: FontStyle.italic,
+                            color: colors.textSecondary,
+                            height: 1.15,
+                            letterSpacing: -1.0,
+                          ),
+                        ),
                         const SizedBox(height: 8),
                         Text(l10n.loginSubtitle, style: AppTextStyles.bodyL),
                         const SizedBox(height: 40),
@@ -206,12 +227,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   Widget _buildLogo() {
-    final colors = AppTheme.of(context);
-    return Container(
-      width: 52, height: 52,
-      decoration: BoxDecoration(gradient: colors.primaryGradient, borderRadius: BorderRadius.circular(16)),
-      child: Center(child: Text('FB', style: TextStyle(fontFamily: 'Syne', fontSize: 20, fontWeight: FontWeight.w800, color: colors.textOnPrimary))),
-    );
+    return Image.asset('assets/icons/logo.png', width: 56, height: 56);
   }
 
   Widget _buildLabel(String text) => Text(text, style: AppTextStyles.labelL);

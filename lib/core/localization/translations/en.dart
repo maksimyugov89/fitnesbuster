@@ -14,7 +14,7 @@ const Map<String, String> enTranslations = {
   'navProgress': 'Progress', 'navProfile': 'Profile',
   'emailLabel': 'Email', 'passwordLabel': 'Password',
   'confirmPasswordLabel': 'Confirm password', 'nameLabel': 'Name',
-  'loginTitle': 'Welcome back!', 'loginSubtitle': 'Log in to continue',
+  'loginTitle': 'Welcome to', 'loginSubtitle': 'Log in to continue',
   'registerTitle': 'Create account', 'registerSubtitle': 'Sign up to get started',
   'emailHint': 'your@email.com', 'passwordHint': 'Your password',
   'forgotPassword': 'Forgot password?', 'orContinueWith': 'or continue with',
