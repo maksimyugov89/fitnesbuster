@@ -1,7 +1,12 @@
-# FitnesBuster
+<p align="center">
+  <img src="assets/icons/icon.png" width="120" alt="FitnesBuster logo">
+</p>
 
-**Издатель:** Югов Максим Александрович  
-**Email:** maksim.yugov.89@gmail.com
+<p align="center">
+  <strong>Издатель:</strong> Югов Максим Александрович &nbsp;|&nbsp; <strong>Email:</strong> maksim.yugov.89@gmail.com
+</p>
+
+# FitnesBuster
 
 **Персональный AI-фитнес-тренер в кармане.**
 
@@ -24,13 +29,13 @@ FitnesBuster — Flutter-приложение (Android / iOS), которое г
 
 ## Скриншоты
 
-|<img src="assets/skrin/Screenshot_0.jpg" width="180">|<img src="assets/skrin/Screenshot_1.jpg" width="180">|<img src="assets/skrin/Screenshot_2.jpg" width="180">|<img src="assets/skrin/Screenshot_3.jpg" width="180">|
+|![Screenshot 0](assets/skrin/Screenshot_0.jpg)|![Screenshot 1](assets/skrin/Screenshot_1.jpg)|![Screenshot 2](assets/skrin/Screenshot_2.jpg)|![Screenshot 3](assets/skrin/Screenshot_3.jpg)|
 |---|---|---|---|
 
-|<img src="assets/skrin/Screenshot_4.jpg" width="180">|<img src="assets/skrin/Screenshot_5.jpg" width="180">|<img src="assets/skrin/Screenshot_6.jpg" width="180">|<img src="assets/skrin/Screenshot_7.jpg" width="180">|
+|![Screenshot 4](assets/skrin/Screenshot_4.jpg)|![Screenshot 5](assets/skrin/Screenshot_5.jpg)|![Screenshot 6](assets/skrin/Screenshot_6.jpg)|![Screenshot 7](assets/skrin/Screenshot_7.jpg)|
 |---|---|---|---|
 
-|<img src="assets/skrin/Screenshot_8.jpg" width="180">|<img src="assets/skrin/Screenshot_9.jpg" width="180">|<img src="assets/skrin/Screenshot_10.jpg" width="180">|
+|![Screenshot 8](assets/skrin/Screenshot_8.jpg)|![Screenshot 9](assets/skrin/Screenshot_9.jpg)|![Screenshot 10](assets/skrin/Screenshot_10.jpg)|
 |---|---|---|
 
 ---
