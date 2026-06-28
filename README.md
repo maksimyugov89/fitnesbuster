@@ -1,10 +1,37 @@
 # FitnesBuster
 
+**Издатель:** Югов Максим Александрович  
+**Email:** maksim.yugov.89@gmail.com
+
 **Персональный AI-фитнес-тренер в кармане.**
 
 FitnesBuster — Flutter-приложение (Android / iOS), которое генерирует персонализированные программы тренировок и питания на базе целей пользователя, уровня подготовки, доступного оборудования и медицинских ограничений. Используется **DeepSeek AI** для создания и корректировки планов, **Google Health Connect / Apple HealthKit** для синхронизации данных здоровья, **Firebase** (Firestore, Auth, Cloud Functions, FCM, Hosting) для бэкенда, **Hive** для офлайн-кэша, **OpenFoodFacts** для сканирования штрих-кодов. Интерактивная **3D анатомическая модель** на базе Z-Anatomy визуализирует задействованные мышцы с X-ray эффектом. База из **1 346 упражнений** с GIF-демонстрациями (100% покрытие) раздаётся через **Firebase Hosting CDN** с immutable-кэшированием.
 
-Версия: `1.0.0+1`
+Версия: `1.0.0+1` | **Рефакторинг завершён** (28.06.2026): 73/73 проблем закрыто, `dart analyze` — 0 ошибок
+
+| Метрика | До рефакторинга | После |
+|---------|----------------|-------|
+| Файлов >1000 строк | 4 | **0** |
+| God-объектов | 2 (1120+754) | **0** |
+| Хардкодированных `Color(0x…)` | 125+ | ~65 → SemanticColors |
+| Хардкодированных UI-строк | 50+ | **0** |
+| Неиспользуемых зависимостей | 8 | **0** |
+| Тестов | 225 | **337** (321 + 16 E2E) |
+| Локализаций | 632 ключа | **845+** ключей |
+| `dart analyze` | — | **0 ошибок** |
+
+---
+
+## Скриншоты
+
+|<img src="assets/skrin/Screenshot_0.jpg" width="180">|<img src="assets/skrin/Screenshot_1.jpg" width="180">|<img src="assets/skrin/Screenshot_2.jpg" width="180">|<img src="assets/skrin/Screenshot_3.jpg" width="180">|
+|---|---|---|---|
+
+|<img src="assets/skrin/Screenshot_4.jpg" width="180">|<img src="assets/skrin/Screenshot_5.jpg" width="180">|<img src="assets/skrin/Screenshot_6.jpg" width="180">|<img src="assets/skrin/Screenshot_7.jpg" width="180">|
+|---|---|---|---|
+
+|<img src="assets/skrin/Screenshot_8.jpg" width="180">|<img src="assets/skrin/Screenshot_9.jpg" width="180">|<img src="assets/skrin/Screenshot_10.jpg" width="180">|
+|---|---|---|
 
 ---
 
@@ -62,58 +89,92 @@ flutter run --dart-define=DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxx
 lib/
 ├── main.dart                       # Entry point, MultiBlocProvider, Hive init, NotificationService
 ├── bloc/                           # State management (BLoC)
-│   ├── auth/                       # AuthBloc — email/Google вход, регистрация
+│   ├── auth/                       # AuthBloc — email/Google вход, регистрация (AuthException в domain)
 │   ├── user/                       # UserBloc — профиль, цели, параметры тела
 │   ├── workout/                    # WorkoutBloc — выполнение тренировки (таймер, фазы, подходы)
 │   ├── health/                     # HealthBloc, HealthSyncBloc — Health Connect / HealthKit
-│   ├── nutrition/                  # NutritionBloc — дневной лог питания, AI-план
+│   ├── nutrition/                  # NutritionBloc — дневной лог питания, AI-план (try-catch)
 │   ├── ai/                         # AiBloc — генерация планов, AI-вопросы
-│   ├── onboarding/                 # OnboardingBloc — 5-шаговый онбординг
-│   └── training/                   # TestWeekBloc — калибровочная неделя, адаптация плана
+│   ├── onboarding/                 # OnboardingBloc — 5-шаговый онбординг (+ OnboardingWorkflowService)
+│   └── training/                   # TestWeekBloc — калибровочная неделя (TestWeekStateError + CompleteTestWeekUseCase)
 ├── core/                           # Сервисы и конфигурация
-│   ├── ai/                         # DeepSeekService — AI-клиент (планы, анализ, чат, дебриф)
-│   ├── analytics/                  # AnalyticsService — Firebase Analytics
-│   ├── cache/                      # HiveCache — офлайн-кэш AI-планов, чата, очередь синхронизации
-│   ├── di/                         # GetIt DI — все сервисы регистрируются по доменным интерфейсам
-│   ├── health/                     # HealthConnectService, HealthAnalyticsService
-│   ├── localization/               # AppLocalizations (632 ключа, 15 языков), LanguageService
-│   ├── notifications/              # NotificationService — локальные push + смарт-напоминание
-│   ├── router/                     # go_router (AppRouter) — навигация с ShellRoute
-│   ├── services/                   # WorkoutSession, GamificationService, SocialService,
-│   │                               # NutritionService, FcmService, RecoveryScoreService
-│   ├── theme/                      # ThemeService + ThemePalette (6 динамических тем)
-│   └── training/                   # AdaptiveTrainingService — калибровка после тестовой недели
+│   ├── ai/
+│   │   ├── base_client.dart        # Общий HTTP-клиент с retry
+│   │   ├── services/               # WorkoutPlanService, MealPlanService, PlanRefinementService,
+│   │   │                           # ProgressAnalyzer, ChatService — 5 специализированных AI-сервисов
+│   │   └── deepseek_service.dart   # Фасад (110 строк)
+│   ├── analytics/                  # AnalyticsService — события login/signup/workout/onboarding/testweek
+│   ├── constants/                  # SemanticColors (11 констант), AvatarPresets, AppConstants
+│   ├── di/                         # GetIt DI — все сервисы по интерфейсам, 0 cast-выражений
+│   ├── health/                     # HealthConnectService, HealthServiceAdapter (IHealthService)
+│   ├── localization/               # AppLocalizations (845+ ключей, 15 языков), LanguageService
+│   ├── notifications/              # NotificationService — локальные push + смарт-напоминание (DailyTime)
+│   ├── router/                     # go_router (AppRouter) — навигация с ShellRoute, AuthRouterNotifier
+│   ├── services/                   # WorkoutSession (DI), GamificationService, NutritionService,
+│   │                               # FcmService, RecoveryScoreService, OnboardingWorkflowService,
+│   │                               # TestWeekWorkflowService, MuscleZoneMatcher
+│   └── theme/                      # ThemeService + ThemePalette (6 динамических тем)
 ├── data/                           # Репозитории и модели
-│   ├── models/                     # WorkoutDay, ChatMessage, AiMealPlan, WeeklyDebrief, ExerciseDbModel
+│   ├── models/                     # ChatMessageModel, ExerciseDbModel (data-слой)
 │   └── repositories/               # AuthRepository, UserRepository (Firestore + Hive), PrRepository,
 │                                   # SettingsRepository
 ├── domain/                         # Доменный слой (чистый, без зависимостей на data/framework)
-│   ├── entities/                   # UserEntity, UserProfile, WorkoutPlan, MealLog, HealthData,
-│   │                               # BodyMeasurement, PersonalRecord
+│   ├── entities/                   # 24 @freezed класса: UserProfile, WorkoutPlan, BodyMeasurement,
+│   │                               # PersonalRecord, NutritionEntities, HealthEntities, DailyTime и др.
+│   │                               # + 18 автогенерированных файлов (.freezed.dart + .g.dart)
+│   ├── exceptions/                 # AuthException
 │   ├── repositories/               # IAuthRepository, IUserRepository, IPrRepository, ISettingsRepository
-│   └── services/                   # 10 интерфейсов: IDeepSeekService, IGamificationService,
-│                                   # IHealthConnectService, IAdaptiveTrainingService, INutritionService,
-│                                   # IAnalyticsService, INotificationService, IFcmService,
-│                                   # IExerciseService, IHealthAnalyticsService
+│   ├── services/                   # 10 интерфейсов: IDeepSeekService, IGamificationService,
+│   │                               # IHealthConnectService, IAdaptiveTrainingService, INutritionService,
+│   │                               # IAnalyticsService, INotificationService, IFcmService,
+│   │                               # IExerciseService, IHealthAnalyticsService
+│   └── usecases/                   # CompleteTestWeekUseCase
 └── presentation/
-    ├── screens/                    # 33 экрана
-    └── widgets/                    # Переиспользуемые виджеты по доменам:
-        ├── nutrition/              # NutritionFoodItemRow, NutritionWaterCard, NutritionManualFoodForm,
-        │                           # NutritionShared
-        ├── progress/               # WeightChart, BodyMeasurementsCard
-        ├── workout/                # WeeklySummaryCard, Muscle3dSheet, TechniqueSheet, ExerciseGifThumb
-        ├── dashboard/              # DashboardXpBar, DashboardDailyTasks
-        ├── profile/                # AvatarPicker, ProfileEditor
-        ├── router/                 # MainShell, RouterWorkoutMiniPlayer, RouterBottomNav
-        └── (общие)                 # AiAssistantSheet, MuscleMap3DWidget, ThemeSelectionSheet,
-                                    # LanguageSelectionSheet
+    ├── screens/                    # 33 экрана (все <700 строк после декомпозиции)
+    └── widgets/                    # 65+ переиспользуемых виджетов по доменам:
+        ├── dashboard/              # DashboardAppBar, ActivityRingsCard, TodaysWorkoutCard, XpBar,
+        │                           # NutritionSummaryCard, QuickStatsCard, AiChatCard, SocialCard
+        ├── workout/                # WorkoutPlanHeader, WorkoutExerciseCard, WorkoutDaySelector,
+        │                           # DayDetailView, WeeklySummaryCard, TechniqueSheet,
+        │                           # MuscleMapWidget, ExerciseGifThumb, WorkoutPlanWidgets
+        ├── nutrition/              # MealCard, DailyProgressCard, NutritionHeader, WeeklyPlanView,
+        │                           # BarcodeScanCard, MealProgressBar, AddedFoodTile, WaterTrackerCard,
+        │                           # FoodItemRow, ManualFoodForm, MacroRing, MealAlternativesTile
+        ├── progress/               # ProgressPeriodSelector, ProgressStatsPanel, ProgressWorkoutLog,
+        │                           # ProgressPhotoSection, ProgressAiAnalysisSection, ProgressWeightSection,
+        │                           # ProgressHealthList, ProgressMeasurementCard, BodyMeasurementsDialog
+        ├── profile/                # ProfileSheetWidgets, ProfileEditSheets, ProfileEditor,
+        │                           # ProfileMiscWidgets, AvatarPickerSheet, LanguageSelectionSheet,
+        │                           # ThemeSelectionSheet
+        └── router/                 # MainShell, RouterWorkoutMiniPlayer, RouterBottomNav
 ```
 
 **Паттерны:** Clean Architecture + BLoC + Repository
 
-**DI:** GetIt — все сервисы и репозитории регистрируются по доменным интерфейсам (`IXxx`). Конкретные типы дополнительно регистрируются для вызовов, требующих конкретной реализации.
+**DI:** GetIt — все сервисы и репозитории регистрируются по доменным интерфейсам (`IXxx`). Конкретные типы дополнительно регистрируются через ту же переменную-экземпляр — 0 cast-выражений (`as ConcreteType`). Все 35+ `sl<Concrete>()` заменены на `sl<IInterface>()`.
+
+**Логирование:** `appLogger` (пакет `logger`) — 0 вызовов `print()` / `debugPrint()` / `kDebugMode`-гейтов.
+
+**Офлайн-очередь:** `OfflineQueue` (Hive) + `connectivity_plus` listener + DI — операции буферизируются при отсутствии сети.
+
+**Data → Domain:** `BodyMeasurement`, `PersonalRecord`, `TestDayExercise`, `ExerciseInfo` — в `domain/entities/`. `ChatMessageModel` — в data-слое, domain `ChatMessage` — чистая сущность без сериализации.
+
+**Строгий линтер:** 8 правил (`prefer_const_constructors`, `avoid_print` и др.), `dart fix --apply` — 117 авто-исправлений; `dart analyze` → «No issues found!»
 
 **Навигация:** go_router с ShellRoute (bottom navigation) + WorkoutMiniPlayer поверх всех табов. Виджеты навигации (`MainShell`, `RouterBottomNav`, `RouterWorkoutMiniPlayer`) вынесены в `widgets/router/` и используют локализацию через `AppLocalizations.tl()`.
+
+**Декомпозиция экранов:**
+| Экран | До (строк) | После (строк) | Сокращение |
+|--------|-----------|--------------|-----------|
+| dashboard_screen.dart | 1814 | 561 | −69% |
+| profile_screen.dart | 1873 | 987 | −47% |
+| workout_plan_screen.dart | 1460 | 445 | −70% |
+| progress_screen.dart | 1449 | 666 | −54% |
+| nutrition_screen.dart | 1320 | 699 | −47% |
+| deepseek_service.dart | 1120 | 110 | −90% (фасад) |
+| functions/src/index.ts | 754 | 7 файлов | разбит на домены |
+
+**DeepSeekService:** фасад (110 строк) → 5 специализированных AI-сервисов + BaseClient. Смена AI-провайдера — одна реализация `IDeepSeekService`, без изменений в BLoC и UI.
 
 ---
 
@@ -229,24 +290,26 @@ lib/
 
 ## Firebase Cloud Functions (europe-west1, Node.js 22)
 
-| Функция | Тип | Назначение |
-|---|---|---|
-| `sendFriendRequest` | Callable | Создаёт запрос, отправляет FCM + in-app уведомление |
-| `acceptFriendRequest` | Callable | Принимает запрос, добавляет в friends обоих пользователей |
-| `declineFriendRequest` | Callable | Отклоняет запрос |
-| `removeFriend` | Callable | Удаляет из friends обоих направлений |
-| `searchUsers` | Callable | Поиск по usernameLower с prefix-match, возвращает isFriend |
-| `fanoutActivityEvent` | Firestore trigger | При записи в `activity_events/{uid}/items` — фанаут в feeds всех друзей (батчами по 499) |
-| `createChallenge` | Callable | Создаёт челлендж + начальный progress-документ |
-| `joinChallenge` | Callable | Добавляет uid в participants, создаёт progress-документ |
-| `updateChallengeProgress` | Callable | Обновляет прогресс, FCM при достижении цели, публикует feed-событие |
-| `cleanOldFeedEvents` | Scheduled (03:00) | Удаляет события ленты старше 30 дней |
-| `recordWorkout` | Callable | Запись завершённой тренировки в Firestore |
-| `deepseekProxy` | Callable | Прокси для DeepSeek API — ключ хранится в Secret Manager, не попадает в APK |
-| `exerciseDbProxy` | Callable | Прокси для ExerciseDB API (Pro, $12.99/мес, 2300 запросов/мес) |
-| `seedChallenges` | Callable | Инициализация дефолтных публичных челленджей |
-| `fixNameLower` | Scheduled | Миграция: заполнение `usernameLower` для поддержки поиска |
-| `cleanupDuplicateRequests` | Scheduled | Удаление дублированных `friend_requests` |
+| Функция | Тип | Безопасность | Назначение |
+|---|---|---|---|
+| `sendFriendRequest` | Callable | Валидация toUid | Создаёт запрос, отправляет FCM + in-app уведомление |
+| `acceptFriendRequest` | Callable | Транзакция Firestore | Принимает запрос, добавляет в friends обоих пользователей |
+| `declineFriendRequest` | Callable | — | Отклоняет запрос |
+| `removeFriend` | Callable | — | Удаляет из friends обоих направлений |
+| `searchUsers` | Callable | Проверка типа query, .limit(500) | Поиск по usernameLower с prefix-match, возвращает isFriend |
+| `fanoutActivityEvent` | Firestore trigger | Best-effort чанки, .limit(500), retry | При записи в `activity_events/{uid}/items` — фанаут в feeds друзей |
+| `createChallenge` | Callable | — | Создаёт челлендж + начальный progress-документ |
+| `joinChallenge` | Callable | — | Добавляет uid в participants, создаёт progress-документ |
+| `updateChallengeProgress` | Callable | — | Обновляет прогресс, FCM при достижении цели, публикует feed-событие |
+| `cleanOldFeedEvents` | Scheduled (03:00) | — | Удаляет события ленты старше 30 дней |
+| `recordWorkout` | Callable | Транзакция Firestore | Запись завершённой тренировки в Firestore |
+| `deepseekProxy` | Callable | Rate limit 20 req/60s | Прокси для DeepSeek API — ключ в Secret Manager |
+| `exerciseDbProxy` | Callable | Rate limit 30 req/60s | Прокси для ExerciseDB API |
+| `seedChallenges` | Callable | Admin-only (`token.role === 'admin'`) | Инициализация дефолтных публичных челленджей |
+| `fixNameLower` | Scheduled | — | Миграция: заполнение `usernameLower` для поиска |
+| `cleanupDuplicateRequests` | Scheduled | — | Удаление дублированных `friend_requests` |
+
+**Инфраструктура:** `withRetry(fn, 3)` в `shared.ts`, JSDoc на всех экспортируемых функциях, 21 константа в `constants.ts`, composite indexes в `firestore.indexes.json`, логирование 20 функций.
 
 ---
 
@@ -309,7 +372,7 @@ lib/
 | 14 | Українська | `uk` | 🇺🇦 |
 | 15 | Беларуская | `be` | 🇧🇾 |
 
-По умолчанию: Русский (`ru`). Локализация охватывает 632 ключа через `AppLocalizations.tl()` / `tlp()`. Все BLoC-сообщения, роутер и сервисы используют `tl()`. Фоллбэк на английский при отсутствии перевода.
+По умолчанию: Русский (`ru`). Локализация охватывает 845+ ключей через `AppLocalizations.tl()` / `tlp()`. Все BLoC-сообщения, роутер, сервисы и виджеты используют `tl()`. 0 хардкодированных UI-строк. Фоллбэк на английский при отсутствии перевода.
 
 ---
 
@@ -343,11 +406,12 @@ lib/
 | Технология | Версия | Назначение |
 |---|---|---|
 | Flutter | 3.27+ | Кроссплатформенный UI (Android, iOS) |
-| Dart | 3.6+ | Язык |
+| Dart | 3.10.3+ | Язык |
 | flutter_bloc | ^9.1.1 | State management |
 | go_router | ^17.3.0 | Навигация с ShellRoute |
 | get_it | ^9.2.1 | Dependency Injection |
 | equatable | ^2.0.5 | Сравнение состояний BLoC |
+| freezed / freezed_annotation | — | Иммутабельные модели данных (24 класса, 18 автогенерированных файлов) |
 
 ### Хранение данных
 | Технология | Назначение |
@@ -374,15 +438,9 @@ lib/
 | Пакет | Назначение |
 |---|---|
 | model_viewer_plus | 3D GLB viewer (WebView + localhost proxy) — анатомическая модель |
-| fl_chart | Графики веса и прогресса |
 | syncfusion_flutter_charts | Продвинутые графики |
-| lottie | Анимации |
-| flutter_animate | Декларативные анимации виджетов |
-| animate_do | Готовые анимации появления |
 | shimmer | Placeholder загрузки |
-| percent_indicator | Прогресс-кольца и бары |
 | table_calendar | Календарь тренировок |
-| smooth_page_indicator | Индикатор страниц онбординга |
 | cached_network_image | Кэширование изображений и GIF |
 
 ### Устройства и сенсоры
@@ -609,7 +667,7 @@ https://fitnesbuster.web.app/gifs/{exerciseDbId}.gif
 flutter test
 ```
 
-16 тестовых файлов в `test/`, 225 тестов:
+**337 тестов** (321 unit/widget + 16 E2E) в ~22 файлах:
 
 | Файл | Покрытие |
 |---|---|
@@ -618,19 +676,36 @@ flutter test
 | `test/bloc/workout_bloc_test.dart` | WorkoutBloc — start, tick, complete |
 | `test/bloc/nutrition_bloc_test.dart` | NutritionBloc — load, add/remove food |
 | `test/bloc/ai_bloc_test.dart` | AiBloc — generate plan, ask question |
+| `test/bloc/health_bloc_test.dart` | HealthBloc — fetch, watch |
+| `test/bloc/health_sync_bloc_test.dart` | HealthSyncBloc — initialize, read |
+| `test/bloc/onboarding_bloc_test.dart` | OnboardingBloc — 5 steps + finalize |
+| `test/bloc/test_week_bloc_test.dart` | TestWeekBloc — start, record, complete |
 | `test/data/auth_repository_test.dart` | AuthRepository — login/register flows |
 | `test/data/user_repository_test.dart` | UserRepository — CRUD профиля |
 | `test/data/settings_repository_test.dart` | SettingsRepository — safe getters/setters |
 | `test/data/gamification_service_test.dart` | GamificationService — XP, уровни, достижения |
+| `test/data/weekly_debrief_test.dart` | WeeklyDebrief — fromJson, defaults, round-trip |
 | `test/domain/user_profile_test.dart` | UserProfile — BMR/TDEE, defaults() factory |
 | `test/services/recovery_score_service_test.dart` | 17 тестов — уровни, shouldReduceIntensity, formatSleep |
 | `test/services/adaptive_training_service_test.dart` | 12 тестов — calculateAdjustment, buildAdaptedPlan |
 | `test/services/social_models_test.dart` | 9 тестов — FeedEvent, Challenge, ChallengeParticipant |
 | `test/services/nutrition_service_test.dart` | NutritionService — calculateMacros |
 | `test/services/deepseek_service_test.dart` | DeepSeekService — парсинг ответов |
+| `test/services/onboarding_workflow_service_test.dart` | OnboardingWorkflowService — 3 теста |
 | `test/widget_test.dart` | Smoke test |
+| `test/integration/onboarding_e2e_test.dart` | **E2E** — 8 тестов (bloc_test + mockito) |
+| `test/integration/workout_e2e_test.dart` | **E2E** — 8 тестов (bloc_test + mockito) |
+| `test/golden/` | **Golden** — DashboardScreen + WorkoutPlanScreen (PNG сгенерированы) |
 
 Mock-файлы генерируются через `mockito` + `build_runner`.
+
+```bash
+# Только E2E тесты
+flutter test test/integration/
+
+# Golden тесты (требуют display-сервер)
+flutter test test/golden/
+```
 
 ---
 
@@ -669,6 +744,19 @@ function isIn(matName, list) {
 ---
 
 ## AI-архитектура (DeepSeek)
+
+### Архитектура AI-слоя
+
+`deepseek_service.dart` — **фасад (110 строк)**, делегирует вызовы 5 специализированным сервисам:
+
+| Сервис | Файл | Назначение |
+|---|---|---|
+| `WorkoutPlanService` | `core/ai/services/` | Генерация + парсинг плана тренировок |
+| `MealPlanService` | `core/ai/services/` | Генерация + парсинг плана питания |
+| `PlanRefinementService` | `core/ai/services/` | Коррекция плана (6 источников, 3 режима) |
+| `ProgressAnalyzer` | `core/ai/services/` | Анализ замеров + дебриф |
+| `ChatService` | `core/ai/services/` | Multi-turn чат с историей |
+| `BaseClient` | `core/ai/` | HTTP-клиент с retry, общий для всех сервисов |
 
 ### Возможности DeepSeekService (через `IDeepSeekService`)
 1. **generateWorkoutPlan** — персональный недельный план с периодизацией
@@ -713,15 +801,30 @@ function isIn(matName, list) {
 
 ## Дорожная карта
 
+### ✅ Завершено (26–28 июня 2026)
+| Задача | Статус | Описание |
+| --- | --- | --- |
+| Рефакторинг (Фазы 1–15) | ✅ | 73/73 проблем закрыто. Clean Architecture, freezed-сущности, декомпозиция God-классов, DI-интерфейсы, Cloud Functions безопасность, 8 пакетов удалено, 337 тестов |
+| CI/CD | ✅ | GitHub Actions: flutter analyze + flutter test на каждый PR |
+| DeepSeekService разделение | ✅ | 5 AI-сервисов + BaseClient + фасад (110 строк) |
+| Use Cases | ✅ | CompleteTestWeekUseCase, TestWeekWorkflowService, OnboardingWorkflowService |
+| Локализация | ✅ | 845+ ключей, 0 хардкодированных строк |
+| Accessibility | ✅ | Semantics на ~77 виджетах в 42 файлах, touch targets ≥48dp |
+| Analytics | ✅ | События в 4 BLoC-файлах через IAnalyticsService |
+| Golden тесты | ✅ | DashboardScreen + WorkoutPlanScreen PNG сгенерированы |
+| E2E тесты | ✅ | 16 тестов (onboarding + workout), bloc_test/mockito |
+| Cloud Functions безопасность | ✅ | Rate-limiting, транзакции, admin-guard, withRetry, JSDoc, constants.ts |
+| OfflineQueue | ✅ | Hive + connectivity_plus + DI |
+| LoadingShimmer | ✅ | Переиспользуемый shimmer на 5 экранах |
+| SemanticColors | ✅ | 11 констант, ~60 хардкодов заменено |
+
 ### Ближайшие задачи
 
 | Задача | Приоритет | Описание |
 | --- | --- | --- |
-| CI/CD | Высокий | GitHub Actions: flutter analyze + flutter test на каждый PR |
-| Аудит безопасности | Высокий | GDPR, Firestore rules, rate limiting, шифрование Hive |
+| Аудит безопасности | Высокий | GDPR, Firestore rules, Hive шифрование |
 | Email-подтверждение | Средний | `sendEmailVerification()` + блокировка до подтверждения |
 | Бета-тестирование | Высокий | 50–100 пользователей, Crashlytics, Retention D1/D7/D30 |
-| Разделение DeepSeekService | Низкий | Выделить `WorkoutAiService`, `NutritionAiService`, `ChatAiService` |
 
 ### Дальнейшее развитие
 
