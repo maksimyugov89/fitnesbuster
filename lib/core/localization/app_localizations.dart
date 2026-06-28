@@ -324,6 +324,8 @@ class AppLocalizations {
   String get unlockedLabel        => _t('unlockedLabel');
   String get lockedLabel          => _t('lockedLabel');
   String get logoutBtn            => _t('logoutBtn');
+  String get logoutTitle          => _t('logoutTitle');
+  String get logoutBody           => _t('logoutBody');
   String get deleteAccountBtn     => _t('deleteAccountBtn');
   String get deleteAccountConfirm => _t('deleteAccountConfirm');
   String get versionLabel         => _t('versionLabel');
