@@ -14,34 +14,26 @@ class TestWeekStateDayInProgress extends TestWeekState {
   final int dayIndex;
   final List<TestDayExercise> dayExercises;
   final List<TestExerciseResult> completedExercises;
-  final int overallRpe;
-  final String sessionNotes;
 
   const TestWeekStateDayInProgress({
     required this.dayIndex,
     required this.dayExercises,
     required this.completedExercises,
-    this.overallRpe = 5,
-    this.sessionNotes = '',
   });
 
   TestWeekStateDayInProgress copyWith({
     int? dayIndex,
     List<TestDayExercise>? dayExercises,
     List<TestExerciseResult>? completedExercises,
-    int? overallRpe,
-    String? sessionNotes,
   }) {
     return TestWeekStateDayInProgress(
       dayIndex: dayIndex ?? this.dayIndex,
       dayExercises: dayExercises ?? this.dayExercises,
       completedExercises: completedExercises ?? this.completedExercises,
-      overallRpe: overallRpe ?? this.overallRpe,
-      sessionNotes: sessionNotes ?? this.sessionNotes,
     );
   }
 
-  @override List<Object?> get props => [dayIndex, dayExercises, completedExercises, overallRpe, sessionNotes];
+  @override List<Object?> get props => [dayIndex, dayExercises, completedExercises];
 }
 
 /// A day was completed, showing summary before next day.
@@ -96,4 +88,11 @@ class TestWeekStateNeedsAdjustment extends TestWeekState {
     required this.suggestions,
   });
   @override List<Object?> get props => [reason, suggestions];
+}
+
+/// Error during plan acceptance.
+class TestWeekStateError extends TestWeekState {
+  final String message;
+  const TestWeekStateError(this.message);
+  @override List<Object?> get props => [message];
 }

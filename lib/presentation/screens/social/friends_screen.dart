@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/core/services/social_service.dart';
+import 'package:fitnesbuster/core/services/i_social_service.dart';
+import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/data/models/user_search_result.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
@@ -42,7 +43,7 @@ class _FriendsScreenState extends State<FriendsScreen>
     }
     setState(() { _searching = true; _searchError = null; });
     try {
-      final results = await sl<SocialService>().searchUsers(query.trim());
+      final results = await sl<ISocialService>().searchUsers(query.trim());
       if (mounted) setState(() { _searchResults = results; _searching = false; });
     } catch (e) {
       if (mounted) setState(() { _searching = false; _searchError = e.toString(); });
@@ -58,7 +59,7 @@ class _FriendsScreenState extends State<FriendsScreen>
       }).toList();
     });
     try {
-      await sl<SocialService>().sendFriendRequest(uid);
+      await sl<ISocialService>().sendFriendRequest(uid);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Запрос отправлен!')),
@@ -134,7 +135,7 @@ class _FriendsScreenState extends State<FriendsScreen>
 
   Widget _buildFriendsList(ThemePalette colors) {
     return StreamBuilder<List<FriendUser>>(
-      stream: sl<SocialService>().friendsStream(),
+      stream: sl<ISocialService>().friendsStream(),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -154,7 +155,7 @@ class _FriendsScreenState extends State<FriendsScreen>
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 80),
           itemCount: friends.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
           itemBuilder: (_, i) => _FriendTile(
             user: friends[i],
             colors: colors,
@@ -180,7 +181,7 @@ class _FriendsScreenState extends State<FriendsScreen>
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              await sl<SocialService>().removeFriend(user.uid);
+              await sl<ISocialService>().removeFriend(user.uid);
             },
             child: Text('Удалить', style: TextStyle(color: colors.error)),
           ),
@@ -193,7 +194,7 @@ class _FriendsScreenState extends State<FriendsScreen>
 
   Widget _buildRequests(ThemePalette colors) {
     return StreamBuilder<List<FriendRequest>>(
-      stream: sl<SocialService>().incomingRequestsStream(),
+      stream: sl<ISocialService>().incomingRequestsStream(),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -221,7 +222,7 @@ class _FriendsScreenState extends State<FriendsScreen>
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 80),
           itemCount: requests.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
           itemBuilder: (_, i) => _RequestTile(request: requests[i], colors: colors),
         );
       },
@@ -258,7 +259,7 @@ class _FriendsScreenState extends State<FriendsScreen>
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
             itemCount: _searchResults.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (_, i) {
               final r = _searchResults[i];
               final isFriend = r.isFriend;
@@ -376,7 +377,7 @@ class _RequestTileState extends State<_RequestTile> {
   Future<void> _accept() async {
     setState(() => _loading = true);
     try {
-      await sl<SocialService>().acceptFriendRequest(widget.request.id);
+      await sl<ISocialService>().acceptFriendRequest(widget.request.id);
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
     } finally {
@@ -387,7 +388,7 @@ class _RequestTileState extends State<_RequestTile> {
   Future<void> _decline() async {
     setState(() => _loading = true);
     try {
-      await sl<SocialService>().declineFriendRequest(widget.request.id);
+      await sl<ISocialService>().declineFriendRequest(widget.request.id);
     } finally {
       if (mounted) setState(() => _loading = false);
     }

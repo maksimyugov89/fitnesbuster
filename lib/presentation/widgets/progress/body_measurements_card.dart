@@ -106,8 +106,11 @@ class _ProgressBodyMeasurementsDialogState extends State<ProgressBodyMeasurement
                 const SizedBox(width: 8),
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
+                  child: Semantics(
+                    label: 'Рассчитать',
+                    button: true,
+                    child: TextButton(
+                      style: TextButton.styleFrom(
                       backgroundColor: colors.primary.withValues(alpha: 0.12),
                       foregroundColor: colors.primary,
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
@@ -118,6 +121,7 @@ class _ProgressBodyMeasurementsDialogState extends State<ProgressBodyMeasurement
                     onPressed: _calcBodyFat,
                     child: const Text('Рассчитать', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
                   ),
+                ),
                 ),
               ],
             ]),
@@ -131,13 +135,21 @@ class _ProgressBodyMeasurementsDialogState extends State<ProgressBodyMeasurement
         ),
       ),
       actions: [
-        TextButton(onPressed: _saving ? null : () => Navigator.pop(context), child: Text('Отмена', style: TextStyle(color: colors.textMuted))),
-        FilledButton(
+        Semantics(
+          label: 'Отмена',
+          button: true,
+          child: TextButton(onPressed: _saving ? null : () => Navigator.pop(context), child: Text('Отмена', style: TextStyle(color: colors.textMuted))),
+        ),
+        Semantics(
+          label: 'Сохранить',
+          button: true,
+          child: FilledButton(
           style: FilledButton.styleFrom(backgroundColor: colors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
           onPressed: _saving ? null : _save,
           child: _saving
               ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
               : const Text('Сохранить'),
+        ),
         ),
       ],
     );

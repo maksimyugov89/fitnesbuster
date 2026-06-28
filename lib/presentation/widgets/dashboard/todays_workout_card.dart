@@ -4,6 +4,7 @@ import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
+import 'package:fitnesbuster/core/constants/app_colors.dart';
 
 class StreakCard extends StatelessWidget {
   final UserLevel level;
@@ -57,15 +58,19 @@ class StreakCard extends StatelessWidget {
           ),
         ])),
         const SizedBox(width: 12),
-        GestureDetector(
-          onTap: () => context.push('/achievements'),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+        Semantics(
+          label: AppLocalizations.of(context).achievementsTitle,
+          button: true,
+          child: GestureDetector(
+            onTap: () => context.push('/achievements'),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text('🏅', style: TextStyle(fontSize: 16)),
             ),
-            child: const Text('🏅', style: TextStyle(fontSize: 16)),
           ),
         ),
       ]),
@@ -175,7 +180,7 @@ class _WeeklyChart extends StatelessWidget {
                           ),
                         AnimatedBuilder(
                           animation: animation,
-                          builder: (_, __) => AnimatedContainer(
+                          builder: (_, _) => AnimatedContainer(
                             duration: const Duration(milliseconds: 400),
                             height: done
                                 ? (38 * animation.value).clamp(8, 38)
@@ -185,7 +190,7 @@ class _WeeklyChart extends StatelessWidget {
                                   ? (isToday
                                       ? p.primaryGradient
                                       : const LinearGradient(
-                                          colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                                          colors: [SemanticColors.progression, Color(0xFF66BB6A)],
                                           begin: Alignment.bottomCenter,
                                           end: Alignment.topCenter))
                                   : null,
@@ -231,14 +236,17 @@ class _TestWeekBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final p = AppTheme.of(context);
-    return GestureDetector(
-      onTap: () => context.push('/test-week'),
-      child: Container(
+    return Semantics(
+      label: l10n.testWeekTitle,
+      button: true,
+      child: GestureDetector(
+        onTap: () => context.push('/test-week'),
+        child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF1A2A3A), Color(0xFF0A1826)],
+            colors: [SemanticColors.cardDark, SemanticColors.cardDarker],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -266,18 +274,19 @@ class _TestWeekBanner extends StatelessWidget {
             Text(l10n.testWeekSubtitle, style: TextStyle(fontSize: 12, color: p.textSecondary)),
             const SizedBox(height: 8),
             const Row(children: [
-              Flexible(child: _InfoPill('Индивидуально', Color(0xFF3D5AFE))),
+              Flexible(child: _InfoPill('Индивидуально', SemanticColors.featurePill)),
               SizedBox(width: 6),
-              Flexible(child: _InfoPill('Ваш график', Color(0xFF3D5AFE))),
+              Flexible(child: _InfoPill('Ваш график', SemanticColors.featurePill)),
               SizedBox(width: 6),
-              Flexible(child: _InfoPill('Без спешки', Color(0xFF3D5AFE))),
+              Flexible(child: _InfoPill('Без спешки', SemanticColors.featurePill)),
             ]),
           ])),
           const SizedBox(width: 8),
           Icon(Icons.arrow_forward_ios_rounded, color: p.info, size: 18),
         ]),
       ),
-    );
+    ),
+  );
   }
 }
 
@@ -312,15 +321,22 @@ class _AiPlans extends StatelessWidget {
               const SizedBox(width: 10),
               Text(l10n.workoutPlanTitle, style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: p.textPrimary)),
               const Spacer(),
-              GestureDetector(
-                onTap: () => context.push('/workout'),
-                child: Text(l10n.openArrow, style: TextStyle(fontSize: 12, color: p.primary, fontWeight: FontWeight.w600)),
+              Semantics(
+                label: l10n.openArrow,
+                button: true,
+                child: GestureDetector(
+                  onTap: () => context.push('/workout'),
+                  child: Text(l10n.openArrow, style: TextStyle(fontSize: 12, color: p.primary, fontWeight: FontWeight.w600)),
+                ),
               ),
             ]),
             const SizedBox(height: 12),
-            GestureDetector(
-              onTap: () => context.push('/workout/session/today'),
-              child: Container(
+            Semantics(
+              label: l10n.startTodayBtn,
+              button: true,
+              child: GestureDetector(
+                onTap: () => context.push('/workout/session/today'),
+                child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [p.primary, p.primary.withValues(alpha: 0.75)],
@@ -333,6 +349,7 @@ class _AiPlans extends StatelessWidget {
                   Text(l10n.startTodayBtn, style: TextStyle(fontFamily: 'Syne', fontSize: 12, fontWeight: FontWeight.w700, color: p.textOnPrimary)),
                 ]),
               ),
+            ),
             ),
           ]),
         ),
@@ -356,9 +373,13 @@ class _AiPlans extends StatelessWidget {
             const SizedBox(width: 10),
             Text(l10n.mealPlanLabel, style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: p.textPrimary)),
             const Spacer(),
-            GestureDetector(
-              onTap: () => context.push('/nutrition/meal-plan'),
-              child: Text(l10n.openArrow, style: TextStyle(fontSize: 12, color: p.accentOrange, fontWeight: FontWeight.w600)),
+            Semantics(
+              label: l10n.openArrow,
+              button: true,
+              child: GestureDetector(
+                onTap: () => context.push('/nutrition/meal-plan'),
+                child: Text(l10n.openArrow, style: TextStyle(fontSize: 12, color: p.accentOrange, fontWeight: FontWeight.w600)),
+              ),
             ),
           ]),
         ),

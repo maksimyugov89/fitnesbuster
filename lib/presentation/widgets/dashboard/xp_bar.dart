@@ -33,10 +33,14 @@ class DashboardXpBar extends StatelessWidget {
               valueColor: AlwaysStoppedAnimation<Color>(color), minHeight: 5)),
         ])),
         const SizedBox(width: 12),
-        GestureDetector(onTap: () => context.push('/achievements'),
-          child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-            child: const Text('🏅', style: TextStyle(fontSize: 16)))),
+        Semantics(
+          label: context.l10n.achievementsTitle,
+          button: true,
+          child: GestureDetector(onTap: () => context.push('/achievements'),
+            child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+              child: const Text('🏅', style: TextStyle(fontSize: 16)))),
+        ),
       ]));
   }
 }

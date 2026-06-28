@@ -10,9 +10,12 @@ class AiChatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final p = AppTheme.of(context);
-    return GestureDetector(
-      onTap: () => context.push('/chat'),
-      child: Container(
+    return Semantics(
+      label: l10n.askAiLabel,
+      button: true,
+      child: GestureDetector(
+        onTap: () => context.push('/chat'),
+        child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -52,6 +55,7 @@ class AiChatCard extends StatelessWidget {
           Icon(Icons.arrow_forward_ios_rounded, color: p.primary, size: 16),
         ]),
       ),
-    );
+    ),
+  );
   }
 }

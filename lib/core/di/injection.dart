@@ -19,6 +19,12 @@ import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/notifications/notification_service.dart';
 import 'package:fitnesbuster/domain/services/i_notification_service.dart';
 import 'package:fitnesbuster/core/ai/deepseek_service.dart';
+import 'package:fitnesbuster/core/ai/base_client.dart';
+import 'package:fitnesbuster/core/ai/services/workout_plan_service.dart';
+import 'package:fitnesbuster/core/ai/services/meal_plan_service.dart';
+import 'package:fitnesbuster/core/ai/services/plan_refinement_service.dart';
+import 'package:fitnesbuster/core/ai/services/progress_analyzer.dart';
+import 'package:fitnesbuster/core/ai/services/chat_service.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/core/analytics/analytics_service.dart';
 import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
@@ -28,7 +34,12 @@ import 'package:fitnesbuster/core/health/health_connect_service.dart';
 import 'package:fitnesbuster/core/health/health_analytics_service.dart';
 import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
 import 'package:fitnesbuster/domain/services/i_health_analytics_service.dart';
+import 'package:fitnesbuster/domain/services/i_health_service.dart';
+import 'package:fitnesbuster/core/health/health_service_adapter.dart';
 import 'package:fitnesbuster/core/services/social_service.dart';
+import 'package:fitnesbuster/core/services/onboarding_workflow_service.dart';
+import 'package:fitnesbuster/core/services/test_week_workflow_service.dart';
+import 'package:fitnesbuster/domain/usecases/complete_test_week_use_case.dart';
 import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/nutrition_service.dart';
 import 'package:fitnesbuster/domain/services/i_nutrition_service.dart';
@@ -61,8 +72,33 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<INotificationService>(() => notificationService);
   sl.registerLazySingleton<NotificationService>(() => notificationService);
 
-  // AI
-  final deepSeek = DeepSeekService();
+  // AI — base client + decomposed services
+  final baseClient = BaseClient();
+  sl.registerLazySingleton<BaseClient>(() => baseClient);
+
+  final workoutPlanService = WorkoutPlanService(baseClient);
+  sl.registerLazySingleton<WorkoutPlanService>(() => workoutPlanService);
+
+  final mealPlanService = MealPlanService(baseClient);
+  sl.registerLazySingleton<MealPlanService>(() => mealPlanService);
+
+  final planRefinementService = PlanRefinementService(baseClient, workoutPlanService);
+  sl.registerLazySingleton<PlanRefinementService>(() => planRefinementService);
+
+  final progressAnalyzer = ProgressAnalyzer(baseClient);
+  sl.registerLazySingleton<ProgressAnalyzer>(() => progressAnalyzer);
+
+  final chatService = ChatService(baseClient);
+  sl.registerLazySingleton<ChatService>(() => chatService);
+
+  // Facade preserving backward compatibility
+  final deepSeek = DeepSeekService(
+    workoutPlan: workoutPlanService,
+    mealPlan: mealPlanService,
+    refinement: planRefinementService,
+    progress: progressAnalyzer,
+    chat: chatService,
+  );
   sl.registerLazySingleton<IDeepSeekService>(() => deepSeek);
   sl.registerLazySingleton<DeepSeekService>(() => deepSeek);
 
@@ -86,6 +122,10 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<IHealthAnalyticsService>(() => healthAnalytics);
   sl.registerLazySingleton<HealthAnalyticsService>(() => healthAnalytics);
 
+  // Health plugin adapter
+  final healthServiceAdapter = HealthServiceAdapter();
+  sl.registerLazySingleton<IHealthService>(() => healthServiceAdapter);
+
   // Social — same instance under both types (screens use concrete, tests use interface)
   final socialService = SocialService();
   sl.registerLazySingleton<ISocialService>(() => socialService);
@@ -94,7 +134,7 @@ Future<void> initDependencies() async {
   // FCM token init on sign-in — cancelled and recreated on each call to stay idempotent
   _authFcmSub?.cancel();
   _authFcmSub = fb.FirebaseAuth.instance.authStateChanges().listen((user) {
-    if (user != null) sl<SocialService>().initFcm();
+    if (user != null) sl<ISocialService>().initFcm();
   });
 
   // FCM deeplink routing
@@ -141,24 +181,34 @@ Future<void> initDependencies() async {
   await offlineQueue.init();
   sl.registerLazySingleton<OfflineQueue>(() => offlineQueue);
 
+  // Onboarding workflow
+  final onboardingWorkflow = OnboardingWorkflowService(aiService: sl(), userRepo: sl());
+  sl.registerLazySingleton<OnboardingWorkflowService>(() => onboardingWorkflow);
+
+  // Test week workflow
+  final testWeekWorkflow = TestWeekWorkflowService(trainingService: sl());
+  sl.registerLazySingleton<TestWeekWorkflowService>(() => testWeekWorkflow);
+
+  // Use cases
+  final completeTestWeekUseCase = CompleteTestWeekUseCase(authRepo: sl(), userRepo: sl(), aiService: sl());
+  sl.registerLazySingleton<CompleteTestWeekUseCase>(() => completeTestWeekUseCase);
+
   // Blocs
   sl.registerFactory(() => AuthBloc(authRepository: sl<IAuthRepository>()));
   sl.registerFactory(() => UserBloc(userRepository: sl<IUserRepository>()));
   sl.registerFactory(() => WorkoutBloc());
   sl.registerFactory(() => NutritionBloc(nutritionService: sl()));
-  sl.registerFactory(() => HealthBloc(analytics: sl<IHealthAnalyticsService>()));
-  sl.registerFactory(() => HealthSyncBloc(hcService: sl()));
+  sl.registerFactory(() => HealthBloc(healthService: sl<IHealthService>(), analytics: sl<IHealthAnalyticsService>()));
+  sl.registerFactory(() => HealthSyncBloc(hcService: sl<IHealthConnectService>()));
   sl.registerFactory(() => AiBloc(aiService: sl()));
   sl.registerFactory(() => OnboardingBloc(
     userRepo: sl(),
-    aiService: sl(),
+    workflowService: sl<OnboardingWorkflowService>(),
     authRepo: sl<IAuthRepository>(),
   ));
   sl.registerFactory(() => TestWeekBloc(
-    trainingService: sl(),
-    aiService: sl(),
-    userRepo: sl(),
-    authRepo: sl<IAuthRepository>(),
+    workflowService: sl(),
+    completeTestWeekUseCase: sl(),
   ));
 }
 

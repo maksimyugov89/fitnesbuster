@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/constants/avatar_presets.dart';
 
 class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
@@ -18,28 +19,6 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.headerCtrl,
     this.initNotifier,
   });
-
-  static const presetEmoji = ['🏋️','🏃','🧘','🚴','🥊','🏊','🧗','🤸','⚡','🏆'];
-  static const presetColors = [
-    [Color(0xFF6C63FF), Color(0xFF3D5AFE)],
-    [Color(0xFF00BFA5), Color(0xFF00695C)],
-    [Color(0xFFAB47BC), Color(0xFF6A1B9A)],
-    [Color(0xFFFF7043), Color(0xFFBF360C)],
-    [Color(0xFFEF5350), Color(0xFFB71C1C)],
-    [Color(0xFF29B6F6), Color(0xFF01579B)],
-    [Color(0xFFFFCA28), Color(0xFFE65100)],
-    [Color(0xFFEC407A), Color(0xFF880E4F)],
-    [Color(0xFF26C6DA), Color(0xFF006064)],
-    [Color(0xFF66BB6A), Color(0xFF1B5E20)],
-  ];
-
-  static String greeting(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final hour = DateTime.now().hour;
-    if (hour < 12) return l10n.greetingMorning;
-    if (hour < 17) return l10n.greetingAfternoon;
-    return l10n.greetingEvening;
-  }
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -69,7 +48,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    greeting(context),
+                    context.l10n.greetingMorning,
                     style: TextStyle(
                       fontSize: 12, color: p.textMuted, fontFamily: 'Inter',
                     ),
@@ -86,9 +65,13 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ],
               ),
             ),
-            GestureDetector(
-              onTap: () => context.go('/profile'),
-              child: _buildAvatar(context),
+            Semantics(
+              label: context.l10n.editProfileLabel,
+              button: true,
+              child: GestureDetector(
+                onTap: () => context.go('/profile'),
+                child: _buildAvatar(context),
+              ),
             ),
           ],
         ),
@@ -111,26 +94,27 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Image.asset(
             avatarCustomPath,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => _buildInitialsAvatar(context, size),
+            errorBuilder: (_, _, _) => _buildInitialsAvatar(context, size),
           ),
         ),
       );
     }
 
-    if (avatarPresetIndex >= 0 && avatarPresetIndex < presetEmoji.length) {
+    if (avatarPresetIndex >= 0 && avatarPresetIndex < kAvatarPresets.length) {
+      final preset = kAvatarPresets[avatarPresetIndex];
       return Container(
         width: size, height: size,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: presetColors[avatarPresetIndex],
+            colors: preset.gradientColors,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           shape: BoxShape.circle,
-          border: Border.all(color: presetColors[avatarPresetIndex][0].withValues(alpha: 0.6), width: 2),
+          border: Border.all(color: preset.gradientColors[0].withValues(alpha: 0.6), width: 2),
         ),
         child: Center(
-          child: Text(presetEmoji[avatarPresetIndex], style: const TextStyle(fontSize: 20)),
+          child: Text(preset.emoji, style: const TextStyle(fontSize: 20)),
         ),
       );
     }

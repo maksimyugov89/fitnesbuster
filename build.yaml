@@ -1,0 +1,7 @@
+targets:
+  $default:
+    sources:
+      include:
+        - lib/**
+        - test/**
+        - integration_test/**

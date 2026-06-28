@@ -30,8 +30,8 @@ void main() {
 
   tearDown(() => bloc.close());
 
-  test('initial state is AuthStateUnknown', () {
-    expect(bloc.state, const AuthStateUnknown());
+  test('initial state is AuthStateInitial', () {
+    expect(bloc.state, const AuthStateInitial());
   });
 
   group('AuthCheckRequested', () {

@@ -47,9 +47,12 @@ class _NutritionManualFoodFormState extends State<NutritionManualFoodForm> {
         SizedBox(
           height: 34,
           child: ListView(scrollDirection: Axis.horizontal, children: _mealTypeKeys.map((key) =>
-            GestureDetector(
-              onTap: () => setState(() => _mealType = key),
-              child: AnimatedContainer(
+            Semantics(
+              label: localizedMealLabel(context, key),
+              button: true,
+              child: GestureDetector(
+                onTap: () => setState(() => _mealType = key),
+                child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 margin: const EdgeInsets.only(right: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -61,6 +64,7 @@ class _NutritionManualFoodFormState extends State<NutritionManualFoodForm> {
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
                   color: _mealType == key ? c.textOnPrimary : c.textMuted)),
               ),
+            ),
             ),
           ).toList()),
         ),
@@ -75,7 +79,10 @@ class _NutritionManualFoodFormState extends State<NutritionManualFoodForm> {
         const SizedBox(height: 14),
         SizedBox(
           width: double.infinity,
-          child: FilledButton.icon(
+          child: Semantics(
+            label: context.l10n.add,
+            button: true,
+            child: FilledButton.icon(
             onPressed: _submit,
             icon: const Icon(Icons.add_rounded, size: 18),
             label: Text(context.l10n.add, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
@@ -85,6 +92,7 @@ class _NutritionManualFoodFormState extends State<NutritionManualFoodForm> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
+        ),
         ),
       ]),
     );

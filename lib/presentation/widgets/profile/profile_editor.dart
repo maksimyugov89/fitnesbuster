@@ -22,9 +22,13 @@ class _ProfileEditorSheetState extends State<ProfileEditorSheet> {
     return Form(
       key: _form,
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        GestureDetector(
-          onTap: widget.onAvatarTap,
-          child: Text(l10n.changeAvatar, style: TextStyle(fontSize: 13, color: colors.primary, fontWeight: FontWeight.w600)),
+        Semantics(
+          label: l10n.changeAvatar,
+          button: true,
+          child: GestureDetector(
+            onTap: widget.onAvatarTap,
+            child: Text(l10n.changeAvatar, style: TextStyle(fontSize: 13, color: colors.primary, fontWeight: FontWeight.w600)),
+          ),
         ),
         const SizedBox(height: 16),
         _SheetField(controller: widget.nameCtrl, label: l10n.nameLabel, icon: Icons.person_outline_rounded, validator: (v) => v!.trim().isEmpty ? l10n.enterNameValidation : null, colors: colors),
@@ -35,9 +39,13 @@ class _ProfileEditorSheetState extends State<ProfileEditorSheet> {
           return null;
         }, colors: colors),
         const SizedBox(height: 16),
-        FilledButton(onPressed: () { if (_form.currentState!.validate()) widget.onSave(); },
-          style: FilledButton.styleFrom(backgroundColor: colors.primary, minimumSize: const Size(double.infinity, 48), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-          child: Text(l10n.save, style: const TextStyle(fontWeight: FontWeight.w700))),
+        Semantics(
+          label: l10n.save,
+          button: true,
+          child: FilledButton(onPressed: () { if (_form.currentState!.validate()) widget.onSave(); },
+            style: FilledButton.styleFrom(backgroundColor: colors.primary, minimumSize: const Size(double.infinity, 48), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+            child: Text(l10n.save, style: const TextStyle(fontWeight: FontWeight.w700))),
+        ),
       ]),
     );
   }

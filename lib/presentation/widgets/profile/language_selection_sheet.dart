@@ -60,7 +60,10 @@ class _LanguageSelectionSheetState extends State<LanguageSelectionSheet> {
                 final isSelected = _selected == lang;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: GestureDetector(
+                  child: Semantics(
+                    label: '${lang.nativeName} — ${lang.englishName}',
+                    button: true,
+                    child: GestureDetector(
                     onTap: () async {
                       HapticFeedback.selectionClick();
                       setState(() => _selected = lang);
@@ -123,7 +126,8 @@ class _LanguageSelectionSheetState extends State<LanguageSelectionSheet> {
                       ),
                     ),
                   ),
-                );
+                ),
+              );
               },
             ),
           ),

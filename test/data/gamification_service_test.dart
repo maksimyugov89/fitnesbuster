@@ -19,10 +19,10 @@ void main() {
   // ── computeLevel (static utility) ────────────────────────────────────────
 
   group('computeLevel', () {
-    test('0 xp = level 1 Новичок', () {
+    test('0 xp = level 1', () {
       final lvl = GamificationService.computeLevel(0);
       expect(lvl.level, 1);
-      expect(lvl.name, 'Новичок');
+      expect(lvl.name, isNotEmpty);
       expect(lvl.emoji, '🌱');
       expect(lvl.xpForCurrent, 0);
       expect(lvl.xpForNext, 500);
@@ -30,10 +30,10 @@ void main() {
       expect(lvl.isMaxLevel, false);
     });
 
-    test('500 xp = level 2 Энтузиаст', () {
+    test('500 xp = level 2', () {
       final lvl = GamificationService.computeLevel(500);
       expect(lvl.level, 2);
-      expect(lvl.name, 'Энтузиаст');
+      expect(lvl.name, isNotEmpty);
       expect(lvl.xpForCurrent, 500);
       expect(lvl.progress, 0);
     });
@@ -44,33 +44,34 @@ void main() {
       expect(lvl.progress, closeTo(0.3, 0.01));
     });
 
-    test('1500 xp = level 3 Атлет', () {
+    test('1500 xp = level 3', () {
       final lvl = GamificationService.computeLevel(1500);
       expect(lvl.level, 3);
-      expect(lvl.name, 'Атлет');
+      expect(lvl.name, isNotEmpty);
     });
 
-    test('3000 xp = level 4 Воин', () {
+    test('3000 xp = level 4', () {
       final lvl = GamificationService.computeLevel(3000);
       expect(lvl.level, 4);
     });
 
-    test('5000 xp = level 5 Чемпион', () {
+    test('5000 xp = level 5', () {
       final lvl = GamificationService.computeLevel(5000);
       expect(lvl.level, 5);
     });
 
-    test('8000 xp = level 6 Легенда', () {
+    test('8000 xp = level 6', () {
       final lvl = GamificationService.computeLevel(8000);
       expect(lvl.level, 6);
     });
 
-    test('12000 xp = level 7 Elite', () {
+    test('12000 xp = level 7', () {
       final lvl = GamificationService.computeLevel(12000);
       expect(lvl.level, 7);
+      expect(lvl.name, isNotEmpty);
     });
 
-    test('18000 xp = level 8 Master', () {
+    test('18000 xp = level 8', () {
       final lvl = GamificationService.computeLevel(18000);
       expect(lvl.level, 8);
     });

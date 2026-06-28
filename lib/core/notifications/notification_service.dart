@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/domain/services/i_notification_service.dart';
+import 'package:fitnesbuster/domain/entities/daily_time.dart';
 
 class NotificationService implements INotificationService {
   final FlutterLocalNotificationsPlugin _plugin;
@@ -62,7 +62,7 @@ class NotificationService implements INotificationService {
 
   @override
   Future<void> scheduleWorkoutReminder({
-    TimeOfDay time = const TimeOfDay(hour: 8, minute: 0),
+    DailyTime time = const DailyTime(hour: 8, minute: 0),
   }) async {
     await _plugin.cancel(id: _workoutReminderId);
     await _plugin.zonedSchedule(
@@ -188,7 +188,7 @@ class NotificationService implements INotificationService {
     // 30 minutes before average workout time, clamped to 05:00–22:00
     final reminderMinutes = (avgMinutes - 30).clamp(300, 22 * 60);
     await scheduleWorkoutReminder(
-      time: TimeOfDay(
+      time: DailyTime(
         hour: reminderMinutes ~/ 60,
         minute: reminderMinutes % 60,
       ),

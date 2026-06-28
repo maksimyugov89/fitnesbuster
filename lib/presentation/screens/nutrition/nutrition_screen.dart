@@ -10,6 +10,13 @@ import 'package:fitnesbuster/data/repositories/user_repository.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/models/ai_meal_plan.dart';
 import 'package:fitnesbuster/presentation/screens/nutrition/barcode_scanner_screen.dart';
+import 'package:fitnesbuster/presentation/widgets/nutrition/meal_card.dart';
+import 'package:fitnesbuster/presentation/widgets/nutrition/daily_progress_card.dart';
+import 'package:fitnesbuster/presentation/widgets/nutrition/nutrition_header.dart';
+import 'package:fitnesbuster/presentation/widgets/nutrition/weekly_plan_view.dart';
+import 'package:fitnesbuster/presentation/widgets/nutrition/barcode_scan_card.dart';
+import 'package:fitnesbuster/presentation/widgets/nutrition/meal_progress_bar.dart';
+import 'package:fitnesbuster/presentation/widgets/nutrition/added_food_tile.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
@@ -93,6 +100,17 @@ class _NutritionScreenState extends State<NutritionScreen>
   }
 
   String _normalizeMealType(String raw) => raw.replaceAll(' ', '').toLowerCase();
+
+  void _toggleMealCompletion(int index) {
+    if (_completedMeals.contains(index)) {
+      HapticFeedback.lightImpact();
+      setState(() => _completedMeals.remove(index));
+    } else {
+      HapticFeedback.mediumImpact();
+      setState(() => _completedMeals.add(index));
+    }
+    _saveProgress();
+  }
 
   // ── Persist completion + eaten calories ───────────────────────────────────
   Future<void> _saveProgress() async {
@@ -194,8 +212,17 @@ class _NutritionScreenState extends State<NutritionScreen>
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Column(children: [
-          _buildHeader(colors),
-          _buildCompactCalories(colors),
+          NutritionHeader(
+            completedCount: _completedMeals.length,
+            totalMeals: _meals.length,
+            onShoppingListTap: () => context.push(AppRouter.shoppingList),
+          ),
+          DailyProgressCard(
+            totalEaten: _totalEaten,
+            targetCal: _targetCal,
+            manualCalories: _manualCaloriesEaten,
+            hasAddedFoods: _addedFoods.isNotEmpty,
+          ),
           TabBar(
             controller: _tabCtrl,
             indicator: BoxDecoration(color: colors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
@@ -209,97 +236,20 @@ class _NutritionScreenState extends State<NutritionScreen>
           Expanded(
             child: TabBarView(controller: _tabCtrl, children: [
               _buildMealPlan(colors),
-              _buildWeeklyPlan(colors),
+              WeeklyPlanView(
+                isLoading: _mealLoading,
+                meals: _meals,
+                targetCal: _targetCal,
+                mealIcons: _mealIcons,
+                mealLabels: _mealLabels,
+                mealColors: _mealColors,
+                normalizeMealType: _normalizeMealType,
+              ),
               _buildAddFood(colors),
             ]),
           ),
         ]),
       ),
-    );
-  }
-
-  // ─── Header ───────────────────────────────────────────────────────────────
-
-  Widget _buildHeader(ThemePalette colors) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      child: Row(children: [
-        const Text('Питание', style: AppTextStyles.displayM),
-        const Spacer(),
-        if (_completedMeals.isNotEmpty)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(color: colors.success.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-            child: Text('${_completedMeals.length}/${_meals.length} приёмов', style: TextStyle(fontSize: 11, color: colors.success, fontWeight: FontWeight.w700)),
-          ),
-        const SizedBox(width: 8),
-        GestureDetector(
-          onTap: () => context.push(AppRouter.shoppingList),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: colors.accentOrange.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              const Text('🛒', style: TextStyle(fontSize: 14)),
-              const SizedBox(width: 4),
-              Text('Покупки', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: colors.accentOrange)),
-            ]),
-          ),
-        ),
-      ]),
-    );
-  }
-
-  // ─── Compact calorie strip ────────────────────────────────────────────────
-
-  Widget _buildCompactCalories(ThemePalette colors) {
-    final progress = _targetCal > 0 ? (_totalEaten / _targetCal).clamp(0.0, 1.0) : 0.0;
-    final remaining = (_targetCal - _totalEaten).clamp(0, _targetCal);
-    final isOverLimit = _totalEaten > _targetCal && _targetCal > 0;
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colors.surfaceCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Text(
-            isOverLimit ? '⚠️ Превышено: $_totalEaten ккал' : '🍽️ Съедено: $_totalEaten ккал',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
-              color: isOverLimit ? colors.error : colors.textPrimary),
-          ),
-          const Spacer(),
-          Text(
-            _targetCal > 0 ? 'Цель: $_targetCal ккал' : 'Загрузка...',
-            style: TextStyle(fontSize: 11, color: colors.textMuted),
-          ),
-        ]),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: LinearProgressIndicator(
-            value: progress,
-            minHeight: 8,
-            backgroundColor: colors.elevated,
-            valueColor: AlwaysStoppedAnimation(isOverLimit ? colors.error : colors.primary),
-          ),
-        ),
-        if (_targetCal > 0) ...[
-          const SizedBox(height: 6),
-          Row(children: [
-            _CompactMacro(label: 'Осталось', value: '$remaining ккал', color: colors.textMuted),
-            const Spacer(),
-            if (_addedFoods.isNotEmpty)
-              _CompactMacro(label: 'Доп. еда', value: '+$_manualCaloriesEaten ккал', color: colors.accentOrange),
-          ]),
-        ],
-      ]),
     );
   }
 
@@ -325,11 +275,27 @@ class _NutritionScreenState extends State<NutritionScreen>
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
       children: [
         // Progress bar across all meals
-        _buildMealProgress(colors),
+        MealProgressBar(
+          meals: _meals,
+          completedMeals: _completedMeals,
+          mealIcons: _mealIcons,
+          mealColors: _mealColors,
+          normalizeMealType: _normalizeMealType,
+        ),
         const SizedBox(height: 16),
 
         // Meal cards
-        ..._meals.asMap().entries.map((e) => _buildMealCard(colors, e.key, e.value)),
+        ..._meals.asMap().entries.map((e) {
+          final type = _normalizeMealType(e.value['type'] as String? ?? '');
+          return MealCard(
+            meal: e.value,
+            isDone: _completedMeals.contains(e.key),
+            mealLabel: _mealLabels[type] ?? type,
+            mealIcon: _mealIcons[type] ?? '🍽️',
+            mealColor: _mealColors[type] ?? colors.primary,
+            onToggle: () => _toggleMealCompletion(e.key),
+          );
+        }),
         const SizedBox(height: 4),
 
         // Water card
@@ -396,333 +362,6 @@ class _NutritionScreenState extends State<NutritionScreen>
     );
   }
 
-  Widget _buildMealProgress(ThemePalette colors) {
-    if (_meals.isEmpty) return const SizedBox.shrink();
-    return Row(
-      children: _meals.asMap().entries.map((e) {
-        final isDone = _completedMeals.contains(e.key);
-        final type = _normalizeMealType(e.value['type'] as String? ?? '');
-        final mealColor = _mealColors[type] ?? colors.primary;
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: Column(children: [
-              Text(_mealIcons[type] ?? '🍽️', style: const TextStyle(fontSize: 14)),
-              const SizedBox(height: 4),
-              Container(
-                height: 6,
-                decoration: BoxDecoration(
-                  color: isDone ? mealColor : colors.elevated,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ]),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildMealCard(ThemePalette colors, int index, Map<String, dynamic> meal) {
-    final type = _normalizeMealType(meal['type'] as String? ?? '');
-    final time = meal['time'] as String? ?? '';
-    final foods = (meal['foods'] as List? ?? []).cast<String>();
-    final cal = (meal['calories'] as num?)?.toInt() ?? 0;
-    final icon = _mealIcons[type] ?? '🍽️';
-    final label = _mealLabels[type] ?? type;
-    final mealColor = _mealColors[type] ?? colors.primary;
-    final isDone = _completedMeals.contains(index);
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      margin: const EdgeInsets.only(bottom: 14),
-      decoration: BoxDecoration(
-        color: isDone ? mealColor.withValues(alpha: 0.08) : colors.surfaceCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDone ? mealColor.withValues(alpha: 0.5) : colors.textPrimary.withValues(alpha: 0.06),
-          width: isDone ? 1.5 : 1,
-        ),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // ── Header ──
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 14, 0),
-          child: Row(children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: mealColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
-              child: Text(icon, style: const TextStyle(fontSize: 22)),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(label, style: TextStyle(fontFamily: 'Syne', fontSize: 17, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-                Text(time, style: TextStyle(fontSize: 12, color: colors.textMuted)),
-              ]),
-            ),
-            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: mealColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-                child: Text('$cal ккал', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: mealColor)),
-              ),
-              if (isDone) Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.check_circle_rounded, size: 12, color: mealColor),
-                  const SizedBox(width: 3),
-                  Text('Выполнено', style: TextStyle(fontSize: 10, color: mealColor, fontWeight: FontWeight.w600)),
-                ]),
-              ),
-            ]),
-          ]),
-        ),
-
-        // ── Foods list ──
-        if (foods.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: foods.map((food) => _FoodItemRow(food: food, colors: colors, mealColor: mealColor)).toList(),
-            ),
-          ),
-        ],
-
-        // ── Macros per meal ──
-        Builder(builder: (ctx) {
-          final macroRaw = meal['macros'] as Map<String, dynamic>? ?? meal['macro_breakdown'] as Map<String, dynamic>?;
-          if (macroRaw == null) return const SizedBox.shrink();
-          final macros = MealMacros.fromJson(macroRaw);
-          if (macros.isEmpty) return const SizedBox.shrink();
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Divider(color: mealColor.withValues(alpha: 0.12)),
-              Row(children: [
-                _NutritionChip(label: 'Б', value: '${macros.protein}г', color: mealColor),
-                const SizedBox(width: 8),
-                _NutritionChip(label: 'У', value: '${macros.carbs}г', color: mealColor),
-                const SizedBox(width: 8),
-                _NutritionChip(label: 'Ж', value: '${macros.fat}г', color: mealColor),
-                if (macros.fiber > 0) ...[
-                  const SizedBox(width: 8),
-                  _NutritionChip(label: 'Кл', value: '${macros.fiber}г', color: mealColor),
-                ],
-              ]),
-              const SizedBox(height: 8),
-            ]),
-          );
-        }),
-
-        // ── Alternatives ──
-        Builder(builder: (ctx) {
-          final altsRaw = meal['alternatives'] as List?;
-          if (altsRaw == null || altsRaw.isEmpty) return const SizedBox.shrink();
-          final alts = altsRaw.cast<String>();
-          return _AlternativesWidget(alternatives: alts, mealColor: mealColor, colors: colors);
-        }),
-
-        // ── Complete button ──
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-          child: SizedBox(
-            width: double.infinity,
-            child: isDone
-                ? OutlinedButton.icon(
-                    onPressed: () { HapticFeedback.lightImpact(); setState(() => _completedMeals.remove(index)); _saveProgress(); },
-                    icon: Icon(Icons.undo_rounded, size: 16, color: mealColor),
-                    label: Text('Отменить', style: TextStyle(fontSize: 13, color: mealColor, fontWeight: FontWeight.w600)),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: mealColor.withValues(alpha: 0.5)),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  )
-                : FilledButton.icon(
-                    onPressed: () { HapticFeedback.mediumImpact(); setState(() => _completedMeals.add(index)); _saveProgress(); },
-                    icon: const Icon(Icons.check_rounded, size: 18),
-                    label: const Text('Приём пищи выполнен', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: mealColor,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-          ),
-        ),
-      ]),
-    );
-  }
-
-  // ─── Weekly Plan Tab ──────────────────────────────────────────────────────
-
-  Widget _buildWeeklyPlan(ThemePalette colors) {
-    if (_mealLoading) return const Center(child: CircularProgressIndicator());
-    if (_meals.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(Icons.calendar_today_rounded, size: 64, color: colors.textMuted.withValues(alpha: 0.35)),
-            const SizedBox(height: 16),
-            Text('Создайте план питания в онбординге,\nчтобы видеть недельное меню.',
-              style: TextStyle(fontSize: 14, color: colors.textMuted, height: 1.5), textAlign: TextAlign.center),
-          ]),
-        ),
-      );
-    }
-
-    // Build a 7-day plan: repeat the daily meals across the week with day labels
-    const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
-    final today = DateTime.now().weekday - 1; // 0=Mon, 6=Sun
-
-    // Aggregate unique foods (shopping list)
-    final shoppingList = <String>{};
-    for (final meal in _meals) {
-      final foods = (meal['foods'] as List? ?? []).cast<String>();
-      for (final f in foods) {
-        // Keep only the product name (first comma-separated part)
-        shoppingList.add(f.split(',').first.trim());
-      }
-    }
-
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
-      children: [
-        // Week overview header
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [colors.primary.withValues(alpha: 0.8), colors.accentPurple.withValues(alpha: 0.6)],
-              begin: Alignment.topLeft, end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(children: [
-            const Text('📅', style: TextStyle(fontSize: 28)),
-            const SizedBox(width: 14),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Недельный план питания',
-                  style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-              Text('Ежедневный рацион · $_targetCal ккал/день',
-                  style: const TextStyle(fontSize: 12, color: Colors.white70)),
-            ])),
-          ]),
-        ),
-        const SizedBox(height: 20),
-
-        // 7-day list
-        ...List.generate(7, (i) {
-          final dayIdx = (today + i) % 7;
-          final label = dayNames[dayIdx];
-          final isToday = i == 0;
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: isToday ? colors.primary.withValues(alpha: 0.08) : colors.surfaceCard,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isToday ? colors.primary.withValues(alpha: 0.4) : colors.textPrimary.withValues(alpha: 0.06),
-                width: isToday ? 1.5 : 1,
-              ),
-            ),
-            child: ExpansionTile(
-              tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              title: Row(children: [
-                if (isToday)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(color: colors.primary, borderRadius: BorderRadius.circular(8)),
-                    child: const Text('Сегодня', style: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.w700)),
-                  ),
-                if (isToday) const SizedBox(width: 8),
-                Expanded(child: Text(label,
-                    style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700,
-                        color: isToday ? colors.primary : colors.textPrimary))),
-                Text('$_targetCal ккал',
-                    style: TextStyle(fontSize: 12, color: colors.textMuted, fontWeight: FontWeight.w600)),
-              ]),
-              initiallyExpanded: isToday,
-              iconColor: colors.textMuted,
-              collapsedIconColor: colors.textMuted,
-              children: _meals.map((meal) {
-                final type = _normalizeMealType(meal['type'] as String? ?? '');
-                final time = meal['time'] as String? ?? '';
-                final foods = (meal['foods'] as List? ?? []).cast<String>();
-                final cal = (meal['calories'] as num?)?.toInt() ?? 0;
-                final icon = _mealIcons[type] ?? '🍽️';
-                final label2 = _mealLabels[type] ?? type;
-                final mealColor = _mealColors[type] ?? colors.primary;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Container(
-                      width: 36, height: 36,
-                      decoration: BoxDecoration(color: mealColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-                      child: Center(child: Text(icon, style: const TextStyle(fontSize: 16))),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Row(children: [
-                        Text(label2, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-                        const Spacer(),
-                        Text('$cal ккал', style: TextStyle(fontSize: 11, color: mealColor, fontWeight: FontWeight.w700)),
-                      ]),
-                      Text(time, style: TextStyle(fontSize: 10, color: colors.textMuted)),
-                      if (foods.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(foods.take(3).join(', ') + (foods.length > 3 ? '...' : ''),
-                            style: TextStyle(fontSize: 11, color: colors.textSecondary, height: 1.4)),
-                      ],
-                    ])),
-                  ]),
-                );
-              }).toList(),
-            ),
-          );
-        }),
-
-        const SizedBox(height: 20),
-
-        // Shopping list section
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colors.success.withValues(alpha: 0.07),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: colors.success.withValues(alpha: 0.25)),
-          ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [
-              const Text('🛒', style: TextStyle(fontSize: 22)),
-              const SizedBox(width: 10),
-              Text('Список покупок на неделю',
-                  style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-            ]),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8, runSpacing: 8,
-              children: shoppingList.map((item) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colors.success.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: colors.success.withValues(alpha: 0.3)),
-                ),
-                child: Text(item, style: TextStyle(fontSize: 12, color: colors.textSecondary, fontWeight: FontWeight.w600)),
-              )).toList(),
-            ),
-          ]),
-        ),
-      ],
-    );
-  }
-
   // ─── Add Food Tab ─────────────────────────────────────────────────────────
 
   Widget _buildAddFood(ThemePalette colors) {
@@ -730,7 +369,7 @@ class _NutritionScreenState extends State<NutritionScreen>
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
       children: [
         // Barcode scan
-        _buildBarcodeCard(colors),
+        BarcodeScanCard(onTap: _openBarcodeScanner),
         const SizedBox(height: 16),
 
         // Manual entry
@@ -748,148 +387,16 @@ class _NutritionScreenState extends State<NutritionScreen>
             Text('$_manualCaloriesEaten ккал', style: TextStyle(fontSize: 13, color: colors.accentOrange, fontWeight: FontWeight.w700)),
           ]),
           const SizedBox(height: 10),
-          ..._addedFoods.asMap().entries.map((e) => _AddedFoodTile(
-            entry: e.value,
-            colors: colors,
+          ..._addedFoods.asMap().entries.map((e) => AddedFoodTile(
+            name: e.value.name,
+            mealType: e.value.mealType,
+            grams: e.value.grams,
+            kcal: e.value.kcal,
             onDelete: () { setState(() => _addedFoods.removeAt(e.key)); _saveProgress(); },
           )),
         ],
       ],
     );
-  }
-
-  Widget _buildBarcodeCard(ThemePalette colors) {
-    return GestureDetector(
-      onTap: _openBarcodeScanner,
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [colors.primary.withValues(alpha: 0.9), colors.primary.withValues(alpha: 0.6)],
-            begin: Alignment.topLeft, end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: colors.primary.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6))],
-        ),
-        child: Row(children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(14)),
-            child: const Icon(Icons.qr_code_scanner_rounded, color: Colors.white, size: 30),
-          ),
-          const SizedBox(width: 16),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Сканировать штрих-код', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-            Text('Автоматически определим состав и КБЖУ', style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.8))),
-          ])),
-          Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withValues(alpha: 0.7), size: 16),
-        ]),
-      ),
-    );
-  }
-}
-
-// ─── Food item row with gram parsing ─────────────────────────────────────────
-
-class _FoodItemRow extends StatefulWidget {
-  final String food;
-  final ThemePalette colors;
-  final Color mealColor;
-  const _FoodItemRow({required this.food, required this.colors, required this.mealColor});
-
-  @override
-  State<_FoodItemRow> createState() => _FoodItemRowState();
-}
-
-class _FoodItemRowState extends State<_FoodItemRow> {
-  bool _expanded = false;
-
-  bool get _isComplex {
-    final lower = widget.food.toLowerCase();
-    const complexKeywords = ['суп', 'рагу', 'запеканка', 'котлет', 'тушен', 'жарен', 'варен', 'пюре', 'каша с', 'рис с', 'гречка с', 'салат'];
-    return complexKeywords.any(lower.contains) && widget.food.split(' ').length > 2;
-  }
-
-  String _getCookingHint() {
-    final lower = widget.food.toLowerCase();
-    if (lower.contains('суп')) return 'Отварите овощи и мясо в подсоленной воде, добавьте специи по вкусу. Варить 30–40 мин.';
-    if (lower.contains('рагу') || lower.contains('тушен')) return 'Обжарьте ингредиенты, добавьте воду или бульон, тушите на медленном огне 25–35 мин.';
-    if (lower.contains('запеканка')) return 'Смешайте ингредиенты, выложите в форму, запекайте при 180°C 35–45 мин до золотистой корочки.';
-    if (lower.contains('котлет')) return 'Сформируйте котлеты, обваляйте в панировке, жарьте по 4–5 мин с каждой стороны.';
-    if (lower.contains('каша') || lower.contains('гречка') || lower.contains('рис')) {
-      return 'Промойте крупу, залейте водой 1:2, варите на медленном огне 15–20 мин. Посолите по вкусу.';
-    }
-    if (lower.contains('салат')) return 'Нарежьте ингредиенты, смешайте, заправьте маслом или соусом. Подавать свежим.';
-    if (lower.contains('пюре')) return 'Отварите картофель/овощи, разомните с маслом или молоком до однородной консистенции.';
-    return 'Приготовьте согласно рецепту. Следите за температурой и временем готовки для сохранения питательных веществ.';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = widget.colors;
-    final m = widget.mealColor;
-
-    // Parse quantity from food string (e.g. "Овсянка — 150г" or "Куриная грудка 200г")
-    final gramMatch = RegExp(r'(\d+)\s*(г|гр|мл|ml|г\.?)(?:\s|$)', caseSensitive: false).firstMatch(widget.food);
-    final qty = gramMatch?.group(0)?.trim().replaceAll('ml', 'мл') ?? '';
-    final foodName = gramMatch != null
-        ? widget.food.substring(0, gramMatch.start).replaceAll(RegExp(r'[\s—\-]+$'), '').trim()
-        : widget.food;
-
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Container(
-            width: 6, height: 6,
-            margin: const EdgeInsets.only(top: 6, right: 10),
-            decoration: BoxDecoration(shape: BoxShape.circle, color: m),
-          ),
-          Expanded(
-            child: Wrap(children: [
-              Text(foodName, style: TextStyle(fontSize: 13, color: c.textPrimary, height: 1.4, fontWeight: FontWeight.w500)),
-              if (qty.isNotEmpty) ...[
-                const SizedBox(width: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                  decoration: BoxDecoration(color: m.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
-                  child: Text(qty, style: TextStyle(fontSize: 11, color: m, fontWeight: FontWeight.w700)),
-                ),
-              ],
-            ]),
-          ),
-          if (_isComplex)
-            GestureDetector(
-              onTap: () => setState(() => _expanded = !_expanded),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 6),
-                child: Icon(_expanded ? Icons.keyboard_arrow_up_rounded : Icons.menu_book_rounded,
-                  size: 18, color: c.textMuted),
-              ),
-            ),
-        ]),
-      ),
-      if (_isComplex && _expanded) ...[
-        Container(
-          margin: const EdgeInsets.fromLTRB(16, 0, 0, 10),
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: c.elevated,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: m.withValues(alpha: 0.2)),
-          ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [
-              Icon(Icons.restaurant_rounded, size: 12, color: m),
-              const SizedBox(width: 4),
-              Text('Способ приготовления', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: m)),
-            ]),
-            const SizedBox(height: 6),
-            Text(_getCookingHint(), style: TextStyle(fontSize: 12, color: c.textSecondary, height: 1.5)),
-          ]),
-        ),
-      ],
-    ]);
   }
 }
 
@@ -961,7 +468,10 @@ class _WaterCard extends StatelessWidget {
           ),
           // Undo last 200 ml
           if (intakeMl > 0)
-            GestureDetector(
+            Semantics(
+              label: '−200 мл',
+              button: true,
+              child: GestureDetector(
               onTap: () {
                 HapticFeedback.lightImpact();
                 onAdd(-200);
@@ -974,6 +484,7 @@ class _WaterCard extends StatelessWidget {
                 ),
                 child: Text('−200', style: TextStyle(fontSize: 11, color: c.textMuted, fontWeight: FontWeight.w600)),
               ),
+            ),
             ),
         ]),
 
@@ -1015,12 +526,15 @@ class _WaterCard extends StatelessWidget {
           ..._quickAmounts.map((ml) => Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: GestureDetector(
-                onTap: () {
-                  HapticFeedback.mediumImpact();
-                  onAdd(ml);
-                },
-                child: Container(
+              child: Semantics(
+                label: '+$ml мл',
+                button: true,
+                child: GestureDetector(
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    onAdd(ml);
+                  },
+                  child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
                     color: c.info.withValues(alpha: 0.15),
@@ -1035,6 +549,7 @@ class _WaterCard extends StatelessWidget {
                   ]),
                 ),
               ),
+            ),
             ),
           )),
         ]),
@@ -1090,9 +605,12 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
         SizedBox(
           height: 34,
           child: ListView(scrollDirection: Axis.horizontal, children: _mealTypes.map((t) =>
-            GestureDetector(
-              onTap: () => setState(() => _mealType = t),
-              child: AnimatedContainer(
+            Semantics(
+              label: t,
+              button: true,
+              child: GestureDetector(
+                onTap: () => setState(() => _mealType = t),
+                child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 margin: const EdgeInsets.only(right: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -1103,6 +621,7 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
                 child: Text(t, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
                   color: _mealType == t ? c.textOnPrimary : c.textMuted)),
               ),
+            ),
             ),
           ).toList()),
         ),
@@ -1122,7 +641,10 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
 
         SizedBox(
           width: double.infinity,
-          child: FilledButton.icon(
+          child: Semantics(
+            label: 'Добавить',
+            button: true,
+            child: FilledButton.icon(
             onPressed: _submit,
             icon: const Icon(Icons.add_rounded, size: 18),
             label: const Text('Добавить', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
@@ -1133,135 +655,13 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
             ),
           ),
         ),
-      ]),
-    );
-  }
-}
-
-// ─── Added food tile ──────────────────────────────────────────────────────────
-
-class _AddedFoodTile extends StatelessWidget {
-  final _FoodEntry entry;
-  final ThemePalette colors;
-  final VoidCallback onDelete;
-  const _AddedFoodTile({required this.entry, required this.colors, required this.onDelete});
-
-  @override
-  Widget build(BuildContext context) {
-    final c = colors;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.fromLTRB(14, 10, 6, 10),
-      decoration: BoxDecoration(color: c.surfaceCard, borderRadius: BorderRadius.circular(14), border: Border.all(color: c.textPrimary.withValues(alpha: 0.06))),
-      child: Row(children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: c.accentOrange.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
-          child: Icon(Icons.restaurant_rounded, size: 16, color: c.accentOrange),
         ),
-        const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(entry.name, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
-          Text('${entry.mealType} · ${entry.grams}г${entry.kcal > 0 ? ' · ${entry.kcal} ккал' : ''}',
-            style: TextStyle(fontSize: 11, color: c.textMuted)),
-        ])),
-        if (entry.kcal > 0)
-          Text('${entry.kcal}', style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: c.accentOrange)),
-        IconButton(onPressed: onDelete, icon: Icon(Icons.close_rounded, size: 18, color: c.textMuted), padding: const EdgeInsets.all(8)),
       ]),
     );
   }
 }
 
-// ─── Alternatives widget ──────────────────────────────────────────────────────
-
-class _AlternativesWidget extends StatefulWidget {
-  final List<String> alternatives;
-  final Color mealColor;
-  final ThemePalette colors;
-  const _AlternativesWidget({required this.alternatives, required this.mealColor, required this.colors});
-
-  @override
-  State<_AlternativesWidget> createState() => _AlternativesWidgetState();
-}
-
-class _AlternativesWidgetState extends State<_AlternativesWidget> {
-  bool _expanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = widget.colors;
-    final m = widget.mealColor;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Divider(color: m.withValues(alpha: 0.12)),
-        GestureDetector(
-          onTap: () { HapticFeedback.selectionClick(); setState(() => _expanded = !_expanded); },
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(children: [
-              Container(
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(color: m.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
-                child: Icon(Icons.swap_horiz_rounded, size: 14, color: m),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Чем заменить продукты',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: m),
-                ),
-              ),
-              Icon(_expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, size: 18, color: c.textMuted),
-            ]),
-          ),
-        ),
-        if (_expanded) ...[
-          const SizedBox(height: 4),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: m.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: m.withValues(alpha: 0.18)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: widget.alternatives.map((alt) => Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 3, right: 8),
-                    child: Icon(Icons.arrow_forward_ios_rounded, size: 10, color: m.withValues(alpha: 0.7)),
-                  ),
-                  Expanded(child: Text(alt, style: TextStyle(fontSize: 12, color: c.textSecondary, height: 1.45))),
-                ]),
-              )).toList(),
-            ),
-          ),
-        ],
-      ]),
-    );
-  }
-}
-
-// ─── Helper widgets ───────────────────────────────────────────────────────────
-
-class _CompactMacro extends StatelessWidget {
-  final String label, value;
-  final Color color;
-  const _CompactMacro({required this.label, required this.value, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return RichText(text: TextSpan(children: [
-      TextSpan(text: '$label: ', style: TextStyle(fontSize: 10, color: color.withValues(alpha: 0.7))),
-      TextSpan(text: value, style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w700)),
-    ]));
-  }
-}
+// ─── Form field ───────────────────────────────────────────────────────────────
 
 class _FormField extends StatelessWidget {
   final TextEditingController ctrl;
@@ -1286,27 +686,6 @@ class _FormField extends StatelessWidget {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),
-    );
-  }
-}
-
-class _NutritionChip extends StatelessWidget {
-  final String label, value;
-  final Color color;
-  const _NutritionChip({required this.label, required this.value, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: RichText(text: TextSpan(children: [
-        TextSpan(text: '$label ', style: TextStyle(fontSize: 10, color: color.withValues(alpha: 0.7))),
-        TextSpan(text: value, style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w700)),
-      ])),
     );
   }
 }

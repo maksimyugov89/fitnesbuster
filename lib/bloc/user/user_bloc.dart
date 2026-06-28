@@ -74,15 +74,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     if (state is! UserStateLoaded) return;
     final current = (state as UserStateLoaded).user;
     try {
-      final updated = await _userRepository.saveOnboardingData(
+      await _userRepository.updateGoal(
         userId: current.id,
         goal: event.goal,
-        intensity: event.intensity,
-        location: event.location,
-        running: event.running,
-        profile: current.profile,
       );
-      emit(UserStateLoaded(user: updated));
+      final updatedProfile = (current.profile ?? UserProfile.defaults).copyWith(
+        goal: event.goal,
+        intensity: event.intensity,
+      );
+      final updatedUser = await _userRepository.updateProfile(
+        current.copyWith(profile: updatedProfile),
+      );
+      emit(UserStateLoaded(user: updatedUser));
     } catch (e, st) {
       appLogger.w('[UserBloc] updateGoal failed', error: e, stackTrace: st);
       emit(UserStateError(message: AppLocalizations.tl('userGoalFailed')));

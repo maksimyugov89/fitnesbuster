@@ -90,7 +90,10 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: GestureDetector(
+                  child: Semantics(
+                    label: '${mode.displayName} — ${mode.description}',
+                    button: true,
+                    child: GestureDetector(
                     onTap: () async {
                       HapticFeedback.mediumImpact();
                       setState(() => _selected = mode);
@@ -185,9 +188,10 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
                             ),
                         ],
                       ),
-                    ),
                   ),
-                );
+                ),
+              ),
+            );
               },
             ),
           ),

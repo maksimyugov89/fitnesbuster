@@ -1,41 +1,39 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'nutrition_entities.freezed.dart';
+part 'nutrition_entities.g.dart';
+
 enum MealType { breakfast, lunch, dinner, snack }
 
-class NutritionPer100g {
-  final double calories;
-  final double protein;
-  final double carbs;
-  final double fat;
-  final double? fiber;
-  final double? sugar;
-  final double? sodium;
+@freezed
+class NutritionPer100g with _$NutritionPer100g {
+  const factory NutritionPer100g({
+    required double calories,
+    required double protein,
+    required double carbs,
+    required double fat,
+    double? fiber,
+    double? sugar,
+    double? sodium,
+  }) = _NutritionPer100g;
 
-  const NutritionPer100g({
-    required this.calories,
-    required this.protein,
-    required this.carbs,
-    required this.fat,
-    this.fiber,
-    this.sugar,
-    this.sodium,
-  });
+  factory NutritionPer100g.fromJson(Map<String, dynamic> json) => _$NutritionPer100gFromJson(json);
 }
 
-class FoodItem {
-  final String id;
-  final String name;
-  final String? brand;
-  final String? barcode;
-  final NutritionPer100g nutrition;
-  final String? imageUrl;
+@freezed
+class FoodItem with _$FoodItem {
+  const FoodItem._();
 
-  const FoodItem({
-    required this.id,
-    required this.name,
-    this.brand,
-    this.barcode,
-    required this.nutrition,
-    this.imageUrl,
-  });
+  const factory FoodItem({
+    required String id,
+    required String name,
+    String? brand,
+    String? barcode,
+    required NutritionPer100g nutrition,
+    String? imageUrl,
+  }) = _FoodItem;
+
+  factory FoodItem.fromJson(Map<String, dynamic> json) => _$FoodItemFromJson(json);
 
   NutritionPer100g nutritionForGrams(double grams) {
     final factor = grams / 100;
@@ -50,11 +48,16 @@ class FoodItem {
   }
 }
 
-class FoodEntry {
-  final FoodItem food;
-  final double grams;
+@freezed
+class FoodEntry with _$FoodEntry {
+  const FoodEntry._();
 
-  const FoodEntry({required this.food, required this.grams});
+  const factory FoodEntry({
+    required FoodItem food,
+    required double grams,
+  }) = _FoodEntry;
+
+  factory FoodEntry.fromJson(Map<String, dynamic> json) => _$FoodEntryFromJson(json);
 
   double get totalCalories => food.nutritionForGrams(grams).calories;
   double get totalProtein => food.nutritionForGrams(grams).protein;
@@ -62,20 +65,19 @@ class FoodEntry {
   double get totalFat => food.nutritionForGrams(grams).fat;
 }
 
-class MealLog {
-  final String id;
-  final String userId;
-  final DateTime date;
-  final MealType mealType;
-  final List<FoodEntry> foods;
+@freezed
+class MealLog with _$MealLog {
+  const MealLog._();
 
-  const MealLog({
-    required this.id,
-    required this.userId,
-    required this.date,
-    required this.mealType,
-    required this.foods,
-  });
+  const factory MealLog({
+    required String id,
+    required String userId,
+    required DateTime date,
+    required MealType mealType,
+    required List<FoodEntry> foods,
+  }) = _MealLog;
+
+  factory MealLog.fromJson(Map<String, dynamic> json) => _$MealLogFromJson(json);
 
   double get totalCalories => foods.fold(0, (sum, f) => sum + f.totalCalories);
   double get totalProtein => foods.fold(0, (sum, f) => sum + f.totalProtein);
@@ -83,50 +85,41 @@ class MealLog {
   double get totalFat => foods.fold(0, (sum, f) => sum + f.totalFat);
 }
 
-class MealPlan {
-  final MealType type;
-  final String title;
-  final List<MealPlanItem> items;
-  final int targetCalories;
+@freezed
+class MealPlan with _$MealPlan {
+  const factory MealPlan({
+    required MealType type,
+    required String title,
+    required List<MealPlanItem> items,
+    required int targetCalories,
+  }) = _MealPlan;
 
-  const MealPlan({
-    required this.type,
-    required this.title,
-    required this.items,
-    required this.targetCalories,
-  });
+  factory MealPlan.fromJson(Map<String, dynamic> json) => _$MealPlanFromJson(json);
 }
 
-class MealPlanItem {
-  final FoodItem food;
-  final double grams;
-  final String? note;
+@freezed
+class MealPlanItem with _$MealPlanItem {
+  const factory MealPlanItem({
+    required FoodItem food,
+    required double grams,
+    String? note,
+  }) = _MealPlanItem;
 
-  const MealPlanItem({
-    required this.food,
-    required this.grams,
-    this.note,
-  });
+  factory MealPlanItem.fromJson(Map<String, dynamic> json) => _$MealPlanItemFromJson(json);
 }
 
-class DailyNutritionPlan {
-  final String id;
-  final String userId;
-  final DateTime date;
-  final double targetCalories;
-  final double targetProtein;
-  final double targetCarbs;
-  final double targetFat;
-  final List<MealPlan> meals;
+@freezed
+class DailyNutritionPlan with _$DailyNutritionPlan {
+  const factory DailyNutritionPlan({
+    required String id,
+    required String userId,
+    required DateTime date,
+    required double targetCalories,
+    required double targetProtein,
+    required double targetCarbs,
+    required double targetFat,
+    required List<MealPlan> meals,
+  }) = _DailyNutritionPlan;
 
-  const DailyNutritionPlan({
-    required this.id,
-    required this.userId,
-    required this.date,
-    required this.targetCalories,
-    required this.targetProtein,
-    required this.targetCarbs,
-    required this.targetFat,
-    required this.meals,
-  });
+  factory DailyNutritionPlan.fromJson(Map<String, dynamic> json) => _$DailyNutritionPlanFromJson(json);
 }

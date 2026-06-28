@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
-import 'package:fitnesbuster/core/ai/deepseek_service.dart';
+import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
@@ -93,7 +94,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
 
       final calTarget = _profile?.dailyCalorieTarget.toInt() ?? 2000;
 
-      final raw = await sl<DeepSeekService>().generateWeeklyDebrief(
+      final raw = await sl<IDeepSeekService>().generateWeeklyDebrief(
         profile: profile,
         workoutsDone: workoutsDone,
         dailyWorkoutKcal: dailyWorkoutKcal,

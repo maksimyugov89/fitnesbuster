@@ -4,7 +4,9 @@ import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
-import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
+import 'package:fitnesbuster/core/services/onboarding_workflow_service.dart';
+import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 
@@ -14,15 +16,15 @@ part 'onboarding_state.dart';
 /// Collects all onboarding data step-by-step and triggers plan generation via DeepSeek.
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final IUserRepository _userRepo;
-  final IDeepSeekService _aiService;
+  final OnboardingWorkflowService _workflowService;
   final IAuthRepository _authRepo;
 
   OnboardingBloc({
     required IUserRepository userRepo,
-    required IDeepSeekService aiService,
+    required OnboardingWorkflowService workflowService,
     required IAuthRepository authRepo,
   })  : _userRepo = userRepo,
-        _aiService = aiService,
+        _workflowService = workflowService,
         _authRepo = authRepo,
         super(const OnboardingCollecting()) {
     on<OnboardingSetGoal>(_onSetGoal);
@@ -96,33 +98,27 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       return;
     }
 
-    // Step 2: Generate workout plan + meal plan via DeepSeek AI
+    // Step 2: Generate workout plan + meal plan via workflow service
     emit(const OnboardingGeneratingPlan());
     try {
-      final workoutPlan = await _aiService.generateWorkoutPlan(profile);
-      final mealPlan = await _aiService.generateMealPlan(
-        profile,
+      final plans = await _workflowService.generatePlans(
+        userId: userId,
+        profile: profile,
         city: data.city.isNotEmpty ? data.city : null,
       );
 
-      // Save plans to Firestore so they persist (non-fatal if fails)
-      try {
-        await _userRepo.saveAiPlans(
-          userId: userId,
-          workoutPlanJson: workoutPlan,
-          mealPlanJson: mealPlan,
-        );
-      } catch (e, st) {
-        appLogger.w('[OnboardingBloc] AI plans save failed', error: e, stackTrace: st);
-      }
-
       emit(OnboardingComplete(
-        workoutPlanJson: workoutPlan,
-        mealPlanJson: mealPlan,
+        workoutPlanJson: plans.workoutPlanJson,
+        mealPlanJson: plans.mealPlanJson,
       ));
+      _track(() => sl<IAnalyticsService>().logOnboardingCompleted(goal: data.goal?.name ?? 'unknown'));
     } catch (e, st) {
       appLogger.w('[OnboardingBloc] plan generation failed', error: e, stackTrace: st);
       emit(OnboardingError(AppLocalizations.tl('onboardingPlanFailed')));
     }
+  }
+
+  Future<void> _track(Future<void> Function() fn) async {
+    try { await fn(); } catch (_) { /* best-effort */ }
   }
 }

@@ -7,8 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/data/repositories/user_repository.dart';
-import 'package:fitnesbuster/core/ai/deepseek_service.dart';
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
+import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 
@@ -120,7 +120,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       final authState = context.read<AuthBloc>().state;
       if (authState is! AuthStateAuthenticated) return;
       final uid = authState.userId;
-      final plans = await sl<UserRepository>().getAiPlans(uid);
+      final plans = await sl<IUserRepository>().getAiPlans(uid);
       final jsonStr = plans['mealPlan'];
       if (jsonStr == null) return;
       final data = jsonDecode(jsonStr) as Map<String, dynamic>;
@@ -749,7 +749,7 @@ class _SubstitutionSheetState extends State<_SubstitutionSheet> {
 
   Future<void> _load() async {
     try {
-      final ai = sl<DeepSeekService>();
+      final ai = sl<IDeepSeekService>();
       // Strip portion info (e.g. "Куриное филе 150г — Основной белок" → "Куриное филе")
       final cleanName = widget.ingredient
           .replaceAll(RegExp(r'\s*\d+\s*(г|гр|мл|л|кг|шт)[^а-яА-Я]*'), '')

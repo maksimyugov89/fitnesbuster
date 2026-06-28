@@ -4,9 +4,11 @@ import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/core/services/social_service.dart';
+import 'package:fitnesbuster/core/services/i_social_service.dart';
+import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
+import 'package:fitnesbuster/core/constants/app_colors.dart';
 
 class ChallengesScreen extends StatefulWidget {
   const ChallengesScreen({super.key});
@@ -72,7 +74,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
 
   Widget _buildMyChallenges(ThemePalette colors) {
     return StreamBuilder<List<Challenge>>(
-      stream: sl<SocialService>().myChallengesStream(),
+      stream: sl<ISocialService>().myChallengesStream(),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
           return Center(child: LoadingShimmer.listView(4));
@@ -84,7 +86,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 80),
           itemCount: challenges.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          separatorBuilder: (_, _) => const SizedBox(height: 10),
           itemBuilder: (_, i) => _ChallengeCard(
             challenge: challenges[i],
             colors: colors,
@@ -99,7 +101,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
     final authState = context.read<AuthBloc>().state;
     final myUid = authState is AuthStateAuthenticated ? authState.userId : null;
     return StreamBuilder<List<Challenge>>(
-      stream: sl<SocialService>().publicChallengesStream(),
+      stream: sl<ISocialService>().publicChallengesStream(),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
           return Center(child: LoadingShimmer.listView(4));
@@ -111,13 +113,13 @@ class _ChallengesScreenState extends State<ChallengesScreen>
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 80),
           itemCount: all.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          separatorBuilder: (_, _) => const SizedBox(height: 10),
           itemBuilder: (_, i) {
             final isParticipant = all[i].participants.contains(myUid);
             return _ChallengeCard(
               challenge: all[i],
               colors: colors,
-              showJoinButton: !isParticipant,
+              showJoinButton: !isParticipant && all[i].isActive,
               isParticipant: isParticipant,
             );
           },
@@ -167,7 +169,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
 
   Future<void> _seedChallenges(ThemePalette colors) async {
     try {
-      await sl<SocialService>().seedChallenges();
+      await sl<ISocialService>().seedChallenges();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Челленджи добавлены!')),
@@ -205,9 +207,9 @@ class _ChallengeCard extends StatelessWidget {
   Color get _statusColor {
     if (!challenge.isActive) return Colors.grey;
     final daysLeft = challenge.endDate.difference(DateTime.now()).inDays;
-    if (daysLeft <= 2) return const Color(0xFFFF4466);
-    if (daysLeft <= 5) return const Color(0xFFF5A623);
-    return const Color(0xFF22D3A5);
+    if (daysLeft <= 2) return SemanticColors.difficultyAdvanced;
+    if (daysLeft <= 5) return SemanticColors.difficultyIntermediate;
+    return SemanticColors.difficultyBeginner;
   }
 
   String get _daysLabel {
@@ -257,6 +259,21 @@ class _ChallengeCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(color: colors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
               child: Center(child: Text('✓ Вы участвуете', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.success))),
+            ),
+          ] else if (!challenge.isActive) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: colors.textMuted.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: colors.textMuted.withValues(alpha: 0.15)),
+              ),
+              child: Center(child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Icon(Icons.lock_clock_rounded, size: 14, color: colors.textMuted),
+                const SizedBox(width: 6),
+                Text('Челлендж завершён', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textMuted)),
+              ])),
             ),
           ] else if (showJoinButton) ...[
             const SizedBox(height: 12),
@@ -312,6 +329,7 @@ class _JoinButton extends StatefulWidget {
 class _JoinButtonState extends State<_JoinButton> {
   bool _loading = false;
   bool _joined = false;
+  bool _ended = false;
 
   @override
   Widget build(BuildContext context) {
@@ -320,6 +338,21 @@ class _JoinButtonState extends State<_JoinButton> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(color: widget.colors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
         child: Center(child: Text('✓ Вы участвуете!', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: widget.colors.success))),
+      );
+    }
+    if (_ended) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: widget.colors.textMuted.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: widget.colors.textMuted.withValues(alpha: 0.15)),
+        ),
+        child: Center(child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.lock_clock_rounded, size: 14, color: widget.colors.textMuted),
+          const SizedBox(width: 6),
+          Text('Челлендж завершён', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: widget.colors.textMuted)),
+        ])),
       );
     }
     return GestureDetector(
@@ -339,12 +372,29 @@ class _JoinButtonState extends State<_JoinButton> {
   Future<void> _join() async {
     setState(() => _loading = true);
     try {
-      await sl<SocialService>().joinChallenge(widget.challengeId);
+      await sl<ISocialService>().joinChallenge(widget.challengeId);
       if (mounted) setState(() { _loading = false; _joined = true; });
     } catch (e) {
       if (mounted) {
         setState(() => _loading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.tl('genericErrorMsg').replaceAll('{error}', e.toString()))));
+        final errStr = e.toString().toLowerCase();
+        if (errStr.contains('challenge already ended') || errStr.contains('failed-precondition')) {
+          setState(() => _ended = true);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Row(children: [
+              Icon(Icons.info_outline_rounded, color: Colors.white, size: 16),
+              SizedBox(width: 8),
+              Text('Этот челлендж уже завершён', style: TextStyle(fontWeight: FontWeight.w600)),
+            ]),
+            backgroundColor: widget.colors.textMuted,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Ошибка: ${e.toString()}', maxLines: 2, overflow: TextOverflow.ellipsis),
+          ));
+        }
       }
     }
   }
@@ -384,7 +434,7 @@ class _LeaderboardSheet extends StatelessWidget {
         const SizedBox(height: 12),
         Expanded(
           child: StreamBuilder<List<ChallengeParticipant>>(
-            stream: sl<SocialService>().challengeLeaderboardStream(challenge.id),
+            stream: sl<ISocialService>().challengeLeaderboardStream(challenge.id),
             builder: (context, snap) {
               if (snap.connectionState == ConnectionState.waiting) {
                 return Center(child: LoadingShimmer.listView(4));
@@ -393,7 +443,7 @@ class _LeaderboardSheet extends StatelessWidget {
               return ListView.separated(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
                 itemCount: participants.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (_, i) {
                   final p = participants[i];
                   final isMe = p.uid == myUid;

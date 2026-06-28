@@ -5,13 +5,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
 
+import 'package:fitnesbuster/core/services/onboarding_workflow_service.dart'
+    as _i7;
 import 'package:fitnesbuster/domain/entities/body_measurement.dart' as _i5;
 import 'package:fitnesbuster/domain/entities/entities.dart' as _i2;
-import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart' as _i8;
+import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart' as _i6;
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart' as _i3;
-import 'package:fitnesbuster/domain/services/i_deepseek_service.dart' as _i6;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i7;
+import 'package:mockito/src/dummies.dart' as _i8;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -265,309 +266,10 @@ class MockIUserRepository extends _i1.Mock implements _i3.IUserRepository {
       ) as _i4.Future<Map<String, String?>>);
 }
 
-/// A class which mocks [IDeepSeekService].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockIDeepSeekService extends _i1.Mock implements _i6.IDeepSeekService {
-  MockIDeepSeekService() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i4.Future<String> generateWorkoutPlan(
-    _i2.UserProfile? profile, {
-    _i2.HealthData? recentHealth,
-    int? weekNumber,
-    String? previousPlanFeedback,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #generateWorkoutPlan,
-          [profile],
-          {
-            #recentHealth: recentHealth,
-            #weekNumber: weekNumber,
-            #previousPlanFeedback: previousPlanFeedback,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i7.dummyValue<String>(
-          this,
-          Invocation.method(
-            #generateWorkoutPlan,
-            [profile],
-            {
-              #recentHealth: recentHealth,
-              #weekNumber: weekNumber,
-              #previousPlanFeedback: previousPlanFeedback,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
-
-  @override
-  _i4.Future<String> generateMealPlan(
-    _i2.UserProfile? profile, {
-    int? stepsToday,
-    _i2.HealthData? recentHealth,
-    List<String>? dislikedFoods,
-    String? cuisinePreference,
-    String? city,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #generateMealPlan,
-          [profile],
-          {
-            #stepsToday: stepsToday,
-            #recentHealth: recentHealth,
-            #dislikedFoods: dislikedFoods,
-            #cuisinePreference: cuisinePreference,
-            #city: city,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i7.dummyValue<String>(
-          this,
-          Invocation.method(
-            #generateMealPlan,
-            [profile],
-            {
-              #stepsToday: stepsToday,
-              #recentHealth: recentHealth,
-              #dislikedFoods: dislikedFoods,
-              #cuisinePreference: cuisinePreference,
-              #city: city,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
-
-  @override
-  _i4.Future<String> refineWorkoutPlan(
-    _i2.UserProfile? profile,
-    List<_i2.TestExerciseResult>? exercises,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #refineWorkoutPlan,
-          [
-            profile,
-            exercises,
-          ],
-        ),
-        returnValue: _i4.Future<String>.value(_i7.dummyValue<String>(
-          this,
-          Invocation.method(
-            #refineWorkoutPlan,
-            [
-              profile,
-              exercises,
-            ],
-          ),
-        )),
-      ) as _i4.Future<String>);
-
-  @override
-  _i4.Future<String> analyzeProgress({
-    required _i2.UserProfile? profile,
-    required Map<String, double?>? latest,
-    Map<String, double?>? previous,
-    bool? hasPhotos,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #analyzeProgress,
-          [],
-          {
-            #profile: profile,
-            #latest: latest,
-            #previous: previous,
-            #hasPhotos: hasPhotos,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i7.dummyValue<String>(
-          this,
-          Invocation.method(
-            #analyzeProgress,
-            [],
-            {
-              #profile: profile,
-              #latest: latest,
-              #previous: previous,
-              #hasPhotos: hasPhotos,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
-
-  @override
-  _i4.Future<String> generateWeeklyDebrief({
-    required _i2.UserProfile? profile,
-    required int? workoutsDone,
-    required List<int>? dailyWorkoutKcal,
-    required List<int>? dailyWaterMl,
-    required List<int>? dailyEatenCal,
-    required int? dailyCalTarget,
-    required int? dailyWaterTarget,
-    required List<String>? weekPrNames,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #generateWeeklyDebrief,
-          [],
-          {
-            #profile: profile,
-            #workoutsDone: workoutsDone,
-            #dailyWorkoutKcal: dailyWorkoutKcal,
-            #dailyWaterMl: dailyWaterMl,
-            #dailyEatenCal: dailyEatenCal,
-            #dailyCalTarget: dailyCalTarget,
-            #dailyWaterTarget: dailyWaterTarget,
-            #weekPrNames: weekPrNames,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i7.dummyValue<String>(
-          this,
-          Invocation.method(
-            #generateWeeklyDebrief,
-            [],
-            {
-              #profile: profile,
-              #workoutsDone: workoutsDone,
-              #dailyWorkoutKcal: dailyWorkoutKcal,
-              #dailyWaterMl: dailyWaterMl,
-              #dailyEatenCal: dailyEatenCal,
-              #dailyCalTarget: dailyCalTarget,
-              #dailyWaterTarget: dailyWaterTarget,
-              #weekPrNames: weekPrNames,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
-
-  @override
-  _i4.Future<String> askWithHistory(
-    List<_i2.ChatMessage>? history,
-    String? newQuestion, {
-    _i2.UserProfile? profile,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #askWithHistory,
-          [
-            history,
-            newQuestion,
-          ],
-          {#profile: profile},
-        ),
-        returnValue: _i4.Future<String>.value(_i7.dummyValue<String>(
-          this,
-          Invocation.method(
-            #askWithHistory,
-            [
-              history,
-              newQuestion,
-            ],
-            {#profile: profile},
-          ),
-        )),
-      ) as _i4.Future<String>);
-
-  @override
-  _i4.Future<String> askQuestion(
-    String? question, {
-    _i2.UserProfile? profile,
-    List<String>? recentTopics,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #askQuestion,
-          [question],
-          {
-            #profile: profile,
-            #recentTopics: recentTopics,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i7.dummyValue<String>(
-          this,
-          Invocation.method(
-            #askQuestion,
-            [question],
-            {
-              #profile: profile,
-              #recentTopics: recentTopics,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
-
-  @override
-  _i4.Future<String> parseWorkoutFromContent(
-    String? content, {
-    String? sourceHint,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #parseWorkoutFromContent,
-          [content],
-          {#sourceHint: sourceHint},
-        ),
-        returnValue: _i4.Future<String>.value(_i7.dummyValue<String>(
-          this,
-          Invocation.method(
-            #parseWorkoutFromContent,
-            [content],
-            {#sourceHint: sourceHint},
-          ),
-        )),
-      ) as _i4.Future<String>);
-
-  @override
-  _i4.Future<String> correctWorkoutPlan({
-    required String? currentPlanJson,
-    required String? userInput,
-    String? correctionType,
-    String? sourceHint,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #correctWorkoutPlan,
-          [],
-          {
-            #currentPlanJson: currentPlanJson,
-            #userInput: userInput,
-            #correctionType: correctionType,
-            #sourceHint: sourceHint,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i7.dummyValue<String>(
-          this,
-          Invocation.method(
-            #correctWorkoutPlan,
-            [],
-            {
-              #currentPlanJson: currentPlanJson,
-              #userInput: userInput,
-              #correctionType: correctionType,
-              #sourceHint: sourceHint,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
-
-  @override
-  void dispose() => super.noSuchMethod(
-        Invocation.method(
-          #dispose,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
-}
-
 /// A class which mocks [IAuthRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIAuthRepository extends _i1.Mock implements _i8.IAuthRepository {
+class MockIAuthRepository extends _i1.Mock implements _i6.IAuthRepository {
   MockIAuthRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -687,4 +389,59 @@ class MockIAuthRepository extends _i1.Mock implements _i8.IAuthRepository {
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
+}
+
+/// A class which mocks [OnboardingWorkflowService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockOnboardingWorkflowService extends _i1.Mock
+    implements _i7.OnboardingWorkflowService {
+  MockOnboardingWorkflowService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<({String mealPlanJson, String workoutPlanJson})> generatePlans({
+    required String? userId,
+    required _i2.UserProfile? profile,
+    String? city,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #generatePlans,
+          [],
+          {
+            #userId: userId,
+            #profile: profile,
+            #city: city,
+          },
+        ),
+        returnValue:
+            _i4.Future<({String mealPlanJson, String workoutPlanJson})>.value((
+          mealPlanJson: _i8.dummyValue<String>(
+            this,
+            Invocation.method(
+              #generatePlans,
+              [],
+              {
+                #userId: userId,
+                #profile: profile,
+                #city: city,
+              },
+            ),
+          ),
+          workoutPlanJson: _i8.dummyValue<String>(
+            this,
+            Invocation.method(
+              #generatePlans,
+              [],
+              {
+                #userId: userId,
+                #profile: profile,
+                #city: city,
+              },
+            ),
+          )
+        )),
+      ) as _i4.Future<({String mealPlanJson, String workoutPlanJson})>);
 }

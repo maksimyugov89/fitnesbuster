@@ -1,4 +1,4 @@
-import 'package:fitnesbuster/core/health/health_connect_service.dart';
+import 'package:fitnesbuster/domain/entities/synced_health_data.dart';
 
 abstract interface class IHealthConnectService {
   bool get isAvailable;

@@ -3,9 +3,10 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
-import 'package:fitnesbuster/core/health/health_connect_service.dart' as _i2;
+import 'package:fitnesbuster/core/health/health_connect_service.dart' as _i3;
+import 'package:fitnesbuster/domain/entities/synced_health_data.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -36,7 +37,7 @@ class _FakeSyncedHealthData_0 extends _i1.SmartFake
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockHealthConnectService extends _i1.Mock
-    implements _i2.HealthConnectService {
+    implements _i3.HealthConnectService {
   MockHealthConnectService() {
     _i1.throwOnMissingStub(this);
   }
@@ -48,41 +49,41 @@ class MockHealthConnectService extends _i1.Mock
       ) as bool);
 
   @override
-  _i3.Future<bool> isHealthConnectAvailable() => (super.noSuchMethod(
+  _i4.Future<bool> isHealthConnectAvailable() => (super.noSuchMethod(
         Invocation.method(
           #isHealthConnectAvailable,
           [],
         ),
-        returnValue: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i3.Future<bool> initialize() => (super.noSuchMethod(
+  _i4.Future<bool> initialize() => (super.noSuchMethod(
         Invocation.method(
           #initialize,
           [],
         ),
-        returnValue: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i3.Future<_i2.SyncedHealthData> readAllToday() => (super.noSuchMethod(
+  _i4.Future<_i2.SyncedHealthData> readAllToday() => (super.noSuchMethod(
         Invocation.method(
           #readAllToday,
           [],
         ),
         returnValue:
-            _i3.Future<_i2.SyncedHealthData>.value(_FakeSyncedHealthData_0(
+            _i4.Future<_i2.SyncedHealthData>.value(_FakeSyncedHealthData_0(
           this,
           Invocation.method(
             #readAllToday,
             [],
           ),
         )),
-      ) as _i3.Future<_i2.SyncedHealthData>);
+      ) as _i4.Future<_i2.SyncedHealthData>);
 
   @override
-  _i3.Future<_i2.SyncedHealthData> readDateRange({
+  _i4.Future<_i2.SyncedHealthData> readDateRange({
     required DateTime? start,
     required DateTime? end,
   }) =>
@@ -96,7 +97,7 @@ class MockHealthConnectService extends _i1.Mock
           },
         ),
         returnValue:
-            _i3.Future<_i2.SyncedHealthData>.value(_FakeSyncedHealthData_0(
+            _i4.Future<_i2.SyncedHealthData>.value(_FakeSyncedHealthData_0(
           this,
           Invocation.method(
             #readDateRange,
@@ -107,7 +108,7 @@ class MockHealthConnectService extends _i1.Mock
             },
           ),
         )),
-      ) as _i3.Future<_i2.SyncedHealthData>);
+      ) as _i4.Future<_i2.SyncedHealthData>);
 
   @override
   void dispose() => super.noSuchMethod(

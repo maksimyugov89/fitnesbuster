@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
+import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
+import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 
@@ -16,7 +18,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({required IAuthRepository authRepository})
       : _authRepository = authRepository,
-        super(const AuthStateUnknown()) {
+        super(const AuthStateInitial()) {
     on<AuthCheckRequested>(_onCheckRequested);
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthRegisterRequested>(_onRegisterRequested);
@@ -51,8 +53,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
       );
+      _track(() => sl<IAnalyticsService>().logLogin(method: 'email'));
       emit(AuthStateAuthenticated(user: user));
-    } on FirebaseAuthException catch (e) {
+    } on AuthException catch (e) {
       appLogger.w('[AuthBloc] login error', error: e);
       emit(AuthStateError(message: _mapFirebaseError(e.code)));
     } catch (e, st) {
@@ -69,8 +72,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         password: event.password,
         name: event.name,
       );
+      _track(() => sl<IAnalyticsService>().logSignUp(method: 'email'));
       emit(AuthStateAuthenticated(user: user));
-    } on FirebaseAuthException catch (e) {
+    } on AuthException catch (e) {
       appLogger.w('[AuthBloc] register error', error: e);
       emit(AuthStateError(message: _mapFirebaseError(e.code)));
     } catch (e, st) {
@@ -83,15 +87,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthStateLoading());
     try {
       final user = await _authRepository.signInWithGoogle();
+      _track(() => sl<IAnalyticsService>().logLogin(method: 'google'));
       emit(AuthStateAuthenticated(user: user));
-    } on FirebaseAuthException catch (e) {
+    } on AuthException catch (e) {
       appLogger.w('[AuthBloc] googleLogin error', error: e);
       emit(AuthStateError(message: _mapFirebaseError(e.code)));
     } catch (e, st) {
       appLogger.w('[AuthBloc] googleLogin failed', error: e, stackTrace: st);
-      if (e is FirebaseAuthException && e.code == 'account-exists-with-different-credential') {
-        emit(const AuthStateUnauthenticated());
-      } else if (e.toString().contains('cancelled')) {
+      if (e.toString().contains('cancelled')) {
         emit(const AuthStateUnauthenticated());
       } else {
         emit(AuthStateError(message: AppLocalizations.tl('googleLoginError')));
@@ -128,5 +131,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       case 'too-many-requests': return AppLocalizations.tl('tooManyRequests');
       default: return AppLocalizations.tl('loginError');
     }
+  }
+
+  Future<void> _track(Future<void> Function() fn) async {
+    try { await fn(); } catch (_) { /* best-effort */ }
   }
 }

@@ -7,7 +7,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/data/repositories/user_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
@@ -61,7 +61,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       final authState = context.read<AuthBloc>().state;
       if (authState is! AuthStateAuthenticated) return;
       final uid = authState.userId;
-      final plans = await sl<UserRepository>().getAiPlans(uid);
+      final plans = await sl<IUserRepository>().getAiPlans(uid);
       final jsonStr = plans['workoutPlan'];
       if (jsonStr == null) return;
       final data = jsonDecode(jsonStr) as Map<String, dynamic>;

@@ -8,7 +8,7 @@ import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
-import 'package:fitnesbuster/data/repositories/user_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class WorkoutSessionScreen extends StatefulWidget {
@@ -66,7 +66,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
       if (authState is! AuthStateAuthenticated) throw Exception(AppLocalizations.tl('notAuthorized'));
       final uid = authState.userId;
 
-      final plans = await sl<UserRepository>().getAiPlans(uid);
+      final plans = await sl<IUserRepository>().getAiPlans(uid);
       final planJson = plans['workoutPlan'];
       if (planJson == null || planJson.isEmpty) {
         throw Exception(AppLocalizations.tl('noSavedWorkoutPlan'));
@@ -321,7 +321,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
       ])),
       AnimatedBuilder(
         animation: _pulseCtrl,
-        builder: (_, __) => Container(
+        builder: (_, _) => Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             color: colors.error.withValues(alpha: 0.1 + 0.05 * _pulseCtrl.value),

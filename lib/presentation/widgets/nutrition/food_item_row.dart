@@ -68,13 +68,17 @@ class _NutritionFoodItemRowState extends State<NutritionFoodItemRow> {
             ]),
           ),
           if (_isComplex)
-            GestureDetector(
+            Semantics(
+              label: 'Способ приготовления',
+              button: true,
+              child: GestureDetector(
               onTap: () => setState(() => _expanded = !_expanded),
               child: Padding(
                 padding: const EdgeInsets.only(left: 6),
                 child: Icon(_expanded ? Icons.keyboard_arrow_up_rounded : Icons.menu_book_rounded,
                   size: 18, color: c.textMuted),
               ),
+            ),
             ),
         ]),
       ),

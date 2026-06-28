@@ -5,10 +5,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/core/ai/deepseek_service.dart';
+import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/data/models/exercise_db_model.dart';
 import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/constants/app_colors.dart';
 
 class ExerciseDetailScreen extends StatefulWidget {
   final String exerciseId;
@@ -70,7 +71,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
     }
     if (mounted) setState(() => _instructionsLoading = true);
     try {
-      final ai = sl<DeepSeekService>();
+      final ai = sl<IDeepSeekService>();
       final numbered = ex.instructions
           .asMap()
           .entries
@@ -102,7 +103,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
     }
     if (mounted) setState(() { _tipsLoading = true; _tipsError = false; });
     try {
-      final ai = sl<DeepSeekService>();
+      final ai = sl<IDeepSeekService>();
       final muscles = ex.primaryMuscles.map((m) => m.displayNameRu).join(', ');
       final tips = await ai.askQuestion(
         'Упражнение: «${ex.nameRu}» (${ex.name}). Мышцы: $muscles.\n'
@@ -225,9 +226,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _LegendDot(color: Color(0xFFE8453C), label: 'Основные'),
+              _LegendDot(color: SemanticColors.primaryMuscle, label: 'Основные'),
               SizedBox(width: 16),
-              _LegendDot(color: Color(0xFF4FA3E0), label: 'Вторичные'),
+              _LegendDot(color: SemanticColors.secondaryMuscle, label: 'Вторичные'),
             ],
           ),
           const SizedBox(height: 12),
@@ -235,7 +236,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             _MuscleRow(
               label: 'Основные',
               muscles: ex.primaryMuscles.map((m) => m.displayNameRu).toList(),
-              color: const Color(0xFFE8453C),
+              color: SemanticColors.primaryMuscle,
               c: c,
             ),
           if (ex.secondaryMuscles.isNotEmpty) ...[
@@ -243,7 +244,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             _MuscleRow(
               label: 'Вторичные',
               muscles: ex.secondaryMuscles.map((m) => m.displayNameRu).toList(),
-              color: const Color(0xFF4FA3E0),
+              color: SemanticColors.secondaryMuscle,
               c: c,
             ),
           ],
@@ -254,9 +255,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
 
   Widget _buildInfoChips(ThemePalette c, ExerciseDbModel ex) {
     final diffColor = switch (ex.difficulty) {
-      ExDifficulty.beginner     => const Color(0xFF22D3A5),
-      ExDifficulty.intermediate => const Color(0xFFF5A623),
-      ExDifficulty.advanced     => const Color(0xFFFF4466),
+      ExDifficulty.beginner     => SemanticColors.difficultyBeginner,
+      ExDifficulty.intermediate => SemanticColors.difficultyIntermediate,
+      ExDifficulty.advanced     => SemanticColors.difficultyAdvanced,
     };
     final diffLabel = switch (ex.difficulty) {
       ExDifficulty.beginner     => 'Начинающий',
@@ -410,11 +411,11 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               imageUrl: url,
               fit: BoxFit.contain,
               width: double.infinity,
-              placeholder: (_, __) => SizedBox(
+              placeholder: (_, _) => SizedBox(
                 height: 260,
                 child: Center(child: CircularProgressIndicator(color: c.primary, strokeWidth: 2)),
               ),
-              errorWidget: (_, __, ___) => const SizedBox.shrink(),
+              errorWidget: (_, _, _) => const SizedBox.shrink(),
             ),
           ),
         ],

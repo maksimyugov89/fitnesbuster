@@ -1,8 +1,4 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
-
 abstract interface class IAnalyticsService {
-  FirebaseAnalyticsObserver get observer;
-
   Future<void> logScreenView({required String screenName});
   Future<void> logLogin({required String method});
   Future<void> logSignUp({required String method});

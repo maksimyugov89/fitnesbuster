@@ -5,8 +5,8 @@ sealed class AuthState extends Equatable {
   @override List<Object?> get props => [];
 }
 
-class AuthStateUnknown extends AuthState {
-  const AuthStateUnknown();
+class AuthStateInitial extends AuthState {
+  const AuthStateInitial();
 }
 
 class AuthStateLoading extends AuthState {

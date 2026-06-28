@@ -48,9 +48,13 @@ class NutritionSummaryCard extends StatelessWidget {
         Row(children: [
           Text(l10n.navNutrition, style: AppTextStyles.titleM),
           const Spacer(),
-          GestureDetector(
-            onTap: () => context.push('/nutrition'),
-            child: Text(l10n.openArrow, style: TextStyle(color: p.primary, fontSize: 13, fontWeight: FontWeight.w600)),
+          Semantics(
+            label: l10n.navNutrition,
+            button: true,
+            child: GestureDetector(
+              onTap: () => context.push('/nutrition'),
+              child: Text(l10n.openArrow, style: TextStyle(color: p.primary, fontSize: 13, fontWeight: FontWeight.w600)),
+            ),
           ),
         ]),
         const SizedBox(height: 20),

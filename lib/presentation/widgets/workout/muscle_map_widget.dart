@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fitnesbuster/core/constants/app_colors.dart';
 
 enum BodyView { front, back }
 
@@ -42,9 +43,9 @@ class MuscleMapWidget extends StatefulWidget {
 }
 
 class _MuscleMapWidgetState extends State<MuscleMapWidget> {
-  static Map<String, MuscleZone>? _manifest;
-  static ui.Image? _cachedFront;
-  static ui.Image? _cachedBack;
+  Map<String, MuscleZone>? _manifest;
+  ui.Image? _cachedFront;
+  ui.Image? _cachedBack;
 
   String? _tappedId;
   bool _ready = false;
@@ -93,6 +94,14 @@ class _MuscleMapWidgetState extends State<MuscleMapWidget> {
   }
 
   @override
+  void dispose() {
+    _cachedFront?.dispose();
+    _cachedBack?.dispose();
+    _manifest = null;
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final bodyImage = widget.view == BodyView.front ? _cachedFront : _cachedBack;
 
@@ -109,9 +118,12 @@ class _MuscleMapWidgetState extends State<MuscleMapWidget> {
 
       final zones = widget.view == BodyView.front ? _kFrontZones : _kBackZones;
 
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapDown: widget.onMuscleTap == null ? null : (d) {
+      return Semantics(
+        label: 'Карта мышц',
+        button: true,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapDown: widget.onMuscleTap == null ? null : (d) {
           final svgX = d.localPosition.dx / w * 1024;
           final svgY = d.localPosition.dy / h * 1536;
           final hit = _hitTest(svgX, svgY, zones);
@@ -128,6 +140,7 @@ class _MuscleMapWidgetState extends State<MuscleMapWidget> {
             secondaryMuscles: widget.secondaryMuscles,
             tappedId: _tappedId,
             zones: zones,
+          ),
           ),
         ),
       );
@@ -221,9 +234,11 @@ class _MusclePainter extends CustomPainter {
   final String? tappedId;
   final Map<String, List<List<int>>> zones;
 
-  static const _primaryColor   = Color(0xFFE8453C);
-  static const _secondaryColor = Color(0xFF4FA3E0);
-  static const _tapColor       = Color(0xFFFFB300);
+  static const _primaryColor   = SemanticColors.primaryMuscle;
+
+  static const _secondaryColor = SemanticColors.secondaryMuscle;
+
+  static const _tapColor       = SemanticColors.tapHighlight;
 
   _MusclePainter({
     required this.bodyImage,
@@ -302,7 +317,7 @@ class _MusclePainter extends CustomPainter {
         bodyImage, src, dst,
         Paint()
           ..filterQuality = FilterQuality.high
-          ..color = const Color(0x55FFFFFF)); // ~33 % opacity overlay
+          ..color = SemanticColors.muscleOverlay); // ~33 % opacity overlay
   }
 
   Color _colorFor(String id) {

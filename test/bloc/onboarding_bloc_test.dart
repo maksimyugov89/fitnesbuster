@@ -6,14 +6,14 @@ import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
-import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/core/services/onboarding_workflow_service.dart';
 
 import 'onboarding_bloc_test.mocks.dart';
 
-@GenerateMocks([IUserRepository, IDeepSeekService, IAuthRepository])
+@GenerateMocks([IUserRepository, IAuthRepository, OnboardingWorkflowService])
 void main() {
   late MockIUserRepository mockUserRepo;
-  late MockIDeepSeekService mockAiService;
+  late MockOnboardingWorkflowService mockWorkflowService;
   late MockIAuthRepository mockAuthRepo;
   late OnboardingBloc bloc;
 
@@ -26,11 +26,11 @@ void main() {
 
   setUp(() {
     mockUserRepo = MockIUserRepository();
-    mockAiService = MockIDeepSeekService();
+    mockWorkflowService = MockOnboardingWorkflowService();
     mockAuthRepo = MockIAuthRepository();
     bloc = OnboardingBloc(
       userRepo: mockUserRepo,
-      aiService: mockAiService,
+      workflowService: mockWorkflowService,
       authRepo: mockAuthRepo,
     );
   });
@@ -105,14 +105,15 @@ void main() {
         )).thenAnswer((_) async => tUser);
         when(mockUserRepo.getUser('uid-1')).thenAnswer((_) async => tUser);
         when(mockUserRepo.updateProfile(any)).thenAnswer((_) async => tUser);
-        when(mockAiService.generateWorkoutPlan(any))
-            .thenAnswer((_) async => '{"title":"test"}');
-        when(mockAiService.generateMealPlan(any, city: anyNamed('city')))
-            .thenAnswer((_) async => '{"meals":[]}');
+        when(mockWorkflowService.generatePlans(
+          userId: anyNamed('userId'),
+          profile: anyNamed('profile'),
+          city: anyNamed('city'),
+        )).thenAnswer((_) async => (workoutPlanJson: '{"title":"test"}', mealPlanJson: '{"meals":[]}'));
 
         final bloc = OnboardingBloc(
           userRepo: mockUserRepo,
-          aiService: mockAiService,
+          workflowService: mockWorkflowService,
           authRepo: mockAuthRepo,
         );
         bloc.add(const OnboardingSetGoal(FitnessGoal.loseWeight));
@@ -149,7 +150,7 @@ void main() {
 
         final bloc = OnboardingBloc(
           userRepo: mockUserRepo,
-          aiService: mockAiService,
+          workflowService: mockWorkflowService,
           authRepo: mockAuthRepo,
         );
         bloc.add(const OnboardingSetGoal(FitnessGoal.loseWeight));
@@ -184,12 +185,15 @@ void main() {
         )).thenAnswer((_) async => tUser);
         when(mockUserRepo.getUser('uid-1')).thenAnswer((_) async => tUser);
         when(mockUserRepo.updateProfile(any)).thenAnswer((_) async => tUser);
-        when(mockAiService.generateWorkoutPlan(any))
-            .thenThrow(Exception('AI error'));
+        when(mockWorkflowService.generatePlans(
+          userId: anyNamed('userId'),
+          profile: anyNamed('profile'),
+          city: anyNamed('city'),
+        )).thenThrow(Exception('AI error'));
 
         final bloc = OnboardingBloc(
           userRepo: mockUserRepo,
-          aiService: mockAiService,
+          workflowService: mockWorkflowService,
           authRepo: mockAuthRepo,
         );
         bloc.add(const OnboardingSetGoal(FitnessGoal.loseWeight));

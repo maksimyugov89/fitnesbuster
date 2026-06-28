@@ -1,23 +1,25 @@
 import 'dart:convert';
 
-class PersonalRecord {
-  final String id;
-  final String exerciseName;
-  final double? weightKg;
-  final int? reps;
-  final int? sets;
-  final DateTime date;
-  final String notes;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  const PersonalRecord({
-    required this.id,
-    required this.exerciseName,
-    this.weightKg,
-    this.reps,
-    this.sets,
-    required this.date,
-    this.notes = '',
-  });
+part 'personal_record.freezed.dart';
+part 'personal_record.g.dart';
+
+@freezed
+class PersonalRecord with _$PersonalRecord {
+  const PersonalRecord._();
+
+  const factory PersonalRecord({
+    required String id,
+    required String exerciseName,
+    double? weightKg,
+    int? reps,
+    int? sets,
+    required DateTime date,
+    @Default('') String notes,
+  }) = _PersonalRecord;
+
+  factory PersonalRecord.fromJson(Map<String, dynamic> json) => _$PersonalRecordFromJson(json);
 
   bool get isBodyweight => weightKg == null || weightKg == 0;
 
@@ -42,26 +44,6 @@ class PersonalRecord {
     if (weightKg != null && weightKg! > 0) parts.add('@ $displayWeight');
     return parts.join(' ');
   }
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'exerciseName': exerciseName,
-    'weightKg': weightKg,
-    'reps': reps,
-    'sets': sets,
-    'date': date.toIso8601String(),
-    'notes': notes,
-  };
-
-  factory PersonalRecord.fromJson(Map<String, dynamic> j) => PersonalRecord(
-    id: j['id'] as String,
-    exerciseName: j['exerciseName'] as String,
-    weightKg: (j['weightKg'] as num?)?.toDouble(),
-    reps: (j['reps'] as num?)?.toInt(),
-    sets: (j['sets'] as num?)?.toInt(),
-    date: DateTime.parse(j['date'] as String),
-    notes: j['notes'] as String? ?? '',
-  );
 
   static String encodeList(List<PersonalRecord> records) =>
       jsonEncode(records.map((r) => r.toJson()).toList());

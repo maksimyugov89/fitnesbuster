@@ -57,7 +57,7 @@ class ActivityRingsCard extends StatelessWidget {
           Expanded(
             child: AnimatedBuilder(
               animation: animation,
-              builder: (context2, __) => CustomPaint(
+              builder: (context2, _) => CustomPaint(
                 size: const Size(160, 160),
                 painter: _ActivityRingsPainter(
                   progress: animation.value,
@@ -68,21 +68,25 @@ class ActivityRingsCard extends StatelessWidget {
                   caloriesColor: AppTheme.of(context2).primary,
                   waterColor:    AppTheme.of(context2).accent,
                 ),
+                ),
               ),
-            ),
           ),
           const SizedBox(width: 20),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              GestureDetector(
-                onTap: onStepsTap,
-                child: _RingLegend(
+              Semantics(
+                label: l10n.stepsLabel,
+                button: true,
+                child: GestureDetector(
+                  onTap: onStepsTap,
+                  child: _RingLegend(
                   color: p.accentOrange,
                   label: l10n.stepsLabel,
                   value: hasSyncedData ? '$steps' : '—',
                   total: '/$targetSteps',
                   unit: '',
                   editable: steps == 0,
+                  ),
                 ),
               ),
               const SizedBox(height: 14),

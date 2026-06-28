@@ -178,28 +178,32 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                     BlocBuilder<AiBloc, AiState>(
                       builder: (context, state) {
                         final isLoading = state is AiStateLoading;
-                        return GestureDetector(
-                          onTap: isLoading
-                              ? null
-                              : () {
-                                  _sendMessage(_controller.text);
-                                  _scrollToBottom();
-                                },
-                          child: Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: isLoading
-                                  ? colors.surfaceLight
-                                  : colors.primary,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Icon(
-                              isLoading ? Icons.hourglass_empty : Icons.send_rounded,
-                              color: isLoading
-                                  ? colors.textMuted
-                                  : colors.textOnPrimary,
-                              size: 20,
+                        return Semantics(
+                          label: 'Отправить',
+                          button: true,
+                          child: GestureDetector(
+                            onTap: isLoading
+                                ? null
+                                : () {
+                                    _sendMessage(_controller.text);
+                                    _scrollToBottom();
+                                  },
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: isLoading
+                                    ? colors.surfaceLight
+                                    : colors.primary,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Icon(
+                                isLoading ? Icons.hourglass_empty : Icons.send_rounded,
+                                color: isLoading
+                                    ? colors.textMuted
+                                    : colors.textOnPrimary,
+                                size: 20,
+                              ),
                             ),
                           ),
                         );
@@ -239,39 +243,43 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
           const SizedBox(height: 12),
           ...suggestions.map((s) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: GestureDetector(
-                  onTap: () {
-                    _sendMessage(s.$2);
-                    _scrollToBottom();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: colors.surfaceCard,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: colors.textPrimary.withValues(alpha: 0.06),
+                child: Semantics(
+                  label: s.$2,
+                  button: true,
+                  child: GestureDetector(
+                    onTap: () {
+                      _sendMessage(s.$2);
+                      _scrollToBottom();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceCard,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: colors.textPrimary.withValues(alpha: 0.06),
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(s.$1, style: const TextStyle(fontSize: 20)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            s.$2,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: colors.textPrimary,
+                      child: Row(
+                        children: [
+                          Text(s.$1, style: const TextStyle(fontSize: 20)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              s.$2,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: colors.textPrimary,
+                              ),
                             ),
                           ),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_rounded,
-                          color: colors.textMuted,
-                          size: 18,
-                        ),
-                      ],
+                          Icon(
+                            Icons.arrow_forward_rounded,
+                            color: colors.textMuted,
+                            size: 18,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

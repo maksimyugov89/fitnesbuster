@@ -1,4 +1,8 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+
+part 'user_entities.freezed.dart';
+part 'user_entities.g.dart';
 
 enum Gender { male, female }
 
@@ -39,136 +43,59 @@ enum ActivityLevel {
   }
 }
 
-class UserEntity {
-  final String id;
-  final String name;
-  final String email;
-  final String? avatarUrl;
-  final UserProfile? profile;
-  final DateTime createdAt;
-
-  const UserEntity({
-    required this.id,
-    required this.name,
-    required this.email,
-    this.avatarUrl,
-    this.profile,
-    required this.createdAt,
-  });
-
-  UserEntity copyWith({
-    String? id,
-    String? name,
-    String? email,
-    String? avatarUrl,
-    UserProfile? profile,
-    DateTime? createdAt,
-    bool clearAvatar = false,
-    bool clearProfile = false,
-  }) {
-    return UserEntity(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      email: email ?? this.email,
-      avatarUrl: clearAvatar ? null : (avatarUrl ?? this.avatarUrl),
-      profile: clearProfile ? null : (profile ?? this.profile),
-      createdAt: createdAt ?? this.createdAt,
-    );
-  }
+enum MuscleGroup {
+  chest, back, shoulders, biceps, triceps, forearms,
+  abs, glutes, quads, hamstrings, calves, fullBody, cardio
 }
 
-class UserProfile {
-  final double weight;
-  final double height;
-  final int age;
-  final Gender gender;
-  final FitnessGoal goal;
-  final IntensityLevel intensity;
-  final List<String> medicalRestrictions;
-  final List<String> exerciseRestrictions;
-  final ActivityLevel activityLevel;
-  final double? targetWeight;
-  final DateTime? targetDate;
-  final bool testWeekCompleted;
-  final List<TestExerciseResult> testResults;
-  final String? workoutLocation;
-  final String? runningPreference;
-  final String? city;
+@freezed
+class UserEntity with _$UserEntity {
+  const factory UserEntity({
+    required String id,
+    required String name,
+    required String email,
+    String? avatarUrl,
+    UserProfile? profile,
+    required DateTime createdAt,
+  }) = _UserEntity;
 
-  const UserProfile({
-    required this.weight,
-    required this.height,
-    required this.age,
-    required this.gender,
-    required this.goal,
-    required this.intensity,
-    this.medicalRestrictions = const [],
-    this.exerciseRestrictions = const [],
-    required this.activityLevel,
-    this.targetWeight,
-    this.targetDate,
-    this.testWeekCompleted = false,
-    this.testResults = const [],
-    this.workoutLocation,
-    this.runningPreference,
-    this.city,
-  });
+  factory UserEntity.fromJson(Map<String, dynamic> json) => _$UserEntityFromJson(json);
+}
 
-  const UserProfile.defaults()
-      : weight = 80,
-        height = 175,
-        age = 30,
-        gender = Gender.male,
-        goal = FitnessGoal.loseWeight,
-        intensity = IntensityLevel.balanced,
-        activityLevel = ActivityLevel.moderatelyActive,
-        medicalRestrictions = const [],
-        exerciseRestrictions = const [],
-        targetWeight = null,
-        targetDate = null,
-        testWeekCompleted = false,
-        testResults = const [],
-        workoutLocation = null,
-        runningPreference = null,
-        city = null;
+@freezed
+class UserProfile with _$UserProfile {
+  const UserProfile._();
 
-  UserProfile copyWith({
-    double? weight,
-    double? height,
-    int? age,
-    Gender? gender,
-    FitnessGoal? goal,
-    IntensityLevel? intensity,
-    List<String>? medicalRestrictions,
-    List<String>? exerciseRestrictions,
-    ActivityLevel? activityLevel,
+  const factory UserProfile({
+    required double weight,
+    required double height,
+    required int age,
+    required Gender gender,
+    required FitnessGoal goal,
+    required IntensityLevel intensity,
+    @Default([]) List<String> medicalRestrictions,
+    @Default([]) List<String> exerciseRestrictions,
+    required ActivityLevel activityLevel,
     double? targetWeight,
     DateTime? targetDate,
-    bool? testWeekCompleted,
-    List<TestExerciseResult>? testResults,
+    @Default(false) bool testWeekCompleted,
+    @Default([]) List<TestExerciseResult> testResults,
     String? workoutLocation,
     String? runningPreference,
     String? city,
-  }) {
-    return UserProfile(
-      weight: weight ?? this.weight,
-      height: height ?? this.height,
-      age: age ?? this.age,
-      gender: gender ?? this.gender,
-      goal: goal ?? this.goal,
-      intensity: intensity ?? this.intensity,
-      medicalRestrictions: medicalRestrictions ?? this.medicalRestrictions,
-      exerciseRestrictions: exerciseRestrictions ?? this.exerciseRestrictions,
-      activityLevel: activityLevel ?? this.activityLevel,
-      targetWeight: targetWeight ?? this.targetWeight,
-      targetDate: targetDate ?? this.targetDate,
-      testWeekCompleted: testWeekCompleted ?? this.testWeekCompleted,
-      testResults: testResults ?? this.testResults,
-      workoutLocation: workoutLocation ?? this.workoutLocation,
-      runningPreference: runningPreference ?? this.runningPreference,
-      city: city ?? this.city,
-    );
-  }
+  }) = _UserProfile;
+
+  factory UserProfile.fromJson(Map<String, dynamic> json) => _$UserProfileFromJson(json);
+
+  static const defaults = UserProfile(
+    weight: 80,
+    height: 175,
+    age: 30,
+    gender: Gender.male,
+    goal: FitnessGoal.loseWeight,
+    intensity: IntensityLevel.balanced,
+    activityLevel: ActivityLevel.moderatelyActive,
+  );
 
   int get estimatedWeeksNeeded {
     if (targetWeight == null) return 4;
@@ -190,7 +117,6 @@ class UserProfile {
     return weight / (h * h);
   }
 
-  /// Mifflin-St Jeor equation
   double get bmr {
     final base = (10 * weight) + (6.25 * height) - (5 * age);
     return gender == Gender.male ? base + 5 : base - 161;
@@ -209,27 +135,16 @@ class UserProfile {
   }
 }
 
-// Forward declaration — defined in workout_entities.dart, referenced by UserProfile.testResults
-// Dart resolves these within the same barrel export.
-class TestExerciseResult {
-  final String exerciseName;
-  final MuscleGroup primaryMuscle;
-  final double comfortableWeightKg;
-  final int comfortableSets;
-  final int comfortableReps;
-  final String? notes;
+@freezed
+class TestExerciseResult with _$TestExerciseResult {
+  const factory TestExerciseResult({
+    required String exerciseName,
+    required MuscleGroup primaryMuscle,
+    required double comfortableWeightKg,
+    required int comfortableSets,
+    required int comfortableReps,
+    String? notes,
+  }) = _TestExerciseResult;
 
-  const TestExerciseResult({
-    required this.exerciseName,
-    required this.primaryMuscle,
-    required this.comfortableWeightKg,
-    required this.comfortableSets,
-    required this.comfortableReps,
-    this.notes,
-  });
-}
-
-enum MuscleGroup {
-  chest, back, shoulders, biceps, triceps, forearms,
-  abs, glutes, quads, hamstrings, calves, fullBody, cardio
+  factory TestExerciseResult.fromJson(Map<String, dynamic> json) => _$TestExerciseResultFromJson(json);
 }

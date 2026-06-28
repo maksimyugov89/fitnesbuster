@@ -1,49 +1,39 @@
-class HealthData {
-  final String userId;
-  final DateTime date;
-  final int? steps;
-  final double? caloriesBurned;
-  final int? heartRateAvg;
-  final int? heartRateResting;
-  final double? weight;
-  final double? bodyFatPercent;
-  final int? sleepMinutes;
-  final double? waterIntakeMl;
-  final double? distanceKm;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  const HealthData({
-    required this.userId,
-    required this.date,
-    this.steps,
-    this.caloriesBurned,
-    this.heartRateAvg,
-    this.heartRateResting,
-    this.weight,
-    this.bodyFatPercent,
-    this.sleepMinutes,
-    this.waterIntakeMl,
-    this.distanceKm,
-  });
+part 'health_entities.freezed.dart';
+part 'health_entities.g.dart';
+
+@freezed
+class HealthData with _$HealthData {
+  const factory HealthData({
+    required String userId,
+    required DateTime date,
+    int? steps,
+    double? caloriesBurned,
+    int? heartRateAvg,
+    int? heartRateResting,
+    double? weight,
+    double? bodyFatPercent,
+    int? sleepMinutes,
+    double? waterIntakeMl,
+    double? distanceKm,
+  }) = _HealthData;
+
+  factory HealthData.fromJson(Map<String, dynamic> json) => _$HealthDataFromJson(json);
 }
 
-class ProgressEntry {
-  final String id;
-  final String userId;
-  final DateTime date;
-  final double? weight;
-  final double? bodyFatPercent;
-  final Map<String, double>? measurements;
-  final String? photoUrl;
-  final String? notes;
+@freezed
+class ProgressEntry with _$ProgressEntry {
+  const factory ProgressEntry({
+    required String id,
+    required String userId,
+    required DateTime date,
+    double? weight,
+    double? bodyFatPercent,
+    Map<String, double>? measurements,
+    String? photoUrl,
+    String? notes,
+  }) = _ProgressEntry;
 
-  const ProgressEntry({
-    required this.id,
-    required this.userId,
-    required this.date,
-    this.weight,
-    this.bodyFatPercent,
-    this.measurements,
-    this.photoUrl,
-    this.notes,
-  });
+  factory ProgressEntry.fromJson(Map<String, dynamic> json) => _$ProgressEntryFromJson(json);
 }

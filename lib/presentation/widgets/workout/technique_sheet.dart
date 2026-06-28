@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
+import 'package:fitnesbuster/core/constants/app_colors.dart';
 
 class WorkoutTechniqueSheet extends StatefulWidget {
   final String title;
@@ -41,10 +42,10 @@ class _WorkoutTechniqueSheetState extends State<WorkoutTechniqueSheet> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(children: [
-            const Icon(Icons.format_list_bulleted_rounded, color: Color(0xFFFF9500), size: 18),
+            const Icon(Icons.format_list_bulleted_rounded, color: SemanticColors.technique, size: 18),
             const SizedBox(width: 8),
             Expanded(child: Text(widget.title, style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w800, color: colors.colorScheme.onSurface), overflow: TextOverflow.ellipsis)),
-            IconButton(onPressed: () => Navigator.pop(context), icon: Icon(Icons.close_rounded, color: colors.colorScheme.onSurface.withValues(alpha: 0.6)), padding: EdgeInsets.zero, constraints: const BoxConstraints(), iconSize: 20),
+            Semantics(label: 'Закрыть', button: true, child: IconButton(onPressed: () => Navigator.pop(context), icon: Icon(Icons.close_rounded, color: colors.colorScheme.onSurface.withValues(alpha: 0.6)), padding: EdgeInsets.zero, constraints: const BoxConstraints(), iconSize: 20)),
           ])),
         const SizedBox(height: 12),
         Flexible(
@@ -52,18 +53,18 @@ class _WorkoutTechniqueSheetState extends State<WorkoutTechniqueSheet> {
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               if (_gifUrl != null) ...[
-                ClipRRect(borderRadius: BorderRadius.circular(14), child: CachedNetworkImage(imageUrl: _gifUrl!, width: double.infinity, height: 220, fit: BoxFit.contain, placeholder: (_, __) => Container(height: 220, decoration: BoxDecoration(color: colors.colorScheme.onSurface.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)), child: const Center(child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFFF9500)))), errorWidget: (_, __, ___) => const SizedBox.shrink())),
+                ClipRRect(borderRadius: BorderRadius.circular(14), child: CachedNetworkImage(imageUrl: _gifUrl!, width: double.infinity, height: 220, fit: BoxFit.contain, placeholder: (_, _) => Container(height: 220, decoration: BoxDecoration(color: colors.colorScheme.onSurface.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)), child: const Center(child: CircularProgressIndicator(strokeWidth: 2, color: SemanticColors.technique))), errorWidget: (_, _, _) => const SizedBox.shrink())),
                 const SizedBox(height: 16),
               ],
               if (widget.techniqueCue.isNotEmpty) ...[
-                _TechniqueSection(icon: Icons.lightbulb_rounded, label: 'Техника', text: widget.techniqueCue, color: const Color(0xFFFF9500)),
+                _TechniqueSection(icon: Icons.lightbulb_rounded, label: 'Техника', text: widget.techniqueCue, color: SemanticColors.technique),
                 const SizedBox(height: 12),
               ],
               if (widget.weightGuideline.isNotEmpty) ...[
-                _TechniqueSection(icon: Icons.monitor_weight_outlined, label: 'Нагрузка', text: widget.weightGuideline, color: const Color(0xFF4FA3E0)),
+                _TechniqueSection(icon: Icons.monitor_weight_outlined, label: 'Нагрузка', text: widget.weightGuideline, color: SemanticColors.weightGuideline),
                 const SizedBox(height: 12),
               ],
-              if (widget.progression.isNotEmpty) _TechniqueSection(icon: Icons.trending_up_rounded, label: 'Прогрессия', text: widget.progression, color: const Color(0xFF4CAF50)),
+              if (widget.progression.isNotEmpty) _TechniqueSection(icon: Icons.trending_up_rounded, label: 'Прогрессия', text: widget.progression, color: SemanticColors.progression),
             ])))],
       ));
   }

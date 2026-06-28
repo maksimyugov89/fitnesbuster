@@ -5,37 +5,23 @@ import 'package:mockito/mockito.dart';
 import 'package:fitnesbuster/bloc/training/test_week_bloc.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_adaptive_training_service.dart';
-import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
-import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
-import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
+import 'package:fitnesbuster/core/services/test_week_workflow_service.dart';
+import 'package:fitnesbuster/domain/usecases/complete_test_week_use_case.dart';
 
 import 'test_week_bloc_test.mocks.dart';
 
-@GenerateMocks([IAdaptiveTrainingService, IDeepSeekService, IUserRepository, IAuthRepository])
+@GenerateMocks([TestWeekWorkflowService, CompleteTestWeekUseCase])
 void main() {
-  late MockIAdaptiveTrainingService mockTraining;
-  late MockIDeepSeekService mockAi;
-  late MockIUserRepository mockUserRepo;
-  late MockIAuthRepository mockAuthRepo;
+  late MockTestWeekWorkflowService mockWorkflow;
+  late MockCompleteTestWeekUseCase mockUseCase;
   late TestWeekBloc bloc;
 
-  final tUser = UserEntity(
-    id: 'uid-1',
-    name: 'Test',
-    email: 'test@example.com',
-    createdAt: DateTime(2024),
-  );
-
   setUp(() {
-    mockTraining = MockIAdaptiveTrainingService();
-    mockAi = MockIDeepSeekService();
-    mockUserRepo = MockIUserRepository();
-    mockAuthRepo = MockIAuthRepository();
+    mockWorkflow = MockTestWeekWorkflowService();
+    mockUseCase = MockCompleteTestWeekUseCase();
     bloc = TestWeekBloc(
-      trainingService: mockTraining,
-      aiService: mockAi,
-      userRepo: mockUserRepo,
-      authRepo: mockAuthRepo,
+      workflowService: mockWorkflow,
+      completeTestWeekUseCase: mockUseCase,
     );
   });
 
@@ -86,37 +72,36 @@ void main() {
     blocTest<TestWeekBloc, TestWeekState>(
       'emits Completed after calculating results',
       build: () {
-        when(mockTraining.calculateAdjustment(
-          testResult: anyNamed('testResult'),
+        when(mockWorkflow.calculateResults(
+          exercises: anyNamed('exercises'),
           profile: anyNamed('profile'),
-        )).thenReturn(const TrainingAdjustment(
-          weightMultiplier: 0.8,
-          weeklyIncreasePercent: 5,
-          suggestedSetsPerExercise: 3,
-          suggestedRepsPerSet: 10,
-          userLevel: UserLevel.beginner,
-          maxHeartRate: 180,
-          adaptedIntensityLabel: 'Beginner',
+        )).thenAnswer((_) async => (
+          adjustment: const TrainingAdjustment(
+            weightMultiplier: 0.8,
+            weeklyIncreasePercent: 5,
+            suggestedSetsPerExercise: 3,
+            suggestedRepsPerSet: 10,
+            userLevel: UserLevel.beginner,
+            maxHeartRate: 180,
+            adaptedIntensityLabel: 'Beginner',
+          ),
+          feasibility: const FeasibilityResult(
+            isFeasible: true,
+            reason: 'Goal is feasible',
+            suggestedActions: [],
+          ),
+          adaptedPlan: <AdaptiveWeek>[],
+          testResult: TestWeekResult(
+            completedAt: DateTime(2024),
+            exercises: [],
+            averageHeartRate: 0,
+            averageSessionDuration: 0,
+            perceivedDifficulty: 5,
+          ),
         ));
-        when(mockTraining.checkGoalFeasibility(
-          profile: anyNamed('profile'),
-          adjustment: anyNamed('adjustment'),
-        )).thenAnswer((_) async => const FeasibilityResult(
-          isFeasible: true,
-          reason: 'Goal is feasible',
-          suggestedActions: [],
-        ));
-        when(mockTraining.buildAdaptedPlan(
-          testResult: anyNamed('testResult'),
-          adjustment: anyNamed('adjustment'),
-          durationWeeks: anyNamed('durationWeeks'),
-        )).thenReturn([]);
         return bloc;
       },
-      act: (b) => b.add(const TestWeekComplete(
-        results: [],
-        profile: UserProfile.defaults(),
-      )),
+      act: (b) => b.add(const TestWeekComplete(results: [])),
       expect: () => [
         const TestWeekStateCalculating(),
         isA<TestWeekStateCompleted>(),
@@ -136,25 +121,40 @@ void main() {
     );
 
     blocTest<TestWeekBloc, TestWeekState>(
-      'saves plan and emits PlanAccepted when user exists',
+      'calls useCase.execute and emits PlanAccepted',
       build: () {
-        when(mockAuthRepo.currentUser).thenReturn(tUser);
-        when(mockUserRepo.getUser('uid-1')).thenAnswer((_) async => tUser);
-        when(mockAi.refineWorkoutPlan(any, any))
-            .thenAnswer((_) async => '{"refined":true}');
-        when(mockUserRepo.updateWorkoutPlan(
-          userId: anyNamed('userId'),
-          workoutPlanJson: anyNamed('workoutPlanJson'),
-        )).thenAnswer((_) async {});
-        when(mockUserRepo.saveTestWeekCompleted(userId: anyNamed('userId')))
-            .thenAnswer((_) async {});
+        when(mockUseCase.execute(any)).thenAnswer((_) async {});
         return bloc;
       },
+      seed: () => TestWeekStateCompleted(
+        testResult: TestWeekResult(
+          completedAt: DateTime(2024),
+          exercises: [],
+        ),
+        adjustment: const TrainingAdjustment(
+          weightMultiplier: 0.8,
+          weeklyIncreasePercent: 5,
+          suggestedSetsPerExercise: 3,
+          suggestedRepsPerSet: 10,
+          userLevel: UserLevel.beginner,
+          maxHeartRate: 180,
+          adaptedIntensityLabel: 'Beginner',
+        ),
+        feasibility: const FeasibilityResult(
+          isFeasible: true,
+          reason: 'Goal is feasible',
+          suggestedActions: [],
+        ),
+        adaptedPlan: [],
+      ),
       act: (b) => b.add(const TestWeekAcceptPlan()),
       expect: () => [
         const TestWeekStateCalculating(),
         const TestWeekStatePlanAccepted(),
       ],
+      verify: (_) {
+        verify(mockUseCase.execute(any)).called(1);
+      },
     );
   });
 

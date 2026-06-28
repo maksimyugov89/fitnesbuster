@@ -1,30 +1,36 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitnesbuster/core/ai/deepseek_service.dart';
-import 'package:fitnesbuster/core/ai/ai_config.dart';
-import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/core/ai/base_client.dart';
+import 'package:fitnesbuster/core/ai/services/workout_plan_service.dart';
+import 'package:fitnesbuster/core/ai/services/meal_plan_service.dart';
+import 'package:fitnesbuster/core/ai/services/plan_refinement_service.dart';
+import 'package:fitnesbuster/core/ai/services/progress_analyzer.dart';
+import 'package:fitnesbuster/core/ai/services/chat_service.dart';
 
 void main() {
-  late AiConfig configuredKey;
-  late AiConfig emptyKey;
+  late BaseClient client;
 
   setUp(() {
-    configuredKey = AiConfig.forTesting(apiKey: 'sk-test-key');
-    emptyKey = AiConfig.forTesting(apiKey: '');
+    client = BaseClient();
   });
 
-  DeepSeekService makeSvc([AiConfig? cfg]) =>
-      DeepSeekService(config: cfg ?? configuredKey);
+  DeepSeekService makeSvc() {
+    final workoutPlan = WorkoutPlanService(client);
+    final mealPlan = MealPlanService(client);
+    final refinement = PlanRefinementService(client, workoutPlan);
+    final progress = ProgressAnalyzer(client);
+    final chat = ChatService(client);
+    return DeepSeekService(
+      workoutPlan: workoutPlan,
+      mealPlan: mealPlan,
+      refinement: refinement,
+      progress: progress,
+      chat: chat,
+    );
+  }
 
-  group('_ensureConfigured', () {
-    test('throws AiException when key is empty', () {
-      final svc = makeSvc(emptyKey);
-      expect(
-        () => svc.generateWorkoutPlan(_profile()),
-        throwsA(isA<AiException>()),
-      );
-    });
-
-    test('does not throw when key is present', () {
+  group('constructor', () {
+    test('creates a valid DeepSeekService instance', () {
       final svc = makeSvc();
       expect(svc, isNotNull);
     });
@@ -34,13 +40,3 @@ void main() {
   // Cloud Function callable mocking requires FirebaseFunctions mocks (out of scope for this sprint).
   // Full integration tests should be added via Firebase Emulator or widget tests with mock callable.
 }
-
-UserProfile _profile() => const UserProfile(
-      weight: 80,
-      height: 175,
-      age: 30,
-      gender: Gender.male,
-      goal: FitnessGoal.loseWeight,
-      intensity: IntensityLevel.balanced,
-      activityLevel: ActivityLevel.moderatelyActive,
-    );

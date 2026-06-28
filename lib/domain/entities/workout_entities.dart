@@ -1,199 +1,158 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fitnesbuster/domain/entities/user_entities.dart';
 
-class TestWeekResult {
-  final DateTime completedAt;
-  final List<TestExerciseResult> exercises;
-  final double averageHeartRate;
-  final int averageSessionDuration;
-  final int perceivedDifficulty;
-  final String? feedback;
-
-  const TestWeekResult({
-    required this.completedAt,
-    required this.exercises,
-    this.averageHeartRate = 0,
-    this.averageSessionDuration = 0,
-    this.perceivedDifficulty = 5,
-    this.feedback,
-  });
-}
+part 'workout_entities.freezed.dart';
+part 'workout_entities.g.dart';
 
 enum WorkoutDayType { workout, rest, activeRecovery, cardio }
 enum WorkoutPlanStatus { active, completed, paused }
 enum ExerciseType { strength, cardio, flexibility, balance, hiit, yoga }
 enum DifficultyLevel { beginner, intermediate, advanced, elite }
 
-class WorkoutPlan {
-  final String id;
-  final String userId;
-  final String title;
-  final FitnessGoal goal;
-  final IntensityLevel intensity;
-  final int durationWeeks;
-  final List<WorkoutWeek> weeks;
-  final DateTime startDate;
-  final DateTime? completedAt;
-  final WorkoutPlanStatus status;
+@freezed
+class TestWeekResult with _$TestWeekResult {
+  const factory TestWeekResult({
+    required DateTime completedAt,
+    required List<TestExerciseResult> exercises,
+    @Default(0) double averageHeartRate,
+    @Default(0) int averageSessionDuration,
+    @Default(5) int perceivedDifficulty,
+    String? feedback,
+  }) = _TestWeekResult;
 
-  const WorkoutPlan({
-    required this.id,
-    required this.userId,
-    required this.title,
-    required this.goal,
-    required this.intensity,
-    required this.durationWeeks,
-    required this.weeks,
-    required this.startDate,
-    this.completedAt,
-    this.status = WorkoutPlanStatus.active,
-  });
+  factory TestWeekResult.fromJson(Map<String, dynamic> json) => _$TestWeekResultFromJson(json);
 }
 
-class WorkoutWeek {
-  final int weekNumber;
-  final List<WorkoutDay> days;
-  final String? weeklyFocus;
+@freezed
+class WorkoutPlan with _$WorkoutPlan {
+  const factory WorkoutPlan({
+    required String id,
+    required String userId,
+    required String title,
+    required FitnessGoal goal,
+    required IntensityLevel intensity,
+    required int durationWeeks,
+    required List<WorkoutWeek> weeks,
+    required DateTime startDate,
+    DateTime? completedAt,
+    @Default(WorkoutPlanStatus.active) WorkoutPlanStatus status,
+  }) = _WorkoutPlan;
 
-  const WorkoutWeek({
-    required this.weekNumber,
-    required this.days,
-    this.weeklyFocus,
-  });
+  factory WorkoutPlan.fromJson(Map<String, dynamic> json) => _$WorkoutPlanFromJson(json);
 }
 
-class WorkoutDay {
-  final int dayNumber;
-  final DateTime date;
-  final WorkoutDayType type;
-  final WorkoutSession? session;
-  final WorkoutLog? log;
+@freezed
+class WorkoutWeek with _$WorkoutWeek {
+  const factory WorkoutWeek({
+    required int weekNumber,
+    required List<WorkoutDay> days,
+    String? weeklyFocus,
+  }) = _WorkoutWeek;
 
-  const WorkoutDay({
-    required this.dayNumber,
-    required this.date,
-    required this.type,
-    this.session,
-    this.log,
-  });
+  factory WorkoutWeek.fromJson(Map<String, dynamic> json) => _$WorkoutWeekFromJson(json);
+}
+
+@freezed
+class WorkoutDay with _$WorkoutDay {
+  const WorkoutDay._();
+
+  const factory WorkoutDay({
+    required int dayNumber,
+    required DateTime date,
+    required WorkoutDayType type,
+    WorkoutSession? session,
+    WorkoutLog? log,
+  }) = _WorkoutDay;
+
+  factory WorkoutDay.fromJson(Map<String, dynamic> json) => _$WorkoutDayFromJson(json);
 
   bool get isCompleted => log != null;
   bool get isRest => type == WorkoutDayType.rest;
 }
 
-class WorkoutSession {
-  final String id;
-  final String title;
-  final String? description;
-  final MuscleGroup primaryMuscle;
-  final List<MuscleGroup> secondaryMuscles;
-  final List<ExerciseSet> exercises;
-  final int estimatedDurationMinutes;
-  final int estimatedCaloriesBurn;
-  final DifficultyLevel difficulty;
+@freezed
+class WorkoutSession with _$WorkoutSession {
+  const factory WorkoutSession({
+    required String id,
+    required String title,
+    String? description,
+    required MuscleGroup primaryMuscle,
+    @Default([]) List<MuscleGroup> secondaryMuscles,
+    required List<ExerciseSet> exercises,
+    required int estimatedDurationMinutes,
+    required int estimatedCaloriesBurn,
+    required DifficultyLevel difficulty,
+  }) = _WorkoutSession;
 
-  const WorkoutSession({
-    required this.id,
-    required this.title,
-    this.description,
-    required this.primaryMuscle,
-    this.secondaryMuscles = const [],
-    required this.exercises,
-    required this.estimatedDurationMinutes,
-    required this.estimatedCaloriesBurn,
-    required this.difficulty,
-  });
+  factory WorkoutSession.fromJson(Map<String, dynamic> json) => _$WorkoutSessionFromJson(json);
 }
 
-class ExerciseSet {
-  final Exercise exercise;
-  final List<SetData> sets;
-  final String? notes;
-  final int restSeconds;
+@freezed
+class ExerciseSet with _$ExerciseSet {
+  const factory ExerciseSet({
+    required Exercise exercise,
+    required List<SetData> sets,
+    String? notes,
+    @Default(60) int restSeconds,
+  }) = _ExerciseSet;
 
-  const ExerciseSet({
-    required this.exercise,
-    required this.sets,
-    this.notes,
-    this.restSeconds = 60,
-  });
+  factory ExerciseSet.fromJson(Map<String, dynamic> json) => _$ExerciseSetFromJson(json);
 }
 
-class SetData {
-  final int setNumber;
-  final int reps;
-  final double? weightKg;
-  final int? durationSeconds;
-  final bool? completed;
-  final double? actualWeight;
-  final int? actualReps;
+@freezed
+class SetData with _$SetData {
+  const factory SetData({
+    required int setNumber,
+    required int reps,
+    double? weightKg,
+    int? durationSeconds,
+    bool? completed,
+    double? actualWeight,
+    int? actualReps,
+  }) = _SetData;
 
-  const SetData({
-    required this.setNumber,
-    required this.reps,
-    this.weightKg,
-    this.durationSeconds,
-    this.completed,
-    this.actualWeight,
-    this.actualReps,
-  });
+  factory SetData.fromJson(Map<String, dynamic> json) => _$SetDataFromJson(json);
 }
 
-class Exercise {
-  final String id;
-  final String name;
-  final String? description;
-  final String? videoUrl;
-  final String? imageUrl;
-  final MuscleGroup primaryMuscle;
-  final List<MuscleGroup> secondaryMuscles;
-  final ExerciseType type;
-  final List<String> equipment;
-  final DifficultyLevel difficulty;
-  final List<String> instructions;
-  final List<String>? contraindications;
+@freezed
+class Exercise with _$Exercise {
+  const factory Exercise({
+    required String id,
+    required String name,
+    String? description,
+    String? videoUrl,
+    String? imageUrl,
+    required MuscleGroup primaryMuscle,
+    @Default([]) List<MuscleGroup> secondaryMuscles,
+    required ExerciseType type,
+    @Default([]) List<String> equipment,
+    required DifficultyLevel difficulty,
+    required List<String> instructions,
+    List<String>? contraindications,
+  }) = _Exercise;
 
-  const Exercise({
-    required this.id,
-    required this.name,
-    this.description,
-    this.videoUrl,
-    this.imageUrl,
-    required this.primaryMuscle,
-    this.secondaryMuscles = const [],
-    required this.type,
-    this.equipment = const [],
-    required this.difficulty,
-    required this.instructions,
-    this.contraindications,
-  });
+  factory Exercise.fromJson(Map<String, dynamic> json) => _$ExerciseFromJson(json);
 }
 
-class WorkoutLog {
-  final String id;
-  final String sessionId;
-  final DateTime startTime;
-  final DateTime? endTime;
-  final List<ExerciseLog> exerciseLogs;
-  final double? caloriesBurned;
-  final int? heartRateAvg;
-  final int? heartRateMax;
-  final String? notes;
-  final int? mood;
-  final int? perceivedEffort;
+@freezed
+class WorkoutLog with _$WorkoutLog {
+  const WorkoutLog._();
 
-  const WorkoutLog({
-    required this.id,
-    required this.sessionId,
-    required this.startTime,
-    this.endTime,
-    required this.exerciseLogs,
-    this.caloriesBurned,
-    this.heartRateAvg,
-    this.heartRateMax,
-    this.notes,
-    this.mood,
-    this.perceivedEffort,
-  });
+  const factory WorkoutLog({
+    required String id,
+    required String sessionId,
+    required DateTime startTime,
+    DateTime? endTime,
+    required List<ExerciseLog> exerciseLogs,
+    double? caloriesBurned,
+    int? heartRateAvg,
+    int? heartRateMax,
+    String? notes,
+    int? mood,
+    int? perceivedEffort,
+  }) = _WorkoutLog;
+
+  factory WorkoutLog.fromJson(Map<String, dynamic> json) => _$WorkoutLogFromJson(json);
 
   int get durationMinutes =>
       endTime != null ? endTime!.difference(startTime).inMinutes : 0;
@@ -201,25 +160,25 @@ class WorkoutLog {
   bool get isCompleted => endTime != null;
 }
 
-class ExerciseLog {
-  final String exerciseId;
-  final List<SetLog> sets;
+@freezed
+class ExerciseLog with _$ExerciseLog {
+  const factory ExerciseLog({
+    required String exerciseId,
+    required List<SetLog> sets,
+  }) = _ExerciseLog;
 
-  const ExerciseLog({required this.exerciseId, required this.sets});
+  factory ExerciseLog.fromJson(Map<String, dynamic> json) => _$ExerciseLogFromJson(json);
 }
 
-class SetLog {
-  final int setNumber;
-  final int reps;
-  final double? weightKg;
-  final int? durationSeconds;
-  final bool completed;
+@freezed
+class SetLog with _$SetLog {
+  const factory SetLog({
+    required int setNumber,
+    required int reps,
+    double? weightKg,
+    int? durationSeconds,
+    @Default(true) bool completed,
+  }) = _SetLog;
 
-  const SetLog({
-    required this.setNumber,
-    required this.reps,
-    this.weightKg,
-    this.durationSeconds,
-    this.completed = true,
-  });
+  factory SetLog.fromJson(Map<String, dynamic> json) => _$SetLogFromJson(json);
 }

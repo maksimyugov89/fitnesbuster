@@ -227,20 +227,15 @@ void main() {
     );
 
     blocTest<NutritionBloc, NutritionState>(
-      'preserves food when foodId does not match',
+      'does not emit when foodId does not match (state unchanged)',
       build: makeBloc,
       seed: loadedWithFood,
       act: (b) => b.add(const NutritionRemoveFood(
         mealType: MealType.breakfast,
         foodId: 'nonexistent',
       )),
-      expect: () => [
-        isA<NutritionStateLoaded>().having(
-          (s) => s.logs.first.foods.length,
-          'foods count',
-          1,
-        ),
-      ],
+      // NutritionStateLoaded uses Equatable — no emission when state is unchanged
+      expect: () => [],
     );
   });
 }

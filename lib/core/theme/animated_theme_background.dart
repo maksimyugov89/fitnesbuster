@@ -49,7 +49,7 @@ class _AnimatedThemeBackgroundState extends State<AnimatedThemeBackground>
         RepaintBoundary(
           child: AnimatedBuilder(
             animation: _ctrl,
-            builder: (_, __) => SizedBox.expand(
+            builder: (_, _) => SizedBox.expand(
               child: CustomPaint(
                 painter: _BlobPainter(
                   t: _ctrl.value,

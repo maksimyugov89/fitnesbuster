@@ -5,6 +5,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/data/models/exercise_db_model.dart';
 import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
+import 'package:fitnesbuster/core/constants/app_colors.dart';
 
 class ExerciseBrowserScreen extends StatefulWidget {
   const ExerciseBrowserScreen({super.key});
@@ -326,9 +327,9 @@ class _ExercisePill extends StatelessWidget {
       key: ValueKey(exercise.id),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8453C).withValues(alpha: 0.15),
+        color: SemanticColors.primaryMuscle.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE8453C).withValues(alpha: 0.4)),
+        border: Border.all(color: SemanticColors.primaryMuscle.withValues(alpha: 0.4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -381,7 +382,7 @@ class _FilterRow<T> extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
           final (value, text) = items[i];
           final isSel = selected == value;
@@ -425,9 +426,9 @@ class _ExerciseCard extends StatelessWidget {
   });
 
   Color _diffColor() => switch (exercise.difficulty) {
-        ExDifficulty.beginner     => const Color(0xFF22D3A5),
-        ExDifficulty.intermediate => const Color(0xFFF5A623),
-        ExDifficulty.advanced     => const Color(0xFFFF4466),
+        ExDifficulty.beginner     => SemanticColors.difficultyBeginner,
+        ExDifficulty.intermediate => SemanticColors.difficultyIntermediate,
+        ExDifficulty.advanced     => SemanticColors.difficultyAdvanced,
       };
 
   String _diffLabel() => switch (exercise.difficulty) {
@@ -487,12 +488,12 @@ class _ExerciseCard extends StatelessWidget {
                       fit: BoxFit.cover,
                       memCacheWidth: 88,
                       memCacheHeight: 88,
-                      placeholder: (_, __) => Container(
+                      placeholder: (_, _) => Container(
                         width: 44, height: 44,
                         color: c.surfaceLight,
                         child: Icon(Icons.fitness_center_rounded, color: c.textMuted, size: 20),
                       ),
-                      errorWidget: (_, __, ___) => Container(
+                      errorWidget: (_, _, _) => Container(
                         width: 44, height: 44,
                         decoration: BoxDecoration(color: c.surfaceLight, borderRadius: BorderRadius.circular(10)),
                         child: Icon(Icons.fitness_center_rounded, color: c.textMuted, size: 20),

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
+import 'package:fitnesbuster/core/di/injection.dart';
 
 part 'workout_event.dart';
 part 'workout_state.dart';
@@ -35,6 +37,9 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
       completedSets: [],
       elapsedSeconds: 0,
     ));
+    if (event.session != null) {
+      _track(() => sl<IAnalyticsService>().logWorkoutStarted(sessionId: event.session!.id));
+    }
   }
 
   void _onPause(WorkoutPauseRequested event, Emitter<WorkoutState> emit) {
@@ -42,6 +47,9 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     if (state is WorkoutStateInProgress) {
       final current = state as WorkoutStateInProgress;
       emit(current.copyWith(isPaused: true));
+      if (current.session != null) {
+        _track(() => sl<IAnalyticsService>().logWorkoutPaused(sessionId: current.session!.id));
+      }
     }
   }
 
@@ -55,20 +63,29 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
 
   void _onStop(WorkoutStopRequested event, Emitter<WorkoutState> emit) {
     _timer?.cancel();
-    final current = state;
-    if (current is! WorkoutStateInProgress) {
-      emit(const WorkoutStateInitial());
-      return;
+    try {
+      final current = state;
+      if (current is! WorkoutStateInProgress) {
+        emit(const WorkoutStateInitial());
+        return;
+      }
+      if (current.session == null) {
+        emit(const WorkoutStateError(message: 'Не удалось завершить тренировку: данные сессии отсутствуют'));
+        return;
+      }
+      emit(WorkoutStateCompleted(
+        sessionId: current.session!.id,
+        elapsedSeconds: _elapsedSeconds,
+        completedSets: List<SetLog>.from(current.completedSets),
+      ));
+      _track(() => sl<IAnalyticsService>().logWorkoutCompleted(
+        sessionId: current.session!.id,
+        durationSeconds: _elapsedSeconds,
+        exercisesCompleted: current.completedSets.length,
+      ));
+    } catch (e) {
+      emit(const WorkoutStateError(message: 'Ошибка завершения тренировки'));
     }
-    if (current.session == null) {
-      emit(const WorkoutStateError(message: 'Не удалось завершить тренировку: данные сессии отсутствуют'));
-      return;
-    }
-    emit(WorkoutStateCompleted(
-      sessionId: current.session!.id,
-      elapsedSeconds: _elapsedSeconds,
-      completedSets: List<SetLog>.from(current.completedSets),
-    ));
   }
 
   void _onSetCompleted(WorkoutSetCompleted event, Emitter<WorkoutState> emit) {
@@ -101,5 +118,9 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
         if (!isClosed) add(const WorkoutTick());
       }
     });
+  }
+
+  Future<void> _track(Future<void> Function() fn) async {
+    try { await fn(); } catch (_) { /* best-effort */ }
   }
 }

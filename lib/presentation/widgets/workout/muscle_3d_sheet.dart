@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
+import 'package:fitnesbuster/core/constants/app_colors.dart';
 
 class WorkoutMuscle3DSheet extends StatelessWidget {
   final String title;
@@ -27,15 +28,15 @@ class WorkoutMuscle3DSheet extends StatelessWidget {
             Icon(Icons.view_in_ar_rounded, color: colors.primary, size: 18),
             const SizedBox(width: 8),
             Expanded(child: Text(title, style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w800, color: colors.textPrimary), overflow: TextOverflow.ellipsis)),
-            IconButton(onPressed: () => Navigator.pop(context), icon: Icon(Icons.close_rounded, color: colors.textMuted), padding: EdgeInsets.zero, constraints: const BoxConstraints(), iconSize: 20),
+            Semantics(label: 'Закрыть', button: true, child: IconButton(onPressed: () => Navigator.pop(context), icon: Icon(Icons.close_rounded, color: colors.textMuted), padding: EdgeInsets.zero, constraints: const BoxConstraints(), iconSize: 20)),
           ])),
         const SizedBox(height: 4),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(children: [
-            const WorkoutLegendDot(color: Color(0xFFE84444), label: 'Основные'),
+            const WorkoutLegendDot(color: SemanticColors.primaryMuscle, label: 'Основные'),
             const SizedBox(width: 16),
-            if (secondaryMuscles.isNotEmpty) const WorkoutLegendDot(color: Color(0xFF4FA3E0), label: 'Вспомогательные'),
+            if (secondaryMuscles.isNotEmpty) const WorkoutLegendDot(color: SemanticColors.secondaryMuscle, label: 'Вспомогательные'),
           ])),
         const SizedBox(height: 8),
         Expanded(

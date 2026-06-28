@@ -623,6 +623,8 @@ class AppLocalizations {
       _tp('mealExceeded', {'cal': cal.toString()});
   String mealEaten(int cal) =>
       _tp('mealEaten', {'cal': cal.toString()});
+  String calTarget(int cal) =>
+      _tp('calTarget', {'cal': cal.toString()});
   String waterDrunkOf(String drunk, String total) =>
       _tp('waterDrunkOf', {'drunk': drunk, 'total': total});
   String waterRemaining(int ml) =>
@@ -684,6 +686,69 @@ class AppLocalizations {
   String get clipboardEmpty     => _t('clipboardEmpty');
   String get openingFilePicker  => _t('openingFilePicker');
   String get selectFileAgain    => _t('selectFileAgain');
+  String get aiAdaptsPlanHint       => _t('aiAdaptsPlanHint');
+  String get aiDeepSeekHint         => _t('aiDeepSeekHint');
+  String get writeWishOption        => _t('writeWishOption');
+  String get writeWishSubtitle      => _t('writeWishSubtitle');
+  String get addFromInternet        => _t('addFromInternet');
+  String get addFromInternetSubtitle=> _t('addFromInternetSubtitle');
+  String get pasteClipboardSubtitle => _t('pasteClipboardSubtitle');
+  String get uploadFileOption       => _t('uploadFileOption');
+  String get uploadFileSubtitle     => _t('uploadFileSubtitle');
+  String get scanQrSubtitle         => _t('scanQrSubtitle');
+  String get shareFromAppSubtitle   => _t('shareFromAppSubtitle');
+  String get autoLabel              => _t('autoLabel');
+  String get qrScannedAnalyzing     => _t('qrScannedAnalyzing');
+  String get qrPointCamera          => _t('qrPointCamera');
+  String get anySiteLabel           => _t('anySiteLabel');
+  String get loadAndCorrectPlanBtn  => _t('loadAndCorrectPlanBtn');
+  String get writeWishHint          => _t('writeWishHint');
+  String get pasteWorkoutHint       => _t('pasteWorkoutHint');
+  String get correctPlanWithAiBtn   => _t('correctPlanWithAiBtn');
+  String get supportedFormatsHint   => _t('supportedFormatsHint');
+  String get yourWishTitle          => _t('yourWishTitle');
+  String get programLinkTitle       => _t('programLinkTitle');
+  String get fromFileTitle          => _t('fromFileTitle');
+  String get qrCodeTitle            => _t('qrCodeTitle');
+  String get pasteWorkoutTitle      => _t('pasteWorkoutTitle');
+  String get workoutAnalysisTitle   => _t('workoutAnalysisTitle');
+  String get exampleRequestsLabel   => _t('exampleRequestsLabel');
+  String get aiCorrectingPlan       => _t('aiCorrectingPlan');
+  String get aiAnalyzingQuery       => _t('aiAnalyzingQuery');
+  String get planCorrectedTitle     => _t('planCorrectedTitle');
+  String get planReplacementWarning => _t('planReplacementWarning');
+  String get savingLabel            => _t('savingLabel');
+  String planCorrectedSummary(String days, String exercises, String changes) =>
+      _tp('planCorrectedSummary', {'days': days, 'exercises': exercises, 'changes': changes});
+  String exercisesShortCount(String n) =>
+      _tp('exercisesShortCount', {'n': n});
+  // ── Source hints ──
+  String get sourceHintPreference   => _t('sourceHintPreference');
+  String get sourceHintLink         => _t('sourceHintLink');
+  String get sourceHintFile         => _t('sourceHintFile');
+  String get sourceHintQr           => _t('sourceHintQr');
+  String get sourceHintOtherApp      => _t('sourceHintOtherApp');
+  String get sourceHintPostWorkout   => _t('sourceHintPostWorkout');
+  // ── Workout plan matching keywords ──
+  String get restDayKeyword         => _t('restDayKeyword');
+  String get recoveryKeyword        => _t('recoveryKeyword');
+  String get cardioKeyword          => _t('cardioKeyword');
+  String get intervalKeyword        => _t('intervalKeyword');
+  String get legDayKeyword          => _t('legDayKeyword');
+  String get glutesKeyword          => _t('glutesKeyword');
+  String get chestKeyword           => _t('chestKeyword');
+  String get tricepsKeyword         => _t('tricepsKeyword');
+  String get backKeyword            => _t('backKeyword');
+  String get bicepsKeyword          => _t('bicepsKeyword');
+  String get shouldersKeyword       => _t('shouldersKeyword');
+  String get absKeyword             => _t('absKeyword');
+  // ── Post-workout summary ──
+  String postWorkoutTitle(String focus) => _tp('postWorkoutTitle', {'focus': focus});
+  String postWorkoutDate(String date)   => _tp('postWorkoutDate', {'date': date});
+  String postWorkoutSetsDone(String done, String total) =>
+      _tp('postWorkoutSetsDone', {'done': done, 'total': total});
+  String get postWorkoutExercisesLabel  => _t('postWorkoutExercisesLabel');
+  String postWorkoutCardio(String min)  => _tp('postWorkoutCardio', {'min': min});
 
   // ── Test week ────────────────────────────────────────────────────────────
   String get testWeek           => _t('testWeek');
@@ -842,6 +907,15 @@ class AppLocalizations {
   String ttsRestNextExercise(String name) => _tp('ttsRestNextExercise', {'name': name});
   String ttsRestNextSet(String n)        => _tp('ttsRestNextSet', {'n': n});
   String get ttsWorkoutDone          => _t('ttsWorkoutDone');
+  String get ttsLanguageCode         => _t('ttsLanguageCode');
+  String get ttsCountdownFive        => _t('ttsCountdown5');
+  String get ttsCountdownFour        => _t('ttsCountdown4');
+  String get ttsCountdownThree       => _t('ttsCountdown3');
+  String get ttsCountdownTwo         => _t('ttsCountdown2');
+  String get ttsCountdownOne         => _t('ttsCountdown1');
+  String ttsSetsByReps(String sets, String reps) => _tp('ttsSetsByReps', {'sets': sets, 'reps': reps});
+  String ttsSetNumber(String n)      => _tp('ttsSetNumber', {'n': n});
+  String get ttsStartNextSet         => _t('ttsStartNextSet');
   // ── Workout session ──
   String get noSavedWorkoutPlan      => _t('noSavedWorkoutPlan');
   String get planIsEmpty             => _t('planIsEmpty');

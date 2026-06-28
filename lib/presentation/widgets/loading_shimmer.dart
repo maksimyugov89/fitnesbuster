@@ -57,8 +57,8 @@ class LoadingShimmer extends StatelessWidget {
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
     itemCount: count,
-    separatorBuilder: (_, __) => const SizedBox(height: 8),
-    itemBuilder: (_, __) => LoadingShimmer.listTile(),
+    separatorBuilder: (_, _) => const SizedBox(height: 8),
+    itemBuilder: (_, _) => LoadingShimmer.listTile(),
   );
 
   static Widget gridView(int count, {int crossAxisCount = 2}) => GridView.builder(
@@ -71,7 +71,7 @@ class LoadingShimmer extends StatelessWidget {
       mainAxisSpacing: 10,
     ),
     itemCount: count,
-    itemBuilder: (_, __) => LoadingShimmer.grid(),
+    itemBuilder: (_, _) => LoadingShimmer.grid(),
   );
 
   static Widget cards(int count) => Column(

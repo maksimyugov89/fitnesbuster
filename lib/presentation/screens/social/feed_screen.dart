@@ -3,7 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/core/services/social_service.dart';
+import 'package:fitnesbuster/core/services/i_social_service.dart';
+import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 
 class FeedScreen extends StatelessWidget {
@@ -28,7 +29,7 @@ class FeedScreen extends StatelessWidget {
         title: const Text('Лента друзей', style: AppTextStyles.titleL),
       ),
       body: StreamBuilder<List<FeedEvent>>(
-        stream: sl<SocialService>().feedStream(),
+        stream: sl<ISocialService>().feedStream(),
         builder: (context, snap) {
           if (snap.connectionState == ConnectionState.waiting) {
             return Center(child: LoadingShimmer.listView(5));
@@ -40,7 +41,7 @@ class FeedScreen extends StatelessWidget {
           return ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 80),
             itemCount: events.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            separatorBuilder: (_, _) => const SizedBox(height: 10),
             itemBuilder: (_, i) => _FeedCard(event: events[i], colors: colors),
           );
         },

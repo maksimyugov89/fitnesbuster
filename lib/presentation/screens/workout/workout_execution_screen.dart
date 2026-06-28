@@ -85,7 +85,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
 
   Future<void> _initTts() async {
     _tts = FlutterTts();
-    await _tts.setLanguage('ru-RU');
+    await _tts.setLanguage(AppLocalizations.tl('ttsLanguageCode'));
     await _tts.setSpeechRate(0.85);
     await _tts.setVolume(1.0);
     await _tts.setPitch(1.05);
@@ -145,9 +145,9 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
   }
 
   void _speakCountdown(int t) {
-    const words = {5: 'Пять', 4: 'Четыре', 3: 'Три', 2: 'Два', 1: 'Один'};
-    final w = words[t];
-    if (w != null) _speak(w);
+    const keys = {5: 'ttsCountdown5', 4: 'ttsCountdown4', 3: 'ttsCountdown3', 2: 'ttsCountdown2', 1: 'ttsCountdown1'};
+    final k = keys[t];
+    if (k != null) _speak(AppLocalizations.tl(k));
   }
 
   // ── Phase management ───────────────────────────────────────────────────────
@@ -167,15 +167,14 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
         _loadExModel(_exIdx);
         _startCountdown();
         Future.delayed(const Duration(milliseconds: 300), () {
-          _speak('${AppLocalizations.tl("ttsGetReady")} ${_ex.name}. '
-              '${_ex.sets} подходов по ${_ex.reps}');
+          _speak(AppLocalizations.tlp('ttsGetReadyExercise', {'name': _ex.name, 'sets': _ex.sets.toString(), 'reps': _ex.reps}));
         });
 
       case WorkoutPhase.exercise:
         _timeLeft = _estimatedSetSec;
         _totalTime = _estimatedSetSec;
         _startCountdown();
-        _speak('${AppLocalizations.tl("ttsGo")} Подход ${_setIdx + 1}');
+        _speak('${AppLocalizations.tl("ttsGo")} ${AppLocalizations.tlp("ttsSetNumber", {"n": "${_setIdx + 1}"})}');
 
       case WorkoutPhase.rest:
         _timeLeft = _ex.restSeconds;
@@ -242,7 +241,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
       case WorkoutPhase.exercise:
         _completeSet();
       case WorkoutPhase.rest:
-        _speak('Начинай следующий подход!');
+        _speak(AppLocalizations.tl('ttsStartNextSet'));
         _enterPhase(WorkoutPhase.exercise);
       case WorkoutPhase.done:
         break;
@@ -328,14 +327,18 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Row(children: [
-        GestureDetector(
-          onTap: () => _showQuitDialog(colors),
-          child: Container(
+        Semantics(
+          label: context.l10n.exitWorkoutTitle,
+          button: true,
+          child: GestureDetector(
+            onTap: () => _showQuitDialog(colors),
+            child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
                 color: colors.elevated, shape: BoxShape.circle),
             child: Icon(Icons.close_rounded, color: colors.textMuted, size: 20),
           ),
+        ),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -461,12 +464,12 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                   height: 160,
                   width: double.infinity,
                   fit: BoxFit.contain,
-                  placeholder: (_, __) => Container(
+                  placeholder: (_, _) => Container(
                     height: 160,
                     color: color.withValues(alpha: 0.08),
                     child: Center(child: CircularProgressIndicator(color: color, strokeWidth: 2)),
                   ),
-                  errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                  errorWidget: (_, _, _) => const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -609,12 +612,12 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                   height: 180,
                   width: double.infinity,
                   fit: BoxFit.contain,
-                  placeholder: (_, __) => Container(
+                  placeholder: (_, _) => Container(
                     height: 180,
                     color: color.withValues(alpha: 0.08),
                     child: Center(child: CircularProgressIndicator(color: color, strokeWidth: 2)),
                   ),
-                  errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                  errorWidget: (_, _, _) => const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -705,9 +708,12 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
       child: showDoneBtn
           ? Column(mainAxisSize: MainAxisSize.min, children: [
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
+              Semantics(
+                label: context.l10n.readyLabel,
+                button: true,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
                   onPressed: () {
                     HapticFeedback.mediumImpact();
                     _timer?.cancel();
@@ -725,25 +731,34 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                   ),
                 ),
               ),
-              TextButton(
-                onPressed: _skip,
-                style: TextButton.styleFrom(
-                    foregroundColor: colors.textMuted,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 4)),
-                child: Text(context.l10n.skip,
-                    style: const TextStyle(fontSize: 13)),
+              ),
+              Semantics(
+                label: context.l10n.skip,
+                button: true,
+                child: TextButton(
+                  onPressed: _skip,
+                  style: TextButton.styleFrom(
+                      foregroundColor: colors.textMuted,
+                      padding:
+                          const EdgeInsets.symmetric(vertical: 4)),
+                  child: Text(context.l10n.skip,
+                      style: const TextStyle(fontSize: 13)),
+                ),
               ),
             ])
           : Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              TextButton(
-                onPressed: _skip,
-                style: TextButton.styleFrom(
-                    foregroundColor: colors.textMuted,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14)),
-                child: Text(context.l10n.skipRestBtn,
-                    style: const TextStyle(fontSize: 14)),
+              Semantics(
+                label: context.l10n.skipRestBtn,
+                button: true,
+                child: TextButton(
+                  onPressed: _skip,
+                  style: TextButton.styleFrom(
+                      foregroundColor: colors.textMuted,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14)),
+                  child: Text(context.l10n.skipRestBtn,
+                      style: const TextStyle(fontSize: 14)),
+                ),
               ),
             ]),
     );
@@ -753,16 +768,16 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
 
   String _buildPostWorkoutSummary() {
     final buf = StringBuffer();
-    buf.writeln('Завершённая тренировка: ${widget.workout.focus}');
-    buf.writeln('Дата: ${DateTime.now().toLocal().toString().substring(0, 10)}');
-    buf.writeln('Выполнено подходов: $_completedSets из ${widget.workout.totalSets}');
+    buf.writeln(AppLocalizations.tlp('postWorkoutTitle', {'focus': widget.workout.focus}));
+    buf.writeln(AppLocalizations.tlp('postWorkoutDate', {'date': DateTime.now().toLocal().toString().substring(0, 10)}));
+    buf.writeln(AppLocalizations.tlp('postWorkoutSetsDone', {'done': '$_completedSets', 'total': '${widget.workout.totalSets}'}));
     buf.writeln();
-    buf.writeln('Упражнения:');
+    buf.writeln(AppLocalizations.tl('postWorkoutExercisesLabel'));
     for (final ex in widget.workout.exercises) {
       buf.writeln('- ${ex.name}: ${ex.sets}×${ex.reps}');
     }
     if (widget.workout.cardioMinutes > 0) {
-      buf.writeln('Кардио: ${widget.workout.cardioMinutes} мин');
+      buf.writeln(AppLocalizations.tlp('postWorkoutCardio', {'min': '${widget.workout.cardioMinutes}'}));
     }
     return buf.toString();
   }
@@ -871,6 +886,9 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                   const SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Semantics(
+                    label: context.l10n.correctPlanBtn,
+                    button: true,
                     child: GestureDetector(
                       onTap: _openPostWorkoutCorrection,
                       child: Container(
@@ -890,20 +908,25 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  FilledButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: colors.primary,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 48, vertical: 18),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18)),
-                    ),
-                    child: Text(context.l10n.done,
-                        style: const TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.w700)),
                   ),
+                  const SizedBox(height: 10),
+              Semantics(
+                label: context.l10n.done,
+                button: true,
+                child: FilledButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 48, vertical: 18),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18)),
+                  ),
+                  child: Text(context.l10n.done,
+                      style: const TextStyle(
+                          fontSize: 17, fontWeight: FontWeight.w700)),
+                ),
+              ),
                 ]),
           ),
         ),
@@ -951,19 +974,26 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
           ],
         ]),
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              // Resume with fresh countdown for current phase
-              _startCountdown();
-            },
-            child: Text(context.l10n.keepGoingBtn,
-                style: TextStyle(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w700)),
+          Semantics(
+            label: context.l10n.keepGoingBtn,
+            button: true,
+            child: TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                // Resume with fresh countdown for current phase
+                _startCountdown();
+              },
+              child: Text(context.l10n.keepGoingBtn,
+                  style: TextStyle(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w700)),
+            ),
           ),
-          TextButton(
-            onPressed: () {
+          Semantics(
+            label: context.l10n.exitBtn,
+            button: true,
+            child: TextButton(
+              onPressed: () {
               Navigator.pop(ctx);
               // Save partial workout (calories + sets done so far)
               sl<WorkoutSession>().endSession(completed: false);
@@ -973,6 +1003,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
             child: Text(context.l10n.exitBtn,
                 style: TextStyle(color: colors.error)),
           ),
+        ),
         ],
       ),
     );

@@ -4,16 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
-import 'package:fitnesbuster/core/health/health_connect_service.dart';
+import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/data/repositories/user_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/bloc/user/user_bloc.dart';
 import 'package:fitnesbuster/bloc/ai/ai_bloc.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
 import 'package:fitnesbuster/core/services/recovery_score_service.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
-import 'package:fitnesbuster/core/services/social_service.dart' show SocialService, FriendRequest;
+import 'package:fitnesbuster/core/services/social_models.dart';
+import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
@@ -96,7 +97,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     _loadWeeklyData();
     _loadAvatarAndName();
     _loadGamificationData();
-    _requestsSub = sl<SocialService>().incomingRequestsStream().listen((list) {
+    _requestsSub = sl<ISocialService>().incomingRequestsStream().listen((list) {
       if (mounted) setState(() => _pendingRequests = list.length);
     });
   }
@@ -193,7 +194,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     final authState = sl<AuthBloc>().state;
     if (authState is! AuthStateAuthenticated) return;
     final userId = authState.userId;
-    final repo = sl<UserRepository>();
+    final repo = sl<IUserRepository>();
     repo.isTestWeekCompleted(userId).then((completed) {
       if (mounted) {
         setState(() {
@@ -228,7 +229,7 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   Future<void> _syncHealthData() async {
     try {
-      final hc = sl<HealthConnectService>();
+      final hc = sl<IHealthConnectService>();
       await hc.initialize();
       final data = await hc.readAllToday();
       if (mounted) {

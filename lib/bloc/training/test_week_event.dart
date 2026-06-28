@@ -32,16 +32,14 @@ class TestWeekRecordExercise extends TestWeekEvent {
 }
 
 class TestWeekFinishDay extends TestWeekEvent {
-  final UserProfile? profile;
-  const TestWeekFinishDay({this.profile});
-  @override List<Object?> get props => [profile ?? ''];
+  const TestWeekFinishDay();
+  @override List<Object?> get props => [];
 }
 
 class TestWeekComplete extends TestWeekEvent {
   final List<TestExerciseResult> results;
-  final UserProfile? profile;
-  const TestWeekComplete({required this.results, this.profile});
-  @override List<Object?> get props => [results, profile ?? ''];
+  const TestWeekComplete({required this.results});
+  @override List<Object?> get props => [results];
 }
 
 class TestWeekAcceptPlan extends TestWeekEvent {

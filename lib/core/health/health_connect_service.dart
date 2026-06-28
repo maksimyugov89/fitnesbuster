@@ -1,41 +1,9 @@
 import 'package:health/health.dart' as hc;
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
+import 'package:fitnesbuster/domain/entities/synced_health_data.dart';
 
-/// Aggregated health data from Google Health Connect / Apple Health.
-class SyncedHealthData {
-  final int steps;
-  final double caloriesBurned;        // Активные калории (или оценка по шагам)
-  final double totalCaloriesBurned;   // Общие калории (активные + базовый обмен)
-  final int? heartRateAvg;            // Средний пульс
-  final int? restingHeartRate;        // Пульс в покое
-  final double? heartRateVariability; // ВСР RMSSD, мс
-  final double? respiratoryRate;      // Частота дыхания, вдохов/мин
-  final double? weight;               // Вес, кг
-  final double? height;               // Рост, м
-  final int? sleepMinutes;            // Сон, минуты
-  final double? distanceKm;           // Расстояние, км
-  final double? waterIntakeMl;        // Вода, мл
-  final int workoutCount;             // Количество тренировок
-  final DateTime syncedAt;
-
-  SyncedHealthData({
-    this.steps = 0,
-    this.caloriesBurned = 0,
-    this.totalCaloriesBurned = 0,
-    this.heartRateAvg,
-    this.restingHeartRate,
-    this.heartRateVariability,
-    this.respiratoryRate,
-    this.weight,
-    this.height,
-    this.sleepMinutes,
-    this.distanceKm,
-    this.waterIntakeMl,
-    this.workoutCount = 0,
-    DateTime? syncedAt,
-  }) : syncedAt = syncedAt ?? DateTime.now();
-}
+export 'package:fitnesbuster/domain/entities/synced_health_data.dart';
 
 /// Reads health data from Google Health Connect (Android) or Apple Health (iOS).
 class HealthConnectService implements IHealthConnectService {

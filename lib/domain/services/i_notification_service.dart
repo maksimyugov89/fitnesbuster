@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:fitnesbuster/domain/entities/daily_time.dart';
 
 abstract interface class INotificationService {
   Future<void> initialize();
-  Future<void> scheduleWorkoutReminder({TimeOfDay time = const TimeOfDay(hour: 8, minute: 0)});
+  Future<void> scheduleWorkoutReminder({DailyTime time = const DailyTime(hour: 8, minute: 0)});
   Future<void> cancelWorkoutReminder();
   Future<void> scheduleWaterReminders();
   Future<void> cancelWaterReminders();

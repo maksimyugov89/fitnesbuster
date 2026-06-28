@@ -40,14 +40,14 @@ void main() {
   });
 
   group('UserProfile.bmr', () {
-    test('Harris-Benedict male formula', () {
-      // 88.362 + (13.397*80) + (4.799*175) - (5.677*30) = 1829.64
-      expect(male80kg175cm30.bmr, closeTo(1829.64, 1.0));
+    test('Mifflin-St Jeor male formula', () {
+      // (10*80) + (6.25*175) - (5*30) + 5 = 1748.75
+      expect(male80kg175cm30.bmr, closeTo(1748.75, 1.0));
     });
 
-    test('Harris-Benedict female formula', () {
-      // 447.593 + (9.247*60) + (3.098*160) - (4.330*25) = 1389.84
-      expect(female60kg160cm25.bmr, closeTo(1389.84, 1.0));
+    test('Mifflin-St Jeor female formula', () {
+      // (10*60) + (6.25*160) - (5*25) - 161 = 1314.0
+      expect(female60kg160cm25.bmr, closeTo(1314.0, 1.0));
     });
   });
 
@@ -100,7 +100,7 @@ void main() {
 
     test('clearAvatar sets avatarUrl to null', () {
       final withAvatar = user.copyWith(avatarUrl: 'http://img.jpg');
-      expect(withAvatar.copyWith(clearAvatar: true).avatarUrl, isNull);
+      expect(withAvatar.copyWith(avatarUrl: null).avatarUrl, isNull);
     });
   });
 

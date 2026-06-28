@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:fitnesbuster/core/health/health_connect_service.dart';
+import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
+import 'package:fitnesbuster/domain/entities/synced_health_data.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 
@@ -10,9 +11,9 @@ part 'health_sync_state.dart';
 
 /// Manages Health Connect sync for fitness data.
 class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
-  final HealthConnectService _hcService;
+  final IHealthConnectService _hcService;
 
-  HealthSyncBloc({required HealthConnectService hcService})
+  HealthSyncBloc({required IHealthConnectService hcService})
       : _hcService = hcService,
         super(const HealthSyncStateInitial()) {
     on<HealthSyncInitializeRequested>(_onInitialize);

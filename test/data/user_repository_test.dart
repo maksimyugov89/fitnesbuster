@@ -158,7 +158,7 @@ void main() {
   group('updateProfile', () {
     test('calls set with merge on user doc', () async {
       final docRef = stubUserDocRef();
-      when(docRef.set(any, SetOptions(merge: true))).thenAnswer((_) async {});
+      when(docRef.set(any, SetOptions(merge: true))).thenAnswer((_) => Future.value());
 
       final user = UserEntity(
         id: tUid,
@@ -189,7 +189,7 @@ void main() {
   group('saveOnboardingData', () {
     test('saves goal, intensity, location, running with profile', () async {
       final docRef = stubUserDocRef();
-      when(docRef.set(any, SetOptions(merge: true))).thenAnswer((_) async {});
+      when(docRef.set(any, SetOptions(merge: true))).thenAnswer((_) => Future.value());
 
       final docSnapshot = stubDocSnapshot(buildUserDoc(
         profile: buildProfileMap(),
@@ -229,7 +229,7 @@ void main() {
   group('updateWorkoutSettings', () {
     test('updates location and running fields', () async {
       final docRef = stubUserDocRef();
-      when(docRef.set(any, SetOptions(merge: true))).thenAnswer((_) async {});
+      when(docRef.set(any, SetOptions(merge: true))).thenAnswer((_) => Future.value());
 
       final docSnapshot = stubDocSnapshot(buildUserDoc());
       when(docRef.get()).thenAnswer((_) async => docSnapshot);
@@ -250,7 +250,7 @@ void main() {
   group('updateGoal', () {
     test('updates profile.goal field', () async {
       final docRef = stubUserDocRef();
-      when(docRef.update(any)).thenAnswer((_) async {});
+      when(docRef.update(any)).thenAnswer((_) => Future.value());
 
       await repo.updateGoal(userId: tUid, goal: FitnessGoal.gainWeight);
 
@@ -263,7 +263,7 @@ void main() {
   group('measurements', () {
     test('saveMeasurement writes with set and merge', () async {
       final docRef = stubUserDocRef();
-      when(docRef.set(any, SetOptions(merge: true))).thenAnswer((_) async {});
+      when(docRef.set(any, SetOptions(merge: true))).thenAnswer((_) => Future.value());
 
       final m = BodyMeasurement(
         date: DateTime(2024, 6, 15),

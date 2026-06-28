@@ -23,3 +23,4 @@ linter:
 analyzer:
   errors:
     invalid_annotation_target: ignore
+    use_null_aware_elements: ignore

@@ -110,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen>
           Image.asset(
             _splashBgFor(ThemeService.current),
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            errorBuilder: (_, _, _) => const SizedBox.shrink(),
           ),
 
           Container(
@@ -254,7 +254,7 @@ class _SplashScreenState extends State<SplashScreen>
           const SizedBox(height: 10),
           AnimatedBuilder(
             animation: _progressAnimation,
-            builder: (_, __) {
+            builder: (_, _) {
               return Stack(
                 clipBehavior: Clip.none,
                 children: [

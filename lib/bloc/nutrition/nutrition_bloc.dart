@@ -24,19 +24,25 @@ class NutritionBloc extends Bloc<NutritionEvent, NutritionState> {
   Future<void> _onLoad(NutritionLoadRequested event, Emitter<NutritionState> emit) async {
     emit(const NutritionStateLoading());
 
-    final profile = event.profile;
-    final macros = profile != null ? _nutritionService.calculateMacros(profile) : const Macros(protein: 0, carbs: 0, fat: 0, totalCalories: 0);
+    try {
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      final profile = event.profile;
+      final macros = profile != null ? _nutritionService.calculateMacros(profile) : const Macros(protein: 0, carbs: 0, fat: 0, totalCalories: 0);
 
-    emit(NutritionStateLoaded(
-      logs: [],
-      targetCalories: macros.totalCalories.toDouble(),
-      targetProtein: macros.protein.toDouble(),
-      targetCarbs: macros.carbs.toDouble(),
-      targetFat: macros.fat.toDouble(),
-    ));
+      emit(NutritionStateLoaded(
+        logs: [],
+        targetCalories: macros.totalCalories.toDouble(),
+        targetProtein: macros.protein.toDouble(),
+        targetCarbs: macros.carbs.toDouble(),
+        targetFat: macros.fat.toDouble(),
+      ));
 
-    if (profile != null && _nutritionService.shouldRegenerate(_lastMealPlanGenerated)) {
-      add(NutritionRegenerateMealPlan(profile: profile));
+      if (profile != null && _nutritionService.shouldRegenerate(_lastMealPlanGenerated)) {
+        add(NutritionRegenerateMealPlan(profile: profile));
+      }
+    } catch (e, st) {
+      appLogger.w('[NutritionBloc] _onLoad failed', error: e, stackTrace: st);
+      emit(const NutritionStateError(message: 'Failed to load nutrition data'));
     }
   }
 

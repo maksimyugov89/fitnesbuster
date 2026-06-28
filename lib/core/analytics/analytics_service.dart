@@ -8,8 +8,6 @@ class AnalyticsService implements IAnalyticsService {
       : _analytics = analytics ?? FirebaseAnalytics.instance;
 
   FirebaseAnalytics get analytics => _analytics;
-  @override
-  FirebaseAnalyticsObserver get observer => FirebaseAnalyticsObserver(analytics: _analytics);
 
   // ─── Screen tracking ─────────────────────────────────────────────
 

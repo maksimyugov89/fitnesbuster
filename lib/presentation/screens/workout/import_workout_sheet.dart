@@ -10,8 +10,10 @@ import 'package:http/http.dart' as http;
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/core/ai/deepseek_service.dart';
-import 'package:fitnesbuster/data/repositories/user_repository.dart';
+import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/core/ai/ai_exception.dart';
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
+import 'package:fitnesbuster/core/constants/app_colors.dart';
 
 // ─── Entry points ─────────────────────────────────────────────────────────────
 
@@ -89,7 +91,7 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
         // Auto-start analysis for post-workout flow
         _source = _ImportSource.postWorkout;
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _runCorrection(widget.initialContent!, 'анализ прошедшей тренировки');
+          _runCorrection(widget.initialContent!, AppLocalizations.tl('sourceHintPostWorkout'));
         });
       } else {
         _source = _ImportSource.sharedApp;
@@ -112,13 +114,13 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
     if (userInput.trim().isEmpty) return;
     setState(() { _step = _ImportStep.parsing; _errorMsg = null; });
     try {
-      final service = sl<DeepSeekService>();
+      final service = sl<IDeepSeekService>();
       final authState = context.read<AuthBloc>().state;
       final uid = authState is AuthStateAuthenticated ? authState.userId : null;
 
       String jsonStr;
       if (uid != null) {
-        final plans = await sl<UserRepository>().getAiPlans(uid);
+        final plans = await sl<IUserRepository>().getAiPlans(uid);
         final currentPlanJson = plans['workoutPlan'];
         if (currentPlanJson != null) {
           // Correction mode: AI sees current plan and adjusts it
@@ -190,7 +192,7 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
           .replaceAll(RegExp(r'\s{2,}'), ' ')
           .trim();
       if (body.length > 8000) body = body.substring(0, 8000);
-      await _runCorrection('URL: $url\n\n$body', 'ссылка: $url');
+      await _runCorrection('URL: $url\n\n$body', '${AppLocalizations.tl("sourceHintLink")}: $url');
     } on SocketException {
       setState(() { _errorMsg = AppLocalizations.tl('networkError'); _step = _ImportStep.error; });
     } catch (e) {
@@ -227,7 +229,7 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
     if (text.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Буфер обмена пуст'), duration: Duration(seconds: 2)),
+          SnackBar(content: Text(AppLocalizations.tl('clipboardEmpty')), duration: const Duration(seconds: 2)),
         );
       }
       return;
@@ -246,7 +248,7 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
       final authState = context.read<AuthBloc>().state;
       final uid = authState is AuthStateAuthenticated ? authState.userId : null;
       if (uid == null) throw Exception(AppLocalizations.tl('notAuthorized'));
-      final repo = sl<UserRepository>();
+      final repo = sl<IUserRepository>();
       final planData = _correctedPlan!;
       final workoutPlanJson = jsonEncode(planData);
       await repo.updateWorkoutPlan(userId: uid, workoutPlanJson: workoutPlanJson);
@@ -344,7 +346,7 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
             HapticFeedback.mediumImpact();
             final isUrl = value.startsWith('http://') || value.startsWith('https://');
             if (isUrl) { _urlCtrl.text = value; _fetchUrl(); }
-            else { _runCorrection(value, 'QR-код'); }
+            else { _runCorrection(value, AppLocalizations.tl('sourceHintQr')); }
           },
         ),
       _ImportStep.parsing => _ParsingView(key: const ValueKey('parsing'), colors: colors),
@@ -369,12 +371,12 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
   }
 
   static String _sourceLabelFor(_ImportSource src) => switch (src) {
-    _ImportSource.text       => 'предпочтения пользователя',
-    _ImportSource.url        => 'ссылка',
-    _ImportSource.file       => 'файл',
-    _ImportSource.qr         => 'QR-код',
-    _ImportSource.sharedApp  => 'другое приложение',
-    _ImportSource.postWorkout => 'анализ прошедшей тренировки',
+    _ImportSource.text       => AppLocalizations.tl('sourceHintPreference'),
+    _ImportSource.url        => AppLocalizations.tl('sourceHintLink'),
+    _ImportSource.file       => AppLocalizations.tl('sourceHintFile'),
+    _ImportSource.qr         => AppLocalizations.tl('sourceHintQr'),
+    _ImportSource.sharedApp  => AppLocalizations.tl('sourceHintOtherApp'),
+    _ImportSource.postWorkout => AppLocalizations.tl('sourceHintPostWorkout'),
   };
 }
 
@@ -411,9 +413,9 @@ class _SourceSelector extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Скорректировать план',
+            Text(AppLocalizations.of(context).correctPlan,
                 style: TextStyle(fontFamily: 'Syne', fontSize: 17, fontWeight: FontWeight.w800, color: c.textPrimary)),
-            Text('AI адаптирует ваш план под запрос', style: TextStyle(fontSize: 12, color: c.textMuted)),
+            Text(AppLocalizations.of(context).aiAdaptsPlanHint, style: TextStyle(fontSize: 12, color: c.textMuted)),
           ])),
         ]),
         const SizedBox(height: 20),
@@ -430,8 +432,7 @@ class _SourceSelector extends StatelessWidget {
             Icon(Icons.psychology_rounded, color: c.primary, size: 18),
             const SizedBox(width: 8),
             Expanded(child: Text(
-              'DeepSeek видит ваш текущий план и вносит точечные изменения — '
-              'не переписывает с нуля, а адаптирует.',
+              AppLocalizations.of(context).aiDeepSeekHint,
               style: TextStyle(fontSize: 11, color: c.textSecondary, height: 1.45),
             )),
           ]),
@@ -441,61 +442,61 @@ class _SourceSelector extends StatelessWidget {
         _OptionCard(
           colors: c,
           icon: Icons.chat_bubble_outline_rounded,
-          iconColor: const Color(0xFF4CAF50),
-          title: 'Написать пожелание',
-          subtitle: 'Замени упражнение, добавь ноги, убери кардио...',
+          iconColor: SemanticColors.importSuccess,
+          title: AppLocalizations.of(context).writeWishOption,
+          subtitle: AppLocalizations.of(context).writeWishSubtitle,
           onTap: () => onSelected(_ImportSource.text),
         ),
         const SizedBox(height: 10),
         _OptionCard(
           colors: c,
           icon: Icons.link_rounded,
-          iconColor: const Color(0xFFFF9500),
-          title: 'Добавить из интернета',
-          subtitle: 'Ссылка на программу: YouTube, Strava, Hevy, любой сайт',
+          iconColor: SemanticColors.importWarning,
+          title: AppLocalizations.of(context).addFromInternet,
+          subtitle: AppLocalizations.of(context).addFromInternetSubtitle,
           onTap: () => onSelected(_ImportSource.url),
         ),
         const SizedBox(height: 10),
         _OptionCard(
           colors: c,
           icon: Icons.content_paste_rounded,
-          iconColor: const Color(0xFF4FA3E0),
-          title: 'Вставить из буфера',
-          subtitle: 'Скопированный текст тренировки',
+          iconColor: SemanticColors.importInfo,
+          title: AppLocalizations.of(context).pasteClipboard,
+          subtitle: AppLocalizations.of(context).pasteClipboardSubtitle,
           onTap: () => onSelected(_ImportSource.sharedApp),
         ),
         const SizedBox(height: 10),
         _OptionCard(
           colors: c,
           icon: Icons.insert_drive_file_rounded,
-          iconColor: const Color(0xFFAB47BC),
-          title: 'Загрузить файл',
-          subtitle: 'JSON, TXT, CSV — программа из другого приложения',
+          iconColor: SemanticColors.importFlex,
+          title: AppLocalizations.of(context).uploadFileOption,
+          subtitle: AppLocalizations.of(context).uploadFileSubtitle,
           onTap: () => onSelected(_ImportSource.file),
         ),
         const SizedBox(height: 10),
         _OptionCard(
           colors: c,
           icon: Icons.qr_code_scanner_rounded,
-          iconColor: const Color(0xFFE84444),
-          title: 'Сканировать QR-код',
-          subtitle: 'Ссылка или тренировка в QR',
+          iconColor: SemanticColors.importError,
+          title: AppLocalizations.of(context).scanQr,
+          subtitle: AppLocalizations.of(context).scanQrSubtitle,
           onTap: () => onSelected(_ImportSource.qr),
         ),
         const SizedBox(height: 10),
         _OptionCard(
           colors: c,
           icon: Icons.share_rounded,
-          iconColor: const Color(0xFF26C6DA),
-          title: 'Поделиться из приложения',
-          subtitle: 'Hevy, Garmin Connect, Strong, Notes и др.',
+          iconColor: SemanticColors.importWater,
+          title: AppLocalizations.of(context).shareFromApp,
+          subtitle: AppLocalizations.of(context).shareFromAppSubtitle,
           trailing: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: c.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Text('Авто', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: c.primary)),
+            child: Text(AppLocalizations.of(context).autoLabel, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: c.primary)),
           ),
           onTap: () => onSelected(_ImportSource.sharedApp),
         ),
@@ -646,7 +647,7 @@ class _ContentInputState extends State<_ContentInput> {
     Padding(
       padding: const EdgeInsets.all(16),
       child: Text(
-        widget.qrScanned ? 'QR-код распознан, анализирую...' : 'Наведите камеру на QR-код',
+        widget.qrScanned ? AppLocalizations.of(context).qrScannedAnalyzing : AppLocalizations.of(context).qrPointCamera,
         style: TextStyle(fontSize: 13, color: c.textMuted),
         textAlign: TextAlign.center,
       ),
@@ -685,7 +686,7 @@ class _ContentInputState extends State<_ContentInput> {
       ),
       const SizedBox(height: 10),
       Wrap(spacing: 8, runSpacing: 8, children: [
-        for (final s in ['YouTube', 'Strava', 'Hevy', 'Garmin', 'GymShark', 'Reddit', 'любой сайт'])
+        for (final s in ['YouTube', 'Strava', 'Hevy', 'Garmin', 'GymShark', 'Reddit', AppLocalizations.of(context).anySiteLabel])
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
@@ -697,7 +698,7 @@ class _ContentInputState extends State<_ContentInput> {
           ),
       ]),
       const SizedBox(height: 24),
-      _ActionButton(colors: c, label: 'Загрузить и скорректировать план',
+      _ActionButton(colors: c, label: AppLocalizations.of(context).loadAndCorrectPlanBtn,
           icon: Icons.auto_fix_high_rounded, onTap: widget.onSubmitUrl),
     ],
   );
@@ -720,9 +721,8 @@ class _ContentInputState extends State<_ContentInput> {
           style: TextStyle(fontSize: 13, color: c.textPrimary, height: 1.5),
           decoration: InputDecoration(
             hintText: widget.source == _ImportSource.text
-                ? 'Например: "Замени жим лёжа на отжимания на брусьях", '
-                  '"Хочу больше упражнений на ноги", "Убери кардио"...'
-                : 'Вставьте описание тренировки: упражнения, подходы, повторения...',
+                ? AppLocalizations.of(context).writeWishHint
+                : AppLocalizations.of(context).pasteWorkoutHint,
             hintStyle: TextStyle(color: c.textMuted, fontSize: 13),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.all(14),
@@ -745,7 +745,7 @@ class _ContentInputState extends State<_ContentInput> {
           child: Row(children: [
             Icon(Icons.content_paste_rounded, color: c.textMuted, size: 16),
             const SizedBox(width: 8),
-            Text('Вставить из буфера обмена', style: TextStyle(fontSize: 12, color: c.textSecondary)),
+            Text(AppLocalizations.of(context).pasteFromClipboard, style: TextStyle(fontSize: 12, color: c.textSecondary)),
           ]),
         ),
       ),
@@ -756,9 +756,9 @@ class _ContentInputState extends State<_ContentInput> {
       const SizedBox(height: 24),
       ListenableBuilder(
         listenable: widget.textCtrl,
-        builder: (_, __) => _ActionButton(
+        builder: (_, _) => _ActionButton(
           colors: c,
-          label: 'Скорректировать план с AI',
+          label: AppLocalizations.of(context).correctPlanWithAiBtn,
           icon: Icons.auto_fix_high_rounded,
           onTap: widget.textCtrl.text.trim().isEmpty
               ? null
@@ -774,30 +774,30 @@ class _ContentInputState extends State<_ContentInput> {
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Icon(Icons.folder_open_rounded, size: 56, color: c.textMuted.withValues(alpha: 0.4)),
         const SizedBox(height: 16),
-        Text('Открывается файловый менеджер...', style: TextStyle(fontSize: 14, color: c.textMuted)),
+        Text(AppLocalizations.of(context).openingFilePicker, style: TextStyle(fontSize: 14, color: c.textMuted)),
         const SizedBox(height: 24),
         OutlinedButton.icon(
           onPressed: widget.onPickFile,
           icon: Icon(Icons.upload_file_rounded, size: 18, color: c.primary),
-          label: Text('Выбрать файл снова', style: TextStyle(color: c.primary)),
+          label: Text(AppLocalizations.of(context).selectFileAgain, style: TextStyle(color: c.primary)),
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: c.primary.withValues(alpha: 0.4)),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
         const SizedBox(height: 12),
-        Text('Поддерживаются: .json  .txt  .csv', style: TextStyle(fontSize: 12, color: c.textMuted)),
+        Text(AppLocalizations.of(context).supportedFormatsHint, style: TextStyle(fontSize: 12, color: c.textMuted)),
       ]),
     ),
   );
 
   static String _title(_ImportSource src) => switch (src) {
-    _ImportSource.text       => 'Ваше пожелание',
-    _ImportSource.url        => 'Ссылка на программу',
-    _ImportSource.file       => 'Из файла',
-    _ImportSource.qr         => 'QR-код',
-    _ImportSource.sharedApp  => 'Вставить тренировку',
-    _ImportSource.postWorkout => 'Анализ тренировки',
+    _ImportSource.text       => AppLocalizations.tl('yourWishTitle'),
+    _ImportSource.url        => AppLocalizations.tl('programLinkTitle'),
+    _ImportSource.file       => AppLocalizations.tl('fromFileTitle'),
+    _ImportSource.qr         => AppLocalizations.tl('qrCodeTitle'),
+    _ImportSource.sharedApp  => AppLocalizations.tl('pasteWorkoutTitle'),
+    _ImportSource.postWorkout => AppLocalizations.tl('workoutAnalysisTitle'),
   };
 }
 
@@ -818,7 +818,7 @@ class _ExamplesHint extends StatelessWidget {
         border: Border.all(color: c.info.withValues(alpha: 0.15)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Примеры запросов:', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c.info)),
+        Text(AppLocalizations.of(context).exampleRequestsLabel, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c.info)),
         const SizedBox(height: 6),
         for (final ex in [
           '"Замени жим штанги на жим гантелей — болят запястья"',
@@ -857,11 +857,11 @@ class _ParsingView extends StatelessWidget {
             child: CircularProgressIndicator(strokeWidth: 3, color: colors.primary),
           ),
           const SizedBox(height: 24),
-          Text('AI корректирует план...',
+          Text(AppLocalizations.of(context).aiCorrectingPlan,
               style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary),
               textAlign: TextAlign.center),
           const SizedBox(height: 8),
-          Text('Анализирую запрос и вношу изменения в ваш план',
+          Text(AppLocalizations.of(context).aiAnalyzingQuery,
               style: TextStyle(fontSize: 13, color: colors.textMuted),
               textAlign: TextAlign.center),
         ]),
@@ -921,9 +921,9 @@ class _PreviewView extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('План скорректирован',
+              Text(AppLocalizations.of(context).planCorrectedTitle,
                   style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: c.textPrimary)),
-              Text('${days.length} дней · $totalEx упражнений · ${changes.length} изм.',
+              Text(AppLocalizations.of(context).planCorrectedSummary('${days.length}', '$totalEx', '${changes.length}'),
                   style: TextStyle(fontSize: 12, color: c.textMuted)),
             ])),
           ]),
@@ -932,7 +932,7 @@ class _PreviewView extends StatelessWidget {
 
         // ── Changes list (most important!) ──
         if (changes.isNotEmpty) ...[
-          Text('Внесённые изменения',
+          Text(AppLocalizations.of(context).changesTitle,
               style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: c.textPrimary)),
           const SizedBox(height: 10),
           ...changes.map((ch) => Container(
@@ -968,7 +968,7 @@ class _PreviewView extends StatelessWidget {
               Icon(Icons.psychology_rounded, color: c.accentPurple, size: 16),
               const SizedBox(width: 8),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Логика AI', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c.accentPurple)),
+                Text(AppLocalizations.of(context).aiLogicTitle, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c.accentPurple)),
                 const SizedBox(height: 3),
                 Text(reasoning, style: TextStyle(fontSize: 11, color: c.textMuted, height: 1.4)),
               ])),
@@ -978,18 +978,19 @@ class _PreviewView extends StatelessWidget {
         ],
 
         // ── Updated plan overview ──
-        Text('Обновлённый план',
+        Text(AppLocalizations.of(context).updatedPlanTitle,
             style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: c.textPrimary)),
         const SizedBox(height: 10),
         ...days.asMap().entries.map((e) {
           final i = e.key;
           final day = e.value;
-          const dayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-          final label = i < dayLabels.length ? dayLabels[i] : 'День ${i+1}';
-          final focus = day['focus'] as String? ?? day['name'] as String? ?? 'День ${i+1}';
+          final l10n = AppLocalizations.of(context);
+          final dayLabels = [l10n.monShort, l10n.tueShort, l10n.wedShort, l10n.thuShort, l10n.friShort, l10n.satShort, l10n.sunShort];
+          final label = i < dayLabels.length ? dayLabels[i] : l10n.dayLabel(i + 1);
+          final focus = day['focus'] as String? ?? day['name'] as String? ?? l10n.dayLabel(i + 1);
           final exercises = (day['exercises'] as List? ?? []).cast<Map<String, dynamic>>();
           final isRest = exercises.isEmpty ||
-              focus.toLowerCase().contains('отдых') ||
+              focus.toLowerCase().contains(AppLocalizations.tl('restDayKeyword')) ||
               (day['type'] as String? ?? '') == 'rest';
           return Container(
             margin: const EdgeInsets.only(bottom: 6),
@@ -1008,7 +1009,7 @@ class _PreviewView extends StatelessWidget {
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: c.textSecondary),
                   overflow: TextOverflow.ellipsis)),
               if (!isRest)
-                Text('${exercises.length} упр.', style: TextStyle(fontSize: 11, color: c.textMuted)),
+                Text(l10n.exercisesShortCount('${exercises.length}'), style: TextStyle(fontSize: 11, color: c.textMuted)),
             ]),
           );
         }),
@@ -1024,7 +1025,7 @@ class _PreviewView extends StatelessWidget {
               border: Border.all(color: c.info.withValues(alpha: 0.15)),
             ),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Рекомендации', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c.info)),
+              Text(AppLocalizations.of(context).weeklyRecsTitle, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c.info)),
               const SizedBox(height: 6),
               for (final r in recs.take(3))
                 Padding(
@@ -1050,14 +1051,14 @@ class _PreviewView extends StatelessWidget {
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Icon(Icons.warning_amber_rounded, color: c.accentOrange, size: 16),
             const SizedBox(width: 8),
-            Expanded(child: Text('Это заменит ваш текущий план тренировок.',
+            Expanded(child: Text(AppLocalizations.of(context).planReplacementWarning,
                 style: TextStyle(fontSize: 11, color: c.textMuted))),
           ]),
         ),
         const SizedBox(height: 16),
         _ActionButton(
           colors: c,
-          label: saving ? 'Сохраняем...' : 'Применить изменения',
+          label: saving ? AppLocalizations.of(context).savingLabel : AppLocalizations.of(context).applyChangesBtn,
           icon: saving ? null : Icons.check_rounded,
           loading: saving,
           onTap: saving ? null : onSave,
@@ -1065,7 +1066,7 @@ class _PreviewView extends StatelessWidget {
         const SizedBox(height: 10),
         TextButton(
           onPressed: saving ? null : onCancel,
-          child: Text('Отмена', style: TextStyle(color: c.textMuted, fontSize: 14)),
+          child: Text(AppLocalizations.of(context).cancel, style: TextStyle(color: c.textMuted, fontSize: 14)),
         ),
       ],
     );

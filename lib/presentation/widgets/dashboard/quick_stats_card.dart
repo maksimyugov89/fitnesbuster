@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/constants/app_colors.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class QuickStatsCard extends StatelessWidget {
@@ -21,17 +22,20 @@ class QuickStatsCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final p = AppTheme.of(context);
     return Row(children: [
-      Expanded(child: GestureDetector(
+      Expanded(child: Semantics(
+        label: '${l10n.heartRateLabel}: ${heartRate > 0 ? '$heartRate ${l10n.dashboardBpm}' : l10n.dashboardTapToEnter}',
+        button: true,
+        child: GestureDetector(
         onTap: onHeartRateTap,
         child: _StatCard(
           icon: Icons.favorite_rounded,
-          iconColor: const Color(0xFFEF4444),
+          iconColor: SemanticColors.cardioRed,
           label: l10n.heartRateLabel,
           value: heartRate > 0 ? '$heartRate' : '—',
           unit: heartRate > 0 ? l10n.dashboardBpm : '',
           subtitle: heartRate > 0 ? l10n.dashboardNormal : l10n.dashboardTapToEnter,
         ),
-      )),
+      ))),
       const SizedBox(width: 12),
       Expanded(child: _StatCard(
         icon: Icons.monitor_weight_outlined,

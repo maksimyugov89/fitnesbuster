@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
+import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
 import 'package:fitnesbuster/core/utils/enum_parser.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
@@ -45,13 +46,17 @@ class AuthRepository implements IAuthRepository {
     required String email,
     required String password,
   }) async {
-    final result = await _auth.signInWithEmailAndPassword(
-      email: email.trim(),
-      password: password,
-    );
-    final fbUser = result.user!;
-    await _ensureFirestoreDoc(fbUser);
-    return _fbUserToEntity(fbUser);
+    try {
+      final result = await _auth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      final fbUser = result.user!;
+      await _ensureFirestoreDoc(fbUser);
+      return _fbUserToEntity(fbUser);
+    } on fb.FirebaseAuthException catch (e) {
+      throw _mapFirebaseException(e);
+    }
   }
 
   Future<void> _ensureFirestoreDoc(fb.User fbUser) async {
@@ -81,19 +86,23 @@ class AuthRepository implements IAuthRepository {
     required String email,
     required String password,
   }) async {
-    final result = await _auth.createUserWithEmailAndPassword(
-      email: email.trim(),
-      password: password,
-    );
-    final fbUser = result.user!;
-    await fbUser.updateDisplayName(name.trim());
-    await _firestore.collection(FirestoreCollections.users).doc(fbUser.uid).set({
-      'name': name.trim(),
-      'nameLower': name.trim().toLowerCase(),
-      'email': email.trim(),
-      'createdAt': FieldValue.serverTimestamp(),
-    });
-    return _fbUserToEntity(fbUser);
+    try {
+      final result = await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      final fbUser = result.user!;
+      await fbUser.updateDisplayName(name.trim());
+      await _firestore.collection(FirestoreCollections.users).doc(fbUser.uid).set({
+        'name': name.trim(),
+        'nameLower': name.trim().toLowerCase(),
+        'email': email.trim(),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      return _fbUserToEntity(fbUser);
+    } on fb.FirebaseAuthException catch (e) {
+      throw _mapFirebaseException(e);
+    }
   }
 
   @override
@@ -186,5 +195,28 @@ class AuthRepository implements IAuthRepository {
       createdAt: (data?['createdAt'] as Timestamp?)?.toDate() ??
           fbUser.metadata.creationTime ?? DateTime.now(),
     );
+  }
+
+  AuthException _mapFirebaseException(fb.FirebaseAuthException e) {
+    switch (e.code) {
+      case 'user-not-found':
+        return const UserNotFoundException();
+      case 'wrong-password':
+        return const WrongPasswordException();
+      case 'invalid-email':
+        return const InvalidEmailException();
+      case 'user-disabled':
+        return const UserDisabledException();
+      case 'email-already-in-use':
+        return const EmailAlreadyInUseException();
+      case 'weak-password':
+        return const WeakPasswordException();
+      case 'operation-not-allowed':
+        return const OperationNotAllowedException();
+      case 'too-many-requests':
+        return const TooManyRequestsException();
+      default:
+        return UnknownAuthException(e.code);
+    }
   }
 }

@@ -493,7 +493,7 @@ class _TypingBubbleState extends State<_TypingBubble>
             ),
             child: AnimatedBuilder(
               animation: _anim,
-              builder: (_, __) => Row(
+              builder: (_, _) => Row(
                 mainAxisSize: MainAxisSize.min,
                 children: List.generate(3, (i) {
                   return Padding(

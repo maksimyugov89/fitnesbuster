@@ -2,10 +2,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/entities/test_day_exercise.dart';
-import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/domain/services/i_adaptive_training_service.dart';
-import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
-import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
+import 'package:fitnesbuster/core/services/test_week_workflow_service.dart';
+import 'package:fitnesbuster/domain/usecases/complete_test_week_use_case.dart';
+import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/test_week_exercises.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
@@ -19,20 +20,15 @@ part 'test_week_state.dart';
 /// 3. After completion, calculates adjustment and checks feasibility
 /// 4. If unrealistic, offers alternatives
 class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
-  final IAdaptiveTrainingService _trainingService;
-  final IDeepSeekService _aiService;
-  final IUserRepository _userRepo;
-  final IAuthRepository _authRepo;
+  final TestWeekWorkflowService _workflowService;
+  final CompleteTestWeekUseCase _completeTestWeekUseCase;
+  UserProfile? _profile;
 
   TestWeekBloc({
-    required IAdaptiveTrainingService trainingService,
-    required IDeepSeekService aiService,
-    required IUserRepository userRepo,
-    required IAuthRepository authRepo,
-  })  : _trainingService = trainingService,
-        _aiService = aiService,
-        _userRepo = userRepo,
-        _authRepo = authRepo,
+    required TestWeekWorkflowService workflowService,
+    required CompleteTestWeekUseCase completeTestWeekUseCase,
+  })  : _workflowService = workflowService,
+        _completeTestWeekUseCase = completeTestWeekUseCase,
         super(const TestWeekStateInitial()) {
     on<TestWeekStartDay>(_onStartDay);
     on<TestWeekRecordExercise>(_onRecordExercise);
@@ -47,12 +43,12 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
   void _onStartDay(TestWeekStartDay event, Emitter<TestWeekState> emit) {
     final dayIdx = event.dayIndex;
     if (dayIdx >= 0 && dayIdx < _testDays.length) {
+      _profile = event.profile;
+      _track(() => sl<IAnalyticsService>().logEvent(name: 'test_week_start', parameters: {'day': dayIdx.toString()}));
       emit(TestWeekStateDayInProgress(
-        dayIndex: dayIdx,
+        dayIndex: event.dayIndex,
         dayExercises: _testDays[dayIdx],
         completedExercises: const [],
-        overallRpe: 5,
-        sessionNotes: '',
       ));
     }
   }
@@ -89,13 +85,13 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
     } else {
       // All days completed — show completion summary
       emit(const TestWeekStateCalculating());
-      await _calculateAndShowResults(current.completedExercises, event.profile, emit);
+      await _calculateAndShowResults(current.completedExercises, _profile, emit);
     }
   }
 
   Future<void> _onComplete(TestWeekComplete event, Emitter<TestWeekState> emit) async {
     emit(const TestWeekStateCalculating());
-    await _calculateAndShowResults(event.results, event.profile, emit);
+    await _calculateAndShowResults(event.results, _profile, emit);
   }
 
   Future<void> _calculateAndShowResults(
@@ -103,57 +99,21 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
     UserProfile? profile,
     Emitter<TestWeekState> emit,
   ) async {
-    // Build TestWeekResult from collected data
-    final testResult = TestWeekResult(
-      completedAt: DateTime.now(),
+    final effectiveProfile = profile ?? UserProfile.defaults;
+    final result = await _workflowService.calculateResults(
       exercises: exercises,
-      averageHeartRate: 0,
-      averageSessionDuration: 0,
-      perceivedDifficulty: 5,
-    );
-
-    // Calculate adjustment
-    final effectiveProfile = profile ?? const UserProfile.defaults();
-
-    final adjustment = _trainingService.calculateAdjustment(
-      testResult: testResult,
       profile: effectiveProfile,
     );
 
-    // Check feasibility via AI
-    FeasibilityResult feasibility;
-    try {
-      feasibility = await _trainingService.checkGoalFeasibility(
-        profile: effectiveProfile,
-        adjustment: adjustment,
-      );
-    } catch (e, st) {
-      appLogger.w('[TestWeekBloc] feasibility check failed', error: e, stackTrace: st);
-      feasibility = FeasibilityResult(
-        isFeasible: true,
-        reason: AppLocalizations.tl('testWeekPlanReady'),
-        suggestedActions: [],
-      );
-    }
-
-    final adaptedPlan = _trainingService.buildAdaptedPlan(
-      testResult: testResult,
-      adjustment: adjustment,
-      durationWeeks: effectiveProfile.targetDate != null
-          ? effectiveProfile.estimatedWeeksNeeded
-          : 12,
-    );
-
     emit(TestWeekStateCompleted(
-      testResult: testResult,
-      adjustment: adjustment,
-      adaptedPlan: adaptedPlan,
-      feasibility: feasibility,
+      testResult: result.testResult,
+      adjustment: result.adjustment,
+      adaptedPlan: result.adaptedPlan,
+      feasibility: result.feasibility,
     ));
   }
 
   Future<void> _onAcceptPlan(TestWeekAcceptPlan event, Emitter<TestWeekState> emit) async {
-    // Capture test results before emitting a new state (state will change)
     TestWeekResult? testResult;
     if (state is TestWeekStateCompleted) {
       testResult = (state as TestWeekStateCompleted).testResult;
@@ -162,36 +122,15 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
     emit(const TestWeekStateCalculating());
 
     try {
-      final uid = _authRepo.currentUser?.id;
-      if (uid != null) {
-        UserProfile? profile;
-        try {
-          final user = await _userRepo.getUser(uid);
-          profile = user.profile;
-        } catch (e, st) {
-          appLogger.w('[TestWeekBloc] getUser failed', error: e, stackTrace: st);
-        }
-
-        if (testResult != null && profile != null) {
-          try {
-            final refined = await _aiService.refineWorkoutPlan(profile, testResult.exercises);
-            await _userRepo.updateWorkoutPlan(userId: uid, workoutPlanJson: refined);
-          } catch (e, st) {
-            appLogger.w('[TestWeekBloc] AI refinement failed', error: e, stackTrace: st);
-          }
-        }
-
-        try {
-          await _userRepo.saveTestWeekCompleted(userId: uid);
-        } catch (e, st) {
-          appLogger.w('[TestWeekBloc] saveTestWeekCompleted failed', error: e, stackTrace: st);
-        }
+      if (testResult != null) {
+        await _completeTestWeekUseCase.execute(testResult);
+        _track(() => sl<IAnalyticsService>().logEvent(name: 'test_week_complete', parameters: {'exercises': testResult!.exercises.length.toString()}));
       }
+      emit(const TestWeekStatePlanAccepted());
     } catch (e, st) {
       appLogger.w('[TestWeekBloc] _onAcceptPlan failed', error: e, stackTrace: st);
+      emit(TestWeekStateError(AppLocalizations.tl('testWeekPlanNotAccepted')));
     }
-
-    emit(const TestWeekStatePlanAccepted());
   }
 
   void _onAdjustGoal(TestWeekAdjustGoal event, Emitter<TestWeekState> emit) {
@@ -199,6 +138,10 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
       reason: event.reason,
       suggestions: event.suggestions,
     ));
+  }
+
+  Future<void> _track(Future<void> Function() fn) async {
+    try { await fn(); } catch (_) { /* best-effort */ }
   }
 }
 

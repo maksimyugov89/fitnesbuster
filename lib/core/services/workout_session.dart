@@ -6,7 +6,7 @@ import 'package:fitnesbuster/core/utils/date_key.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
-import 'package:fitnesbuster/core/services/social_service.dart';
+import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
@@ -167,7 +167,7 @@ class WorkoutSession extends ChangeNotifier {
           workoutHour: now.hour,
         );
         try {
-          completedChallenges = await sl<SocialService>().recordWorkout(
+          completedChallenges = await sl<ISocialService>().recordWorkout(
             durationMinutes: durationMin,
             caloriesBurned: kcal,
             cardioMinutes: cardioMin,

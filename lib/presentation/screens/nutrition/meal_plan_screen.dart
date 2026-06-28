@@ -7,9 +7,10 @@ import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/data/repositories/user_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/data/models/ai_meal_plan.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
+import 'package:fitnesbuster/presentation/screens/nutrition/meal_constants.dart';
 
 class MealPlanScreen extends StatefulWidget {
   const MealPlanScreen({super.key});
@@ -21,17 +22,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   bool _loading = true;
   String? _error;
   AiMealPlan? _plan;
-
-  static const _mealIcons = {
-    'breakfast': '🌅', 'lunch': '☀️', 'dinner': '🌙', 'snack': '🍎',
-    'pre_workout': '🏋️', 'post_workout': '💪', 'evening_snack': '🌛',
-    'morning_snack': '🌤️',
-  };
-  static const _mealLabels = {
-    'breakfast': 'Завтрак', 'lunch': 'Обед', 'dinner': 'Ужин', 'snack': 'Перекус',
-    'pre_workout': 'Предтрен', 'post_workout': 'Послетрен', 'evening_snack': 'Веч. перекус',
-    'morning_snack': 'Утр. перекус',
-  };
 
   @override
   void initState() {
@@ -47,7 +37,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         return;
       }
       final uid = authState.userId;
-      final plans = await sl<UserRepository>().getAiPlans(uid);
+      final plans = await sl<IUserRepository>().getAiPlans(uid);
       final jsonStr = plans['mealPlan'];
       if (jsonStr == null) {
         setState(() { _loading = false; _error = 'План питания ещё не сгенерирован.\nПройдите онбординг.'; });
@@ -219,8 +209,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   Widget _buildMealCard(ThemePalette colors, AiMeal meal) {
     final normalizedType = meal.type.replaceAll(' ', '').toLowerCase();
-    final icon = _mealIcons[normalizedType] ?? '🍽️';
-    final label = _mealLabels[normalizedType] ?? meal.type;
+    final icon = mealIcons[normalizedType] ?? '🍽️';
+    final label = mealLabels[normalizedType] ?? meal.type;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),

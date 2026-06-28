@@ -1,20 +1,20 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:health/health.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/domain/services/i_health_service.dart';
 import 'package:fitnesbuster/domain/services/i_health_analytics_service.dart';
 
 part 'health_event.dart';
 part 'health_state.dart';
 
 class HealthBloc extends Bloc<HealthEvent, HealthState> {
-  final Health _health;
+  final IHealthService _healthService;
   final IHealthAnalyticsService _analytics;
 
-  HealthBloc({Health? health, required IHealthAnalyticsService analytics})
-      : _health = health ?? Health(),
+  HealthBloc({required IHealthService healthService, required IHealthAnalyticsService analytics})
+      : _healthService = healthService,
         _analytics = analytics,
         super(const HealthStateInitial()) {
     on<HealthFetchRequested>(_onFetchRequested);
@@ -34,7 +34,7 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
         HealthDataType.DISTANCE_DELTA,
       ];
 
-      final granted = await _health.requestAuthorization(types);
+      final granted = await _healthService.requestAuthorization(types);
       if (!granted) {
         emit(HealthStateError(message: AppLocalizations.tl('healthNoAccess')));
         return;
@@ -43,7 +43,7 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
       final now = DateTime.now();
       final start = now.subtract(const Duration(days: 7));
 
-      final data = await _health.getHealthDataFromTypes(
+      final data = await _healthService.getHealthDataFromTypes(
         startTime: start,
         endTime: now,
         types: types,
@@ -75,13 +75,13 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
   Future<void> _onWatchRequested(HealthWatchRequested event, Emitter<HealthState> emit) async {
     try {
       final types = [HealthDataType.STEPS, HealthDataType.HEART_RATE, HealthDataType.DISTANCE_DELTA];
-      final granted = await _health.requestAuthorization(types);
+      final granted = await _healthService.requestAuthorization(types);
       if (!granted) {
         emit(HealthStateError(message: AppLocalizations.tl('healthPermissionsDenied')));
         return;
       }
       final now = DateTime.now();
-      final data = await _health.getHealthDataFromTypes(
+      final data = await _healthService.getHealthDataFromTypes(
         startTime: now.subtract(const Duration(hours: 1)),
         endTime: now,
         types: types,
