@@ -146,7 +146,7 @@ class RouterBottomNav extends StatelessWidget {
                     decoration: BoxDecoration(color: isSel ? p.primary.withValues(alpha: 0.15) : Colors.transparent, borderRadius: BorderRadius.circular(20)),
                     child: Icon(e.value.icon, color: isSel ? p.primary : p.textMuted, size: 22)),
                   const SizedBox(height: 2),
-                  Text(e.value.label, style: TextStyle(fontSize: 10, fontWeight: isSel ? FontWeight.w700 : FontWeight.w400, color: isSel ? p.primary : p.textMuted)),
+                  FittedBox(fit: BoxFit.scaleDown, child: Text(e.value.label, style: TextStyle(fontSize: 10, fontWeight: isSel ? FontWeight.w700 : FontWeight.w400, color: isSel ? p.primary : p.textMuted))),
                 ]),
               ));
           }).toList())),
