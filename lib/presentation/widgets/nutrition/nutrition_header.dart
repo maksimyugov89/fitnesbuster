@@ -20,12 +20,18 @@ class NutritionHeader extends StatelessWidget {
     final colors = AppTheme.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      child: Row(children: [
-        Flexible(
-          child: Text(context.l10n.nutritionTitle, style: AppTextStyles.displayM, overflow: TextOverflow.ellipsis),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(context.l10n.nutritionTitle, style: AppTextStyles.displayM),
+            ),
+            Text(context.l10n.aiPlanSubtitle, style: TextStyle(fontSize: 13, color: colors.textMuted)),
+          ]),
         ),
-        const Spacer(),
-        if (completedCount > 0)
+        if (completedCount > 0) ...[
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(color: colors.success.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
@@ -34,7 +40,8 @@ class NutritionHeader extends StatelessWidget {
               style: TextStyle(fontSize: 11, color: colors.success, fontWeight: FontWeight.w700),
             ),
           ),
-        const SizedBox(width: 8),
+          const SizedBox(width: 8),
+        ],
         Semantics(
           label: context.l10n.shoppingListLabel,
           button: true,
