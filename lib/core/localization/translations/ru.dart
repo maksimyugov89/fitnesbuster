@@ -108,7 +108,7 @@ const Map<String, String> ruTranslations = {
   'lastSyncLabel': 'Последняя синхр.', 'achievementsTitle': 'Достижения',
   'unlockedLabel': 'Открыто', 'lockedLabel': 'Закрыто', 'logoutBtn': 'Выйти',
   'deleteAccountBtn': 'Удалить аккаунт',
-  'deleteAccountConfirm': 'Вы уверены? Это действие необратимо.',
+  'deleteAccountConfirm': 'Это действие необратимо. Все данные, история и тренировки будут удалены навсегда.',
   'versionLabel': 'Версия', 'yourDataLabel': 'Ваши данные',
   'appearanceLabel': 'Оформление', 'selectLanguageTitle': 'Выбор языка',
   'selectThemeTitle': 'Выбор темы', 'themeNeon': 'Неоновый',

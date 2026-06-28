@@ -109,7 +109,7 @@ const Map<String, String> enTranslations = {
   'lastSyncLabel': 'Last sync', 'achievementsTitle': 'Achievements',
   'unlockedLabel': 'Unlocked', 'lockedLabel': 'Locked', 'logoutBtn': 'Log out',
   'deleteAccountBtn': 'Delete account',
-  'deleteAccountConfirm': 'Are you sure? This action is irreversible.',
+  'deleteAccountConfirm': 'This action is irreversible. All data, history and workouts will be permanently deleted.',
   'versionLabel': 'Version', 'yourDataLabel': 'Your data',
   'appearanceLabel': 'Appearance', 'selectLanguageTitle': 'Select language',
   'selectThemeTitle': 'Select theme', 'themeNeon': 'Neon Dark',

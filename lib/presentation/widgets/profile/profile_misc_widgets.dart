@@ -10,7 +10,7 @@ class LogoutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
     return Semantics(
-      label: AppLocalizations.tl('logoutLabel'),
+      label: AppLocalizations.tl('logoutBtn'),
       button: true,
       child: OutlinedButton.icon(
         onPressed: onTap,
@@ -34,7 +34,7 @@ class DeleteAccountButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
     return Semantics(
-      label: AppLocalizations.tl('deleteAccount'),
+      label: AppLocalizations.tl('deleteAccountBtn'),
       button: true,
       child: TextButton.icon(
         onPressed: onTap,

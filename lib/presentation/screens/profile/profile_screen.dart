@@ -698,8 +698,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Выйти?', style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w800, color: colors.textPrimary)),
-        content: Text('Данные сохранятся и вы сможете войти снова.', style: TextStyle(color: colors.textSecondary)),
+        title: Text(l10n.logoutTitle, style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w800, color: colors.textPrimary)),
+        content: Text(l10n.logoutBody, style: TextStyle(color: colors.textSecondary)),
         actions: [
           TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: Text(l10n.cancel, style: TextStyle(color: colors.textMuted))),
           TextButton(onPressed: () {
@@ -730,8 +730,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(l10n.deleteAccountConfirm, style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w800, color: colors.error)),
-        content: Text('Это действие необратимо. Все данные, история и тренировки будут удалены навсегда.', style: TextStyle(color: colors.textSecondary, height: 1.5)),
+        title: Text(l10n.deleteAccountBtn, style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w800, color: colors.error)),
+        content: Text(l10n.deleteAccountConfirm, style: TextStyle(color: colors.textSecondary, height: 1.5)),
         actions: [
           TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: Text(l10n.cancel, style: TextStyle(color: colors.textMuted))),
           TextButton(onPressed: () { context.go('/login'); }, child: Text(l10n.delete, style: TextStyle(color: colors.error, fontWeight: FontWeight.w700))),
