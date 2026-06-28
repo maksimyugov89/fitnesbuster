@@ -15,7 +15,7 @@ class LogoutButton extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: onTap,
         icon: Icon(Icons.logout_rounded, color: colors.textMuted, size: 18),
-        label: Text(AppLocalizations.tl('logoutLabel'), style: TextStyle(color: colors.textMuted)),
+        label: Text(AppLocalizations.tl('logoutBtn'), style: TextStyle(color: colors.textMuted)),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: colors.surfaceLight),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -39,7 +39,7 @@ class DeleteAccountButton extends StatelessWidget {
       child: TextButton.icon(
         onPressed: onTap,
         icon: Icon(Icons.delete_forever_rounded, color: colors.error, size: 16),
-        label: Text(AppLocalizations.tl('deleteAccount'), style: TextStyle(color: colors.error, fontSize: 13)),
+        label: Text(AppLocalizations.tl('deleteAccountBtn'), style: TextStyle(color: colors.error, fontSize: 13)),
         style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 8)),
       ),
     );
