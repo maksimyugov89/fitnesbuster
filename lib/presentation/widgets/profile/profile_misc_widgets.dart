@@ -73,23 +73,26 @@ class StatBox extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                number,
-                style: TextStyle(fontFamily: 'Syne', fontSize: 20, fontWeight: FontWeight.w800, color: color),
-              ),
-              if (unit.isNotEmpty) ...[
-                const SizedBox(width: 2),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
                 Text(
-                  unit,
-                  style: TextStyle(fontFamily: 'Syne', fontSize: 11, fontWeight: FontWeight.w600, color: color.withValues(alpha: 0.8)),
+                  number,
+                  style: TextStyle(fontFamily: 'Syne', fontSize: 20, fontWeight: FontWeight.w800, color: color),
                 ),
+                if (unit.isNotEmpty) ...[
+                  const SizedBox(width: 2),
+                  Text(
+                    unit,
+                    style: TextStyle(fontFamily: 'Syne', fontSize: 11, fontWeight: FontWeight.w600, color: color.withValues(alpha: 0.8)),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
           const SizedBox(height: 4),
           Text(
