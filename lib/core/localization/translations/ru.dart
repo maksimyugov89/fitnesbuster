@@ -14,7 +14,7 @@ const Map<String, String> ruTranslations = {
   'navProgress': 'Прогресс', 'navProfile': 'Профиль',
   'emailLabel': 'Email', 'passwordLabel': 'Пароль',
   'confirmPasswordLabel': 'Подтвердите пароль', 'nameLabel': 'Имя',
-  'loginTitle': 'С возвращением!', 'loginSubtitle': 'Войдите, чтобы продолжить',
+  'loginTitle': 'Добро пожаловать в', 'loginSubtitle': 'Войдите, чтобы продолжить',
   'registerTitle': 'Регистрация', 'registerSubtitle': 'Зарегистрируйтесь, чтобы начать',
   'emailHint': 'your@email.com', 'passwordHint': 'Ваш пароль',
   'forgotPassword': 'Забыли пароль?', 'orContinueWith': 'или продолжить через',
