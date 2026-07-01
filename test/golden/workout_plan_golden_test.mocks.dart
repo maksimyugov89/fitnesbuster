@@ -810,26 +810,9 @@ class MockIExerciseService extends _i1.Mock implements _i8.IExerciseService {
   }
 
   @override
-  _i4.Future<String?> getGifPath(String? exerciseId, String? exerciseName) =>
+  _i4.Future<void> init() =>
       (super.noSuchMethod(
-            Invocation.method(#getGifPath, [exerciseId, exerciseName]),
-            returnValue: _i4.Future<String?>.value(),
-          )
-          as _i4.Future<String?>);
-
-  @override
-  _i4.Future<void> clearCache() =>
-      (super.noSuchMethod(
-            Invocation.method(#clearCache, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
-
-  @override
-  _i4.Future<void> preloadPopular() =>
-      (super.noSuchMethod(
-            Invocation.method(#preloadPopular, []),
+            Invocation.method(#init, []),
             returnValue: _i4.Future<void>.value(),
             returnValueForMissingStub: _i4.Future<void>.value(),
           )
@@ -839,13 +822,4 @@ class MockIExerciseService extends _i1.Mock implements _i8.IExerciseService {
   _i2.ExerciseInfo? findByRuName(String? ruName) =>
       (super.noSuchMethod(Invocation.method(#findByRuName, [ruName]))
           as _i2.ExerciseInfo?);
-
-  @override
-  _i4.Future<void> init() =>
-      (super.noSuchMethod(
-            Invocation.method(#init, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
 }

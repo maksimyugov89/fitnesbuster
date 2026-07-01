@@ -4,7 +4,6 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {logInfo, logError, checkRateLimit} from "./shared";
 import {
   DEEPSEEK_RATE_LIMIT,
-  EXERCISEDB_RATE_LIMIT,
   RATE_LIMIT_WINDOW_MS,
   DEEPSEEK_DEFAULT_MAX_TOKENS,
   DEEPSEEK_MAX_TOKENS_CAP,
@@ -12,73 +11,9 @@ import {
   DEEPSEEK_MAX_MESSAGES,
   DEEPSEEK_MAX_MESSAGE_LENGTH,
 } from "./constants";
-import type {DeepSeekRequest, ExerciseDbRequest} from "./types";
+import type {DeepSeekRequest} from "./types";
 
 const deepseekApiKey = defineSecret("DEEPSEEK_API_KEY");
-const exerciseDbApiKey = defineSecret("EXERCISE_DB_API_KEY");
-
-/**
- * Proxies exercise GIF lookups to the ExerciseDB RapidAPI.
- *
- * Rate-limited to {@link EXERCISEDB_RATE_LIMIT} requests per minute per user.
- * Returns the first matching GIF URL or `null`.
- */
-export const exerciseDbProxy = onCall(
-  {region: "europe-west1", secrets: [exerciseDbApiKey]},
-  async (request: {auth?: {uid: string}; data: ExerciseDbRequest}) => {
-    if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
-
-    const uid = request.auth.uid;
-    const allowed = await checkRateLimit(uid, "exerciseDbProxy", EXERCISEDB_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
-    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
-
-    const {exerciseName} = request.data;
-    if (!exerciseName?.trim()) throw new HttpsError("invalid-argument", "exerciseName required");
-    logInfo("exerciseDbProxy lookup", {uid, exerciseName: exerciseName.trim().toLowerCase()});
-
-    const encoded = encodeURIComponent(exerciseName.trim().toLowerCase());
-
-    return new Promise<{gifUrl: string | null}>((resolve, reject) => {
-      const req = https.request(
-        {
-          hostname: "exercisedb.p.rapidapi.com",
-          path: `/exercises/name/${encoded}?limit=1&offset=0`,
-          method: "GET",
-          headers: {
-            "X-RapidAPI-Key": exerciseDbApiKey.value(),
-            "X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
-          },
-        },
-        (res) => {
-          let data = "";
-          res.on("data", (chunk) => { data += chunk; });
-          res.on("end", () => {
-            try {
-              if (res.statusCode !== 200) {
-                logError("ExerciseDB proxy error", `${res.statusCode}: ${data}`, {exerciseName});
-                reject(new HttpsError("internal", `ExerciseDB error ${res.statusCode}`));
-                return;
-              }
-              const json = JSON.parse(data);
-              const gifUrl = Array.isArray(json) && json.length > 0
-                ? (json[0]?.gifUrl as string | undefined) ?? null
-                : null;
-              resolve({gifUrl});
-            } catch (e) {
-              logError("ExerciseDB parse error", e, {exerciseName});
-              reject(new HttpsError("internal", "Parse error"));
-            }
-          });
-        }
-      );
-      req.on("error", (e) => {
-        logError("ExerciseDB network error", e, {exerciseName});
-        reject(new HttpsError("internal", "Network error"));
-      });
-      req.end();
-    });
-  }
-);
 
 /**
  * Proxies AI requests to the DeepSeek API.

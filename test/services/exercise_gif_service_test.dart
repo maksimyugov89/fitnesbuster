@@ -10,26 +10,6 @@ void main() {
     service = ExerciseGifService();
   });
 
-  group('preloadExercises', () {
-    test('list is not empty', () {
-      expect(ExerciseGifService.preloadExercises, isNotEmpty);
-    });
-
-    test('all entries have non-empty id and name', () {
-      for (final ex in ExerciseGifService.preloadExercises) {
-        expect(ex.id, isNotEmpty);
-        expect(ex.name, isNotEmpty);
-      }
-    });
-
-    test('contains key exercises', () {
-      final ids = ExerciseGifService.preloadExercises.map((e) => e.id).toSet();
-      expect(ids, contains('push_up'));
-      expect(ids, contains('barbell_bench_press'));
-      expect(ids, contains('barbell_deadlift'));
-    });
-  });
-
   group('findByRuName', () {
     test('returns null before initialization', () {
       final result = service.findByRuName('жим лежа');

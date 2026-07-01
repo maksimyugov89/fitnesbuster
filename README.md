@@ -321,7 +321,6 @@ lib/
 | `cleanOldFeedEvents` | Scheduled (03:00) | — | Удаляет события ленты старше 30 дней |
 | `recordWorkout` | Callable | Транзакция Firestore, rate limit 30/мин | Запись завершённой тренировки в Firestore |
 | `deepseekProxy` | Callable | Rate limit 20/мин, cap maxTokens ≤8192, ≤40 сообщений ≤20K симв. | Прокси для DeepSeek API — ключ в Secret Manager |
-| `exerciseDbProxy` | Callable | Rate limit 30 req/60s | Прокси для ExerciseDB API |
 | `seedChallenges` | Callable | Admin-only (`token.role === 'admin'`) | Инициализация дефолтных публичных челленджей |
 | `deleteAccount` | Callable | Только self (`request.auth.uid`) | GDPR-удаление: каскадно чистит Firestore (профиль, друзья, заявки, лента, участие в челленджах) + Firebase Auth |
 
@@ -445,7 +444,6 @@ lib/
 | Сервис | Назначение |
 |---|---|
 | DeepSeek API | Генерация планов тренировок и питания, анализ прогресса, AI-чат, дебриф, советы по технике, AI-коррекция плана, замена ингредиентов |
-| ExerciseDB API | Pro план ($12.99/мес). Endpoint `GET /image?exerciseId={id}&resolution=360` → GIF. Ключ в Firebase Secret Manager. Прокси через Cloud Function `exerciseDbProxy` |
 | Google Health Connect | Шаги, ккал, пульс, сон, вес, тренировки (Android) |
 | Apple HealthKit | Аналогично (iOS) |
 | OpenFoodFacts | Питательная ценность по штрих-коду |
@@ -887,6 +885,17 @@ function isIn(matName, list) {
 | `checkRateLimit()` не был атомарен (read-then-write) — гонка позволяла обойти лимит | Средняя | Переведён на `db.runTransaction()` |
 | `activity_events`/`notifications` разрешали прямую клиентскую запись без валидации | Средняя | Rules: запись только через Admin SDK (обе коллекции сейчас не пишутся клиентом) |
 | `friend_requests` update разрешал менять любое поле, не только `status` | Средняя | Rules: запись только через Admin SDK |
+
+### ✅ Завершено (2 июля 2026) — Отказ от RapidAPI (ExerciseDB)
+
+При разборе стоимости нагрузочного тестирования обнаружилось, что живой поиск через RapidAPI (`exerciseDbProxy`) фактически не вызывался нигде в приложении — `getGifPath()`, `preloadPopular()` и `clearCache()` были мёртвым кодом. Все 4 экрана, показывающие превью упражнений (`ExerciseDetailScreen`, `technique_sheet.dart`, `workout_exercise_card.dart`, `workout_execution_screen.dart`), уже используют бесплатный путь: локальный фаззи-матчинг AI-названия упражнения (`ExerciseMatcher.findByRuName`) → `exerciseDbId` → статический URL на собственном Firebase Hosting CDN. Покрытие подтверждено: **1346 из 1346** упражнений в `exercises.json` имеют `exerciseDbId` и скачанный GIF.
+
+| Действие | Статус | Описание |
+| --- | --- | --- |
+| Удалён мёртвый код | ✅ | `ExerciseGifService`/`IExerciseService` урезаны до `init()` + `findByRuName()`; убраны `getGifPath`, `_fetchGifUrl`, `_downloadGif`, `preloadPopular`, `preloadExercises`, `clearCache` |
+| Удалена Cloud Function | ✅ | `exerciseDbProxy` убрана из `functions/src/proxies.ts`, `index.ts`, `types.ts`, `constants.ts`; задеплоена к удалению из прода |
+| Потеря функциональности | Нет | Оба пути (живой RapidAPI-поиск и CDN) отдавали один и тот же результат для всех 1346 упражнений; RapidAPI-путь не вызывался ни разу в текущем коде |
+| RapidAPI-подписка | Можно отменять | После удаления `exerciseDbProxy` из прода зависимость от RapidAPI отсутствует полностью — оплаченный план ExerciseDB (Pro, $12.99/мес) больше не нужен |
 
 ### Ближайшие задачи
 

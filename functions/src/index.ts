@@ -23,8 +23,8 @@ export {createChallenge, joinChallenge, updateChallengeProgress, recordWorkout, 
 // Maintenance — scheduled cleanup jobs
 export {cleanOldFeedEvents} from "./maintenance";
 
-// Proxies — third-party API proxying (ExerciseDB, DeepSeek AI)
-export {exerciseDbProxy, deepseekProxy} from "./proxies";
+// Proxies — third-party API proxying (DeepSeek AI)
+export {deepseekProxy} from "./proxies";
 
 // Account — GDPR-compliant self-service account deletion
 export {deleteAccount} from "./account";

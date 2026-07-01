@@ -47,14 +47,6 @@ export interface DeepSeekRequest {
   temperature?: number;
 }
 
-export interface ExerciseDbRequest {
-  exerciseName: string;
-}
-
-export interface ExerciseDbResponse {
-  gifUrl: string | null;
-}
-
 export interface DeepSeekResponse {
   content: string;
 }

@@ -9,9 +9,6 @@ export const ONE_DAY_MS = 86_400_000;
 /** Rate-limit window: DeepSeek proxy — 20 AI calls per minute */
 export const DEEPSEEK_RATE_LIMIT = 20;
 
-/** Rate-limit window: ExerciseDB proxy — 30 lookups per minute */
-export const EXERCISEDB_RATE_LIMIT = 30;
-
 /** Rate-limit window duration in ms (1 minute) */
 export const RATE_LIMIT_WINDOW_MS = ONE_MINUTE_MS;
 
