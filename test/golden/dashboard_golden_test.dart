@@ -101,6 +101,7 @@ void main() {
 
     when(mockAuthRepo.currentUser).thenReturn(testUser);
     when(mockAuthRepo.userChanges).thenAnswer((_) => Stream.value(testUser));
+    when(mockAuthRepo.isEmailVerified).thenReturn(true);
 
     when(mockSettingsRepo.getAvatarMode()).thenAnswer((_) async => 'initials');
     when(mockSettingsRepo.getAvatarPresetIndex()).thenAnswer((_) async => -1);

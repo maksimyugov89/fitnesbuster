@@ -25,6 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthGoogleLoginRequested>(_onGoogleLoginRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
     on<AuthUserChanged>(_onUserChanged);
+    on<AuthEmailVerificationChecked>(_onEmailVerificationChecked);
 
     _userSubscription = _authRepository.userChanges.listen(
       (user) => add(AuthUserChanged(user: user)),
@@ -40,7 +41,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void _onCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) {
     final user = _authRepository.currentUser;
     if (user != null) {
-      emit(AuthStateAuthenticated(user: user));
+      emit(
+        AuthStateAuthenticated(
+          user: user,
+          emailVerified: _authRepository.isEmailVerified,
+        ),
+      );
     } else {
       emit(const AuthStateUnauthenticated());
     }
@@ -57,7 +63,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         password: event.password,
       );
       _track(() => sl<IAnalyticsService>().logLogin(method: 'email'));
-      emit(AuthStateAuthenticated(user: user));
+      emit(
+        AuthStateAuthenticated(
+          user: user,
+          emailVerified: _authRepository.isEmailVerified,
+        ),
+      );
     } on AuthException catch (e) {
       appLogger.w('[AuthBloc] login error', error: e);
       emit(AuthStateError(message: _mapFirebaseError(e.code)));
@@ -79,7 +90,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         name: event.name,
       );
       _track(() => sl<IAnalyticsService>().logSignUp(method: 'email'));
-      emit(AuthStateAuthenticated(user: user));
+      emit(
+        AuthStateAuthenticated(
+          user: user,
+          emailVerified: _authRepository.isEmailVerified,
+        ),
+      );
     } on AuthException catch (e) {
       appLogger.w('[AuthBloc] register error', error: e);
       emit(AuthStateError(message: _mapFirebaseError(e.code)));
@@ -97,7 +113,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = await _authRepository.signInWithGoogle();
       _track(() => sl<IAnalyticsService>().logLogin(method: 'google'));
-      emit(AuthStateAuthenticated(user: user));
+      emit(
+        AuthStateAuthenticated(
+          user: user,
+          emailVerified: _authRepository.isEmailVerified,
+        ),
+      );
     } on AuthException catch (e) {
       appLogger.w('[AuthBloc] googleLogin error', error: e);
       emit(AuthStateError(message: _mapFirebaseError(e.code)));
@@ -125,9 +146,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onUserChanged(AuthUserChanged event, Emitter<AuthState> emit) {
     if (event.user != null) {
-      emit(AuthStateAuthenticated(user: event.user!));
+      emit(
+        AuthStateAuthenticated(
+          user: event.user!,
+          emailVerified: _authRepository.isEmailVerified,
+        ),
+      );
     } else {
       emit(const AuthStateUnauthenticated());
+    }
+  }
+
+  Future<void> _onEmailVerificationChecked(
+    AuthEmailVerificationChecked event,
+    Emitter<AuthState> emit,
+  ) async {
+    final current = state;
+    if (current is! AuthStateAuthenticated) return;
+    try {
+      final verified = await _authRepository.reloadAndCheckEmailVerified();
+      emit(AuthStateAuthenticated(user: current.user, emailVerified: verified));
+    } catch (e, st) {
+      appLogger.w(
+        '[AuthBloc] email verification check failed',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 

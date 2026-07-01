@@ -25,6 +25,7 @@ void main() {
     repo = MockIAuthRepository();
     when(repo.userChanges).thenAnswer((_) => const Stream.empty());
     when(repo.currentUser).thenReturn(null);
+    when(repo.isEmailVerified).thenReturn(true);
     bloc = AuthBloc(authRepository: repo);
   });
 

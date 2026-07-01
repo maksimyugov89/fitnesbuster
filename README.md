@@ -191,7 +191,7 @@ lib/
 
 | BLoC | Назначение | Ключевые события |
 |---|---|---|
-| **AuthBloc** | Email/Google вход, регистрация, проверка сессии | `AuthLoginRequested`, `AuthRegisterRequested`, `AuthGoogleLoginRequested`, `AuthLogoutRequested` |
+| **AuthBloc** | Email/Google вход, регистрация, проверка сессии, email-верификация | `AuthLoginRequested`, `AuthRegisterRequested`, `AuthGoogleLoginRequested`, `AuthLogoutRequested`, `AuthEmailVerificationChecked` |
 | **UserBloc** | CRUD профиля, онбординг, настройки | `UserLoadRequested`, `UserUpdateProfile`, `UserUpdateBodyParams`, `UserUpdateGoal`, `UserUpdateSettings` |
 | **WorkoutBloc** | Выполнение тренировки (таймер, фазы, сеты) | `WorkoutStartRequested`, `WorkoutPauseRequested`, `WorkoutResumeRequested`, `WorkoutStopRequested`, `WorkoutSetCompleted`, `WorkoutTick` |
 | **HealthBloc** | Чтение данных из Health Connect | `HealthFetchRequested`, `HealthWatchRequested` |
@@ -206,6 +206,14 @@ lib/
 ---
 
 ## Функциональность
+
+### Аутентификация
+| Функция | Описание |
+|---|---|
+| Вход | Email/пароль + Google Sign-In (`AuthBloc`, `AuthRepository`) |
+| Регистрация | Email/пароль → `createUserWithEmailAndPassword` + документ в Firestore + автоотправка письма верификации (`sendEmailVerification()`) |
+| Email-верификация | Доступ ко всему приложению (включая онбординг) заблокирован роутером, пока email не подтверждён. Экран `VerifyEmailScreen`: ручная проверка статуса, повторная отправка письма (cooldown 60с), автопроверка каждые 4с, выход из аккаунта. Google-аккаунты верифицируются автоматически и минуют экран |
+| Сброс пароля | `sendPasswordResetEmail` |
 
 ### Онбординг и профиль
 | Экран | Описание |
@@ -426,7 +434,7 @@ lib/
 | Технология | Назначение |
 |---|---|
 | Firebase Firestore | Профили, AI-планы, замеры, друзья, лента, челленджи, уведомления |
-| Firebase Auth | Email/пароль + Google Sign-In |
+| Firebase Auth | Email/пароль + Google Sign-In + email-верификация |
 | Firebase Analytics | Аналитика: экраны, тренировки, питание, онбординг |
 | Firebase Cloud Functions | Бэкенд-логика: друзья, лента, челленджи, FCM, scheduled jobs |
 | Firebase Messaging (FCM) | Push-уведомления: запросы в друзья, принятие, победа в челлендже |
@@ -598,6 +606,7 @@ https://fitnesbuster.web.app/gifs/{exerciseDbId}.gif
 /                               → SplashScreen
 /login                          → LoginScreen
 /register                       → RegisterScreen
+/verify-email                   → VerifyEmailScreen
 /onboarding                     → OnboardingScreen
   /goal                         → GoalSelectionScreen
   /intensity                    → IntensitySelectionScreen
@@ -639,7 +648,8 @@ https://fitnesbuster.web.app/gifs/{exerciseDbId}.gif
 |---|---|---|
 | SplashScreen | ✅ Готов | Auth check + redirect |
 | LoginScreen | ✅ Готов | Email/пароль + Google Sign-In |
-| RegisterScreen | ✅ Готов | Email + Firestore doc |
+| RegisterScreen | ✅ Готов | Email + Firestore doc + автоотправка письма верификации |
+| VerifyEmailScreen | ✅ Готов | Блокирует доступ до подтверждения email, повторная отправка, автопроверка |
 | Онбординг (5 шагов) | ✅ Готов | Goal → AI генерация планов |
 | DashboardScreen | ✅ Готов | HC + XP-бар + Recovery Score + социальная карточка |
 | WorkoutPlanScreen | ✅ Готов | AI-план с периодизацией + AI-коррекция + календарь |
@@ -847,12 +857,21 @@ function isIn(matName, list) {
 | `dart analyze` — 0 замечаний | ✅ | 61 `curly_braces_in_flow_control_structures` устранены через `dart fix --apply` |
 | Документация | ✅ | [docs/CI_CD.md](docs/CI_CD.md) — секреты, релизы, покрытие, известные ограничения |
 
+### ✅ Завершено (1 июля 2026) — Email-верификация при регистрации
+
+| Задача | Статус | Описание |
+| --- | --- | --- |
+| Отправка письма верификации | ✅ | `AuthRepository.register()` вызывает `sendEmailVerification()` сразу после создания аккаунта; ошибка отправки не блокирует регистрацию |
+| Гейт доступа в роутере | ✅ | `AppRouter._redirect` блокирует все маршруты (включая онбординг), пока `AuthStateAuthenticated.emailVerified == false`, и редиректит на `/verify-email` |
+| VerifyEmailScreen | ✅ | Ручная проверка (`AuthEmailVerificationChecked` → `reloadAndCheckEmailVerified()`), повторная отправка письма с cooldown 60с, автопроверка каждые 4с, выход из аккаунта |
+| Обратная совместимость | ✅ | Существующие неверифицированные пользователи тоже проходят гейт при следующем входе и могут запросить письмо повторно; Google-аккаунты считаются верифицированными автоматически |
+| Локализация | ✅ | Новые ключи `verifyEmail*` добавлены в ru/en (остальные 13 языков — автофоллбэк на английский) |
+
 ### Ближайшие задачи
 
 | Задача | Приоритет | Описание |
 | --- | --- | --- |
 | Аудит безопасности | Высокий | GDPR, Firestore rules, Hive шифрование |
-| Email-подтверждение | Средний | `sendEmailVerification()` + блокировка до подтверждения |
 | Бета-тестирование | Высокий | 50–100 пользователей, Crashlytics, Retention D1/D7/D30 |
 | Миграция `firebase-admin` на v14 | Низкий | Не срочно: v14 несовместим с текущим `firebase-functions@7.2.5` (peer dependency), нужна миграция 5 файлов `functions/src/` на модульный API. Ждём релиза `firebase-functions` с поддержкой v14 |
 

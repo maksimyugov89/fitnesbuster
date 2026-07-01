@@ -10,6 +10,7 @@ import 'package:fitnesbuster/presentation/screens/workout/workout_execution_scre
 import 'package:fitnesbuster/presentation/screens/auth/splash_screen.dart';
 import 'package:fitnesbuster/presentation/screens/auth/login_screen.dart';
 import 'package:fitnesbuster/presentation/screens/auth/register_screen.dart';
+import 'package:fitnesbuster/presentation/screens/auth/verify_email_screen.dart';
 import 'package:fitnesbuster/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:fitnesbuster/presentation/screens/onboarding/goal_selection_screen.dart';
 import 'package:fitnesbuster/presentation/screens/onboarding/intensity_selection_screen.dart';
@@ -42,6 +43,7 @@ class AppRouter {
   static const String splash = '/';
   static const String login = '/login';
   static const String register = '/register';
+  static const String verifyEmail = '/verify-email';
   static const String onboarding = '/onboarding';
   static const String goalSelection = '/onboarding/goal';
   static const String intensitySelection = '/onboarding/intensity';
@@ -83,6 +85,10 @@ class AppRouter {
         GoRoute(path: splash, builder: (_, _) => const SplashScreen()),
         GoRoute(path: login, builder: (_, _) => const LoginScreen()),
         GoRoute(path: register, builder: (_, _) => const RegisterScreen()),
+        GoRoute(
+          path: verifyEmail,
+          builder: (_, _) => const VerifyEmailScreen(),
+        ),
         GoRoute(
           path: onboarding,
           builder: (_, _) => const OnboardingScreen(),
@@ -185,19 +191,27 @@ class AppRouter {
     if (loc == splash) return null;
 
     final isOnboarding = loc.startsWith(onboarding);
+    final isVerifyEmail = loc == verifyEmail;
     final isPublic = loc == login || loc == register || isOnboarding;
 
     if (!isAuthenticated && !isPublic) return login;
 
-    if (isAuthenticated && isPublic) {
+    if (isAuthenticated) {
       final authState = context.read<AuthBloc>().state;
 
-      // AuthBloc ещё не подтвердил аутентификацию — ждём, не редиректим на онбординг
+      // AuthBloc ещё не подтвердил аутентификацию — ждём, не редиректим
       if (authState is! AuthStateAuthenticated) return null;
 
-      final hasProfile = authState.user.profile != null;
-      if (isOnboarding) return hasProfile ? dashboard : null;
-      return hasProfile ? dashboard : onboarding;
+      // Email не подтверждён — блокируем доступ ко всему, кроме экрана верификации
+      if (!authState.emailVerified) {
+        return isVerifyEmail ? null : verifyEmail;
+      }
+
+      if (isPublic || isVerifyEmail) {
+        final hasProfile = authState.user.profile != null;
+        if (isOnboarding) return hasProfile ? dashboard : null;
+        return hasProfile ? dashboard : onboarding;
+      }
     }
 
     return null;

@@ -145,6 +145,16 @@ class AppLocalizations {
   String get dontHaveAccount => _t('dontHaveAccount');
   String get loginButton => _t('loginButton');
   String get registerButton => _t('registerButton');
+  String get verifyEmailTitle => _t('verifyEmailTitle');
+  String verifyEmailSubtitle(String email) =>
+      _tp('verifyEmailSubtitle', {'email': email});
+  String get verifyEmailCheckBtn => _t('verifyEmailCheckBtn');
+  String get verifyEmailResendBtn => _t('verifyEmailResendBtn');
+  String verifyEmailResendCooldown(String seconds) =>
+      _tp('verifyEmailResendCooldown', {'seconds': seconds});
+  String get verifyEmailSentSnackbar => _t('verifyEmailSentSnackbar');
+  String get verifyEmailNotYetSnackbar => _t('verifyEmailNotYetSnackbar');
+  String get verifyEmailLogoutBtn => _t('verifyEmailLogoutBtn');
 
   // ── Onboarding ────────────────────────────────────────────────────────────
   String get onbGoalTitle => _t('onbGoalTitle');

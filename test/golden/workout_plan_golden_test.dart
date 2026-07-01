@@ -69,6 +69,7 @@ void main() {
 
     when(mockAuthRepo.currentUser).thenReturn(testUser);
     when(mockAuthRepo.userChanges).thenAnswer((_) => Stream.value(testUser));
+    when(mockAuthRepo.isEmailVerified).thenReturn(true);
 
     when(mockUserRepo.getAiPlans(any)).thenAnswer((_) async => {});
     when(mockUserRepo.isTestWeekCompleted(any)).thenAnswer((_) async => true);

@@ -29,6 +29,9 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
+  bool get isEmailVerified => _auth.currentUser?.emailVerified ?? false;
+
+  @override
   Stream<UserEntity?> get userChanges => _auth.authStateChanges().asyncMap((
     fbUser,
   ) async {
@@ -117,10 +120,41 @@ class AuthRepository implements IAuthRepository {
             'email': email.trim(),
             'createdAt': FieldValue.serverTimestamp(),
           });
+      try {
+        await fbUser.sendEmailVerification();
+      } catch (e, st) {
+        // Non-fatal: user can resend from the verify-email screen.
+        appLogger.w(
+          'AuthRepository: sendEmailVerification on register failed',
+          error: e,
+          stackTrace: st,
+        );
+      }
       return _fbUserToEntity(fbUser);
     } on fb.FirebaseAuthException catch (e) {
       throw _mapFirebaseException(e);
     }
+  }
+
+  @override
+  Future<void> sendEmailVerification() async {
+    final fbUser = _auth.currentUser;
+    if (fbUser == null || fbUser.emailVerified) return;
+    try {
+      await fbUser.sendEmailVerification();
+    } on fb.FirebaseAuthException catch (e) {
+      throw _mapFirebaseException(e);
+    }
+  }
+
+  @override
+  Future<bool> reloadAndCheckEmailVerified() async {
+    try {
+      await _auth.currentUser?.reload();
+    } on fb.FirebaseAuthException catch (e) {
+      throw _mapFirebaseException(e);
+    }
+    return _auth.currentUser?.emailVerified ?? false;
   }
 
   @override

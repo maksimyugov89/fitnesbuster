@@ -49,3 +49,11 @@ class AuthUserChanged extends AuthEvent {
   @override
   List<Object?> get props => [user];
 }
+
+/// Re-checks the current user's email verification status with Firebase
+/// (e.g. after the user taps "I verified my email" on the verify-email screen).
+class AuthEmailVerificationChecked extends AuthEvent {
+  const AuthEmailVerificationChecked();
+  @override
+  List<Object?> get props => [];
+}

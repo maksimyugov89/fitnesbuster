@@ -28,8 +28,13 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: subtype_of_sealed_class
 
 class _FakeUserEntity_0 extends _i1.SmartFake implements _i2.UserEntity {
-  _FakeUserEntity_0(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
+  _FakeUserEntity_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
 }
 
 /// A class which mocks [IAuthRepository].
@@ -41,12 +46,16 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
   }
 
   @override
-  _i4.Stream<_i2.UserEntity?> get userChanges =>
-      (super.noSuchMethod(
-            Invocation.getter(#userChanges),
-            returnValue: _i4.Stream<_i2.UserEntity?>.empty(),
-          )
-          as _i4.Stream<_i2.UserEntity?>);
+  _i4.Stream<_i2.UserEntity?> get userChanges => (super.noSuchMethod(
+        Invocation.getter(#userChanges),
+        returnValue: _i4.Stream<_i2.UserEntity?>.empty(),
+      ) as _i4.Stream<_i2.UserEntity?>);
+
+  @override
+  bool get isEmailVerified => (super.noSuchMethod(
+        Invocation.getter(#isEmailVerified),
+        returnValue: false,
+      ) as bool);
 
   @override
   _i4.Future<_i2.UserEntity> login({
@@ -54,18 +63,26 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
     required String? password,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#login, [], {#email: email, #password: password}),
-            returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(
-                this,
-                Invocation.method(#login, [], {
-                  #email: email,
-                  #password: password,
-                }),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.UserEntity>);
+        Invocation.method(
+          #login,
+          [],
+          {
+            #email: email,
+            #password: password,
+          },
+        ),
+        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
+          this,
+          Invocation.method(
+            #login,
+            [],
+            {
+              #email: email,
+              #password: password,
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.UserEntity>);
 
   @override
   _i4.Future<_i2.UserEntity> register({
@@ -74,63 +91,100 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
     required String? password,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#register, [], {
+        Invocation.method(
+          #register,
+          [],
+          {
+            #name: name,
+            #email: email,
+            #password: password,
+          },
+        ),
+        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
+          this,
+          Invocation.method(
+            #register,
+            [],
+            {
               #name: name,
               #email: email,
               #password: password,
-            }),
-            returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(
-                this,
-                Invocation.method(#register, [], {
-                  #name: name,
-                  #email: email,
-                  #password: password,
-                }),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.UserEntity>);
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.UserEntity>);
 
   @override
-  _i4.Future<_i2.UserEntity> signInWithGoogle() =>
-      (super.noSuchMethod(
-            Invocation.method(#signInWithGoogle, []),
-            returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(this, Invocation.method(#signInWithGoogle, [])),
-            ),
-          )
-          as _i4.Future<_i2.UserEntity>);
+  _i4.Future<_i2.UserEntity> signInWithGoogle() => (super.noSuchMethod(
+        Invocation.method(
+          #signInWithGoogle,
+          [],
+        ),
+        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
+          this,
+          Invocation.method(
+            #signInWithGoogle,
+            [],
+          ),
+        )),
+      ) as _i4.Future<_i2.UserEntity>);
 
   @override
-  _i4.Future<void> resetPassword(String? email) =>
-      (super.noSuchMethod(
-            Invocation.method(#resetPassword, [email]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> resetPassword(String? email) => (super.noSuchMethod(
+        Invocation.method(
+          #resetPassword,
+          [email],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> logout() =>
-      (super.noSuchMethod(
-            Invocation.method(#logout, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> logout() => (super.noSuchMethod(
+        Invocation.method(
+          #logout,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> updateProfile({String? name, String? photoUrl}) =>
+  _i4.Future<void> updateProfile({
+    String? name,
+    String? photoUrl,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#updateProfile, [], {
-              #name: name,
-              #photoUrl: photoUrl,
-            }),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #updateProfile,
+          [],
+          {
+            #name: name,
+            #photoUrl: photoUrl,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> sendEmailVerification() => (super.noSuchMethod(
+        Invocation.method(
+          #sendEmailVerification,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<bool> reloadAndCheckEmailVerified() => (super.noSuchMethod(
+        Invocation.method(
+          #reloadAndCheckEmailVerified,
+          [],
+        ),
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 }
 
 /// A class which mocks [IUserRepository].
@@ -142,27 +196,35 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
   }
 
   @override
-  _i4.Future<_i2.UserEntity> getUser(String? userId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getUser, [userId]),
-            returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(this, Invocation.method(#getUser, [userId])),
-            ),
-          )
-          as _i4.Future<_i2.UserEntity>);
+  _i4.Future<_i2.UserEntity> getUser(String? userId) => (super.noSuchMethod(
+        Invocation.method(
+          #getUser,
+          [userId],
+        ),
+        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
+          this,
+          Invocation.method(
+            #getUser,
+            [userId],
+          ),
+        )),
+      ) as _i4.Future<_i2.UserEntity>);
 
   @override
   _i4.Future<_i2.UserEntity> updateProfile(_i2.UserEntity? user) =>
       (super.noSuchMethod(
-            Invocation.method(#updateProfile, [user]),
-            returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(
-                this,
-                Invocation.method(#updateProfile, [user]),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.UserEntity>);
+        Invocation.method(
+          #updateProfile,
+          [user],
+        ),
+        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
+          this,
+          Invocation.method(
+            #updateProfile,
+            [user],
+          ),
+        )),
+      ) as _i4.Future<_i2.UserEntity>);
 
   @override
   _i4.Future<_i2.UserEntity> saveOnboardingData({
@@ -175,7 +237,25 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
     _i2.UserProfile? profile,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#saveOnboardingData, [], {
+        Invocation.method(
+          #saveOnboardingData,
+          [],
+          {
+            #userId: userId,
+            #goal: goal,
+            #intensity: intensity,
+            #location: location,
+            #running: running,
+            #city: city,
+            #profile: profile,
+          },
+        ),
+        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
+          this,
+          Invocation.method(
+            #saveOnboardingData,
+            [],
+            {
               #userId: userId,
               #goal: goal,
               #intensity: intensity,
@@ -183,23 +263,10 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
               #running: running,
               #city: city,
               #profile: profile,
-            }),
-            returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(
-                this,
-                Invocation.method(#saveOnboardingData, [], {
-                  #userId: userId,
-                  #goal: goal,
-                  #intensity: intensity,
-                  #location: location,
-                  #running: running,
-                  #city: city,
-                  #profile: profile,
-                }),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.UserEntity>);
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.UserEntity>);
 
   @override
   _i4.Future<_i2.UserEntity> updateWorkoutSettings({
@@ -208,23 +275,28 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
     required String? running,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#updateWorkoutSettings, [], {
+        Invocation.method(
+          #updateWorkoutSettings,
+          [],
+          {
+            #userId: userId,
+            #location: location,
+            #running: running,
+          },
+        ),
+        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
+          this,
+          Invocation.method(
+            #updateWorkoutSettings,
+            [],
+            {
               #userId: userId,
               #location: location,
               #running: running,
-            }),
-            returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(
-                this,
-                Invocation.method(#updateWorkoutSettings, [], {
-                  #userId: userId,
-                  #location: location,
-                  #running: running,
-                }),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.UserEntity>);
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.UserEntity>);
 
   @override
   _i4.Future<void> saveAiPlans({
@@ -233,32 +305,39 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
     required String? mealPlanJson,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#saveAiPlans, [], {
-              #userId: userId,
-              #workoutPlanJson: workoutPlanJson,
-              #mealPlanJson: mealPlanJson,
-            }),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #saveAiPlans,
+          [],
+          {
+            #userId: userId,
+            #workoutPlanJson: workoutPlanJson,
+            #mealPlanJson: mealPlanJson,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   _i4.Future<void> saveTestWeekCompleted({required String? userId}) =>
       (super.noSuchMethod(
-            Invocation.method(#saveTestWeekCompleted, [], {#userId: userId}),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #saveTestWeekCompleted,
+          [],
+          {#userId: userId},
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<bool> isTestWeekCompleted(String? userId) =>
-      (super.noSuchMethod(
-            Invocation.method(#isTestWeekCompleted, [userId]),
-            returnValue: _i4.Future<bool>.value(false),
-          )
-          as _i4.Future<bool>);
+  _i4.Future<bool> isTestWeekCompleted(String? userId) => (super.noSuchMethod(
+        Invocation.method(
+          #isTestWeekCompleted,
+          [userId],
+        ),
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
   _i4.Future<void> updateGoal({
@@ -266,11 +345,17 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
     required _i2.FitnessGoal? goal,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#updateGoal, [], {#userId: userId, #goal: goal}),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #updateGoal,
+          [],
+          {
+            #userId: userId,
+            #goal: goal,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   _i4.Future<void> saveMeasurement({
@@ -278,24 +363,28 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
     required _i6.BodyMeasurement? measurement,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#saveMeasurement, [], {
-              #userId: userId,
-              #measurement: measurement,
-            }),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #saveMeasurement,
+          [],
+          {
+            #userId: userId,
+            #measurement: measurement,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   _i4.Future<List<_i6.BodyMeasurement>> getMeasurements(String? userId) =>
       (super.noSuchMethod(
-            Invocation.method(#getMeasurements, [userId]),
-            returnValue: _i4.Future<List<_i6.BodyMeasurement>>.value(
-              <_i6.BodyMeasurement>[],
-            ),
-          )
-          as _i4.Future<List<_i6.BodyMeasurement>>);
+        Invocation.method(
+          #getMeasurements,
+          [userId],
+        ),
+        returnValue: _i4.Future<List<_i6.BodyMeasurement>>.value(
+            <_i6.BodyMeasurement>[]),
+      ) as _i4.Future<List<_i6.BodyMeasurement>>);
 
   @override
   _i4.Future<void> updateWorkoutPlan({
@@ -303,24 +392,28 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
     required String? workoutPlanJson,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#updateWorkoutPlan, [], {
-              #userId: userId,
-              #workoutPlanJson: workoutPlanJson,
-            }),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #updateWorkoutPlan,
+          [],
+          {
+            #userId: userId,
+            #workoutPlanJson: workoutPlanJson,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   _i4.Future<Map<String, String?>> getAiPlans(String? userId) =>
       (super.noSuchMethod(
-            Invocation.method(#getAiPlans, [userId]),
-            returnValue: _i4.Future<Map<String, String?>>.value(
-              <String, String?>{},
-            ),
-          )
-          as _i4.Future<Map<String, String?>>);
+        Invocation.method(
+          #getAiPlans,
+          [userId],
+        ),
+        returnValue:
+            _i4.Future<Map<String, String?>>.value(<String, String?>{}),
+      ) as _i4.Future<Map<String, String?>>);
 }
 
 /// A class which mocks [ISettingsRepository].
@@ -333,438 +426,592 @@ class MockISettingsRepository extends _i1.Mock
   }
 
   @override
-  _i4.Future<bool> getWorkoutDone(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getWorkoutDone, [dayKey]),
-            returnValue: _i4.Future<bool>.value(false),
-          )
-          as _i4.Future<bool>);
+  _i4.Future<bool> getWorkoutDone(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getWorkoutDone,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i4.Future<void> setWorkoutDone(String? dayKey, bool? done) =>
+  _i4.Future<void> setWorkoutDone(
+    String? dayKey,
+    bool? done,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setWorkoutDone, [dayKey, done]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setWorkoutDone,
+          [
+            dayKey,
+            done,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getWorkoutKcal(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getWorkoutKcal, [dayKey]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getWorkoutKcal(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getWorkoutKcal,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setWorkoutKcal(String? dayKey, int? kcal) =>
+  _i4.Future<void> setWorkoutKcal(
+    String? dayKey,
+    int? kcal,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setWorkoutKcal, [dayKey, kcal]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setWorkoutKcal,
+          [
+            dayKey,
+            kcal,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getWorkoutSets(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getWorkoutSets, [dayKey]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getWorkoutSets(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getWorkoutSets,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setWorkoutSets(String? dayKey, int? sets) =>
+  _i4.Future<void> setWorkoutSets(
+    String? dayKey,
+    int? sets,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setWorkoutSets, [dayKey, sets]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setWorkoutSets,
+          [
+            dayKey,
+            sets,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getWorkoutTime(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getWorkoutTime, [dayKey]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getWorkoutTime(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getWorkoutTime,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setWorkoutTime(String? dayKey, int? minuteOfDay) =>
+  _i4.Future<void> setWorkoutTime(
+    String? dayKey,
+    int? minuteOfDay,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setWorkoutTime, [dayKey, minuteOfDay]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setWorkoutTime,
+          [
+            dayKey,
+            minuteOfDay,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getWorkoutRating(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getWorkoutRating, [dayKey]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getWorkoutRating(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getWorkoutRating,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setWorkoutRating(String? dayKey, int? rating) =>
+  _i4.Future<void> setWorkoutRating(
+    String? dayKey,
+    int? rating,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setWorkoutRating, [dayKey, rating]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setWorkoutRating,
+          [
+            dayKey,
+            rating,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   _i4.Future<String?> getWorkoutLogDetail(String? dayKey) =>
       (super.noSuchMethod(
-            Invocation.method(#getWorkoutLogDetail, [dayKey]),
-            returnValue: _i4.Future<String?>.value(),
-          )
-          as _i4.Future<String?>);
+        Invocation.method(
+          #getWorkoutLogDetail,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
 
   @override
-  _i4.Future<void> setWorkoutLogDetail(String? dayKey, String? json) =>
+  _i4.Future<void> setWorkoutLogDetail(
+    String? dayKey,
+    String? json,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setWorkoutLogDetail, [dayKey, json]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setWorkoutLogDetail,
+          [
+            dayKey,
+            json,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getWorkoutStreak() =>
-      (super.noSuchMethod(
-            Invocation.method(#getWorkoutStreak, []),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getWorkoutStreak() => (super.noSuchMethod(
+        Invocation.method(
+          #getWorkoutStreak,
+          [],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setWorkoutStreak(int? streak) =>
-      (super.noSuchMethod(
-            Invocation.method(#setWorkoutStreak, [streak]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> setWorkoutStreak(int? streak) => (super.noSuchMethod(
+        Invocation.method(
+          #setWorkoutStreak,
+          [streak],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<String?> getLastWorkoutDate() =>
-      (super.noSuchMethod(
-            Invocation.method(#getLastWorkoutDate, []),
-            returnValue: _i4.Future<String?>.value(),
-          )
-          as _i4.Future<String?>);
+  _i4.Future<String?> getLastWorkoutDate() => (super.noSuchMethod(
+        Invocation.method(
+          #getLastWorkoutDate,
+          [],
+        ),
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
 
   @override
-  _i4.Future<void> setLastWorkoutDate(String? date) =>
-      (super.noSuchMethod(
-            Invocation.method(#setLastWorkoutDate, [date]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> setLastWorkoutDate(String? date) => (super.noSuchMethod(
+        Invocation.method(
+          #setLastWorkoutDate,
+          [date],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getEatenCal(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getEatenCal, [dayKey]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getEatenCal(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getEatenCal,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setEatenCal(String? dayKey, int? cal) =>
+  _i4.Future<void> setEatenCal(
+    String? dayKey,
+    int? cal,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setEatenCal, [dayKey, cal]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setEatenCal,
+          [
+            dayKey,
+            cal,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getTargetCal(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getTargetCal, [dayKey]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getTargetCal(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getTargetCal,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setTargetCal(String? dayKey, int? cal) =>
+  _i4.Future<void> setTargetCal(
+    String? dayKey,
+    int? cal,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setTargetCal, [dayKey, cal]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setTargetCal,
+          [
+            dayKey,
+            cal,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getWaterMl(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getWaterMl, [dayKey]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getWaterMl(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getWaterMl,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setWaterMl(String? dayKey, int? ml) =>
+  _i4.Future<void> setWaterMl(
+    String? dayKey,
+    int? ml,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setWaterMl, [dayKey, ml]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setWaterMl,
+          [
+            dayKey,
+            ml,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getWaterGlasses(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getWaterGlasses, [dayKey]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getWaterGlasses(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getWaterGlasses,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setWaterGlasses(String? dayKey, int? glasses) =>
+  _i4.Future<void> setWaterGlasses(
+    String? dayKey,
+    int? glasses,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setWaterGlasses, [dayKey, glasses]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setWaterGlasses,
+          [
+            dayKey,
+            glasses,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<List<String>> getMealsDone(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getMealsDone, [dayKey]),
-            returnValue: _i4.Future<List<String>>.value(<String>[]),
-          )
-          as _i4.Future<List<String>>);
+  _i4.Future<List<String>> getMealsDone(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getMealsDone,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<List<String>>.value(<String>[]),
+      ) as _i4.Future<List<String>>);
 
   @override
-  _i4.Future<void> setMealsDone(String? dayKey, List<String>? meals) =>
+  _i4.Future<void> setMealsDone(
+    String? dayKey,
+    List<String>? meals,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setMealsDone, [dayKey, meals]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setMealsDone,
+          [
+            dayKey,
+            meals,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   _i4.Future<List<String>> getManualFoods(String? dayKey) =>
       (super.noSuchMethod(
-            Invocation.method(#getManualFoods, [dayKey]),
-            returnValue: _i4.Future<List<String>>.value(<String>[]),
-          )
-          as _i4.Future<List<String>>);
+        Invocation.method(
+          #getManualFoods,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<List<String>>.value(<String>[]),
+      ) as _i4.Future<List<String>>);
 
   @override
-  _i4.Future<void> setManualFoods(String? dayKey, List<String>? foods) =>
+  _i4.Future<void> setManualFoods(
+    String? dayKey,
+    List<String>? foods,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setManualFoods, [dayKey, foods]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setManualFoods,
+          [
+            dayKey,
+            foods,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getManualSteps(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getManualSteps, [dayKey]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getManualSteps(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getManualSteps,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setManualSteps(String? dayKey, int? steps) =>
+  _i4.Future<void> setManualSteps(
+    String? dayKey,
+    int? steps,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setManualSteps, [dayKey, steps]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setManualSteps,
+          [
+            dayKey,
+            steps,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getManualHeartRate(String? dayKey) =>
-      (super.noSuchMethod(
-            Invocation.method(#getManualHeartRate, [dayKey]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getManualHeartRate(String? dayKey) => (super.noSuchMethod(
+        Invocation.method(
+          #getManualHeartRate,
+          [dayKey],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setManualHeartRate(String? dayKey, int? bpm) =>
+  _i4.Future<void> setManualHeartRate(
+    String? dayKey,
+    int? bpm,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#setManualHeartRate, [dayKey, bpm]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setManualHeartRate,
+          [
+            dayKey,
+            bpm,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<String?> getAvatarMode() =>
-      (super.noSuchMethod(
-            Invocation.method(#getAvatarMode, []),
-            returnValue: _i4.Future<String?>.value(),
-          )
-          as _i4.Future<String?>);
+  _i4.Future<String?> getAvatarMode() => (super.noSuchMethod(
+        Invocation.method(
+          #getAvatarMode,
+          [],
+        ),
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
 
   @override
-  _i4.Future<void> setAvatarMode(String? mode) =>
-      (super.noSuchMethod(
-            Invocation.method(#setAvatarMode, [mode]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> setAvatarMode(String? mode) => (super.noSuchMethod(
+        Invocation.method(
+          #setAvatarMode,
+          [mode],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int?> getAvatarPresetIndex() =>
-      (super.noSuchMethod(
-            Invocation.method(#getAvatarPresetIndex, []),
-            returnValue: _i4.Future<int?>.value(),
-          )
-          as _i4.Future<int?>);
+  _i4.Future<int?> getAvatarPresetIndex() => (super.noSuchMethod(
+        Invocation.method(
+          #getAvatarPresetIndex,
+          [],
+        ),
+        returnValue: _i4.Future<int?>.value(),
+      ) as _i4.Future<int?>);
 
   @override
-  _i4.Future<void> setAvatarPresetIndex(int? index) =>
-      (super.noSuchMethod(
-            Invocation.method(#setAvatarPresetIndex, [index]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> setAvatarPresetIndex(int? index) => (super.noSuchMethod(
+        Invocation.method(
+          #setAvatarPresetIndex,
+          [index],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<String?> getAvatarCustomPath() =>
-      (super.noSuchMethod(
-            Invocation.method(#getAvatarCustomPath, []),
-            returnValue: _i4.Future<String?>.value(),
-          )
-          as _i4.Future<String?>);
+  _i4.Future<String?> getAvatarCustomPath() => (super.noSuchMethod(
+        Invocation.method(
+          #getAvatarCustomPath,
+          [],
+        ),
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
 
   @override
-  _i4.Future<void> setAvatarCustomPath(String? path) =>
-      (super.noSuchMethod(
-            Invocation.method(#setAvatarCustomPath, [path]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> setAvatarCustomPath(String? path) => (super.noSuchMethod(
+        Invocation.method(
+          #setAvatarCustomPath,
+          [path],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> removeAvatarCustomPath() =>
-      (super.noSuchMethod(
-            Invocation.method(#removeAvatarCustomPath, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> removeAvatarCustomPath() => (super.noSuchMethod(
+        Invocation.method(
+          #removeAvatarCustomPath,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<List<String>> getShoppingListChecked() =>
-      (super.noSuchMethod(
-            Invocation.method(#getShoppingListChecked, []),
-            returnValue: _i4.Future<List<String>>.value(<String>[]),
-          )
-          as _i4.Future<List<String>>);
+  _i4.Future<List<String>> getShoppingListChecked() => (super.noSuchMethod(
+        Invocation.method(
+          #getShoppingListChecked,
+          [],
+        ),
+        returnValue: _i4.Future<List<String>>.value(<String>[]),
+      ) as _i4.Future<List<String>>);
 
   @override
   _i4.Future<void> setShoppingListChecked(List<String>? items) =>
       (super.noSuchMethod(
-            Invocation.method(#setShoppingListChecked, [items]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setShoppingListChecked,
+          [items],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<String?> getCalendarOverrides() =>
-      (super.noSuchMethod(
-            Invocation.method(#getCalendarOverrides, []),
-            returnValue: _i4.Future<String?>.value(),
-          )
-          as _i4.Future<String?>);
+  _i4.Future<String?> getCalendarOverrides() => (super.noSuchMethod(
+        Invocation.method(
+          #getCalendarOverrides,
+          [],
+        ),
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
 
   @override
-  _i4.Future<void> setCalendarOverrides(String? json) =>
-      (super.noSuchMethod(
-            Invocation.method(#setCalendarOverrides, [json]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> setCalendarOverrides(String? json) => (super.noSuchMethod(
+        Invocation.method(
+          #setCalendarOverrides,
+          [json],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getGamificationXp() =>
-      (super.noSuchMethod(
-            Invocation.method(#getGamificationXp, []),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getGamificationXp() => (super.noSuchMethod(
+        Invocation.method(
+          #getGamificationXp,
+          [],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setGamificationXp(int? xp) =>
-      (super.noSuchMethod(
-            Invocation.method(#setGamificationXp, [xp]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> setGamificationXp(int? xp) => (super.noSuchMethod(
+        Invocation.method(
+          #setGamificationXp,
+          [xp],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<List<String>> getGamificationUnlocked() =>
-      (super.noSuchMethod(
-            Invocation.method(#getGamificationUnlocked, []),
-            returnValue: _i4.Future<List<String>>.value(<String>[]),
-          )
-          as _i4.Future<List<String>>);
+  _i4.Future<List<String>> getGamificationUnlocked() => (super.noSuchMethod(
+        Invocation.method(
+          #getGamificationUnlocked,
+          [],
+        ),
+        returnValue: _i4.Future<List<String>>.value(<String>[]),
+      ) as _i4.Future<List<String>>);
 
   @override
   _i4.Future<void> setGamificationUnlocked(List<String>? ids) =>
       (super.noSuchMethod(
-            Invocation.method(#setGamificationUnlocked, [ids]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setGamificationUnlocked,
+          [ids],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getGamificationTotalWorkouts() =>
-      (super.noSuchMethod(
-            Invocation.method(#getGamificationTotalWorkouts, []),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getGamificationTotalWorkouts() => (super.noSuchMethod(
+        Invocation.method(
+          #getGamificationTotalWorkouts,
+          [],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
   _i4.Future<void> setGamificationTotalWorkouts(int? count) =>
       (super.noSuchMethod(
-            Invocation.method(#setGamificationTotalWorkouts, [count]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #setGamificationTotalWorkouts,
+          [count],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<int> getGamificationTotalPr() =>
-      (super.noSuchMethod(
-            Invocation.method(#getGamificationTotalPr, []),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
+  _i4.Future<int> getGamificationTotalPr() => (super.noSuchMethod(
+        Invocation.method(
+          #getGamificationTotalPr,
+          [],
+        ),
+        returnValue: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 
   @override
-  _i4.Future<void> setGamificationTotalPr(int? count) =>
-      (super.noSuchMethod(
-            Invocation.method(#setGamificationTotalPr, [count]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> setGamificationTotalPr(int? count) => (super.noSuchMethod(
+        Invocation.method(
+          #setGamificationTotalPr,
+          [count],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
 
 /// A class which mocks [IExerciseService].
@@ -776,42 +1023,55 @@ class MockIExerciseService extends _i1.Mock implements _i8.IExerciseService {
   }
 
   @override
-  _i4.Future<String?> getGifPath(String? exerciseId, String? exerciseName) =>
+  _i4.Future<String?> getGifPath(
+    String? exerciseId,
+    String? exerciseName,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#getGifPath, [exerciseId, exerciseName]),
-            returnValue: _i4.Future<String?>.value(),
-          )
-          as _i4.Future<String?>);
+        Invocation.method(
+          #getGifPath,
+          [
+            exerciseId,
+            exerciseName,
+          ],
+        ),
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
 
   @override
-  _i4.Future<void> clearCache() =>
-      (super.noSuchMethod(
-            Invocation.method(#clearCache, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> clearCache() => (super.noSuchMethod(
+        Invocation.method(
+          #clearCache,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> preloadPopular() =>
-      (super.noSuchMethod(
-            Invocation.method(#preloadPopular, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> preloadPopular() => (super.noSuchMethod(
+        Invocation.method(
+          #preloadPopular,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   _i2.ExerciseInfo? findByRuName(String? ruName) =>
-      (super.noSuchMethod(Invocation.method(#findByRuName, [ruName]))
-          as _i2.ExerciseInfo?);
+      (super.noSuchMethod(Invocation.method(
+        #findByRuName,
+        [ruName],
+      )) as _i2.ExerciseInfo?);
 
   @override
-  _i4.Future<void> init() =>
-      (super.noSuchMethod(
-            Invocation.method(#init, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> init() => (super.noSuchMethod(
+        Invocation.method(
+          #init,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
