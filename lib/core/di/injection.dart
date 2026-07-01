@@ -211,7 +211,15 @@ Future<void> initDependencies() async {
   );
 
   // Blocs
-  sl.registerFactory(() => AuthBloc(authRepository: sl<IAuthRepository>()));
+  // AuthBloc must be a singleton: AuthRouterNotifier, the widget-tree
+  // BlocProvider, and dashboard_screen.dart all resolve it independently via
+  // sl<AuthBloc>() — with registerFactory each call created a separate
+  // instance, so events dispatched from one screen (e.g. email verification
+  // checks) never reached the router's listener, leaving the UI stuck until
+  // a full app restart re-synced everything from scratch.
+  sl.registerLazySingleton(
+    () => AuthBloc(authRepository: sl<IAuthRepository>()),
+  );
   sl.registerFactory(() => UserBloc(userRepository: sl<IUserRepository>()));
   sl.registerFactory(() => WorkoutBloc());
   sl.registerFactory(() => NutritionBloc(nutritionService: sl()));

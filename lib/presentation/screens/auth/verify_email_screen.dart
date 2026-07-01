@@ -28,7 +28,10 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   @override
   void initState() {
     super.initState();
-    _startCooldown();
+    // Cooldown only starts after an actual send (see _resend()) — starting
+    // it here too disabled the "resend" button for the first 60s on every
+    // screen visit, even for accounts that never got an initial email
+    // (e.g. pre-verification accounts logging in for the first time).
     _pollTimer = Timer.periodic(_autoPollInterval, (_) => _checkVerified());
   }
 

@@ -11,6 +11,7 @@ import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
 import 'package:fitnesbuster/core/utils/enum_parser.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/localization/language_service.dart';
 import 'package:fitnesbuster/core/constants/firestore_collections.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 
@@ -130,6 +131,7 @@ class AuthRepository implements IAuthRepository {
             'createdAt': FieldValue.serverTimestamp(),
           });
       try {
+        await _auth.setLanguageCode(LanguageService.current.code);
         await fbUser.sendEmailVerification();
       } catch (e, st) {
         // Non-fatal: user can resend from the verify-email screen.
@@ -150,6 +152,7 @@ class AuthRepository implements IAuthRepository {
     final fbUser = _auth.currentUser;
     if (fbUser == null || fbUser.emailVerified) return;
     try {
+      await _auth.setLanguageCode(LanguageService.current.code);
       await fbUser.sendEmailVerification();
     } on fb.FirebaseAuthException catch (e) {
       throw _mapFirebaseException(e);
@@ -203,6 +206,7 @@ class AuthRepository implements IAuthRepository {
 
   @override
   Future<void> resetPassword(String email) async {
+    await _auth.setLanguageCode(LanguageService.current.code);
     await _auth.sendPasswordResetEmail(email: email.trim());
   }
 
