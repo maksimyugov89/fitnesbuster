@@ -60,10 +60,21 @@ async function checkRateLimit(
       }
       tx.set(ref, {count: count + 1, windowStart}, {merge: true});
       return true;
-    });
+    }, {maxAttempts: 15});
   } catch (e) {
+    const code = (e as {code?: number}).code;
+    if (code === 10) {
+      // ABORTED: Firestore's own concurrency control gave up retrying after
+      // exhausting maxAttempts under heavy contention on this exact document
+      // (many requests racing for the same rate-limit slot at once). Fail
+      // *closed* here — unlike a genuine infra outage, this is precisely
+      // the burst scenario the limiter exists to catch. The caller can
+      // safely retry a moment later once the contention clears.
+      logWarn("Rate limiter contention exhausted — denying", {uid, action});
+      return false;
+    }
     logError("Rate limiter check failed", e, {uid, action});
-    return true; // fail-open: permit on infrastructure error
+    return true; // fail-open: permit on genuine infrastructure error
   }
 }
 
