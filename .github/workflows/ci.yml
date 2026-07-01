@@ -13,6 +13,9 @@ jobs:
   flutter:
     name: Flutter — analyze, format, test, coverage
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
@@ -54,13 +57,14 @@ jobs:
           echo '## Test coverage summary' >> "$GITHUB_STEP_SUMMARY"
           lcov --summary coverage/lcov.info 2>&1 | tail -n +2 >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+      - name: Report coverage in PR comment
+        if: github.event_name == 'pull_request'
+        uses: zgosalvez/github-actions-report-lcov@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage/lcov.info
-          flags: flutter
-          fail_ci_if_error: false
+          coverage-files: coverage/lcov.info
+          artifact-name: coverage-html-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-comment: true
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4

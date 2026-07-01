@@ -9,7 +9,6 @@
 # FitnesBuster
 
 [![CI](https://github.com/maksimyugov89/fitnesbuster/actions/workflows/ci.yml/badge.svg)](https://github.com/maksimyugov89/fitnesbuster/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/maksimyugov89/fitnesbuster/branch/master/graph/badge.svg)](https://codecov.io/gh/maksimyugov89/fitnesbuster)
 [![Security](https://github.com/maksimyugov89/fitnesbuster/actions/workflows/security.yml/badge.svg)](https://github.com/maksimyugov89/fitnesbuster/actions/workflows/security.yml)
 
 **Персональный AI-фитнес-тренер в кармане.**

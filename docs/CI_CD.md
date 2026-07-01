@@ -6,7 +6,7 @@
 
 | Файл | Триггер | Что делает |
 |---|---|---|
-| [`ci.yml`](../.github/workflows/ci.yml) | push/PR → `master` | `dart format`, `flutter analyze`, все 337 тестов (`flutter test --coverage`), загрузка покрытия в Codecov + артефакт `lcov.info`, сборка Cloud Functions (`npm run build`) |
+| [`ci.yml`](../.github/workflows/ci.yml) | push/PR → `master` | `dart format`, `flutter analyze`, все 337 тестов (`flutter test --coverage`), отчёт о покрытии в комментарии PR + артефакт `lcov.info`, сборка Cloud Functions (`npm run build`) |
 | [`build.yml`](../.github/workflows/build.yml) | push/PR → `master`, ручной запуск | Собирает APK и AAB (debug-подпись, для внутреннего тестирования) и сохраняет их как build-артефакты на 14 дней |
 | [`release.yml`](../.github/workflows/release.yml) | push тега `v*.*.*` **или** ручной запуск (`workflow_dispatch`) | Прогоняет `flutter analyze` + `flutter test` как гейт качества, собирает **подписанные боевым ключом** APK/AAB, публикует GitHub Release с артефактами и авто-changelog, шлёт уведомление в Telegram |
 | [`security.yml`](../.github/workflows/security.yml) | PR → `master`, push → `master`, еженедельно (пн 06:00 UTC), ручной запуск | Сканирует `pubspec.lock` и `functions/package-lock.json` через OSV-Scanner (результаты — во вкладке Security → Code scanning), проверяет diff зависимостей в PR (`dependency-review-action`), шлёт уведомление в Telegram при найденных уязвимостях |
@@ -18,7 +18,6 @@
 
 | Секрет | Используется в | Обязателен для |
 |---|---|---|
-| `CODECOV_TOKEN` | `ci.yml` | Загрузки отчёта покрытия в Codecov |
 | `TELEGRAM_BOT_TOKEN` | `ci.yml`, `release.yml`, `security.yml` | Уведомлений в Telegram |
 | `TELEGRAM_CHAT_ID` | `ci.yml`, `release.yml`, `security.yml` | Уведомлений в Telegram |
 | `ANDROID_KEYSTORE_BASE64` | `release.yml` | Подписанной release-сборки APK/AAB |
@@ -26,7 +25,9 @@
 | `ANDROID_KEY_ALIAS` | `release.yml` | Подписанной release-сборки |
 | `ANDROID_KEY_PASSWORD` | `release.yml` | Подписанной release-сборки |
 
-Без этих секретов `ci.yml` и `build.yml` всё равно работают (Codecov просто пропускает загрузку, Telegram-шаги молча падают только на `failure()` веток — не блокируют пайплайн). `release.yml` без keystore-секретов не сможет собрать подписанный релиз.
+`GITHUB_TOKEN` для комментария с покрытием в PR создаётся GitHub автоматически на каждый workflow run — добавлять его вручную не нужно.
+
+Без Telegram-секретов `ci.yml`/`security.yml` всё равно работают (шаги уведомления молча падают только на `failure()` веток — не блокируют пайплайн). `release.yml` без keystore-секретов не сможет собрать подписанный релиз.
 
 ### Как создать Telegram-бота и получить chat_id
 
@@ -66,12 +67,6 @@ base64 -i upload-keystore.jks -o keystore-base64.txt
 
 Для **локальной** release-сборки скопируйте `android/key.properties.example` → `android/key.properties` и заполните теми же значениями (файл в `.gitignore`, не коммитится).
 
-### Как получить Codecov token
-
-1. Зайдите на [codecov.io](https://codecov.io), авторизуйтесь через GitHub, добавьте репозиторий `maksimyugov89/fitnesbuster`.
-2. Скопируйте `Repository Upload Token` со страницы настроек репозитория.
-3. Добавьте как `CODECOV_TOKEN` в GitHub Secrets. Для публичных репозиториев Codecov принимает загрузки и без токена, но с ним отчёты стабильнее (нет rate limit).
-
 ## Как выпустить релиз
 
 **Вариант 1 — через git-тег:**
@@ -87,10 +82,18 @@ git push origin v1.2.0
 
 ## Отчёты о покрытии тестами
 
-- **Codecov dashboard** — https://codecov.io/gh/maksimyugov89/fitnesbuster (графики, история, дифф покрытия в PR)
+Покрытие остаётся полностью внутри GitHub, без стороннего сервиса (см. раздел про Codecov ниже — почему):
+
+- **Комментарий в PR** — на каждый PR бот ([`zgosalvez/github-actions-report-lcov`](https://github.com/zgosalvez/github-actions-report-lcov)) публикует % покрытия и таблицу по файлам, обновляя один и тот же комментарий при новых пушах
+- **Job summary** — краткая сводка `lcov --summary` видна на вкладке Summary каждого workflow run
 - **Artifact `coverage-report`** — сырой `lcov.info` на вкладке каждого workflow run в Actions (14 дней), можно открыть локально: `genhtml coverage/lcov.info -o coverage/html && open coverage/html/index.html`
+- **Artifact `coverage-html-report`** (только для PR) — готовый HTML-отчёт от того же action, тоже прикрепляется к run
 
 Из покрытия исключён сгенерированный код (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`) — он не отражает реальное качество тестирования.
+
+### Почему не Codecov
+
+Изначально планировался Codecov, но `codecov.io`/`app.codecov.io`/`api.codecov.io` возвращают `403 Forbidden` при обращении из РФ (похоже на блокировку по региону со стороны сервиса, а не проблему настройки). Если у вас появится доступ (VPN и т.п.), Codecov можно подключить: зарегистрироваться на codecov.io, добавить репозиторий, скопировать `Repository Upload Token` и добавить его как `CODECOV_TOKEN` в секреты — затем вернуть шаг `codecov/codecov-action@v4` в `ci.yml` вместо/вместе с PR-комментарием.
 
 ## Известные ограничения
 
