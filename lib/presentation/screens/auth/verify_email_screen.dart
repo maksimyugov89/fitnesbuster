@@ -62,8 +62,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     if (!mounted) return;
     setState(() => _checking = false);
     final state = context.read<AuthBloc>().state;
-    final verified =
-        state is AuthStateAuthenticated && state.emailVerified;
+    final verified = state is AuthStateAuthenticated && state.emailVerified;
     if (showFeedback && !verified) {
       _showSnack(context.l10n.verifyEmailNotYetSnackbar);
     }
@@ -106,134 +105,129 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
-          children: [
-            Positioned(
-              top: -80,
-              left: -80,
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      colors.primary.withValues(alpha: 0.082),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 88,
-                        height: 88,
-                        decoration: BoxDecoration(
-                          color: colors.surfaceLight,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.mark_email_unread_rounded,
-                          color: colors.primary,
-                          size: 40,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 28),
-                    Text(
-                      l10n.verifyEmailTitle,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.displayL,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      l10n.verifyEmailSubtitle(email),
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.bodyL.copyWith(
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 36),
-                    SizedBox(
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _checking
-                            ? null
-                            : () => _checkVerified(showFeedback: true),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colors.primary,
-                          foregroundColor: colors.textOnPrimary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: _checking
-                            ? SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: colors.textOnPrimary,
-                                ),
-                              )
-                            : Text(
-                                l10n.verifyEmailCheckBtn,
-                                style: const TextStyle(
-                                  fontFamily: 'Syne',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: (_resending || _cooldownSeconds > 0)
-                          ? null
-                          : _resend,
-                      child: Text(
-                        _cooldownSeconds > 0
-                            ? l10n.verifyEmailResendCooldown(
-                                _cooldownSeconds.toString(),
-                              )
-                            : l10n.verifyEmailResendBtn,
-                        style: TextStyle(
-                          color: _cooldownSeconds > 0
-                              ? colors.textMuted
-                              : colors.primary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    TextButton(
-                      onPressed: () => context
-                          .read<AuthBloc>()
-                          .add(const AuthLogoutRequested()),
-                      child: Text(
-                        l10n.verifyEmailLogoutBtn,
-                        style: TextStyle(
-                          color: colors.textMuted,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
+        children: [
+          Positioned(
+            top: -80,
+            left: -80,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    colors.primary.withValues(alpha: 0.082),
+                    Colors.transparent,
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        color: colors.surfaceLight,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.mark_email_unread_rounded,
+                        color: colors.primary,
+                        size: 40,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  Text(
+                    l10n.verifyEmailTitle,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.displayL,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.verifyEmailSubtitle(email),
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyL.copyWith(
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 36),
+                  SizedBox(
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: _checking
+                          ? null
+                          : () => _checkVerified(showFeedback: true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colors.primary,
+                        foregroundColor: colors.textOnPrimary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: _checking
+                          ? SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: colors.textOnPrimary,
+                              ),
+                            )
+                          : Text(
+                              l10n.verifyEmailCheckBtn,
+                              style: const TextStyle(
+                                fontFamily: 'Syne',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: (_resending || _cooldownSeconds > 0)
+                        ? null
+                        : _resend,
+                    child: Text(
+                      _cooldownSeconds > 0
+                          ? l10n.verifyEmailResendCooldown(
+                              _cooldownSeconds.toString(),
+                            )
+                          : l10n.verifyEmailResendBtn,
+                      style: TextStyle(
+                        color: _cooldownSeconds > 0
+                            ? colors.textMuted
+                            : colors.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  TextButton(
+                    onPressed: () => context.read<AuthBloc>().add(
+                      const AuthLogoutRequested(),
+                    ),
+                    child: Text(
+                      l10n.verifyEmailLogoutBtn,
+                      style: TextStyle(color: colors.textMuted, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
-
-
