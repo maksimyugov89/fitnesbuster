@@ -1,0 +1,63 @@
+name: 'Telegram Notify'
+description: 'Отправляет уведомление о статусе workflow в Telegram-чат'
+
+inputs:
+  bot-token:
+    description: 'Telegram Bot API token (secrets.TELEGRAM_BOT_TOKEN)'
+    required: true
+  chat-id:
+    description: 'Telegram chat id (secrets.TELEGRAM_CHAT_ID)'
+    required: true
+  status:
+    description: 'success | failure'
+    required: true
+  title:
+    description: 'Заголовок уведомления, напр. название workflow'
+    required: true
+  message:
+    description: 'Тело сообщения (поддерживает переносы строк)'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Send Telegram message
+      shell: bash
+      env:
+        BOT_TOKEN: ${{ inputs.bot-token }}
+        CHAT_ID: ${{ inputs.chat-id }}
+        STATUS: ${{ inputs.status }}
+        TITLE: ${{ inputs.title }}
+        BODY: ${{ inputs.message }}
+        REPO: ${{ github.repository }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        REF_NAME: ${{ github.ref_name }}
+        ACTOR: ${{ github.actor }}
+      run: |
+        set -e
+        if [ "$STATUS" = "success" ]; then
+          ICON="✅"
+        else
+          ICON="❌"
+        fi
+
+        LINES=(
+          "${ICON} <b>${TITLE}</b>"
+          "Репозиторий: <code>${REPO}</code>"
+          "Ветка/тег: <code>${REF_NAME}</code>"
+          "Автор: ${ACTOR}"
+        )
+        if [ -n "$BODY" ]; then
+          LINES+=("$BODY")
+        fi
+        LINES+=("" "Открыть workflow run: ${RUN_URL}")
+
+        TEXT=$(printf '%s\n' "${LINES[@]}")
+
+        curl -sS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+          --data-urlencode "chat_id=${CHAT_ID}" \
+          --data-urlencode "text=${TEXT}" \
+          -d "parse_mode=HTML" \
+          -d "disable_web_page_preview=true" \
+          -o /dev/null -w "Telegram API response: %{http_code}\n"

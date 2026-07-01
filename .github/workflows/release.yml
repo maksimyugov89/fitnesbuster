@@ -1,0 +1,116 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Версия релиза без "v", напр. 1.2.0 (тег v1.2.0 будет создан автоматически)'
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.38.5'
+
+jobs:
+  prepare-tag:
+    name: Create release tag (только для ручного запуска)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create and push tag
+        id: tag
+        run: |
+          TAG="v${{ github.event.inputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+  release:
+    name: Build signed release & publish GitHub Release
+    needs: [prepare-tag]
+    if: always() && (needs.prepare-tag.result == 'success' || needs.prepare-tag.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve release tag
+        id: resolve
+        run: echo "tag=${{ needs.prepare-tag.outputs.tag || github.ref_name }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.resolve.outputs.tag }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - run: flutter pub get
+
+      # Гейт качества — релиз не собирается, если анализ/тесты красные
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/ test/
+
+      - name: Test (все 337 тестов)
+        run: flutter test --reporter=expanded
+
+      - name: Restore release keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storeFile=upload-keystore.jks
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          EOF
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Build release AAB
+        run: flutter build appbundle --release
+
+      - name: Remove keystore from runner
+        if: always()
+        run: rm -f android/app/upload-keystore.jks android/key.properties
+
+      - name: Create GitHub Release
+        id: gh_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.resolve.outputs.tag }}
+          name: 'FitnesBuster ${{ steps.resolve.outputs.tag }}'
+          generate_release_notes: true
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+
+      - name: Notify Telegram on success
+        if: success()
+        uses: ./.github/actions/telegram-notify
+        with:
+          bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          status: success
+          title: 'Выпущен релиз ${{ steps.resolve.outputs.tag }}'
+          message: 'GitHub Release: ${{ steps.gh_release.outputs.url }}'
+
+      - name: Notify Telegram on failure
+        if: failure()
+        uses: ./.github/actions/telegram-notify
+        with:
+          bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          status: failure
+          title: 'Релиз ${{ steps.resolve.outputs.tag }} не собрался'
+          message: 'Проверьте лог workflow run'

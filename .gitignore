@@ -88,3 +88,8 @@ functions/lib/
 
 # Android build artifacts
 android/build/
+
+# Release signing (never commit real keystores/credentials)
+android/key.properties
+*.jks
+*.keystore
