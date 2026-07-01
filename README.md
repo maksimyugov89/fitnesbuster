@@ -15,19 +15,15 @@
 
 FitnesBuster — Flutter-приложение (Android / iOS), которое генерирует персонализированные программы тренировок и питания на базе целей пользователя, уровня подготовки, доступного оборудования и медицинских ограничений. Используется **DeepSeek AI** для создания и корректировки планов, **Google Health Connect / Apple HealthKit** для синхронизации данных здоровья, **Firebase** (Firestore, Auth, Cloud Functions, FCM, Hosting) для бэкенда, **Hive** для офлайн-кэша, **OpenFoodFacts** для сканирования штрих-кодов. Интерактивная **3D анатомическая модель** на базе Z-Anatomy визуализирует задействованные мышцы с X-ray эффектом. База из **1 346 упражнений** с GIF-демонстрациями (100% покрытие) раздаётся через **Firebase Hosting CDN** с immutable-кэшированием.
 
-Версия: `1.0.0+1` | **Рефакторинг завершён** (28.06.2026): 73/73 проблем закрыто, `dart analyze` — 0 ошибок | **CI/CD-инфраструктура введена в строй** (01.07.2026): 4 workflow на GitHub Actions, `dart analyze` — 0 замечаний (было 61) | **Аудит безопасности проведён** (02.07.2026): 10 находок закрыто (GDPR-удаление аккаунта, Firestore rules, rate-limiting, шифрование Hive)
+Версия: `1.0.0+1` | `dart analyze` — 0 замечаний | **CI/CD**: 4 workflow на GitHub Actions | **Аудит безопасности + нагрузочное тестирование проведены** (02.07.2026)
 
-| Метрика | До рефакторинга | После |
-|---------|----------------|-------|
-| Файлов >1000 строк | 4 | **0** |
-| God-объектов | 2 (1120+754) | **0** |
-| Хардкодированных `Color(0x…)` | 125+ | ~65 → SemanticColors |
-| Хардкодированных UI-строк | 50+ | **0** |
-| Неиспользуемых зависимостей | 8 | **0** |
-| Тестов | 225 | **336 проходят** + 2 golden (см. [Тестирование](#тестирование)) |
-| Локализаций | 632 ключа | **845+** ключей |
-| `dart analyze` | — | **0 замечаний** (включая info-уровень) |
-| CI/CD | — | **GitHub Actions**: analyze/format/test/coverage, сборка APK/AAB, подписанные релизы, сканирование уязвимостей |
+| Метрика | Текущее состояние |
+|---------|-------------------|
+| Тестов | **319 проходят** (+13 skipped) + 2 golden отдельно (см. [Тестирование](#тестирование)) |
+| Локализаций | **845+** ключей, 15 языков |
+| `dart analyze` | **0 замечаний** (включая info-уровень) |
+| CI/CD | **GitHub Actions**: analyze/format/test/coverage, сборка APK/AAB, подписанные релизы, сканирование уязвимостей |
+| Экранов | 33/33 функциональны |
 
 ---
 
@@ -139,7 +135,7 @@ lib/
 │   │                               # IExerciseService, IHealthAnalyticsService
 │   └── usecases/                   # CompleteTestWeekUseCase
 └── presentation/
-    ├── screens/                    # 33 экрана (все <700 строк после декомпозиции)
+    ├── screens/                    # 33 экрана (все <700 строк)
     └── widgets/                    # 65+ переиспользуемых виджетов по доменам:
         ├── dashboard/              # DashboardAppBar, ActivityRingsCard, TodaysWorkoutCard, XpBar,
         │                           # NutritionSummaryCard, QuickStatsCard, AiChatCard, SocialCard
@@ -168,22 +164,11 @@ lib/
 
 **Data → Domain:** `BodyMeasurement`, `PersonalRecord`, `TestDayExercise`, `ExerciseInfo` — в `domain/entities/`. `ChatMessageModel` — в data-слое, domain `ChatMessage` — чистая сущность без сериализации.
 
-**Строгий линтер:** 8 правил (`prefer_const_constructors`, `avoid_print` и др.), `dart fix --apply` — 178 авто-исправлений за два прохода (117 при рефакторинге + 61 `curly_braces_in_flow_control_structures` при внедрении CI/CD); `dart analyze --no-fatal-infos --no-fatal-warnings` → «No issues found!» (0 замечаний любого уровня, проверено в реальном CI)
+**Строгий линтер:** 8 правил (`prefer_const_constructors`, `avoid_print` и др.); `dart analyze --no-fatal-infos --no-fatal-warnings` → «No issues found!» (0 замечаний любого уровня, проверено в реальном CI)
 
 **Навигация:** go_router с ShellRoute (bottom navigation) + WorkoutMiniPlayer поверх всех табов. Виджеты навигации (`MainShell`, `RouterBottomNav`, `RouterWorkoutMiniPlayer`) вынесены в `widgets/router/` и используют локализацию через `AppLocalizations.tl()`.
 
-**Декомпозиция экранов:**
-| Экран | До (строк) | После (строк) | Сокращение |
-|--------|-----------|--------------|-----------|
-| dashboard_screen.dart | 1814 | 561 | −69% |
-| profile_screen.dart | 1873 | 987 | −47% |
-| workout_plan_screen.dart | 1460 | 445 | −70% |
-| progress_screen.dart | 1449 | 666 | −54% |
-| nutrition_screen.dart | 1320 | 699 | −47% |
-| deepseek_service.dart | 1120 | 110 | −90% (фасад) |
-| functions/src/index.ts | 754 | 7 файлов | разбит на домены |
-
-**DeepSeekService:** фасад (110 строк) → 5 специализированных AI-сервисов + BaseClient. Смена AI-провайдера — одна реализация `IDeepSeekService`, без изменений в BLoC и UI.
+**DeepSeekService:** фасад (110 строк), делегирует 5 специализированным AI-сервисам + BaseClient. Смена AI-провайдера — одна реализация `IDeepSeekService`, без изменений в BLoC и UI. Cloud Functions организованы по доменам: `friends.ts`, `challenges.ts`, `feed.ts`, `proxies.ts`, `account.ts`, `maintenance.ts`, `shared.ts`.
 
 ---
 
@@ -539,18 +524,14 @@ needs_sync_{uid}            String  — флаг "true" — требуется �
 ## Firebase Firestore — структура
 
 ```
-users/{uid}
+users/{uid}                                 — единый документ, без подколлекций для профиля
   ├── name, email, avatarUrl, createdAt
   ├── fcmToken                              — FCM-токен для push-уведомлений
   ├── username, usernameLower               — для поиска в социальных функциях
-  ├── onboarding/
-  │   └── data: { goal, intensity, location, runningPreference }
-  ├── profile/
-  │   └── data: { weight, height, age, gender, activityLevel, medicalRestrictions, ... }
-  ├── aiPlans/
-  │   └── data: { workoutPlanJson, mealPlanJson, generatedAt }
-  └── measurements/
-      └── {measurementId}: { date, chestCm, waistCm, hipsCm, bodyFatPercent }
+  ├── onboarding: { goal, intensity, location, runningPreference }
+  ├── profile: { weight, height, age, gender, activityLevel, medicalRestrictions, ... }
+  ├── aiPlans: { workoutPlan, mealPlan, generatedAt }
+  └── bodyMeasurements: [ { date, chestCm, waistCm, hipsCm, bodyFatPercent }, ... ]  — arrayUnion
 
 friend_requests/{reqId}
   └── { fromUid, fromName, toUid, status, createdAt }  — status: pending|accepted|declined
@@ -688,7 +669,7 @@ https://fitnesbuster.web.app/gifs/{exerciseDbId}.gif
 flutter test
 ```
 
-**336 unit/widget/E2E тестов проходят** (+ 13 skipped — требуют реального устройства, Firebase или отсутствующего в тестовом окружении `BlocProvider`) в ~22 файлах, плюс 2 golden-теста отдельно (см. ниже):
+**319 unit/widget/E2E тестов проходят** (+ 13 skipped — требуют реального устройства, Firebase или отсутствующего в тестовом окружении `BlocProvider`) в ~22 файлах, плюс 2 golden-теста отдельно (см. ниже):
 
 | Файл | Покрытие |
 |---|---|
@@ -825,23 +806,6 @@ function isIn(matName, list) {
 
 ## Дорожная карта
 
-### ✅ Завершено (26–28 июня 2026)
-| Задача | Статус | Описание |
-| --- | --- | --- |
-| Рефакторинг (Фазы 1–15) | ✅ | 73/73 проблем закрыто. Clean Architecture, freezed-сущности, декомпозиция God-классов, DI-интерфейсы, Cloud Functions безопасность, 8 пакетов удалено, 337 тестов |
-| CI/CD (черновик) | ✅ | Первая версия `ci.yml`; полноценная рабочая инфраструктура — см. раздел ниже (1 июля 2026) |
-| DeepSeekService разделение | ✅ | 5 AI-сервисов + BaseClient + фасад (110 строк) |
-| Use Cases | ✅ | CompleteTestWeekUseCase, TestWeekWorkflowService, OnboardingWorkflowService |
-| Локализация | ✅ | 845+ ключей, 0 хардкодированных строк |
-| Accessibility | ✅ | Semantics на ~77 виджетах в 42 файлах, touch targets ≥48dp |
-| Analytics | ✅ | События в 4 BLoC-файлах через IAnalyticsService |
-| Golden тесты | ✅ | DashboardScreen + WorkoutPlanScreen PNG сгенерированы |
-| E2E тесты | ✅ | 16 тестов (onboarding + workout), bloc_test/mockito |
-| Cloud Functions безопасность | ✅ | Rate-limiting, транзакции, admin-guard, withRetry, JSDoc, constants.ts |
-| OfflineQueue | ✅ | Hive + connectivity_plus + DI |
-| LoadingShimmer | ✅ | Переиспользуемый shimmer на 5 экранах |
-| SemanticColors | ✅ | 11 констант, ~60 хардкодов заменено |
-
 ### ✅ Завершено (1 июля 2026) — CI/CD-инфраструктура
 
 Полноценная инженерная инфраструктура коммерческого уровня, проверенная в реальной эксплуатации (не только настроена — прогнана на живом GitHub Actions, найденные баги исправлены).
@@ -855,7 +819,7 @@ function isIn(matName, list) {
 | Сканирование уязвимостей | ✅ | OSV-Scanner на `pubspec.lock` и `functions/package-lock.json`, уже поймал реальную CVE в `uuid` |
 | Telegram-уведомления | ✅ | О падениях CI и о выпущенных релизах |
 | Dependabot | ✅ | Автообновление зависимостей (pub/npm/github-actions), 10 PR уже смерджено |
-| Исправлены реальные баги, найденные при первом прогоне | ✅ | Нерабочий branch-триггер (`main` вместо `master`), хардкод локального JDK-пути, неотформатированный код (275 файлов), OOM при сборке на CI-раннере (лишний `-Xmx8G`), зависающие golden-тесты, пустая `assets/animations/`, 10 сломанных тестов (устаревшие моки/ассершены после рефакторинга auth-исключений и локализации) |
+| Исправлены реальные баги, найденные при первом прогоне | ✅ | Нерабочий branch-триггер (`main` вместо `master`), хардкод локального JDK-пути, неотформатированный код (275 файлов), OOM при сборке на CI-раннере (лишний `-Xmx8G`), зависающие golden-тесты, пустая `assets/animations/`, 10 сломанных тестов (устаревшие моки/ассершены) |
 | `dart analyze` — 0 замечаний | ✅ | 61 `curly_braces_in_flow_control_structures` устранены через `dart fix --apply` |
 | Документация | ✅ | [docs/CI_CD.md](docs/CI_CD.md) — секреты, релизы, покрытие, известные ограничения |
 
@@ -885,17 +849,6 @@ function isIn(matName, list) {
 | `checkRateLimit()` не был атомарен (read-then-write) — гонка позволяла обойти лимит | Средняя | Переведён на `db.runTransaction()` |
 | `activity_events`/`notifications` разрешали прямую клиентскую запись без валидации | Средняя | Rules: запись только через Admin SDK (обе коллекции сейчас не пишутся клиентом) |
 | `friend_requests` update разрешал менять любое поле, не только `status` | Средняя | Rules: запись только через Admin SDK |
-
-### ✅ Завершено (2 июля 2026) — Отказ от RapidAPI (ExerciseDB)
-
-При разборе стоимости нагрузочного тестирования обнаружилось, что живой поиск через RapidAPI (`exerciseDbProxy`) фактически не вызывался нигде в приложении — `getGifPath()`, `preloadPopular()` и `clearCache()` были мёртвым кодом. Все 4 экрана, показывающие превью упражнений (`ExerciseDetailScreen`, `technique_sheet.dart`, `workout_exercise_card.dart`, `workout_execution_screen.dart`), уже используют бесплатный путь: локальный фаззи-матчинг AI-названия упражнения (`ExerciseMatcher.findByRuName`) → `exerciseDbId` → статический URL на собственном Firebase Hosting CDN. Покрытие подтверждено: **1346 из 1346** упражнений в `exercises.json` имеют `exerciseDbId` и скачанный GIF.
-
-| Действие | Статус | Описание |
-| --- | --- | --- |
-| Удалён мёртвый код | ✅ | `ExerciseGifService`/`IExerciseService` урезаны до `init()` + `findByRuName()`; убраны `getGifPath`, `_fetchGifUrl`, `_downloadGif`, `preloadPopular`, `preloadExercises`, `clearCache` |
-| Удалена Cloud Function | ✅ | `exerciseDbProxy` убрана из `functions/src/proxies.ts`, `index.ts`, `types.ts`, `constants.ts`; задеплоена к удалению из прода |
-| Потеря функциональности | Нет | Оба пути (живой RapidAPI-поиск и CDN) отдавали один и тот же результат для всех 1346 упражнений; RapidAPI-путь не вызывался ни разу в текущем коде |
-| RapidAPI-подписка | Можно отменять | После удаления `exerciseDbProxy` из прода зависимость от RapidAPI отсутствует полностью — оплаченный план ExerciseDB (Pro, $12.99/мес) больше не нужен |
 
 ### ✅ Завершено (2 июля 2026) — Нагрузочное тестирование Cloud Functions
 
