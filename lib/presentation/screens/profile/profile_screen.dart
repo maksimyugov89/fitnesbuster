@@ -1087,7 +1087,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           TextButton(
             onPressed: () {
-              context.go('/login');
+              Navigator.of(context, rootNavigator: true).pop();
+              _handleDeleteAccount(context);
             },
             child: Text(
               l10n.delete,
@@ -1100,6 +1101,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _handleDeleteAccount(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+    String? errorMessage;
+    try {
+      await sl<IAuthRepository>().deleteAccount();
+      // Firebase Auth flips to signed-out here; AuthBloc's userChanges
+      // subscription picks it up and the router redirects to /login.
+    } catch (e, st) {
+      appLogger.w(
+        'ProfileScreen: deleteAccount failed',
+        error: e,
+        stackTrace: st,
+      );
+      errorMessage = AppLocalizations.tl('genericError');
+    }
+    if (!context.mounted) return;
+    Navigator.of(context, rootNavigator: true).pop();
+    if (errorMessage != null) {
+      final colors = AppTheme.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: colors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
   }
 }
 

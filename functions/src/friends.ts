@@ -1,7 +1,14 @@
 import * as admin from "firebase-admin";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {db, logInfo, createNotification, sendPush} from "./shared";
-import {SEARCH_USERS_LIMIT, FRIEND_LIST_LIMIT} from "./constants";
+import {db, logInfo, createNotification, sendPush, checkRateLimit} from "./shared";
+import {
+  SEARCH_USERS_LIMIT,
+  FRIEND_LIST_LIMIT,
+  SEND_FRIEND_REQUEST_RATE_LIMIT,
+  SEARCH_USERS_RATE_LIMIT,
+  FRIEND_ACTION_RATE_LIMIT,
+  RATE_LIMIT_WINDOW_MS,
+} from "./constants";
 import type {FriendRequestData, AcceptDeclineData, RemoveFriendData, SearchUsersData} from "./types";
 
 /**
@@ -21,6 +28,9 @@ export const sendFriendRequest = onCall(
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const fromUid = request.auth.uid;
     const {toUid} = request.data;
+
+    const allowed = await checkRateLimit(fromUid, "sendFriendRequest", SEND_FRIEND_REQUEST_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
     if (typeof toUid !== "string" || toUid.trim().length === 0) {
       throw new HttpsError("invalid-argument", "toUid must be a non-empty string");
@@ -70,6 +80,9 @@ export const acceptFriendRequest = onCall(
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
     const {requestId} = request.data;
+
+    const allowed = await checkRateLimit(uid, "acceptFriendRequest", FRIEND_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
     if (typeof requestId !== "string" || requestId.trim().length === 0) {
       throw new HttpsError("invalid-argument", "requestId must be a non-empty string");
@@ -123,6 +136,13 @@ export const declineFriendRequest = onCall(
     const uid = request.auth.uid;
     const {requestId} = request.data;
 
+    const allowed = await checkRateLimit(uid, "declineFriendRequest", FRIEND_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
+
+    if (typeof requestId !== "string" || requestId.trim().length === 0) {
+      throw new HttpsError("invalid-argument", "requestId must be a non-empty string");
+    }
+
     const reqRef = db.doc(`friend_requests/${requestId}`);
     const reqSnap = await reqRef.get();
     if (!reqSnap.exists) throw new HttpsError("not-found", "Request not found");
@@ -142,6 +162,13 @@ export const removeFriend = onCall(
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
     const {friendUid} = request.data;
+
+    const allowed = await checkRateLimit(uid, "removeFriend", FRIEND_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
+
+    if (typeof friendUid !== "string" || friendUid.trim().length === 0) {
+      throw new HttpsError("invalid-argument", "friendUid must be a non-empty string");
+    }
 
     const batch = db.batch();
     batch.delete(db.doc(`friends/${uid}/list/${friendUid}`));
@@ -167,6 +194,9 @@ export const searchUsers = onCall(
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const {query} = request.data;
     if (typeof query !== "string" || query.length < 2) throw new HttpsError("invalid-argument", "Query too short (min 2 chars)");
+
+    const allowed = await checkRateLimit(request.auth.uid, "searchUsers", SEARCH_USERS_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
     const q = query.toLowerCase().trim();
 

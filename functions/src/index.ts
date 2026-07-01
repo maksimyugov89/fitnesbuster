@@ -25,3 +25,6 @@ export {cleanOldFeedEvents} from "./maintenance";
 
 // Proxies — third-party API proxying (ExerciseDB, DeepSeek AI)
 export {exerciseDbProxy, deepseekProxy} from "./proxies";
+
+// Account — GDPR-compliant self-service account deletion
+export {deleteAccount} from "./account";

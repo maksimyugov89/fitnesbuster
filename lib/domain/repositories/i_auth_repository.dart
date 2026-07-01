@@ -26,4 +26,9 @@ abstract interface class IAuthRepository {
   /// Refreshes the current user from Firebase and returns the up-to-date
   /// email verification status.
   Future<bool> reloadAndCheckEmailVerified();
+
+  /// Permanently deletes the current user's account and all associated data
+  /// (Firestore documents + Firebase Auth record) via the `deleteAccount`
+  /// Cloud Function, then clears local caches and signs out.
+  Future<void> deleteAccount();
 }

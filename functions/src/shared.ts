@@ -40,25 +40,27 @@ async function checkRateLimit(
 ): Promise<boolean> {
   const ref = db.collection("rate_limits").doc(`${uid}_${action}`);
   try {
-    const snap = await ref.get();
-    const now = Date.now();
-    if (!snap.exists) {
-      await ref.set({count: 1, windowStart: now});
+    return await db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      const now = Date.now();
+      if (!snap.exists) {
+        tx.set(ref, {count: 1, windowStart: now});
+        return true;
+      }
+      const data = snap.data()!;
+      const windowStart = data.windowStart as number;
+      if (now - windowStart > windowMs) {
+        tx.set(ref, {count: 1, windowStart: now});
+        return true;
+      }
+      const count = data.count as number;
+      if (count >= maxRequests) {
+        logWarn("Rate limit exceeded", {uid, action, count, maxRequests});
+        return false;
+      }
+      tx.set(ref, {count: count + 1, windowStart}, {merge: true});
       return true;
-    }
-    const data = snap.data()!;
-    const windowStart = data.windowStart as number;
-    if (now - windowStart > windowMs) {
-      await ref.set({count: 1, windowStart: now});
-      return true;
-    }
-    const count = data.count as number;
-    if (count >= maxRequests) {
-      logWarn("Rate limit exceeded", {uid, action, count, maxRequests});
-      return false;
-    }
-    await ref.set({count: count + 1, windowStart}, {merge: true});
-    return true;
+    });
   } catch (e) {
     logError("Rate limiter check failed", e, {uid, action});
     return true; // fail-open: permit on infrastructure error

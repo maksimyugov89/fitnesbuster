@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
@@ -10,10 +12,17 @@ import 'package:fitnesbuster/core/utils/enum_parser.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/constants/firestore_collections.dart';
+import 'package:fitnesbuster/core/cache/hive_cache.dart';
 
 class AuthRepository implements IAuthRepository {
   final fb.FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
+
+  // Lazy: constructing this eagerly requires Firebase.initializeApp() to
+  // have already run, which breaks pure-mock unit tests that never touch
+  // deleteAccount().
+  FirebaseFunctions get _functions =>
+      FirebaseFunctions.instanceFor(region: 'europe-west1');
 
   AuthRepository({
     required fb.FirebaseAuth auth,
@@ -210,6 +219,30 @@ class AuthRepository implements IAuthRepository {
     } catch (e, st) {
       appLogger.w(
         'AuthRepository: delete FCM token on logout',
+        error: e,
+        stackTrace: st,
+      );
+    }
+    await _auth.signOut();
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    final uid = _auth.currentUser?.uid;
+    try {
+      await _functions.httpsCallable('deleteAccount').call();
+    } on FirebaseFunctionsException catch (e) {
+      throw UnknownAuthException(e.code);
+    }
+    if (uid != null) {
+      await HiveCache.clearUserCache(uid);
+    }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+    } catch (e, st) {
+      appLogger.w(
+        'AuthRepository: clear SharedPreferences on account deletion',
         error: e,
         stackTrace: st,
       );

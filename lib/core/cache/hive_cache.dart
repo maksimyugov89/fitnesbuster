@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:fitnesbuster/data/models/chat_message.dart';
 import 'package:fitnesbuster/domain/entities/chat_message.dart';
 import 'package:fitnesbuster/data/models/weekly_debrief.dart';
+import 'package:fitnesbuster/core/cache/hive_encryption.dart';
 
 /// Single entry point for all Hive cache operations.
 /// Uses plain string storage — no code generation required.
@@ -12,7 +13,10 @@ class HiveCache {
 
   static Future<void> init() async {
     if (!Hive.isBoxOpen(_boxName)) {
-      await Hive.openBox<String>(_boxName);
+      await Hive.openBox<String>(
+        _boxName,
+        encryptionCipher: HiveEncryption.cipher,
+      );
     }
   }
 
@@ -110,13 +114,11 @@ class HiveCache {
 
   // ── Cache invalidation ────────────────────────────────────────────────────
 
+  /// Clears every cached entry for [uid], including per-week debrief keys
+  /// (`debrief_{uid}_{weekStart}`), by sweeping all box keys containing it.
   static Future<void> clearUserCache(String uid) async {
-    await _box.delete(_workoutKey(uid));
-    await _box.delete(_mealKey(uid));
-    await _box.delete(_tsKey(uid));
-    await _box.delete(_testWeekKey(uid));
-    await _box.delete(_chatKey(uid));
-    await _box.delete(_needsSyncKey(uid));
+    final keysToDelete = _box.keys.where((k) => k is String && k.contains(uid));
+    await _box.deleteAll(keysToDelete);
   }
 
   // ── Weekly debrief ────────────────────────────────────────────────────────

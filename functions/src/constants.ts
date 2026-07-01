@@ -18,8 +18,17 @@ export const RATE_LIMIT_WINDOW_MS = ONE_MINUTE_MS;
 /** Default max tokens for DeepSeek chat completion */
 export const DEEPSEEK_DEFAULT_MAX_TOKENS = 4096;
 
+/** Hard upper bound for client-requested maxTokens (cost-abuse guard) */
+export const DEEPSEEK_MAX_TOKENS_CAP = 8192;
+
 /** Default temperature for DeepSeek chat completion */
 export const DEEPSEEK_DEFAULT_TEMPERATURE = 0.7;
+
+/** Maximum messages allowed per DeepSeek request (cost-abuse guard) */
+export const DEEPSEEK_MAX_MESSAGES = 40;
+
+/** Maximum character length per individual message content (cost-abuse guard) */
+export const DEEPSEEK_MAX_MESSAGE_LENGTH = 20_000;
 
 // ─── Friends / Search ─────────────────────────────────────────────────────────
 
@@ -28,6 +37,15 @@ export const SEARCH_USERS_LIMIT = 20;
 
 /** Maximum friend list size used for fanout and search deduplication */
 export const FRIEND_LIST_LIMIT = 500;
+
+/** Rate limit: friend requests sent per user per minute */
+export const SEND_FRIEND_REQUEST_RATE_LIMIT = 10;
+
+/** Rate limit: user search queries per user per minute */
+export const SEARCH_USERS_RATE_LIMIT = 30;
+
+/** Rate limit: friend-request accept/decline/remove actions per user per minute */
+export const FRIEND_ACTION_RATE_LIMIT = 20;
 
 // ─── Challenges ────────────────────────────────────────────────────────────────
 
@@ -48,6 +66,12 @@ export const CHALLENGE_MAX_PROGRESS = 1_000_000;
 
 /** Default challenge duration for predefined system challenges */
 export const PREDEFINED_CHALLENGE_DURATION_DAYS = 365;
+
+/** Rate limit: challenge creation per user per minute */
+export const CREATE_CHALLENGE_RATE_LIMIT = 5;
+
+/** Rate limit: challenge join / progress / workout-record actions per user per minute */
+export const CHALLENGE_ACTION_RATE_LIMIT = 30;
 
 // ─── Feed ──────────────────────────────────────────────────────────────────────
 

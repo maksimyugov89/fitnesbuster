@@ -3,23 +3,24 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ── Users ──────────────────────────────────────────────────────────────────
+    // Full profile documents contain email, fcmToken and medical restrictions —
+    // readable only by the owner. Cross-user lookups (search, friends, feed) use
+    // denormalized name/username fields already stored on friends/feed/search
+    // results, never a direct read of another user's document.
     match /users/{uid} {
-      allow read: if request.auth != null;
+      allow read: if request.auth != null && request.auth.uid == uid;
       allow write: if request.auth != null && request.auth.uid == uid;
     }
 
     // ── Friend requests ────────────────────────────────────────────────────────
+    // All mutations (send/accept/decline) go through Cloud Functions, which
+    // validate duplicates, ownership and status transitions with Admin SDK
+    // (bypasses these rules). Direct client writes would skip that validation.
     match /friend_requests/{reqId} {
       allow read: if request.auth != null &&
         (resource.data.fromUid == request.auth.uid ||
          resource.data.toUid   == request.auth.uid);
-      allow create: if request.auth != null &&
-        request.resource.data.fromUid == request.auth.uid;
-      allow update: if request.auth != null &&
-        resource.data.toUid == request.auth.uid;
-      allow delete: if request.auth != null &&
-        (resource.data.fromUid == request.auth.uid ||
-         resource.data.toUid   == request.auth.uid);
+      // Write only via Cloud Functions (Admin SDK bypasses rules)
     }
 
     // ── Friends lists (bidirectional sub-collections) ─────────────────────────
@@ -28,9 +29,13 @@ service cloud.firestore {
       // Write only via Cloud Functions (Admin SDK bypasses rules)
     }
 
-    // ── Activity events (user writes own events, Functions fan out) ───────────
+    // ── Activity events (written by Cloud Functions only) ─────────────────────
+    // Previously client-writable; nothing in the app writes here directly
+    // (publishActivity() is currently unused), so this is locked down to avoid
+    // unvalidated events being fanned out to friends' feeds.
     match /activity_events/{uid}/items/{eventId} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if request.auth != null && request.auth.uid == uid;
+      // Write only via Cloud Functions (Admin SDK bypasses rules)
     }
 
     // ── Feed (written by Cloud Functions only) ─────────────────────────────────
@@ -40,24 +45,25 @@ service cloud.firestore {
     }
 
     // ── Challenges ─────────────────────────────────────────────────────────────
+    // createChallenge/joinChallenge (Cloud Functions) enforce duration/target
+    // limits and participant integrity — direct client writes would bypass them.
     match /challenges/{challengeId} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null &&
-        request.resource.data.createdBy == request.auth.uid;
-      allow update: if request.auth != null &&
-        resource.data.createdBy == request.auth.uid;
-      // participants changes only via Cloud Functions (Admin SDK)
+      // Write only via Cloud Functions (Admin SDK bypasses rules)
     }
 
     match /challenge_progress/{challengeId}/participants/{uid} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == uid;
+      // Write only via Cloud Functions (Admin SDK) —
+      // updateChallengeProgress enforces monotonic, clamped progress
     }
 
     // ── Notifications ──────────────────────────────────────────────────────────
+    // Not currently read or written by the Flutter client at all — reserved
+    // for a future in-app notifications inbox.
     match /notifications/{uid}/items/{notifId} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
-      // Create only via Cloud Functions
+      allow read: if request.auth != null && request.auth.uid == uid;
+      // Write only via Cloud Functions (Admin SDK bypasses rules)
     }
   }
 }

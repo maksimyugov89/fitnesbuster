@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {db, logInfo, logWarn, sendPush} from "./shared";
+import {db, logInfo, logWarn, sendPush, checkRateLimit} from "./shared";
 import {
   ONE_DAY_MS,
   CHALLENGE_MAX_DURATION_DAYS,
@@ -9,6 +9,9 @@ import {
   WORKOUT_MAX_STREAK,
   CHALLENGE_MAX_PROGRESS,
   PREDEFINED_CHALLENGE_DURATION_DAYS,
+  CREATE_CHALLENGE_RATE_LIMIT,
+  CHALLENGE_ACTION_RATE_LIMIT,
+  RATE_LIMIT_WINDOW_MS,
 } from "./constants";
 import type {CreateChallengeData, JoinChallengeData, UpdateChallengeProgressData, RecordWorkoutData} from "./types";
 
@@ -25,6 +28,9 @@ export const createChallenge = onCall(
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
     const {title, description, goalType, targetValue, durationDays, isPublic} = request.data;
+
+    const allowed = await checkRateLimit(uid, "createChallenge", CREATE_CHALLENGE_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
     if (!title?.trim()) throw new HttpsError("invalid-argument", "Title required");
     if (targetValue <= 0) throw new HttpsError("invalid-argument", "Target must be > 0");
@@ -76,6 +82,9 @@ export const joinChallenge = onCall(
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
     const {challengeId} = request.data;
+
+    const allowed = await checkRateLimit(uid, "joinChallenge", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
     if (typeof challengeId !== "string" || challengeId.trim().length === 0) {
       throw new HttpsError("invalid-argument", "challengeId must be a non-empty string");
@@ -130,6 +139,9 @@ export const updateChallengeProgress = onCall(
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
     const {challengeId, value} = request.data;
+
+    const allowed = await checkRateLimit(uid, "updateChallengeProgress", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
     if (typeof value !== "number" || value < 0 || value > CHALLENGE_MAX_PROGRESS || !Number.isFinite(value)) {
       throw new HttpsError("invalid-argument", `value must be a finite number between 0 and ${CHALLENGE_MAX_PROGRESS}`);
@@ -208,6 +220,9 @@ export const recordWorkout = onCall(
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
     const {caloriesBurned, cardioMinutes, streak} = request.data;
+
+    const allowed = await checkRateLimit(uid, "recordWorkout", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
     if (typeof caloriesBurned !== "number" || caloriesBurned < 0 || caloriesBurned > WORKOUT_MAX_CALORIES) {
       throw new HttpsError("invalid-argument", `caloriesBurned must be 0-${WORKOUT_MAX_CALORIES}`);

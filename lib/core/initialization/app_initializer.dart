@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
+import 'package:fitnesbuster/core/cache/hive_encryption.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
 import 'package:fitnesbuster/data/models/exercise_db_model.dart';
@@ -39,6 +40,7 @@ class AppInitializer {
       onProgress?.call('Storage');
       final appDocDir = await getApplicationDocumentsDirectory();
       Hive.init(appDocDir.path);
+      await HiveEncryption.init();
       await HiveCache.init();
     } catch (e) {
       throw AppInitException('Storage', e.toString());

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive/hive.dart';
+import 'package:fitnesbuster/core/cache/hive_encryption.dart';
 
 typedef QueueOperation = Future<void> Function();
 
@@ -32,7 +33,10 @@ class OfflineQueue {
   OfflineQueue();
 
   Future<void> init() async {
-    _box = await Hive.openBox<String>(_boxName);
+    _box = await Hive.openBox<String>(
+      _boxName,
+      encryptionCipher: HiveEncryption.cipher,
+    );
     _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
       if (results.any((r) => r != ConnectivityResult.none)) {
         flush();

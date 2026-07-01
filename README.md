@@ -15,7 +15,7 @@
 
 FitnesBuster — Flutter-приложение (Android / iOS), которое генерирует персонализированные программы тренировок и питания на базе целей пользователя, уровня подготовки, доступного оборудования и медицинских ограничений. Используется **DeepSeek AI** для создания и корректировки планов, **Google Health Connect / Apple HealthKit** для синхронизации данных здоровья, **Firebase** (Firestore, Auth, Cloud Functions, FCM, Hosting) для бэкенда, **Hive** для офлайн-кэша, **OpenFoodFacts** для сканирования штрих-кодов. Интерактивная **3D анатомическая модель** на базе Z-Anatomy визуализирует задействованные мышцы с X-ray эффектом. База из **1 346 упражнений** с GIF-демонстрациями (100% покрытие) раздаётся через **Firebase Hosting CDN** с immutable-кэшированием.
 
-Версия: `1.0.0+1` | **Рефакторинг завершён** (28.06.2026): 73/73 проблем закрыто, `dart analyze` — 0 ошибок | **CI/CD-инфраструктура введена в строй** (01.07.2026): 4 workflow на GitHub Actions, `dart analyze` — 0 замечаний (было 61)
+Версия: `1.0.0+1` | **Рефакторинг завершён** (28.06.2026): 73/73 проблем закрыто, `dart analyze` — 0 ошибок | **CI/CD-инфраструктура введена в строй** (01.07.2026): 4 workflow на GitHub Actions, `dart analyze` — 0 замечаний (было 61) | **Аудит безопасности проведён** (02.07.2026): 10 находок закрыто (GDPR-удаление аккаунта, Firestore rules, rate-limiting, шифрование Hive)
 
 | Метрика | До рефакторинга | После |
 |---------|----------------|-------|
@@ -309,24 +309,23 @@ lib/
 
 | Функция | Тип | Безопасность | Назначение |
 |---|---|---|---|
-| `sendFriendRequest` | Callable | Валидация toUid | Создаёт запрос, отправляет FCM + in-app уведомление |
-| `acceptFriendRequest` | Callable | Транзакция Firestore | Принимает запрос, добавляет в friends обоих пользователей |
-| `declineFriendRequest` | Callable | — | Отклоняет запрос |
-| `removeFriend` | Callable | — | Удаляет из friends обоих направлений |
-| `searchUsers` | Callable | Проверка типа query, .limit(500) | Поиск по usernameLower с prefix-match, возвращает isFriend |
+| `sendFriendRequest` | Callable | Валидация toUid, rate limit 10/мин | Создаёт запрос, отправляет FCM + in-app уведомление |
+| `acceptFriendRequest` | Callable | Транзакция Firestore, rate limit 20/мин | Принимает запрос, добавляет в friends обоих пользователей |
+| `declineFriendRequest` | Callable | Rate limit 20/мин | Отклоняет запрос |
+| `removeFriend` | Callable | Rate limit 20/мин | Удаляет из friends обоих направлений |
+| `searchUsers` | Callable | Проверка типа query, .limit(500), rate limit 30/мин | Поиск по usernameLower с prefix-match, возвращает isFriend |
 | `fanoutActivityEvent` | Firestore trigger | Best-effort чанки, .limit(500), retry | При записи в `activity_events/{uid}/items` — фанаут в feeds друзей |
-| `createChallenge` | Callable | — | Создаёт челлендж + начальный progress-документ |
-| `joinChallenge` | Callable | — | Добавляет uid в participants, создаёт progress-документ |
-| `updateChallengeProgress` | Callable | — | Обновляет прогресс, FCM при достижении цели, публикует feed-событие |
+| `createChallenge` | Callable | Лимиты title/duration/target, rate limit 5/мин | Создаёт челлендж + начальный progress-документ |
+| `joinChallenge` | Callable | Rate limit 30/мин | Добавляет uid в participants, создаёт progress-документ |
+| `updateChallengeProgress` | Callable | Монотонный clamp 0–1M, rate limit 30/мин | Обновляет прогресс, FCM при достижении цели, публикует feed-событие |
 | `cleanOldFeedEvents` | Scheduled (03:00) | — | Удаляет события ленты старше 30 дней |
-| `recordWorkout` | Callable | Транзакция Firestore | Запись завершённой тренировки в Firestore |
-| `deepseekProxy` | Callable | Rate limit 20 req/60s | Прокси для DeepSeek API — ключ в Secret Manager |
+| `recordWorkout` | Callable | Транзакция Firestore, rate limit 30/мин | Запись завершённой тренировки в Firestore |
+| `deepseekProxy` | Callable | Rate limit 20/мин, cap maxTokens ≤8192, ≤40 сообщений ≤20K симв. | Прокси для DeepSeek API — ключ в Secret Manager |
 | `exerciseDbProxy` | Callable | Rate limit 30 req/60s | Прокси для ExerciseDB API |
 | `seedChallenges` | Callable | Admin-only (`token.role === 'admin'`) | Инициализация дефолтных публичных челленджей |
-| `fixNameLower` | Scheduled | — | Миграция: заполнение `usernameLower` для поиска |
-| `cleanupDuplicateRequests` | Scheduled | — | Удаление дублированных `friend_requests` |
+| `deleteAccount` | Callable | Только self (`request.auth.uid`) | GDPR-удаление: каскадно чистит Firestore (профиль, друзья, заявки, лента, участие в челленджах) + Firebase Auth |
 
-**Инфраструктура:** `withRetry(fn, 3)` в `shared.ts`, JSDoc на всех экспортируемых функциях, 21 константа в `constants.ts`, composite indexes в `firestore.indexes.json`, логирование 20 функций.
+**Инфраструктура:** `withRetry(fn, 3)` в `shared.ts`, JSDoc на всех экспортируемых функциях, `checkRateLimit()` — атомарный (Firestore-транзакция) sliding-window лимитер, применён ко всем callable-функциям кроме `deleteAccount` и `seedChallenges`, composite indexes в `firestore.indexes.json`.
 
 ---
 
@@ -349,6 +348,7 @@ lib/
 | Health Connect | Синхронизация: шаги, пульс, сон, вес, вода, тренировки — 15 провайдеров |
 | Достижения | Превью уровня, XP-прогресс, разблокированные значки |
 | Уведомления | Смарт-напоминание о тренировке + 6 напоминаний пить воду (9:00–19:00) |
+| Удаление аккаунта | GDPR-совместимое — Cloud Function `deleteAccount` каскадно удаляет профиль, друзей, заявки, ленту, участие в челленджах и Firebase Auth запись; локально очищаются Hive-кэш и SharedPreferences |
 
 ---
 
@@ -439,7 +439,7 @@ lib/
 | Firebase Cloud Functions | Бэкенд-логика: друзья, лента, челленджи, FCM, scheduled jobs |
 | Firebase Messaging (FCM) | Push-уведомления: запросы в друзья, принятие, победа в челлендже |
 | SharedPreferences | Ежедневный трекинг, кэш советов по упражнениям, список покупок, перенос тренировок |
-| Hive | Офлайн-кэш AI-планов, истории чата, дебрифов; очередь отложенной синхронизации |
+| Hive | Офлайн-кэш AI-планов, истории чата, дебрифов; очередь отложенной синхронизации. Шифруется `HiveAesCipher`, ключ — в `flutter_secure_storage` |
 
 ### AI и API
 | Сервис | Назначение |
@@ -494,6 +494,7 @@ lib/
 | logger | Структурированное логирование (`appLogger`) |
 | freezed / freezed_annotation | Иммутабельные модели данных |
 | json_annotation / json_serializable | JSON-сериализация |
+| flutter_secure_storage | Keychain (iOS) / EncryptedSharedPreferences (Android) — хранит ключ шифрования Hive |
 
 ---
 
@@ -590,13 +591,16 @@ https://fitnesbuster.web.app/gifs/{exerciseDbId}.gif
 
 ### Firestore Security Rules
 
-- `users/{uid}`: чтение — любой авторизованный, запись — только владелец
-- `friend_requests/{reqId}`: чтение — участники, создание — fromUid==caller, update — toUid==caller
-- `friends/{uid}/list/*`: чтение — владелец, запись — только Admin SDK (Cloud Functions)
-- `activity_events/{uid}/*`: чтение и запись — только владелец
-- `feed/{uid}/*`: чтение — владелец, запись — только Admin SDK
-- `challenges/*`: чтение — любой авторизованный, создание — createdBy==caller
-- `challenge_progress/*`: чтение — любой авторизованный, запись — владелец записи
+После аудита безопасности (02.07.2026) все коллекции, которые фактически мутируются только через Cloud Functions, закрыты от прямой клиентской записи — раньше правила разрешали её, что позволяло любому авторизованному клиенту (не обязательно через приложение) обходить валидацию Cloud Function прямым запросом к Firestore.
+
+- `users/{uid}`: чтение и запись — только владелец (раньше читать мог любой авторизованный — утечка email/медограничений чужих пользователей)
+- `friend_requests/{reqId}`: чтение — участники; запись — только Admin SDK
+- `friends/{uid}/list/*`: чтение — владелец; запись — только Admin SDK
+- `activity_events/{uid}/*`: чтение — владелец; запись — только Admin SDK (публикация клиентом сейчас не используется)
+- `feed/{uid}/*`: чтение — владелец; запись — только Admin SDK
+- `challenges/*`: чтение — любой авторизованный; запись — только Admin SDK (лимиты title/duration/target проверяются в `createChallenge`)
+- `challenge_progress/*`: чтение — любой авторизованный; запись — только Admin SDK (раньше участник мог напрямую выставить себе любой `currentValue` — чит в лидерборде)
+- `notifications/{uid}/*`: чтение — владелец; запись — только Admin SDK (коллекция пока не используется клиентом)
 
 ---
 
@@ -867,11 +871,27 @@ function isIn(matName, list) {
 | Обратная совместимость | ✅ | Существующие неверифицированные пользователи тоже проходят гейт при следующем входе и могут запросить письмо повторно; Google-аккаунты считаются верифицированными автоматически |
 | Локализация | ✅ | Новые ключи `verifyEmail*` добавлены в ru/en (остальные 13 языков — автофоллбэк на английский) |
 
+### ✅ Завершено (2 июля 2026) — Аудит безопасности
+
+Ручной аудит по 5 направлениям (Firestore rules, Cloud Functions, хранение данных, GDPR, зависимости). Полный список находок и приоритетов — в истории обсуждения; ключевые исправления:
+
+| Находка | Серьёзность | Исправление |
+| --- | --- | --- |
+| «Удаление аккаунта» ничего не удаляло, только `context.go('/login')` | Критично | Новая Cloud Function `deleteAccount` — каскадно чистит Firestore (профиль, друзья, заявки, лента, уведомления, участие в челленджах) + Firebase Auth; клиент дополнительно чистит Hive/SharedPreferences |
+| `challenge_progress` писался клиентом напрямую — чит лидерборда в обход `updateChallengeProgress` | Критично | Firestore rules: запись только через Admin SDK |
+| `users/{uid}` читался любым авторизованным — утечка email/медограничений чужих профилей | Высокая | Rules: чтение только владельцем; проверено, что клиент нигде не читает чужие профили напрямую (поиск/друзья используют денормализованные поля) |
+| `challenges` создавались/менялись клиентом в обход лимитов `createChallenge` | Высокая | Rules: запись только через Admin SDK |
+| Соц. и challenge-функции без rate-limiting (спам, накрутка FCM/Firestore-costов) | Высокая | `checkRateLimit()` добавлен в 8 функций (`friends.ts`, `challenges.ts`) |
+| `deepseekProxy` принимал неограниченные `messages`/`maxTokens` — риск накрутки счёта за платный API | Высокая | Кламп `maxTokens` ≤8192, ≤40 сообщений, ≤20K символов на сообщение |
+| Hive-кэш (AI-планы, история чата) хранился на диске в открытом виде | Средняя | `HiveAesCipher` + ключ в `flutter_secure_storage` (Keychain/EncryptedSharedPreferences) |
+| `checkRateLimit()` не был атомарен (read-then-write) — гонка позволяла обойти лимит | Средняя | Переведён на `db.runTransaction()` |
+| `activity_events`/`notifications` разрешали прямую клиентскую запись без валидации | Средняя | Rules: запись только через Admin SDK (обе коллекции сейчас не пишутся клиентом) |
+| `friend_requests` update разрешал менять любое поле, не только `status` | Средняя | Rules: запись только через Admin SDK |
+
 ### Ближайшие задачи
 
 | Задача | Приоритет | Описание |
 | --- | --- | --- |
-| Аудит безопасности | Высокий | GDPR, Firestore rules, Hive шифрование |
 | Бета-тестирование | Высокий | 50–100 пользователей, Crashlytics, Retention D1/D7/D30 |
 | Миграция `firebase-admin` на v14 | Низкий | Не срочно: v14 несовместим с текущим `firebase-functions@7.2.5` (peer dependency), нужна миграция 5 файлов `functions/src/` на модульный API. Ждём релиза `firebase-functions` с поддержкой v14 |
 
