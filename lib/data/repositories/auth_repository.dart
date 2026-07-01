@@ -126,8 +126,9 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<UserEntity> signInWithGoogle() async {
     final googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null)
+    if (googleUser == null) {
       throw Exception(AppLocalizations.tl('googleLoginCancelled'));
+    }
     final googleAuth = await googleUser.authentication;
     final credential = fb.GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,

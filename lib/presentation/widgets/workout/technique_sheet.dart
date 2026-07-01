@@ -35,8 +35,9 @@ class _WorkoutTechniqueSheetState extends State<WorkoutTechniqueSheet> {
     final exService = sl<IExerciseService>();
     await exService.init();
     final model = exService.findByRuName(widget.title);
-    if (mounted && model?.gifUrl != null)
+    if (mounted && model?.gifUrl != null) {
       setState(() => _gifUrl = model!.gifUrl);
+    }
   }
 
   @override

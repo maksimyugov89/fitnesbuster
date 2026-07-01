@@ -102,11 +102,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await settings.setAvatarMode('preset');
     await settings.setAvatarPresetIndex(index);
     await settings.removeAvatarCustomPath();
-    if (mounted)
+    if (mounted) {
       setState(() {
         _avatarPresetIndex = index;
         _avatarCustomPath = '';
       });
+    }
   }
 
   Future<void> _saveAvatarCustom(String sourcePath) async {
@@ -117,11 +118,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await settings.setAvatarMode('custom');
     await settings.setAvatarCustomPath(dest);
     await settings.setAvatarPresetIndex(-1);
-    if (mounted)
+    if (mounted) {
       setState(() {
         _avatarCustomPath = dest;
         _avatarPresetIndex = -1;
       });
+    }
   }
 
   void _openAvatarPicker(BuildContext context) {
@@ -261,14 +263,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       : RunningPreference.withRunning;
 
   FitnessGoal _fitnessGoalFromLabel(String label) {
-    if (label == AppLocalizations.tl('goalMuscleMass'))
+    if (label == AppLocalizations.tl('goalMuscleMass')) {
       return FitnessGoal.gainWeight;
-    if (label == AppLocalizations.tl('goalMaintainWeight'))
+    }
+    if (label == AppLocalizations.tl('goalMaintainWeight')) {
       return FitnessGoal.maintain;
-    if (label == AppLocalizations.tl('goalBeachSeason'))
+    }
+    if (label == AppLocalizations.tl('goalBeachSeason')) {
       return FitnessGoal.beachBody;
-    if (label == AppLocalizations.tl('goalSportsRecords'))
+    }
+    if (label == AppLocalizations.tl('goalSportsRecords')) {
       return FitnessGoal.sportPerformance;
+    }
     return FitnessGoal.loseWeight;
   }
 

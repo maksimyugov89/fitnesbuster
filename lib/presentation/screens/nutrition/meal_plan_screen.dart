@@ -58,13 +58,14 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         });
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
           _error = AppLocalizations.tl(
             'loadErrorMsg',
           ).replaceAll('{error}', e.toString());
         });
+      }
     }
   }
 

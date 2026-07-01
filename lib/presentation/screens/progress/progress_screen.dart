@@ -339,8 +339,9 @@ class _ProgressScreenState extends State<ProgressScreen>
           _heartRateVariability = data.heartRateVariability;
           _respiratoryRate = data.respiratoryRate;
           _sleepMinutes = data.sleepMinutes;
-          if ((data.waterIntakeMl ?? 0) > _waterMlToday)
+          if ((data.waterIntakeMl ?? 0) > _waterMlToday) {
             _waterIntakeMl = data.waterIntakeMl;
+          }
           _healthLoaded = true;
           if (data.weight != null && data.weight! > 0) {
             _weight = data.weight;
@@ -364,11 +365,12 @@ class _ProgressScreenState extends State<ProgressScreen>
     if (uid == null) return;
     try {
       final list = await sl<IUserRepository>().getMeasurements(uid);
-      if (mounted)
+      if (mounted) {
         setState(() {
           _measurements = list;
           _measurementsLoaded = true;
         });
+      }
     } catch (_) {
       if (mounted) setState(() => _measurementsLoaded = true);
     }
@@ -573,17 +575,19 @@ class _ProgressScreenState extends State<ProgressScreen>
         hasPhotos: hasPhotos,
       );
 
-      if (mounted)
+      if (mounted) {
         setState(() {
           _aiAnalysis = result;
           _aiAnalyzing = false;
         });
+      }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _aiAnalysis = '${context.l10n.error}: $e';
           _aiAnalyzing = false;
         });
+      }
     }
   }
 

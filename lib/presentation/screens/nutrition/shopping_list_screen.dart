@@ -945,19 +945,21 @@ class _SubstitutionSheetState extends State<_SubstitutionSheet> {
         'Для каждой замены укажи: название, примерный эквивалент по граммам и краткое пояснение (1 фраза). '
         'Ответ давай кратко, по одной замене на строку, без лишних слов.',
       );
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
           _result = answer.trim();
         });
+      }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
           _error = AppLocalizations.tl(
             'aiErrorMsg',
           ).replaceAll('{error}', e.toString());
         });
+      }
     }
   }
 

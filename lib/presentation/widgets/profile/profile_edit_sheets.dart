@@ -212,12 +212,14 @@ class _ProfileEditSheetState extends State<ProfileEditSheet> {
               icon: Icons.mail_outline_rounded,
               keyboardType: TextInputType.emailAddress,
               validator: (v) {
-                if (v == null || v.trim().isEmpty)
+                if (v == null || v.trim().isEmpty) {
                   return l10n.enterEmailValidation;
+                }
                 if (!RegExp(
                   r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$',
-                ).hasMatch(v.trim()))
+                ).hasMatch(v.trim())) {
                   return l10n.invalidEmailFormat;
+                }
                 return null;
               },
             ),
@@ -717,8 +719,9 @@ class _SecuritySheetState extends State<SecuritySheet> {
               ),
               validator: (v) {
                 if (v!.isEmpty) return AppLocalizations.tl('enterNewPassword');
-                if (v.length < 6)
+                if (v.length < 6) {
                   return AppLocalizations.tl('passwordMinLength');
+                }
                 return null;
               },
             ),

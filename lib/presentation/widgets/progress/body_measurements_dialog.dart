@@ -253,8 +253,9 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
       validator: (v) {
         if (v != null && v.trim().isNotEmpty) {
           final d = double.tryParse(v.trim().replaceAll(',', '.'));
-          if (d == null || d <= 0)
+          if (d == null || d <= 0) {
             return AppLocalizations.tl('enterValidValue');
+          }
         }
         return null;
       },

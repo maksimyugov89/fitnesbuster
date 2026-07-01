@@ -284,8 +284,9 @@ class _DayTile extends StatelessWidget {
 
   String get _statusLabel {
     if (!record.hasData) return '—';
-    if (record.target > 0 && record.eaten > record.target * 1.1)
+    if (record.target > 0 && record.eaten > record.target * 1.1) {
       return 'Превышение';
+    }
     if (record.eaten > 0 && record.target > 0) return 'В норме';
     if (record.eaten > 0) return 'Ок';
     return '—';

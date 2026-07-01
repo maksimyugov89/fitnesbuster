@@ -138,8 +138,9 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     if (d == today) return AppLocalizations.tl('today');
-    if (d == today.subtract(const Duration(days: 1)))
+    if (d == today.subtract(const Duration(days: 1))) {
       return AppLocalizations.tl('yesterday');
+    }
     final months = [
       '',
       AppLocalizations.tl('janShort'),

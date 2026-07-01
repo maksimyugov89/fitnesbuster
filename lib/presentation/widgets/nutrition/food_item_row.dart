@@ -41,23 +41,29 @@ class _NutritionFoodItemRowState extends State<NutritionFoodItemRow> {
 
   String _getCookingHint() {
     final lower = widget.food.toLowerCase();
-    if (lower.contains('суп'))
+    if (lower.contains('суп')) {
       return 'Отварите овощи и мясо в подсоленной воде, добавьте специи по вкусу. Варить 30–40 мин.';
-    if (lower.contains('рагу') || lower.contains('тушен'))
+    }
+    if (lower.contains('рагу') || lower.contains('тушен')) {
       return 'Обжарьте ингредиенты, добавьте воду или бульон, тушите на медленном огне 25–35 мин.';
-    if (lower.contains('запеканка'))
+    }
+    if (lower.contains('запеканка')) {
       return 'Смешайте ингредиенты, выложите в форму, запекайте при 180°C 35–45 мин до золотистой корочки.';
-    if (lower.contains('котлет'))
+    }
+    if (lower.contains('котлет')) {
       return 'Сформируйте котлеты, обваляйте в панировке, жарьте по 4–5 мин с каждой стороны.';
+    }
     if (lower.contains('каша') ||
         lower.contains('гречка') ||
         lower.contains('рис')) {
       return 'Промойте крупу, залейте водой 1:2, варите на медленном огне 15–20 мин. Посолите по вкусу.';
     }
-    if (lower.contains('салат'))
+    if (lower.contains('салат')) {
       return 'Нарежьте ингредиенты, смешайте, заправьте маслом или соусом. Подавать свежим.';
-    if (lower.contains('пюре'))
+    }
+    if (lower.contains('пюре')) {
       return 'Отварите картофель/овощи, разомните с маслом или молоком до однородной консистенции.';
+    }
     return 'Приготовьте согласно рецепту. Следите за температурой и временем готовки для сохранения питательных веществ.';
   }
 

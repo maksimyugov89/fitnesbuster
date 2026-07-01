@@ -50,17 +50,19 @@ class _FriendsScreenState extends State<FriendsScreen>
     });
     try {
       final results = await sl<ISocialService>().searchUsers(query.trim());
-      if (mounted)
+      if (mounted) {
         setState(() {
           _searchResults = results;
           _searching = false;
         });
+      }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _searching = false;
           _searchError = e.toString();
         });
+      }
     }
   }
 
@@ -566,10 +568,11 @@ class _RequestTileState extends State<_RequestTile> {
     try {
       await sl<ISocialService>().acceptFriendRequest(widget.request.id);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }

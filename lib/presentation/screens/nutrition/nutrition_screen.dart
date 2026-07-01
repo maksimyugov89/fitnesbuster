@@ -154,8 +154,9 @@ class _NutritionScreenState extends State<NutritionScreen>
         .whereType<int>()
         .where((i) => i < _meals.length)
         .toSet();
-    if (mounted && done.isNotEmpty)
+    if (mounted && done.isNotEmpty) {
       setState(() => _completedMeals.addAll(done));
+    }
   }
 
   Future<void> _loadAddedFoods() async {

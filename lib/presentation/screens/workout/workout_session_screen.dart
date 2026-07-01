@@ -68,8 +68,9 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
   Future<void> _loadWorkout() async {
     try {
       final authState = context.read<AuthBloc>().state;
-      if (authState is! AuthStateAuthenticated)
+      if (authState is! AuthStateAuthenticated) {
         throw Exception(AppLocalizations.tl('notAuthorized'));
+      }
       final uid = authState.userId;
 
       final plans = await sl<IUserRepository>().getAiPlans(uid);
@@ -113,11 +114,12 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
         _startWorkoutTimer();
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loadError = e.toString().replaceFirst('Exception: ', '');
           _loading = false;
         });
+      }
     }
   }
 
@@ -631,8 +633,9 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
   }
 
   Widget _buildSetsList(ThemePalette colors, List<WorkoutExercise> exercises) {
-    if (_currentExercise >= _completedSets.length)
+    if (_currentExercise >= _completedSets.length) {
       return const SizedBox.shrink();
+    }
     final ex = exercises[_currentExercise];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

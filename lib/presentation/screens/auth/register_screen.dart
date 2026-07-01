@@ -53,28 +53,34 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   String? _validateEmail(String? v) {
-    if (v == null || v.trim().isEmpty)
+    if (v == null || v.trim().isEmpty) {
       return AppLocalizations.tl('enterEmailValidation');
+    }
     final re = RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
-    if (!re.hasMatch(v.trim()))
+    if (!re.hasMatch(v.trim())) {
       return AppLocalizations.tl('invalidEmailFormat');
+    }
     return null;
   }
 
   String? _validatePassword(String? v) {
-    if (v == null || v.isEmpty)
+    if (v == null || v.isEmpty) {
       return AppLocalizations.tl('enterPasswordValidation');
+    }
     if (v.length < 6) return AppLocalizations.tl('passwordMinLength');
-    if (!RegExp(r'[A-Za-z]').hasMatch(v))
+    if (!RegExp(r'[A-Za-z]').hasMatch(v)) {
       return AppLocalizations.tl('passwordNeedLetter');
-    if (!RegExp(r'[0-9]').hasMatch(v))
+    }
+    if (!RegExp(r'[0-9]').hasMatch(v)) {
       return AppLocalizations.tl('passwordNeedNumber');
+    }
     return null;
   }
 
   String? _validateConfirm(String? v) {
-    if (v == null || v.isEmpty)
+    if (v == null || v.isEmpty) {
       return AppLocalizations.tl('enterPasswordValidation');
+    }
     if (v != _passCtrl.text) return AppLocalizations.tl('passwordsDontMatch');
     return null;
   }

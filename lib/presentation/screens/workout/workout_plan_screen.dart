@@ -197,20 +197,25 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
     final focus = (day['focus'] as String? ?? day['name'] as String? ?? '')
         .toLowerCase();
     if (focus.contains(AppLocalizations.tl('cardioKeyword')) ||
-        focus.contains(AppLocalizations.tl('intervalKeyword')))
+        focus.contains(AppLocalizations.tl('intervalKeyword'))) {
       return '🏃';
+    }
     if (focus.contains(AppLocalizations.tl('legDayKeyword')) ||
-        focus.contains(AppLocalizations.tl('glutesKeyword')))
+        focus.contains(AppLocalizations.tl('glutesKeyword'))) {
       return '🦵';
+    }
     if (focus.contains(AppLocalizations.tl('chestKeyword')) ||
-        focus.contains(AppLocalizations.tl('tricepsKeyword')))
+        focus.contains(AppLocalizations.tl('tricepsKeyword'))) {
       return '💪';
+    }
     if (focus.contains(AppLocalizations.tl('backKeyword')) ||
-        focus.contains(AppLocalizations.tl('bicepsKeyword')))
+        focus.contains(AppLocalizations.tl('bicepsKeyword'))) {
       return '🏋️';
+    }
     if (focus.contains(AppLocalizations.tl('shouldersKeyword')) ||
-        focus.contains(AppLocalizations.tl('absKeyword')))
+        focus.contains(AppLocalizations.tl('absKeyword'))) {
       return '⚡';
+    }
     return '🏋️';
   }
 

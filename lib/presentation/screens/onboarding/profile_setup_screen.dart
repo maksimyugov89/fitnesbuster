@@ -1282,8 +1282,9 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
     );
     _factTimer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (!mounted) return;
-      if (_facts.isNotEmpty)
+      if (_facts.isNotEmpty) {
         setState(() => _factIndex = (_factIndex + 1) % _facts.length);
+      }
     });
 
     // Step progression schedule

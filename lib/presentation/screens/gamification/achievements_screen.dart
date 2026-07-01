@@ -39,11 +39,12 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   Future<void> _load() async {
     final unlocked = await sl<IGamificationService>().getUnlockedIds();
     final xp = await sl<IGamificationService>().getTotalXp();
-    if (mounted)
+    if (mounted) {
       setState(() {
         _unlocked = unlocked;
         _totalXp = xp;
       });
+    }
   }
 
   List<Achievement> get _filtered {

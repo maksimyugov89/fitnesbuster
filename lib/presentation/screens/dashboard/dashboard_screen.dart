@@ -169,11 +169,12 @@ class _DashboardScreenState extends State<DashboardScreen>
       final k = todayKey();
       final eaten = await settings.getEatenCal(k);
       final target = await settings.getTargetCal(k);
-      if (mounted)
+      if (mounted) {
         setState(() {
           _eatenCal = eaten;
           _targetNutCal = target;
         });
+      }
     } catch (e, st) {
       appLogger.w('Dashboard: load nutrition prefs', error: e, stackTrace: st);
     }
@@ -268,8 +269,9 @@ class _DashboardScreenState extends State<DashboardScreen>
           if (data.steps > 0) _steps = data.steps;
           if (data.caloriesBurned > 0) _caloriesBurned = data.caloriesBurned;
           if (data.heartRateAvg != null) _heartRate = data.heartRateAvg!;
-          if ((data.waterIntakeMl ?? 0) > _waterMl)
+          if ((data.waterIntakeMl ?? 0) > _waterMl) {
             _waterMl = data.waterIntakeMl!;
+          }
           if (data.weight != null && data.weight! > 0) {
             final newWeight = data.weight!;
             if ((newWeight - _weight).abs() > 1.0 && _weight > 0) {

@@ -597,11 +597,12 @@ class _JoinButtonState extends State<_JoinButton> {
     setState(() => _loading = true);
     try {
       await sl<ISocialService>().joinChallenge(widget.challengeId);
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
           _joined = true;
         });
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _loading = false);

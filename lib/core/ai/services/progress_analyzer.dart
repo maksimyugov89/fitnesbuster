@@ -18,8 +18,9 @@ class ProgressAnalyzer {
     if (latest['chest'] != null) buf.writeln('- Грудь: ${latest['chest']} см');
     if (latest['waist'] != null) buf.writeln('- Талия: ${latest['waist']} см');
     if (latest['hips'] != null) buf.writeln('- Бёдра: ${latest['hips']} см');
-    if (latest['bodyFat'] != null)
+    if (latest['bodyFat'] != null) {
       buf.writeln('- Жир тела: ${latest['bodyFat']}%');
+    }
 
     String changesBlock = '';
     if (previous != null) {

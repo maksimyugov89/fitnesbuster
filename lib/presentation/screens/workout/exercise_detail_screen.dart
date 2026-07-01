@@ -87,11 +87,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           .where((l) => l.isNotEmpty)
           .toList();
       await prefs.setString(cacheKey, jsonEncode(lines));
-      if (mounted)
+      if (mounted) {
         setState(() {
           _instructionsRu = lines;
           _instructionsLoading = false;
         });
+      }
     } catch (_) {
       if (mounted) setState(() => _instructionsLoading = false);
     }
@@ -105,11 +106,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       if (mounted) setState(() => _aiTips = cached);
       return;
     }
-    if (mounted)
+    if (mounted) {
       setState(() {
         _tipsLoading = true;
         _tipsError = false;
       });
+    }
     try {
       final ai = sl<IDeepSeekService>();
       final muscles = ex.primaryMuscles.map((m) => m.displayNameRu).join(', ');
@@ -119,17 +121,19 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         'Ответ — короткими пунктами, без вступлений, только суть.',
       );
       await prefs.setString(cacheKey, tips.trim());
-      if (mounted)
+      if (mounted) {
         setState(() {
           _aiTips = tips.trim();
           _tipsLoading = false;
         });
+      }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _tipsLoading = false;
           _tipsError = true;
         });
+      }
     }
   }
 
@@ -346,8 +350,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   Widget _buildInstructions(ThemePalette c, ExerciseDbModel ex) {
     if (ex.instructions.isEmpty) return const SizedBox.shrink();
     // Only show when Russian translation is ready or loading
-    if (_instructionsRu == null && !_instructionsLoading)
+    if (_instructionsRu == null && !_instructionsLoading) {
       return const SizedBox.shrink();
+    }
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),

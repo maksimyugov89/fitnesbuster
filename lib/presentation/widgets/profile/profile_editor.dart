@@ -61,12 +61,14 @@ class _ProfileEditorSheetState extends State<ProfileEditorSheet> {
             label: l10n.emailLabel,
             icon: Icons.email_outlined,
             validator: (v) {
-              if (v == null || v.trim().isEmpty)
+              if (v == null || v.trim().isEmpty) {
                 return l10n.enterEmailValidation;
+              }
               if (!RegExp(
                 r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$',
-              ).hasMatch(v.trim()))
+              ).hasMatch(v.trim())) {
                 return l10n.invalidEmailFormat;
+              }
               return null;
             },
             colors: colors,
