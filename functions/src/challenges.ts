@@ -92,6 +92,11 @@ export const joinChallenge = onCall(
 
     const chalRef = db.doc(`challenges/${challengeId}`);
 
+    // maxAttempts raised from the SDK default (5): a popular public challenge
+    // can draw many simultaneous joiners, all contending on this single
+    // chalRef document — under load-test conditions (60 concurrent joins)
+    // the default retry budget was exhausted and threw ABORTED for over
+    // half the requests.
     await db.runTransaction(async (tx) => {
       const chalSnap = await tx.get(chalRef);
       if (!chalSnap.exists) throw new HttpsError("not-found", "Challenge not found");
@@ -114,7 +119,7 @@ export const joinChallenge = onCall(
         currentValue: 0,
         lastUpdated: now,
       });
-    });
+    }, {maxAttempts: 15});
 
     const userSnap = await db.doc(`users/${uid}`).get();
     const name = (userSnap.data()?.name as string) ?? "Пользователь";
