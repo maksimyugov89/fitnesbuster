@@ -47,8 +47,11 @@ void main() {
       build: () => bloc,
       act: (b) => b.add(const OnboardingSetGoal(FitnessGoal.loseWeight)),
       expect: () => [
-        isA<OnboardingCollecting>()
-            .having((s) => s.goal, 'goal', FitnessGoal.loseWeight),
+        isA<OnboardingCollecting>().having(
+          (s) => s.goal,
+          'goal',
+          FitnessGoal.loseWeight,
+        ),
       ],
     );
   });
@@ -59,8 +62,11 @@ void main() {
       build: () => bloc,
       act: (b) => b.add(const OnboardingSetIntensity(IntensityLevel.balanced)),
       expect: () => [
-        isA<OnboardingCollecting>()
-            .having((s) => s.intensity, 'intensity', IntensityLevel.balanced),
+        isA<OnboardingCollecting>().having(
+          (s) => s.intensity,
+          'intensity',
+          IntensityLevel.balanced,
+        ),
       ],
     );
   });
@@ -85,31 +91,38 @@ void main() {
       'emits error when data is incomplete',
       build: () => bloc,
       act: (b) => b.add(const OnboardingFinalize()),
-      expect: () => [
-        isA<OnboardingError>(),
-      ],
+      expect: () => [isA<OnboardingError>()],
     );
 
     blocTest<OnboardingBloc, OnboardingState>(
       'emits Saving then Complete on success',
       build: () {
         when(mockAuthRepo.currentUser).thenReturn(tUser);
-        when(mockUserRepo.saveOnboardingData(
-          userId: anyNamed('userId'),
-          goal: anyNamed('goal'),
-          intensity: anyNamed('intensity'),
-          location: anyNamed('location'),
-          running: anyNamed('running'),
-          city: anyNamed('city'),
-          profile: anyNamed('profile'),
-        )).thenAnswer((_) async => tUser);
+        when(
+          mockUserRepo.saveOnboardingData(
+            userId: anyNamed('userId'),
+            goal: anyNamed('goal'),
+            intensity: anyNamed('intensity'),
+            location: anyNamed('location'),
+            running: anyNamed('running'),
+            city: anyNamed('city'),
+            profile: anyNamed('profile'),
+          ),
+        ).thenAnswer((_) async => tUser);
         when(mockUserRepo.getUser('uid-1')).thenAnswer((_) async => tUser);
         when(mockUserRepo.updateProfile(any)).thenAnswer((_) async => tUser);
-        when(mockWorkflowService.generatePlans(
-          userId: anyNamed('userId'),
-          profile: anyNamed('profile'),
-          city: anyNamed('city'),
-        )).thenAnswer((_) async => (workoutPlanJson: '{"title":"test"}', mealPlanJson: '{"meals":[]}'));
+        when(
+          mockWorkflowService.generatePlans(
+            userId: anyNamed('userId'),
+            profile: anyNamed('profile'),
+            city: anyNamed('city'),
+          ),
+        ).thenAnswer(
+          (_) async => (
+            workoutPlanJson: '{"title":"test"}',
+            mealPlanJson: '{"meals":[]}',
+          ),
+        );
 
         final bloc = OnboardingBloc(
           userRepo: mockUserRepo,
@@ -118,11 +131,19 @@ void main() {
         );
         bloc.add(const OnboardingSetGoal(FitnessGoal.loseWeight));
         bloc.add(const OnboardingSetIntensity(IntensityLevel.balanced));
-        bloc.add(const OnboardingSetLocation(location: 'gym', running: 'treadmill'));
-        bloc.add(const OnboardingSetProfile(
-          name: 'Test', age: 30, weight: 80, height: 180,
-          gender: Gender.male, activity: ActivityLevel.moderatelyActive,
-        ));
+        bloc.add(
+          const OnboardingSetLocation(location: 'gym', running: 'treadmill'),
+        );
+        bloc.add(
+          const OnboardingSetProfile(
+            name: 'Test',
+            age: 30,
+            weight: 80,
+            height: 180,
+            gender: Gender.male,
+            activity: ActivityLevel.moderatelyActive,
+          ),
+        );
         return bloc;
       },
       act: (b) => b.add(const OnboardingFinalize()),
@@ -138,15 +159,17 @@ void main() {
       'emits error when save fails',
       build: () {
         when(mockAuthRepo.currentUser).thenReturn(tUser);
-        when(mockUserRepo.saveOnboardingData(
-          userId: anyNamed('userId'),
-          goal: anyNamed('goal'),
-          intensity: anyNamed('intensity'),
-          location: anyNamed('location'),
-          running: anyNamed('running'),
-          city: anyNamed('city'),
-          profile: anyNamed('profile'),
-        )).thenThrow(Exception('Firestore error'));
+        when(
+          mockUserRepo.saveOnboardingData(
+            userId: anyNamed('userId'),
+            goal: anyNamed('goal'),
+            intensity: anyNamed('intensity'),
+            location: anyNamed('location'),
+            running: anyNamed('running'),
+            city: anyNamed('city'),
+            profile: anyNamed('profile'),
+          ),
+        ).thenThrow(Exception('Firestore error'));
 
         final bloc = OnboardingBloc(
           userRepo: mockUserRepo,
@@ -155,41 +178,50 @@ void main() {
         );
         bloc.add(const OnboardingSetGoal(FitnessGoal.loseWeight));
         bloc.add(const OnboardingSetIntensity(IntensityLevel.balanced));
-        bloc.add(const OnboardingSetLocation(location: 'gym', running: 'treadmill'));
-        bloc.add(const OnboardingSetProfile(
-          name: 'Test', age: 30, weight: 80, height: 180,
-          gender: Gender.male, activity: ActivityLevel.moderatelyActive,
-        ));
+        bloc.add(
+          const OnboardingSetLocation(location: 'gym', running: 'treadmill'),
+        );
+        bloc.add(
+          const OnboardingSetProfile(
+            name: 'Test',
+            age: 30,
+            weight: 80,
+            height: 180,
+            gender: Gender.male,
+            activity: ActivityLevel.moderatelyActive,
+          ),
+        );
         return bloc;
       },
       act: (b) => b.add(const OnboardingFinalize()),
       skip: 4,
-      expect: () => [
-        const OnboardingSaving(),
-        isA<OnboardingError>(),
-      ],
+      expect: () => [const OnboardingSaving(), isA<OnboardingError>()],
     );
 
     blocTest<OnboardingBloc, OnboardingState>(
       'emits error when plan generation fails',
       build: () {
         when(mockAuthRepo.currentUser).thenReturn(tUser);
-        when(mockUserRepo.saveOnboardingData(
-          userId: anyNamed('userId'),
-          goal: anyNamed('goal'),
-          intensity: anyNamed('intensity'),
-          location: anyNamed('location'),
-          running: anyNamed('running'),
-          city: anyNamed('city'),
-          profile: anyNamed('profile'),
-        )).thenAnswer((_) async => tUser);
+        when(
+          mockUserRepo.saveOnboardingData(
+            userId: anyNamed('userId'),
+            goal: anyNamed('goal'),
+            intensity: anyNamed('intensity'),
+            location: anyNamed('location'),
+            running: anyNamed('running'),
+            city: anyNamed('city'),
+            profile: anyNamed('profile'),
+          ),
+        ).thenAnswer((_) async => tUser);
         when(mockUserRepo.getUser('uid-1')).thenAnswer((_) async => tUser);
         when(mockUserRepo.updateProfile(any)).thenAnswer((_) async => tUser);
-        when(mockWorkflowService.generatePlans(
-          userId: anyNamed('userId'),
-          profile: anyNamed('profile'),
-          city: anyNamed('city'),
-        )).thenThrow(Exception('AI error'));
+        when(
+          mockWorkflowService.generatePlans(
+            userId: anyNamed('userId'),
+            profile: anyNamed('profile'),
+            city: anyNamed('city'),
+          ),
+        ).thenThrow(Exception('AI error'));
 
         final bloc = OnboardingBloc(
           userRepo: mockUserRepo,
@@ -198,11 +230,19 @@ void main() {
         );
         bloc.add(const OnboardingSetGoal(FitnessGoal.loseWeight));
         bloc.add(const OnboardingSetIntensity(IntensityLevel.balanced));
-        bloc.add(const OnboardingSetLocation(location: 'gym', running: 'treadmill'));
-        bloc.add(const OnboardingSetProfile(
-          name: 'Test', age: 30, weight: 80, height: 180,
-          gender: Gender.male, activity: ActivityLevel.moderatelyActive,
-        ));
+        bloc.add(
+          const OnboardingSetLocation(location: 'gym', running: 'treadmill'),
+        );
+        bloc.add(
+          const OnboardingSetProfile(
+            name: 'Test',
+            age: 30,
+            weight: 80,
+            height: 180,
+            gender: Gender.male,
+            activity: ActivityLevel.moderatelyActive,
+          ),
+        );
         return bloc;
       },
       act: (b) => b.add(const OnboardingFinalize()),

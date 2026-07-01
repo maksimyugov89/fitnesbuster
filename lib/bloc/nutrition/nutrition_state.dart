@@ -2,7 +2,8 @@ part of 'nutrition_bloc.dart';
 
 sealed class NutritionState extends Equatable {
   const NutritionState();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
 
 class NutritionStateInitial extends NutritionState {
@@ -49,7 +50,9 @@ class NutritionStateLoaded extends NutritionState {
       targetCarbs: targetCarbs ?? this.targetCarbs,
       targetFat: targetFat ?? this.targetFat,
       mealPlanJson: mealPlanJson ?? this.mealPlanJson,
-      mealPlanError: clearMealPlanError ? null : (mealPlanError ?? this.mealPlanError),
+      mealPlanError: clearMealPlanError
+          ? null
+          : (mealPlanError ?? this.mealPlanError),
     );
   }
 
@@ -59,11 +62,21 @@ class NutritionStateLoaded extends NutritionState {
   double get totalFat => logs.fold(0.0, (s, m) => s + m.totalFat);
   double get remainingCalories => targetCalories - totalCalories;
 
-  @override List<Object?> get props => [logs, targetCalories, targetProtein, targetCarbs, targetFat, mealPlanJson, mealPlanError];
+  @override
+  List<Object?> get props => [
+    logs,
+    targetCalories,
+    targetProtein,
+    targetCarbs,
+    targetFat,
+    mealPlanJson,
+    mealPlanError,
+  ];
 }
 
 class NutritionStateError extends NutritionState {
   final String message;
   const NutritionStateError({required this.message});
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }

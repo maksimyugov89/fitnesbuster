@@ -14,6 +14,7 @@ jobs:
   build-android:
     name: Build APK & AAB (debug-signed)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +37,15 @@ jobs:
           restore-keys: pub-${{ runner.os }}-
 
       - run: flutter pub get
+
+      # android/gradle.properties запрашивает -Xmx8G для локальной мощной
+      # машины разработчика — раннер ubuntu-latest располагает только ~7GB
+      # RAM, из-за чего Gradle получал OOM-kill (exit 143) во время сборки.
+      # Понижаем хип только на CI, файл в репозитории не трогаем.
+      - name: Constrain Gradle heap for CI runner
+        run: |
+          sed -i 's/-Xmx8G/-Xmx3G/; s/-XX:MaxMetaspaceSize=4G/-XX:MaxMetaspaceSize=1G/' android/gradle.properties
+          cat android/gradle.properties
 
       # Секретов подписи здесь нет — android/app/build.gradle.kts откатывается
       # на debug-подпись. Эти сборки предназначены только для внутреннего

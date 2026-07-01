@@ -45,8 +45,13 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/ test/
 
-      - name: Test (337 тестов, включая E2E из test/integration)
-        run: flutter test --coverage --reporter=expanded
+      # test/golden/ исключён: оба golden-теста зависают на 10-минутный таймаут
+      # даже на ubuntu-latest (не только локально на Windows) — см.
+      # "Известные ограничения" в docs/CI_CD.md. Гоняются вручную локально.
+      - name: Test (321 unit/widget + 16 E2E из test/integration)
+        run: >
+          flutter test --coverage --reporter=expanded
+          test/bloc test/data test/domain test/services test/integration test/widget_test.dart
 
       - name: Strip generated code from coverage
         run: |

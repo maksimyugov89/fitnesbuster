@@ -148,8 +148,9 @@ class ExerciseDbModel {
       instructions: ((json['instructions'] as List?) ?? [])
           .map((e) => e as String)
           .toList(),
-      movementType:
-          ExMovementType.fromJson(json['movementType'] as String? ?? ''),
+      movementType: ExMovementType.fromJson(
+        json['movementType'] as String? ?? '',
+      ),
       tags: ((json['tags'] as List?) ?? []).map((e) => e as String).toList(),
       exerciseDbId: json['exerciseDbId'] as String?,
     );
@@ -162,7 +163,8 @@ class ExerciseDbModel {
   }
 
   /// Russian display name: JSON value → asset map → English fallback.
-  String get nameRu => _nameRu ?? ExerciseLocalization.instance.translate(name) ?? name;
+  String get nameRu =>
+      _nameRu ?? ExerciseLocalization.instance.translate(name) ?? name;
 
   ExerciseInfo toExerciseInfo() => ExerciseInfo(
     id: id,
@@ -198,18 +200,18 @@ class ExerciseDbModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        if (_nameRu != null) 'nameRu': _nameRu,
-        if (description.isNotEmpty) 'description': description,
-        'difficulty': difficulty.name,
-        'equipment': equipment.map((e) => e.name).toList(),
-        'primaryMuscles': primaryMuscles.map((e) => e.name).toList(),
-        'secondaryMuscles': secondaryMuscles.map((e) => e.name).toList(),
-        'instructions': instructions,
-        'movementType': movementType.name,
-        'tags': tags,
-      };
+    'id': id,
+    'name': name,
+    if (_nameRu != null) 'nameRu': _nameRu,
+    if (description.isNotEmpty) 'description': description,
+    'difficulty': difficulty.name,
+    'equipment': equipment.map((e) => e.name).toList(),
+    'primaryMuscles': primaryMuscles.map((e) => e.name).toList(),
+    'secondaryMuscles': secondaryMuscles.map((e) => e.name).toList(),
+    'instructions': instructions,
+    'movementType': movementType.name,
+    'tags': tags,
+  };
 }
 
 // ─── Repository ───────────────────────────────────────────────────────────────
@@ -219,8 +221,7 @@ class ExerciseDatabase {
 
   static Future<List<ExerciseDbModel>> load() async {
     if (_cache != null) return _cache!;
-    final raw =
-        await rootBundle.loadString('assets/data/exercises.json');
+    final raw = await rootBundle.loadString('assets/data/exercises.json');
     final loadFreeDb = FreeExerciseDb.instance.load();
     final loadLocalization = ExerciseLocalization.instance.init();
     final list = jsonDecode(raw) as List;
@@ -275,37 +276,37 @@ extension ExMuscleZone on ExMuscle {
   // Zone IDs match GLB material names.
   // L+R sides share ONE material name → selecting any muscle highlights both sides.
   static const _zoneMap = <String, ExMuscle>{
-    'neck':                 ExMuscle.levatorScapulae,
-    'upper_trapezius':      ExMuscle.trapezius,
-    'middle_trapezius':     ExMuscle.trapezius,
-    'lower_trapezius':      ExMuscle.trapezius,
-    'anterior_deltoid':     ExMuscle.anteriorDeltoid,
-    'lateral_deltoid':      ExMuscle.lateralDeltoid,
-    'posterior_deltoid':    ExMuscle.posteriorDeltoid,
-    'rotator_cuff':         ExMuscle.rotatorCuff,
-    'pectoralis_upper':     ExMuscle.pectoralisMajor,
-    'pectoralis_lower':     ExMuscle.pectoralisMajor,
-    'pectoralis_minor':     ExMuscle.pectoralisMinor,
-    'serratus_anterior':    ExMuscle.serratusAnterior,
-    'biceps':               ExMuscle.biceps,
-    'brachialis':           ExMuscle.brachialis,
-    'triceps':              ExMuscle.triceps,
-    'forearm_flexors':      ExMuscle.forearmFlexors,
-    'rectus_abdominis':     ExMuscle.rectusAbdominis,
-    'external_oblique':     ExMuscle.obliques,
+    'neck': ExMuscle.levatorScapulae,
+    'upper_trapezius': ExMuscle.trapezius,
+    'middle_trapezius': ExMuscle.trapezius,
+    'lower_trapezius': ExMuscle.trapezius,
+    'anterior_deltoid': ExMuscle.anteriorDeltoid,
+    'lateral_deltoid': ExMuscle.lateralDeltoid,
+    'posterior_deltoid': ExMuscle.posteriorDeltoid,
+    'rotator_cuff': ExMuscle.rotatorCuff,
+    'pectoralis_upper': ExMuscle.pectoralisMajor,
+    'pectoralis_lower': ExMuscle.pectoralisMajor,
+    'pectoralis_minor': ExMuscle.pectoralisMinor,
+    'serratus_anterior': ExMuscle.serratusAnterior,
+    'biceps': ExMuscle.biceps,
+    'brachialis': ExMuscle.brachialis,
+    'triceps': ExMuscle.triceps,
+    'forearm_flexors': ExMuscle.forearmFlexors,
+    'rectus_abdominis': ExMuscle.rectusAbdominis,
+    'external_oblique': ExMuscle.obliques,
     'transverse_abdominis': ExMuscle.transverseAbdominis,
-    'latissimus':           ExMuscle.latissimusDorsi,
-    'teres_major':          ExMuscle.rhomboids,
-    'erector_spinae':       ExMuscle.erectorSpinae,
-    'hip_flexors':          ExMuscle.hipFlexors,
-    'adductors':            ExMuscle.adductors,
-    'gluteus_medius':       ExMuscle.gluteusMedius,
-    'gluteus_maximus':      ExMuscle.gluteusMaximus,
-    'quadriceps':           ExMuscle.quadriceps,
-    'hamstrings':           ExMuscle.hamstrings,
-    'gastrocnemius':        ExMuscle.calves,
-    'soleus':               ExMuscle.calves,
-    'tibialis_anterior':    ExMuscle.calves,
+    'latissimus': ExMuscle.latissimusDorsi,
+    'teres_major': ExMuscle.rhomboids,
+    'erector_spinae': ExMuscle.erectorSpinae,
+    'hip_flexors': ExMuscle.hipFlexors,
+    'adductors': ExMuscle.adductors,
+    'gluteus_medius': ExMuscle.gluteusMedius,
+    'gluteus_maximus': ExMuscle.gluteusMaximus,
+    'quadriceps': ExMuscle.quadriceps,
+    'hamstrings': ExMuscle.hamstrings,
+    'gastrocnemius': ExMuscle.calves,
+    'soleus': ExMuscle.calves,
+    'tibialis_anterior': ExMuscle.calves,
   };
 
   // Zone tap → ExMuscle (for exercise filtering)
@@ -318,31 +319,31 @@ extension ExMuscleZone on ExMuscle {
       .toList();
 
   String get displayNameRu => const <ExMuscle, String>{
-    ExMuscle.pectoralisMajor:     'Грудные (большая)',
-    ExMuscle.pectoralisMinor:     'Грудные (малая)',
-    ExMuscle.latissimusDorsi:     'Широчайшие',
-    ExMuscle.rhomboids:           'Ромбовидные',
-    ExMuscle.trapezius:           'Трапеция',
-    ExMuscle.anteriorDeltoid:     'Дельта передняя',
-    ExMuscle.lateralDeltoid:      'Дельта средняя',
-    ExMuscle.posteriorDeltoid:    'Дельта задняя',
-    ExMuscle.biceps:              'Бицепс',
-    ExMuscle.triceps:             'Трицепс',
-    ExMuscle.quadriceps:          'Квадрицепс',
-    ExMuscle.hamstrings:          'Задняя бедра',
-    ExMuscle.gluteusMaximus:      'Ягодичная',
-    ExMuscle.calves:              'Икроножная',
-    ExMuscle.rectusAbdominis:     'Пресс',
-    ExMuscle.obliques:            'Косые мышцы',
-    ExMuscle.erectorSpinae:       'Разгибатели спины',
+    ExMuscle.pectoralisMajor: 'Грудные (большая)',
+    ExMuscle.pectoralisMinor: 'Грудные (малая)',
+    ExMuscle.latissimusDorsi: 'Широчайшие',
+    ExMuscle.rhomboids: 'Ромбовидные',
+    ExMuscle.trapezius: 'Трапеция',
+    ExMuscle.anteriorDeltoid: 'Дельта передняя',
+    ExMuscle.lateralDeltoid: 'Дельта средняя',
+    ExMuscle.posteriorDeltoid: 'Дельта задняя',
+    ExMuscle.biceps: 'Бицепс',
+    ExMuscle.triceps: 'Трицепс',
+    ExMuscle.quadriceps: 'Квадрицепс',
+    ExMuscle.hamstrings: 'Задняя бедра',
+    ExMuscle.gluteusMaximus: 'Ягодичная',
+    ExMuscle.calves: 'Икроножная',
+    ExMuscle.rectusAbdominis: 'Пресс',
+    ExMuscle.obliques: 'Косые мышцы',
+    ExMuscle.erectorSpinae: 'Разгибатели спины',
     ExMuscle.transverseAbdominis: 'Поперечный пресс',
-    ExMuscle.brachialis:          'Плечевая мышца',
-    ExMuscle.hipFlexors:          'Сгибатели бедра',
-    ExMuscle.forearmFlexors:      'Предплечье',
-    ExMuscle.adductors:           'Приводящие',
-    ExMuscle.rotatorCuff:         'Вращательная манжета',
-    ExMuscle.serratusAnterior:    'Передняя зубчатая',
-    ExMuscle.levatorScapulae:     'Шея / лопатка',
-    ExMuscle.gluteusMedius:       'Ягодичная средняя',
+    ExMuscle.brachialis: 'Плечевая мышца',
+    ExMuscle.hipFlexors: 'Сгибатели бедра',
+    ExMuscle.forearmFlexors: 'Предплечье',
+    ExMuscle.adductors: 'Приводящие',
+    ExMuscle.rotatorCuff: 'Вращательная манжета',
+    ExMuscle.serratusAnterior: 'Передняя зубчатая',
+    ExMuscle.levatorScapulae: 'Шея / лопатка',
+    ExMuscle.gluteusMedius: 'Ягодичная средняя',
   }[this]!;
 }

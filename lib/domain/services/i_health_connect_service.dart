@@ -5,6 +5,9 @@ abstract interface class IHealthConnectService {
   Future<bool> isHealthConnectAvailable();
   Future<bool> initialize();
   Future<SyncedHealthData> readAllToday();
-  Future<SyncedHealthData> readDateRange({required DateTime start, required DateTime end});
+  Future<SyncedHealthData> readDateRange({
+    required DateTime start,
+    required DateTime end,
+  });
   void dispose();
 }

@@ -20,7 +20,11 @@ class _WorkoutEvent {
   final int planDayIndex; // 0-6 in the AI plan
   final String focus;
   final bool isRest;
-  _WorkoutEvent({required this.planDayIndex, required this.focus, required this.isRest});
+  _WorkoutEvent({
+    required this.planDayIndex,
+    required this.focus,
+    required this.isRest,
+  });
 }
 
 // ── Screen ────────────────────────────────────────────────────────────────────
@@ -79,20 +83,25 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   Future<void> _loadOverrides() async {
     final raw = await sl<ISettingsRepository>().getCalendarOverrides();
     if (raw != null) {
-      final map = (jsonDecode(raw) as Map<String, dynamic>)
-          .map((k, v) => MapEntry(k, (v as num).toInt()));
+      final map = (jsonDecode(raw) as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, (v as num).toInt()),
+      );
       if (mounted) setState(() => _overrides = map);
     }
   }
 
   Future<void> _saveOverrides() async {
-    await sl<ISettingsRepository>().setCalendarOverrides(jsonEncode(_overrides));
+    await sl<ISettingsRepository>().setCalendarOverrides(
+      jsonEncode(_overrides),
+    );
   }
 
-  String _dateKey(DateTime d) => '${d.year}-${d.month.toString().padLeft(2,'0')}-${d.day.toString().padLeft(2,'0')}';
+  String _dateKey(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   // Default assignment: weekday 1=Mon → plan day 0, etc.
-  int _defaultPlanIndex(DateTime date) => (date.weekday - 1) % _planDays.length.clamp(1, 7);
+  int _defaultPlanIndex(DateTime date) =>
+      (date.weekday - 1) % _planDays.length.clamp(1, 7);
 
   Map<String, dynamic>? _planDayFor(DateTime date) {
     if (_planDays.isEmpty) return null;
@@ -104,15 +113,20 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   bool _isRest(Map<String, dynamic>? day) {
     if (day == null) return true;
     final exercises = day['exercises'] as List? ?? [];
-    final focus = (day['focus'] as String? ?? day['name'] as String? ?? '').toLowerCase();
+    final focus = (day['focus'] as String? ?? day['name'] as String? ?? '')
+        .toLowerCase();
     final type = (day['type'] as String? ?? '').toLowerCase();
-    return exercises.isEmpty || focus.contains('отдых') || focus.contains('восстановлен')
-        || type == 'rest' || type == 'active_recovery';
+    return exercises.isEmpty ||
+        focus.contains('отдых') ||
+        focus.contains('восстановлен') ||
+        type == 'rest' ||
+        type == 'active_recovery';
   }
 
   String _dayIcon(Map<String, dynamic>? day) {
     if (day == null || _isRest(day)) return '😴';
-    final focus = (day['focus'] as String? ?? day['name'] as String? ?? '').toLowerCase();
+    final focus = (day['focus'] as String? ?? day['name'] as String? ?? '')
+        .toLowerCase();
     if (focus.contains('кардио') || focus.contains('интервал')) return '🏃';
     if (focus.contains('нога') || focus.contains('ягодиц')) return '🦵';
     if (focus.contains('грудн') || focus.contains('трицепс')) return '💪';
@@ -126,11 +140,13 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     if (planDay == null) return [];
     final k = _dateKey(day);
     final idx = _overrides[k] ?? _defaultPlanIndex(day);
-    return [_WorkoutEvent(
-      planDayIndex: idx,
-      focus: planDay['focus'] as String? ?? planDay['name'] as String? ?? '',
-      isRest: _isRest(planDay),
-    )];
+    return [
+      _WorkoutEvent(
+        planDayIndex: idx,
+        focus: planDay['focus'] as String? ?? planDay['name'] as String? ?? '',
+        isRest: _isRest(planDay),
+      ),
+    ];
   }
 
   // Shows bottom sheet to reassign a day to any plan day
@@ -155,93 +171,163 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
           return Container(
             decoration: BoxDecoration(
               color: colors.surfaceCard,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
             ),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              const SizedBox(height: 12),
-              Container(width: 36, height: 4, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(2))),
-              const SizedBox(height: 16),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(children: [
-                  const Text('📅', style: TextStyle(fontSize: 22)),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      '${date.day}.${date.month.toString().padLeft(2,'0')}.${date.year} — назначить тренировку',
-                      style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: colors.textPrimary),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                ]),
-              ),
-              const SizedBox(height: 12),
+                ),
+                const SizedBox(height: 16),
 
-              ...List.generate(_planDays.length, (i) {
-                final d = _planDays[i];
-                final focus = d['focus'] as String? ?? d['name'] as String? ?? '';
-                final label = i < _weekLabels.length ? _weekLabels[i] : 'День ${i+1}';
-                final isSelected = selected == i;
-                return GestureDetector(
-                  onTap: () => setSheetState(() => selected = i),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    color: isSelected ? colors.primary.withValues(alpha: 0.08) : Colors.transparent,
-                    child: Row(children: [
-                      Text(_dayIcon(d), style: const TextStyle(fontSize: 20)),
-                      const SizedBox(width: 12),
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(label, style: TextStyle(fontSize: 11, color: colors.textMuted)),
-                        Text(focus.isEmpty ? 'Отдых / Восстановление' : focus,
-                            style: TextStyle(fontSize: 14, color: colors.textPrimary, fontWeight: FontWeight.w600)),
-                      ])),
-                      if (isSelected) Icon(Icons.check_circle_rounded, color: colors.primary, size: 20),
-                    ]),
-                  ),
-                );
-              }),
-
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                child: Row(children: [
-                  if (_overrides.containsKey(k))
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () {
-                          setState(() => _overrides.remove(k));
-                          _saveOverrides();
-                          Navigator.pop(ctx);
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: colors.textMuted.withValues(alpha: 0.3)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      const Text('📅', style: TextStyle(fontSize: 22)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          '${date.day}.${date.month.toString().padLeft(2, '0')}.${date.year} — назначить тренировку',
+                          style: TextStyle(
+                            fontFamily: 'Syne',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: colors.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        child: Text(AppLocalizations.tl('reset'), style: TextStyle(color: colors.textMuted)),
                       ),
-                    ),
-                  if (_overrides.containsKey(k)) const SizedBox(width: 12),
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() => _overrides[k] = selected);
-                        _saveOverrides();
-                        Navigator.pop(ctx);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colors.primary,
-                        foregroundColor: colors.textOnPrimary,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      child: Text(AppLocalizations.tl('save'), style: const TextStyle(fontWeight: FontWeight.w700)),
-                    ),
+                    ],
                   ),
-                ]),
-              ),
-            ]),
+                ),
+                const SizedBox(height: 12),
+
+                ...List.generate(_planDays.length, (i) {
+                  final d = _planDays[i];
+                  final focus =
+                      d['focus'] as String? ?? d['name'] as String? ?? '';
+                  final label = i < _weekLabels.length
+                      ? _weekLabels[i]
+                      : 'День ${i + 1}';
+                  final isSelected = selected == i;
+                  return GestureDetector(
+                    onTap: () => setSheetState(() => selected = i),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      color: isSelected
+                          ? colors.primary.withValues(alpha: 0.08)
+                          : Colors.transparent,
+                      child: Row(
+                        children: [
+                          Text(
+                            _dayIcon(d),
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  label,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: colors.textMuted,
+                                  ),
+                                ),
+                                Text(
+                                  focus.isEmpty
+                                      ? 'Отдых / Восстановление'
+                                      : focus,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: colors.textPrimary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (isSelected)
+                            Icon(
+                              Icons.check_circle_rounded,
+                              color: colors.primary,
+                              size: 20,
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                  child: Row(
+                    children: [
+                      if (_overrides.containsKey(k))
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              setState(() => _overrides.remove(k));
+                              _saveOverrides();
+                              Navigator.pop(ctx);
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: colors.textMuted.withValues(alpha: 0.3),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              AppLocalizations.tl('reset'),
+                              style: TextStyle(color: colors.textMuted),
+                            ),
+                          ),
+                        ),
+                      if (_overrides.containsKey(k)) const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() => _overrides[k] = selected);
+                            _saveOverrides();
+                            Navigator.pop(ctx);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colors.primary,
+                            foregroundColor: colors.textOnPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: Text(
+                            AppLocalizations.tl('save'),
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -262,8 +348,15 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
           onTap: () => Navigator.pop(context),
           child: Container(
             margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: BorderRadius.circular(10)),
-            child: Icon(Icons.arrow_back_rounded, color: colors.textPrimary, size: 20),
+            decoration: BoxDecoration(
+              color: colors.surfaceCard,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.arrow_back_rounded,
+              color: colors.textPrimary,
+              size: 20,
+            ),
           ),
         ),
         title: const Text('Расписание тренировок', style: AppTextStyles.titleL),
@@ -271,17 +364,18 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _planDays.isEmpty
-              ? _buildEmpty(colors)
-              : ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
-                  children: [
-                    _buildCalendar(colors, now),
-                    const SizedBox(height: 20),
-                    if (_selectedDay != null) _buildSelectedDayCard(colors, _selectedDay!),
-                    const SizedBox(height: 20),
-                    _buildUpcomingWorkouts(colors, now),
-                  ],
-                ),
+          ? _buildEmpty(colors)
+          : ListView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+              children: [
+                _buildCalendar(colors, now),
+                const SizedBox(height: 20),
+                if (_selectedDay != null)
+                  _buildSelectedDayCard(colors, _selectedDay!),
+                const SizedBox(height: 20),
+                _buildUpcomingWorkouts(colors, now),
+              ],
+            ),
     );
   }
 
@@ -289,13 +383,28 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('📅', style: TextStyle(fontSize: 56)),
-          const SizedBox(height: 16),
-          Text('Нет плана тренировок', style: TextStyle(fontFamily: 'Syne', fontSize: 18, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-          const SizedBox(height: 8),
-          Text('Сгенерируй AI-план, чтобы управлять расписанием', style: TextStyle(fontSize: 13, color: colors.textMuted), textAlign: TextAlign.center),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('📅', style: TextStyle(fontSize: 56)),
+            const SizedBox(height: 16),
+            Text(
+              'Нет плана тренировок',
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: colors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Сгенерируй AI-план, чтобы управлять расписанием',
+              style: TextStyle(fontSize: 13, color: colors.textMuted),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -323,24 +432,63 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         headerStyle: HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
-          titleTextStyle: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w800, color: colors.textPrimary),
-          leftChevronIcon: Icon(Icons.chevron_left_rounded, color: colors.textMuted),
-          rightChevronIcon: Icon(Icons.chevron_right_rounded, color: colors.textMuted),
+          titleTextStyle: TextStyle(
+            fontFamily: 'Syne',
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            color: colors.textPrimary,
+          ),
+          leftChevronIcon: Icon(
+            Icons.chevron_left_rounded,
+            color: colors.textMuted,
+          ),
+          rightChevronIcon: Icon(
+            Icons.chevron_right_rounded,
+            color: colors.textMuted,
+          ),
           decoration: const BoxDecoration(color: Colors.transparent),
         ),
         daysOfWeekStyle: DaysOfWeekStyle(
-          weekdayStyle: TextStyle(fontSize: 11, color: colors.textMuted, fontWeight: FontWeight.w600),
-          weekendStyle: TextStyle(fontSize: 11, color: colors.textMuted.withValues(alpha: 0.6), fontWeight: FontWeight.w600),
+          weekdayStyle: TextStyle(
+            fontSize: 11,
+            color: colors.textMuted,
+            fontWeight: FontWeight.w600,
+          ),
+          weekendStyle: TextStyle(
+            fontSize: 11,
+            color: colors.textMuted.withValues(alpha: 0.6),
+            fontWeight: FontWeight.w600,
+          ),
         ),
         calendarStyle: CalendarStyle(
-          defaultTextStyle: TextStyle(color: colors.textSecondary, fontSize: 13),
+          defaultTextStyle: TextStyle(
+            color: colors.textSecondary,
+            fontSize: 13,
+          ),
           weekendTextStyle: TextStyle(color: colors.textMuted, fontSize: 13),
           outsideDaysVisible: false,
-          todayDecoration: BoxDecoration(color: colors.primary.withValues(alpha: 0.2), shape: BoxShape.circle),
-          todayTextStyle: TextStyle(color: colors.primary, fontWeight: FontWeight.w700, fontSize: 13),
-          selectedDecoration: BoxDecoration(color: colors.primary, shape: BoxShape.circle),
-          selectedTextStyle: TextStyle(color: colors.textOnPrimary, fontWeight: FontWeight.w700, fontSize: 13),
-          markerDecoration: BoxDecoration(color: colors.primary, shape: BoxShape.circle),
+          todayDecoration: BoxDecoration(
+            color: colors.primary.withValues(alpha: 0.2),
+            shape: BoxShape.circle,
+          ),
+          todayTextStyle: TextStyle(
+            color: colors.primary,
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
+          ),
+          selectedDecoration: BoxDecoration(
+            color: colors.primary,
+            shape: BoxShape.circle,
+          ),
+          selectedTextStyle: TextStyle(
+            color: colors.textOnPrimary,
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
+          ),
+          markerDecoration: BoxDecoration(
+            color: colors.primary,
+            shape: BoxShape.circle,
+          ),
           markerSize: 5,
           markersMaxCount: 1,
         ),
@@ -352,8 +500,12 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             return Positioned(
               bottom: 2,
               child: Container(
-                width: 5, height: 5,
-                decoration: BoxDecoration(color: colors.primary, shape: BoxShape.circle),
+                width: 5,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  shape: BoxShape.circle,
+                ),
               ),
             );
           },
@@ -364,147 +516,278 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
 
   Widget _buildSelectedDayCard(ThemePalette colors, DateTime date) {
     final planDay = _planDayFor(date);
-    final focus = planDay?['focus'] as String? ?? planDay?['name'] as String? ?? '';
+    final focus =
+        planDay?['focus'] as String? ?? planDay?['name'] as String? ?? '';
     final isRest = _isRest(planDay);
     final icon = _dayIcon(planDay);
-    final exercises = (planDay?['exercises'] as List? ?? []).cast<Map<String, dynamic>>();
+    final exercises = (planDay?['exercises'] as List? ?? [])
+        .cast<Map<String, dynamic>>();
     final k = _dateKey(date);
     final isOverridden = _overrides.containsKey(k);
     final isToday = isSameDay(date, DateTime.now());
 
-    final workoutDay = isRest || exercises.isEmpty ? null : WorkoutDay(
-      day: (date.weekday),
-      focus: focus,
-      exercises: exercises.map((ex) => WorkoutExercise.fromJson(ex)).toList(),
-    );
+    final workoutDay = isRest || exercises.isEmpty
+        ? null
+        : WorkoutDay(
+            day: (date.weekday),
+            focus: focus,
+            exercises: exercises
+                .map((ex) => WorkoutExercise.fromJson(ex))
+                .toList(),
+          );
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        Text(
-          '${date.day}.${date.month.toString().padLeft(2,'0')}${isToday ? ' — Сегодня' : ''}',
-          style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: colors.textPrimary),
-        ),
-        if (isOverridden) ...[
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(color: colors.accentOrange.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
-            child: Text('Перенесено', style: TextStyle(fontSize: 10, color: colors.accentOrange, fontWeight: FontWeight.w700)),
-          ),
-        ],
-      ]),
-      const SizedBox(height: 10),
-      Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colors.surfaceCard,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
-        ),
-        child: Column(children: [
-          Row(children: [
-            Text(icon, style: const TextStyle(fontSize: 28)),
-            const SizedBox(width: 14),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                isRest ? 'Отдых / Восстановление' : focus,
-                style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w800, color: colors.textPrimary),
-              ),
-              if (!isRest)
-                Text('${exercises.length} упражнений', style: TextStyle(fontSize: 12, color: colors.textMuted)),
-            ])),
-            GestureDetector(
-              onTap: () => _showReassignSheet(date),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(color: colors.elevated, borderRadius: BorderRadius.circular(10)),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.edit_calendar_rounded, size: 14, color: colors.textMuted),
-                  const SizedBox(width: 4),
-                  Text('Изменить', style: TextStyle(fontSize: 11, color: colors.textMuted, fontWeight: FontWeight.w600)),
-                ]),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              '${date.day}.${date.month.toString().padLeft(2, '0')}${isToday ? ' — Сегодня' : ''}',
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: colors.textPrimary,
               ),
             ),
-          ]),
-          if (workoutDay != null) ...[
-            const SizedBox(height: 14),
-            GestureDetector(
-              onTap: () => context.push(AppRouter.workoutExecution, extra: workoutDay),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+            if (isOverridden) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: colors.primary,
-                  borderRadius: BorderRadius.circular(12),
+                  color: colors.accentOrange.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 20),
-                  const SizedBox(width: 6),
-                  Text('Начать тренировку', style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: colors.textOnPrimary)),
-                ]),
+                child: Text(
+                  'Перенесено',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: colors.accentOrange,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
-            ),
+            ],
           ],
-        ]),
-      ),
-    ]);
+        ),
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surfaceCard,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(icon, style: const TextStyle(fontSize: 28)),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isRest ? 'Отдых / Восстановление' : focus,
+                          style: TextStyle(
+                            fontFamily: 'Syne',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                        if (!isRest)
+                          Text(
+                            '${exercises.length} упражнений',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colors.textMuted,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _showReassignSheet(date),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.elevated,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.edit_calendar_rounded,
+                            size: 14,
+                            color: colors.textMuted,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Изменить',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colors.textMuted,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (workoutDay != null) ...[
+                const SizedBox(height: 14),
+                GestureDetector(
+                  onTap: () => context.push(
+                    AppRouter.workoutExecution,
+                    extra: workoutDay,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: colors.primary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.play_arrow_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Начать тренировку',
+                          style: TextStyle(
+                            fontFamily: 'Syne',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: colors.textOnPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildUpcomingWorkouts(ThemePalette colors, DateTime now) {
     // Next 7 days
-    final upcomingDays = List.generate(7, (i) => now.add(Duration(days: i + 1)));
-    final workoutDays = upcomingDays.where((d) {
-      final planDay = _planDayFor(d);
-      return !_isRest(planDay);
-    }).take(5).toList();
+    final upcomingDays = List.generate(
+      7,
+      (i) => now.add(Duration(days: i + 1)),
+    );
+    final workoutDays = upcomingDays
+        .where((d) {
+          final planDay = _planDayFor(d);
+          return !_isRest(planDay);
+        })
+        .take(5)
+        .toList();
 
     if (workoutDays.isEmpty) return const SizedBox.shrink();
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('Ближайшие тренировки', style: AppTextStyles.titleM),
-      const SizedBox(height: 12),
-      ...workoutDays.map((date) {
-        final planDay = _planDayFor(date);
-        final focus = planDay?['focus'] as String? ?? planDay?['name'] as String? ?? '';
-        final icon = _dayIcon(planDay);
-        final k = _dateKey(date);
-        final isOverridden = _overrides.containsKey(k);
-        final weekday = _weekLabels[date.weekday - 1];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: colors.surfaceCard,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
-          ),
-          child: Row(children: [
-            Container(
-              width: 42, height: 42,
-              decoration: BoxDecoration(color: colors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10)),
-              child: Center(child: Text(icon, style: const TextStyle(fontSize: 20))),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Ближайшие тренировки', style: AppTextStyles.titleM),
+        const SizedBox(height: 12),
+        ...workoutDays.map((date) {
+          final planDay = _planDayFor(date);
+          final focus =
+              planDay?['focus'] as String? ?? planDay?['name'] as String? ?? '';
+          final icon = _dayIcon(planDay);
+          final k = _dateKey(date);
+          final isOverridden = _overrides.containsKey(k);
+          final weekday = _weekLabels[date.weekday - 1];
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: colors.surfaceCard,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
             ),
-            const SizedBox(width: 12),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Text('$weekday, ${date.day}.${date.month.toString().padLeft(2,'0')}',
-                    style: TextStyle(fontSize: 11, color: colors.textMuted)),
-                if (isOverridden) ...[
-                  const SizedBox(width: 6),
-                  Text('перенесено', style: TextStyle(fontSize: 10, color: colors.accentOrange)),
-                ],
-              ]),
-              Text(focus, style: TextStyle(fontSize: 13, color: colors.textPrimary, fontWeight: FontWeight.w600)),
-            ])),
-            GestureDetector(
-              onTap: () {
-                setState(() => _selectedDay = date);
-                _showReassignSheet(date);
-              },
-              child: Icon(Icons.edit_rounded, size: 16, color: colors.textMuted),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(icon, style: const TextStyle(fontSize: 20)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            '$weekday, ${date.day}.${date.month.toString().padLeft(2, '0')}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colors.textMuted,
+                            ),
+                          ),
+                          if (isOverridden) ...[
+                            const SizedBox(width: 6),
+                            Text(
+                              'перенесено',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: colors.accentOrange,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      Text(
+                        focus,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() => _selectedDay = date);
+                    _showReassignSheet(date);
+                  },
+                  child: Icon(
+                    Icons.edit_rounded,
+                    size: 16,
+                    color: colors.textMuted,
+                  ),
+                ),
+              ],
             ),
-          ]),
-        );
-      }),
-    ]);
+          );
+        }),
+      ],
+    );
   }
 }

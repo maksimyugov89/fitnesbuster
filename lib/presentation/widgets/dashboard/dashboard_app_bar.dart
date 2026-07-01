@@ -26,7 +26,9 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final p = AppTheme.of(context);
-    final displayName = userName.isNotEmpty ? userName : AppLocalizations.of(context).dashboardDefaultName;
+    final displayName = userName.isNotEmpty
+        ? userName
+        : AppLocalizations.of(context).dashboardDefaultName;
     final firstName = displayName.split(' ').first;
 
     return SliverAppBar(
@@ -50,14 +52,18 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Text(
                     context.l10n.greetingMorning,
                     style: TextStyle(
-                      fontSize: 12, color: p.textMuted, fontFamily: 'Inter',
+                      fontSize: 12,
+                      color: p.textMuted,
+                      fontFamily: 'Inter',
                     ),
                   ),
                   Text(
                     firstName,
                     style: TextStyle(
-                      fontFamily: 'Syne', fontSize: 20,
-                      fontWeight: FontWeight.w800, color: p.textPrimary,
+                      fontFamily: 'Syne',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: p.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -85,7 +91,8 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     if (avatarCustomPath.isNotEmpty) {
       return Container(
-        width: size, height: size,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(color: p.primary.withValues(alpha: 0.5), width: 2),
@@ -103,7 +110,8 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (avatarPresetIndex >= 0 && avatarPresetIndex < kAvatarPresets.length) {
       final preset = kAvatarPresets[avatarPresetIndex];
       return Container(
-        width: size, height: size,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: preset.gradientColors,
@@ -111,7 +119,10 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
             end: Alignment.bottomRight,
           ),
           shape: BoxShape.circle,
-          border: Border.all(color: preset.gradientColors[0].withValues(alpha: 0.6), width: 2),
+          border: Border.all(
+            color: preset.gradientColors[0].withValues(alpha: 0.6),
+            width: 2,
+          ),
         ),
         child: Center(
           child: Text(preset.emoji, style: const TextStyle(fontSize: 20)),
@@ -126,7 +137,8 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
     final p = AppTheme.of(context);
     final initial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
     return Container(
-      width: size, height: size,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [p.primary, p.primaryDark],
@@ -139,8 +151,10 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Text(
           initial,
           style: TextStyle(
-            fontFamily: 'Syne', fontSize: 18,
-            fontWeight: FontWeight.w800, color: p.textOnPrimary,
+            fontFamily: 'Syne',
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: p.textOnPrimary,
           ),
         ),
       ),

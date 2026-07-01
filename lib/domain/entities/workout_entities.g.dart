@@ -20,15 +20,15 @@ _$TestWeekResultImpl _$$TestWeekResultImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$TestWeekResultImplToJson(
-        _$TestWeekResultImpl instance) =>
-    <String, dynamic>{
-      'completedAt': instance.completedAt.toIso8601String(),
-      'exercises': instance.exercises,
-      'averageHeartRate': instance.averageHeartRate,
-      'averageSessionDuration': instance.averageSessionDuration,
-      'perceivedDifficulty': instance.perceivedDifficulty,
-      'feedback': instance.feedback,
-    };
+  _$TestWeekResultImpl instance,
+) => <String, dynamic>{
+  'completedAt': instance.completedAt.toIso8601String(),
+  'exercises': instance.exercises,
+  'averageHeartRate': instance.averageHeartRate,
+  'averageSessionDuration': instance.averageSessionDuration,
+  'perceivedDifficulty': instance.perceivedDifficulty,
+  'feedback': instance.feedback,
+};
 
 _$WorkoutPlanImpl _$$WorkoutPlanImplFromJson(Map<String, dynamic> json) =>
     _$WorkoutPlanImpl(
@@ -45,7 +45,8 @@ _$WorkoutPlanImpl _$$WorkoutPlanImplFromJson(Map<String, dynamic> json) =>
       completedAt: json['completedAt'] == null
           ? null
           : DateTime.parse(json['completedAt'] as String),
-      status: $enumDecodeNullable(_$WorkoutPlanStatusEnumMap, json['status']) ??
+      status:
+          $enumDecodeNullable(_$WorkoutPlanStatusEnumMap, json['status']) ??
           WorkoutPlanStatus.active,
     );
 
@@ -136,34 +137,35 @@ _$WorkoutSessionImpl _$$WorkoutSessionImplFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String,
       description: json['description'] as String?,
       primaryMuscle: $enumDecode(_$MuscleGroupEnumMap, json['primaryMuscle']),
-      secondaryMuscles: (json['secondaryMuscles'] as List<dynamic>?)
+      secondaryMuscles:
+          (json['secondaryMuscles'] as List<dynamic>?)
               ?.map((e) => $enumDecode(_$MuscleGroupEnumMap, e))
               .toList() ??
           const [],
       exercises: (json['exercises'] as List<dynamic>)
           .map((e) => ExerciseSet.fromJson(e as Map<String, dynamic>))
           .toList(),
-      estimatedDurationMinutes:
-          (json['estimatedDurationMinutes'] as num).toInt(),
+      estimatedDurationMinutes: (json['estimatedDurationMinutes'] as num)
+          .toInt(),
       estimatedCaloriesBurn: (json['estimatedCaloriesBurn'] as num).toInt(),
       difficulty: $enumDecode(_$DifficultyLevelEnumMap, json['difficulty']),
     );
 
 Map<String, dynamic> _$$WorkoutSessionImplToJson(
-        _$WorkoutSessionImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'title': instance.title,
-      'description': instance.description,
-      'primaryMuscle': _$MuscleGroupEnumMap[instance.primaryMuscle]!,
-      'secondaryMuscles': instance.secondaryMuscles
-          .map((e) => _$MuscleGroupEnumMap[e]!)
-          .toList(),
-      'exercises': instance.exercises,
-      'estimatedDurationMinutes': instance.estimatedDurationMinutes,
-      'estimatedCaloriesBurn': instance.estimatedCaloriesBurn,
-      'difficulty': _$DifficultyLevelEnumMap[instance.difficulty]!,
-    };
+  _$WorkoutSessionImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'title': instance.title,
+  'description': instance.description,
+  'primaryMuscle': _$MuscleGroupEnumMap[instance.primaryMuscle]!,
+  'secondaryMuscles': instance.secondaryMuscles
+      .map((e) => _$MuscleGroupEnumMap[e]!)
+      .toList(),
+  'exercises': instance.exercises,
+  'estimatedDurationMinutes': instance.estimatedDurationMinutes,
+  'estimatedCaloriesBurn': instance.estimatedCaloriesBurn,
+  'difficulty': _$DifficultyLevelEnumMap[instance.difficulty]!,
+};
 
 const _$MuscleGroupEnumMap = {
   MuscleGroup.chest: 'chest',
@@ -236,12 +238,14 @@ _$ExerciseImpl _$$ExerciseImplFromJson(Map<String, dynamic> json) =>
       videoUrl: json['videoUrl'] as String?,
       imageUrl: json['imageUrl'] as String?,
       primaryMuscle: $enumDecode(_$MuscleGroupEnumMap, json['primaryMuscle']),
-      secondaryMuscles: (json['secondaryMuscles'] as List<dynamic>?)
+      secondaryMuscles:
+          (json['secondaryMuscles'] as List<dynamic>?)
               ?.map((e) => $enumDecode(_$MuscleGroupEnumMap, e))
               .toList() ??
           const [],
       type: $enumDecode(_$ExerciseTypeEnumMap, json['type']),
-      equipment: (json['equipment'] as List<dynamic>?)
+      equipment:
+          (json['equipment'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
@@ -324,18 +328,15 @@ _$ExerciseLogImpl _$$ExerciseLogImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$ExerciseLogImplToJson(_$ExerciseLogImpl instance) =>
-    <String, dynamic>{
-      'exerciseId': instance.exerciseId,
-      'sets': instance.sets,
-    };
+    <String, dynamic>{'exerciseId': instance.exerciseId, 'sets': instance.sets};
 
 _$SetLogImpl _$$SetLogImplFromJson(Map<String, dynamic> json) => _$SetLogImpl(
-      setNumber: (json['setNumber'] as num).toInt(),
-      reps: (json['reps'] as num).toInt(),
-      weightKg: (json['weightKg'] as num?)?.toDouble(),
-      durationSeconds: (json['durationSeconds'] as num?)?.toInt(),
-      completed: json['completed'] as bool? ?? true,
-    );
+  setNumber: (json['setNumber'] as num).toInt(),
+  reps: (json['reps'] as num).toInt(),
+  weightKg: (json['weightKg'] as num?)?.toDouble(),
+  durationSeconds: (json['durationSeconds'] as num?)?.toInt(),
+  completed: json['completed'] as bool? ?? true,
+);
 
 Map<String, dynamic> _$$SetLogImplToJson(_$SetLogImpl instance) =>
     <String, dynamic>{

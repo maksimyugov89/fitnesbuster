@@ -62,7 +62,12 @@ StreamSubscription<fb.User?>? _authFcmSub;
 Future<void> initDependencies() async {
   // Firebase
   sl.registerLazySingleton(() => fb.FirebaseAuth.instance);
-  sl.registerLazySingleton(() => FirebaseFirestore.instanceFor(app: Firebase.app(), databaseId: 'fitnesbuster'));
+  sl.registerLazySingleton(
+    () => FirebaseFirestore.instanceFor(
+      app: Firebase.app(),
+      databaseId: 'fitnesbuster',
+    ),
+  );
 
   // Notifications
   final notificationService = NotificationService();
@@ -82,7 +87,10 @@ Future<void> initDependencies() async {
   final mealPlanService = MealPlanService(baseClient);
   sl.registerLazySingleton<MealPlanService>(() => mealPlanService);
 
-  final planRefinementService = PlanRefinementService(baseClient, workoutPlanService);
+  final planRefinementService = PlanRefinementService(
+    baseClient,
+    workoutPlanService,
+  );
   sl.registerLazySingleton<PlanRefinementService>(() => planRefinementService);
 
   final progressAnalyzer = ProgressAnalyzer(baseClient);
@@ -182,7 +190,10 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<OfflineQueue>(() => offlineQueue);
 
   // Onboarding workflow
-  final onboardingWorkflow = OnboardingWorkflowService(aiService: sl(), userRepo: sl());
+  final onboardingWorkflow = OnboardingWorkflowService(
+    aiService: sl(),
+    userRepo: sl(),
+  );
   sl.registerLazySingleton<OnboardingWorkflowService>(() => onboardingWorkflow);
 
   // Test week workflow
@@ -190,26 +201,40 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<TestWeekWorkflowService>(() => testWeekWorkflow);
 
   // Use cases
-  final completeTestWeekUseCase = CompleteTestWeekUseCase(authRepo: sl(), userRepo: sl(), aiService: sl());
-  sl.registerLazySingleton<CompleteTestWeekUseCase>(() => completeTestWeekUseCase);
+  final completeTestWeekUseCase = CompleteTestWeekUseCase(
+    authRepo: sl(),
+    userRepo: sl(),
+    aiService: sl(),
+  );
+  sl.registerLazySingleton<CompleteTestWeekUseCase>(
+    () => completeTestWeekUseCase,
+  );
 
   // Blocs
   sl.registerFactory(() => AuthBloc(authRepository: sl<IAuthRepository>()));
   sl.registerFactory(() => UserBloc(userRepository: sl<IUserRepository>()));
   sl.registerFactory(() => WorkoutBloc());
   sl.registerFactory(() => NutritionBloc(nutritionService: sl()));
-  sl.registerFactory(() => HealthBloc(healthService: sl<IHealthService>(), analytics: sl<IHealthAnalyticsService>()));
-  sl.registerFactory(() => HealthSyncBloc(hcService: sl<IHealthConnectService>()));
+  sl.registerFactory(
+    () => HealthBloc(
+      healthService: sl<IHealthService>(),
+      analytics: sl<IHealthAnalyticsService>(),
+    ),
+  );
+  sl.registerFactory(
+    () => HealthSyncBloc(hcService: sl<IHealthConnectService>()),
+  );
   sl.registerFactory(() => AiBloc(aiService: sl()));
-  sl.registerFactory(() => OnboardingBloc(
-    userRepo: sl(),
-    workflowService: sl<OnboardingWorkflowService>(),
-    authRepo: sl<IAuthRepository>(),
-  ));
-  sl.registerFactory(() => TestWeekBloc(
-    workflowService: sl(),
-    completeTestWeekUseCase: sl(),
-  ));
+  sl.registerFactory(
+    () => OnboardingBloc(
+      userRepo: sl(),
+      workflowService: sl<OnboardingWorkflowService>(),
+      authRepo: sl<IAuthRepository>(),
+    ),
+  );
+  sl.registerFactory(
+    () => TestWeekBloc(workflowService: sl(), completeTestWeekUseCase: sl()),
+  );
 }
 
 void disposeDependencies() {

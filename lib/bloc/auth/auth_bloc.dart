@@ -17,8 +17,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   StreamSubscription<UserEntity?>? _userSubscription;
 
   AuthBloc({required IAuthRepository authRepository})
-      : _authRepository = authRepository,
-        super(const AuthStateInitial()) {
+    : _authRepository = authRepository,
+      super(const AuthStateInitial()) {
     on<AuthCheckRequested>(_onCheckRequested);
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthRegisterRequested>(_onRegisterRequested);
@@ -46,7 +46,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onLoginRequested(AuthLoginRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onLoginRequested(
+    AuthLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthStateLoading());
     try {
       final user = await _authRepository.login(
@@ -64,7 +67,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onRegisterRequested(AuthRegisterRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onRegisterRequested(
+    AuthRegisterRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthStateLoading());
     try {
       final user = await _authRepository.register(
@@ -83,7 +89,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onGoogleLoginRequested(AuthGoogleLoginRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onGoogleLoginRequested(
+    AuthGoogleLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthStateLoading());
     try {
       final user = await _authRepository.signInWithGoogle();
@@ -102,7 +111,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onLogoutRequested(AuthLogoutRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onLogoutRequested(
+    AuthLogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       await _authRepository.logout();
     } catch (e, st) {
@@ -121,19 +133,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   String _mapFirebaseError(String code) {
     switch (code) {
-      case 'user-not-found': return AppLocalizations.tl('userNotFound');
-      case 'wrong-password': return AppLocalizations.tl('wrongPassword');
-      case 'invalid-email': return AppLocalizations.tl('invalidEmail');
-      case 'user-disabled': return AppLocalizations.tl('userDisabled');
-      case 'email-already-in-use': return AppLocalizations.tl('emailAlreadyInUse');
-      case 'weak-password': return AppLocalizations.tl('weakPassword');
-      case 'operation-not-allowed': return AppLocalizations.tl('operationNotAllowed');
-      case 'too-many-requests': return AppLocalizations.tl('tooManyRequests');
-      default: return AppLocalizations.tl('loginError');
+      case 'user-not-found':
+        return AppLocalizations.tl('userNotFound');
+      case 'wrong-password':
+        return AppLocalizations.tl('wrongPassword');
+      case 'invalid-email':
+        return AppLocalizations.tl('invalidEmail');
+      case 'user-disabled':
+        return AppLocalizations.tl('userDisabled');
+      case 'email-already-in-use':
+        return AppLocalizations.tl('emailAlreadyInUse');
+      case 'weak-password':
+        return AppLocalizations.tl('weakPassword');
+      case 'operation-not-allowed':
+        return AppLocalizations.tl('operationNotAllowed');
+      case 'too-many-requests':
+        return AppLocalizations.tl('tooManyRequests');
+      default:
+        return AppLocalizations.tl('loginError');
     }
   }
 
   Future<void> _track(Future<void> Function() fn) async {
-    try { await fn(); } catch (_) { /* best-effort */ }
+    try {
+      await fn();
+    } catch (_) {
+      /* best-effort */
+    }
   }
 }

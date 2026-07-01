@@ -31,14 +31,20 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
   void _onStart(WorkoutStartRequested event, Emitter<WorkoutState> emit) {
     _elapsedSeconds = 0;
     _startTimer();
-    emit(WorkoutStateInProgress(
-      session: event.session,
-      currentExerciseIndex: 0,
-      completedSets: [],
-      elapsedSeconds: 0,
-    ));
+    emit(
+      WorkoutStateInProgress(
+        session: event.session,
+        currentExerciseIndex: 0,
+        completedSets: [],
+        elapsedSeconds: 0,
+      ),
+    );
     if (event.session != null) {
-      _track(() => sl<IAnalyticsService>().logWorkoutStarted(sessionId: event.session!.id));
+      _track(
+        () => sl<IAnalyticsService>().logWorkoutStarted(
+          sessionId: event.session!.id,
+        ),
+      );
     }
   }
 
@@ -48,7 +54,11 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
       final current = state as WorkoutStateInProgress;
       emit(current.copyWith(isPaused: true));
       if (current.session != null) {
-        _track(() => sl<IAnalyticsService>().logWorkoutPaused(sessionId: current.session!.id));
+        _track(
+          () => sl<IAnalyticsService>().logWorkoutPaused(
+            sessionId: current.session!.id,
+          ),
+        );
       }
     }
   }
@@ -70,19 +80,28 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
         return;
       }
       if (current.session == null) {
-        emit(const WorkoutStateError(message: 'Не удалось завершить тренировку: данные сессии отсутствуют'));
+        emit(
+          const WorkoutStateError(
+            message:
+                'Не удалось завершить тренировку: данные сессии отсутствуют',
+          ),
+        );
         return;
       }
-      emit(WorkoutStateCompleted(
-        sessionId: current.session!.id,
-        elapsedSeconds: _elapsedSeconds,
-        completedSets: List<SetLog>.from(current.completedSets),
-      ));
-      _track(() => sl<IAnalyticsService>().logWorkoutCompleted(
-        sessionId: current.session!.id,
-        durationSeconds: _elapsedSeconds,
-        exercisesCompleted: current.completedSets.length,
-      ));
+      emit(
+        WorkoutStateCompleted(
+          sessionId: current.session!.id,
+          elapsedSeconds: _elapsedSeconds,
+          completedSets: List<SetLog>.from(current.completedSets),
+        ),
+      );
+      _track(
+        () => sl<IAnalyticsService>().logWorkoutCompleted(
+          sessionId: current.session!.id,
+          durationSeconds: _elapsedSeconds,
+          exercisesCompleted: current.completedSets.length,
+        ),
+      );
     } catch (e) {
       emit(const WorkoutStateError(message: 'Ошибка завершения тренировки'));
     }
@@ -96,7 +115,10 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     }
   }
 
-  void _onExerciseChanged(WorkoutExerciseChanged event, Emitter<WorkoutState> emit) {
+  void _onExerciseChanged(
+    WorkoutExerciseChanged event,
+    Emitter<WorkoutState> emit,
+  ) {
     if (state is WorkoutStateInProgress) {
       final current = state as WorkoutStateInProgress;
       emit(current.copyWith(currentExerciseIndex: event.index));
@@ -121,6 +143,10 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
   }
 
   Future<void> _track(Future<void> Function() fn) async {
-    try { await fn(); } catch (_) { /* best-effort */ }
+    try {
+      await fn();
+    } catch (_) {
+      /* best-effort */
+    }
   }
 }

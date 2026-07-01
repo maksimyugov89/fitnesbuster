@@ -3,14 +3,17 @@ import 'package:flutter/services.dart';
 
 class ExerciseLocalization {
   static ExerciseLocalization? _instance;
-  static ExerciseLocalization get instance => _instance ??= ExerciseLocalization._();
+  static ExerciseLocalization get instance =>
+      _instance ??= ExerciseLocalization._();
   ExerciseLocalization._();
 
   Map<String, String>? _names;
 
   Future<void> init() async {
     if (_names != null) return;
-    final raw = await rootBundle.loadString('assets/data/exercise_ru_names.json');
+    final raw = await rootBundle.loadString(
+      'assets/data/exercise_ru_names.json',
+    );
     _names = (jsonDecode(raw) as Map<String, dynamic>).map(
       (k, v) => MapEntry(k, v as String),
     );

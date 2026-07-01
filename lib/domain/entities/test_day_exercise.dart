@@ -12,5 +12,6 @@ class TestDayExercise with _$TestDayExercise {
     required double baseWeight,
   }) = _TestDayExercise;
 
-  factory TestDayExercise.fromJson(Map<String, dynamic> json) => _$TestDayExerciseFromJson(json);
+  factory TestDayExercise.fromJson(Map<String, dynamic> json) =>
+      _$TestDayExerciseFromJson(json);
 }

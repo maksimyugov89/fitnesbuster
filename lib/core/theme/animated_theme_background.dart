@@ -51,10 +51,7 @@ class _AnimatedThemeBackgroundState extends State<AnimatedThemeBackground>
             animation: _ctrl,
             builder: (_, _) => SizedBox.expand(
               child: CustomPaint(
-                painter: _BlobPainter(
-                  t: _ctrl.value,
-                  palette: widget.palette,
-                ),
+                painter: _BlobPainter(t: _ctrl.value, palette: widget.palette),
               ),
             ),
           ),

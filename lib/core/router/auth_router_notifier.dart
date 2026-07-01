@@ -10,9 +10,9 @@ class AuthRouterNotifier extends ChangeNotifier {
   late final StreamSubscription<AuthState> _blocSub;
 
   AuthRouterNotifier() {
-    _firebaseSub = FirebaseAuth.instance
-        .authStateChanges()
-        .listen((_) => notifyListeners());
+    _firebaseSub = FirebaseAuth.instance.authStateChanges().listen(
+      (_) => notifyListeners(),
+    );
     _blocSub = sl<AuthBloc>().stream.listen((_) => notifyListeners());
   }
 

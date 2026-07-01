@@ -29,17 +29,22 @@ class MealProgressBar extends StatelessWidget {
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: Column(children: [
-              Text(mealIcons[type] ?? '🍽️', style: const TextStyle(fontSize: 14)),
-              const SizedBox(height: 4),
-              Container(
-                height: 6,
-                decoration: BoxDecoration(
-                  color: isDone ? mealColor : colors.elevated,
-                  borderRadius: BorderRadius.circular(3),
+            child: Column(
+              children: [
+                Text(
+                  mealIcons[type] ?? '🍽️',
+                  style: const TextStyle(fontSize: 14),
                 ),
-              ),
-            ]),
+                const SizedBox(height: 4),
+                Container(
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: isDone ? mealColor : colors.elevated,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       }).toList(),

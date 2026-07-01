@@ -21,17 +21,41 @@ class SocialCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(l10n.socialSection, style: AppTextStyles.titleM),
-        const SizedBox(height: 14),
-        Row(children: [
-          Expanded(child: _SocialBtn(emoji: '👥', label: l10n.feedTitle, onTap: () => context.push(AppRouter.feed))),
-          const SizedBox(width: 10),
-          Expanded(child: _SocialBtn(emoji: '🤝', label: l10n.friendsTitle, badge: pendingRequests, onTap: () => context.push(AppRouter.friends))),
-          const SizedBox(width: 10),
-          Expanded(child: _SocialBtn(emoji: '⚡', label: l10n.challengesTitle, onTap: () => context.push(AppRouter.challenges))),
-        ]),
-      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.socialSection, style: AppTextStyles.titleM),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: _SocialBtn(
+                  emoji: '👥',
+                  label: l10n.feedTitle,
+                  onTap: () => context.push(AppRouter.feed),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _SocialBtn(
+                  emoji: '🤝',
+                  label: l10n.friendsTitle,
+                  badge: pendingRequests,
+                  onTap: () => context.push(AppRouter.friends),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _SocialBtn(
+                  emoji: '⚡',
+                  label: l10n.challengesTitle,
+                  onTap: () => context.push(AppRouter.challenges),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -40,7 +64,12 @@ class _SocialBtn extends StatelessWidget {
   final String emoji, label;
   final int? badge;
   final VoidCallback onTap;
-  const _SocialBtn({required this.emoji, required this.label, this.badge, required this.onTap});
+  const _SocialBtn({
+    required this.emoji,
+    required this.label,
+    this.badge,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,22 +85,46 @@ class _SocialBtn extends StatelessWidget {
             color: p.surfaceLight,
             borderRadius: BorderRadius.circular(16),
           ),
-          child: Column(children: [
-            Stack(clipBehavior: Clip.none, children: [
-              Text(emoji, style: const TextStyle(fontSize: 24)),
-              if (badge != null && badge! > 0)
-                Positioned(
-                  right: -12, top: -8,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(color: SemanticColors.cardioRed, shape: BoxShape.circle),
-                    child: Text('$badge', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
-                  ),
+          child: Column(
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Text(emoji, style: const TextStyle(fontSize: 24)),
+                  if (badge != null && badge! > 0)
+                    Positioned(
+                      right: -12,
+                      top: -8,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: SemanticColors.cardioRed,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '$badge',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: p.textSecondary,
                 ),
-            ]),
-            const SizedBox(height: 6),
-            Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.textSecondary), textAlign: TextAlign.center),
-          ]),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

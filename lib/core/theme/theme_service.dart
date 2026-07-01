@@ -54,7 +54,8 @@ class ThemeService {
   static Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     final index = prefs.getInt(_key) ?? _default.index;
-    _current = AppThemeMode.values[index.clamp(0, AppThemeMode.values.length - 1)];
+    _current =
+        AppThemeMode.values[index.clamp(0, AppThemeMode.values.length - 1)];
     notifier.value = _current;
   }
 
@@ -146,23 +147,26 @@ class ThemeService {
 
   // ─── Nebula (Midnight Purple) ───────────────────────────────────
 
-  static final ThemeData _midnightPurple = app_theme.AppTheme.darkTheme.copyWith(
-    colorScheme: const ColorScheme.dark(
-      primary: Color(0xFFA855F7),
-      secondary: Color(0xFFF472B6),
-      surface: Color(0xFF0C0620),
-      error: Color(0xFFF87171),
-      onPrimary: Color(0xFF04020A),
-      onSecondary: Color(0xFF04020A),
-      onSurface: Colors.white,
-    ),
-    scaffoldBackgroundColor: const Color(0xFF04020A),
-    cardTheme: CardThemeData(
-      color: const Color(0xFF110828),
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-    ),
-  );
+  static final ThemeData _midnightPurple = app_theme.AppTheme.darkTheme
+      .copyWith(
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFFA855F7),
+          secondary: Color(0xFFF472B6),
+          surface: Color(0xFF0C0620),
+          error: Color(0xFFF87171),
+          onPrimary: Color(0xFF04020A),
+          onSecondary: Color(0xFF04020A),
+          onSurface: Colors.white,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF04020A),
+        cardTheme: CardThemeData(
+          color: const Color(0xFF110828),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      );
 
   // ─── Neon Tokyo (CyberPunk) ─────────────────────────────────────
 

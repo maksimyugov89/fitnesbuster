@@ -10,7 +10,7 @@ class NotificationService implements INotificationService {
   final FlutterLocalNotificationsPlugin _plugin;
 
   NotificationService({FlutterLocalNotificationsPlugin? plugin})
-      : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
+    : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   static const _workoutChannelId = 'fitnesbuster_workout';
   static final _workoutChannelName = AppLocalizations.tl('notifWorkoutChannel');
@@ -41,21 +41,29 @@ class NotificationService implements INotificationService {
   }
 
   Future<void> _createChannels() async {
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
-    await android?.createNotificationChannel(AndroidNotificationChannel(
-      _workoutChannelId, _workoutChannelName,
-      description: _workoutChannelDesc,
-      importance: Importance.high,
-      playSound: true,
-      enableVibration: true,
-    ));
-    await android?.createNotificationChannel(AndroidNotificationChannel(
-      _waterChannelId, _waterChannelName,
-      description: _waterChannelDesc,
-      importance: Importance.defaultImportance,
-      playSound: false,
-    ));
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    await android?.createNotificationChannel(
+      AndroidNotificationChannel(
+        _workoutChannelId,
+        _workoutChannelName,
+        description: _workoutChannelDesc,
+        importance: Importance.high,
+        playSound: true,
+        enableVibration: true,
+      ),
+    );
+    await android?.createNotificationChannel(
+      AndroidNotificationChannel(
+        _waterChannelId,
+        _waterChannelName,
+        description: _waterChannelDesc,
+        importance: Importance.defaultImportance,
+        playSound: false,
+      ),
+    );
   }
 
   // ── Workout reminder ─────────────────────────────────────────────────────────
@@ -72,7 +80,8 @@ class NotificationService implements INotificationService {
       scheduledDate: _nextInstanceOf(time.hour, time.minute),
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
-          _workoutChannelId, _workoutChannelName,
+          _workoutChannelId,
+          _workoutChannelName,
           channelDescription: _workoutChannelDesc,
           importance: Importance.high,
           priority: Priority.high,
@@ -103,7 +112,8 @@ class NotificationService implements INotificationService {
         scheduledDate: _nextInstanceOf(_waterReminderHours[i], 0),
         notificationDetails: NotificationDetails(
           android: AndroidNotificationDetails(
-            _waterChannelId, _waterChannelName,
+            _waterChannelId,
+            _waterChannelName,
             channelDescription: _waterChannelDesc,
             importance: Importance.defaultImportance,
             priority: Priority.defaultPriority,
@@ -150,7 +160,8 @@ class NotificationService implements INotificationService {
       body: body,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
-          channelId, channelName,
+          channelId,
+          channelName,
           importance: Importance.high,
           priority: Priority.high,
         ),
@@ -183,8 +194,7 @@ class NotificationService implements INotificationService {
       return;
     }
 
-    final avgMinutes =
-        (times.reduce((a, b) => a + b) / times.length).round();
+    final avgMinutes = (times.reduce((a, b) => a + b) / times.length).round();
     // 30 minutes before average workout time, clamped to 05:00–22:00
     final reminderMinutes = (avgMinutes - 30).clamp(300, 22 * 60);
     await scheduleWorkoutReminder(
@@ -202,7 +212,14 @@ class NotificationService implements INotificationService {
 
   tz.TZDateTime _nextInstanceOf(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }

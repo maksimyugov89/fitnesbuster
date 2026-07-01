@@ -56,7 +56,10 @@ class HiveCache {
   }
 
   /// True if the cached plans are younger than [maxAge].
-  static bool isFresh(String uid, {Duration maxAge = const Duration(hours: 24)}) {
+  static bool isFresh(
+    String uid, {
+    Duration maxAge = const Duration(hours: 24),
+  }) {
     final ts = getCacheTime(uid);
     if (ts == null) return false;
     return DateTime.now().difference(ts) < maxAge;
@@ -92,7 +95,9 @@ class HiveCache {
   }
 
   static Future<void> saveChatHistory(
-      String uid, List<ChatMessage> messages) async {
+    String uid,
+    List<ChatMessage> messages,
+  ) async {
     final limited = messages.length > _maxHistoryMessages
         ? messages.sublist(messages.length - _maxHistoryMessages)
         : messages;
@@ -132,7 +137,10 @@ class HiveCache {
   }
 
   static Future<void> saveDebrief(
-      String uid, String weekStart, WeeklyDebrief debrief) async {
+    String uid,
+    String weekStart,
+    WeeklyDebrief debrief,
+  ) async {
     await _box.put(_debriefKey(uid, weekStart), WeeklyDebrief.encode(debrief));
   }
 

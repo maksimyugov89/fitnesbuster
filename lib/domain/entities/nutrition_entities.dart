@@ -17,7 +17,8 @@ class NutritionPer100g with _$NutritionPer100g {
     double? sodium,
   }) = _NutritionPer100g;
 
-  factory NutritionPer100g.fromJson(Map<String, dynamic> json) => _$NutritionPer100gFromJson(json);
+  factory NutritionPer100g.fromJson(Map<String, dynamic> json) =>
+      _$NutritionPer100gFromJson(json);
 }
 
 @freezed
@@ -33,7 +34,8 @@ class FoodItem with _$FoodItem {
     String? imageUrl,
   }) = _FoodItem;
 
-  factory FoodItem.fromJson(Map<String, dynamic> json) => _$FoodItemFromJson(json);
+  factory FoodItem.fromJson(Map<String, dynamic> json) =>
+      _$FoodItemFromJson(json);
 
   NutritionPer100g nutritionForGrams(double grams) {
     final factor = grams / 100;
@@ -52,12 +54,11 @@ class FoodItem with _$FoodItem {
 class FoodEntry with _$FoodEntry {
   const FoodEntry._();
 
-  const factory FoodEntry({
-    required FoodItem food,
-    required double grams,
-  }) = _FoodEntry;
+  const factory FoodEntry({required FoodItem food, required double grams}) =
+      _FoodEntry;
 
-  factory FoodEntry.fromJson(Map<String, dynamic> json) => _$FoodEntryFromJson(json);
+  factory FoodEntry.fromJson(Map<String, dynamic> json) =>
+      _$FoodEntryFromJson(json);
 
   double get totalCalories => food.nutritionForGrams(grams).calories;
   double get totalProtein => food.nutritionForGrams(grams).protein;
@@ -77,7 +78,8 @@ class MealLog with _$MealLog {
     required List<FoodEntry> foods,
   }) = _MealLog;
 
-  factory MealLog.fromJson(Map<String, dynamic> json) => _$MealLogFromJson(json);
+  factory MealLog.fromJson(Map<String, dynamic> json) =>
+      _$MealLogFromJson(json);
 
   double get totalCalories => foods.fold(0, (sum, f) => sum + f.totalCalories);
   double get totalProtein => foods.fold(0, (sum, f) => sum + f.totalProtein);
@@ -94,7 +96,8 @@ class MealPlan with _$MealPlan {
     required int targetCalories,
   }) = _MealPlan;
 
-  factory MealPlan.fromJson(Map<String, dynamic> json) => _$MealPlanFromJson(json);
+  factory MealPlan.fromJson(Map<String, dynamic> json) =>
+      _$MealPlanFromJson(json);
 }
 
 @freezed
@@ -105,7 +108,8 @@ class MealPlanItem with _$MealPlanItem {
     String? note,
   }) = _MealPlanItem;
 
-  factory MealPlanItem.fromJson(Map<String, dynamic> json) => _$MealPlanItemFromJson(json);
+  factory MealPlanItem.fromJson(Map<String, dynamic> json) =>
+      _$MealPlanItemFromJson(json);
 }
 
 @freezed
@@ -121,5 +125,6 @@ class DailyNutritionPlan with _$DailyNutritionPlan {
     required List<MealPlan> meals,
   }) = _DailyNutritionPlan;
 
-  factory DailyNutritionPlan.fromJson(Map<String, dynamic> json) => _$DailyNutritionPlanFromJson(json);
+  factory DailyNutritionPlan.fromJson(Map<String, dynamic> json) =>
+      _$DailyNutritionPlanFromJson(json);
 }

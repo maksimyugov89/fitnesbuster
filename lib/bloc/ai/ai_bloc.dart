@@ -13,8 +13,8 @@ class AiBloc extends Bloc<AiEvent, AiState> {
   final IDeepSeekService _aiService;
 
   AiBloc({required IDeepSeekService aiService})
-      : _aiService = aiService,
-        super(const AiStateInitial()) {
+    : _aiService = aiService,
+      super(const AiStateInitial()) {
     on<AiGenerateWorkoutPlan>(_onGenerateWorkoutPlan);
     on<AiGenerateMealPlan>(_onGenerateMealPlan);
     on<AiAskQuestion>(_onAskQuestion);
@@ -32,8 +32,14 @@ class AiBloc extends Bloc<AiEvent, AiState> {
     } on AiException catch (e) {
       emit(AiStateError(message: e.message));
     } catch (e, st) {
-      appLogger.w('[AiBloc] generateWorkoutPlan failed', error: e, stackTrace: st);
-      emit(AiStateError(message: AppLocalizations.tl('aiGenerateWorkoutFailed')));
+      appLogger.w(
+        '[AiBloc] generateWorkoutPlan failed',
+        error: e,
+        stackTrace: st,
+      );
+      emit(
+        AiStateError(message: AppLocalizations.tl('aiGenerateWorkoutFailed')),
+      );
     }
   }
 

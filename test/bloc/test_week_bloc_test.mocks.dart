@@ -29,35 +29,20 @@ import 'package:mockito/mockito.dart' as _i1;
 
 class _FakeTrainingAdjustment_0 extends _i1.SmartFake
     implements _i2.TrainingAdjustment {
-  _FakeTrainingAdjustment_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeTrainingAdjustment_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 class _FakeFeasibilityResult_1 extends _i1.SmartFake
     implements _i2.FeasibilityResult {
-  _FakeFeasibilityResult_1(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeFeasibilityResult_1(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 class _FakeTestWeekResult_2 extends _i1.SmartFake
     implements _i3.TestWeekResult {
-  _FakeTestWeekResult_2(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeTestWeekResult_2(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [TestWeekWorkflowService].
@@ -71,73 +56,63 @@ class MockTestWeekWorkflowService extends _i1.Mock
 
   @override
   _i5.Future<
-      ({
-        List<_i2.AdaptiveWeek> adaptedPlan,
-        _i2.TrainingAdjustment adjustment,
-        _i2.FeasibilityResult feasibility,
-        _i3.TestWeekResult testResult
-      })> calculateResults({
+    ({
+      List<_i2.AdaptiveWeek> adaptedPlan,
+      _i2.TrainingAdjustment adjustment,
+      _i2.FeasibilityResult feasibility,
+      _i3.TestWeekResult testResult,
+    })
+  >
+  calculateResults({
     required List<_i3.TestExerciseResult>? exercises,
     required _i3.UserProfile? profile,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #calculateResults,
-          [],
-          {
-            #exercises: exercises,
-            #profile: profile,
-          },
-        ),
-        returnValue: _i5.Future<
+            Invocation.method(#calculateResults, [], {
+              #exercises: exercises,
+              #profile: profile,
+            }),
+            returnValue:
+                _i5.Future<
+                  ({
+                    List<_i2.AdaptiveWeek> adaptedPlan,
+                    _i2.TrainingAdjustment adjustment,
+                    _i2.FeasibilityResult feasibility,
+                    _i3.TestWeekResult testResult,
+                  })
+                >.value((
+                  adaptedPlan: <_i2.AdaptiveWeek>[],
+                  adjustment: _FakeTrainingAdjustment_0(
+                    this,
+                    Invocation.method(#calculateResults, [], {
+                      #exercises: exercises,
+                      #profile: profile,
+                    }),
+                  ),
+                  feasibility: _FakeFeasibilityResult_1(
+                    this,
+                    Invocation.method(#calculateResults, [], {
+                      #exercises: exercises,
+                      #profile: profile,
+                    }),
+                  ),
+                  testResult: _FakeTestWeekResult_2(
+                    this,
+                    Invocation.method(#calculateResults, [], {
+                      #exercises: exercises,
+                      #profile: profile,
+                    }),
+                  ),
+                )),
+          )
+          as _i5.Future<
             ({
               List<_i2.AdaptiveWeek> adaptedPlan,
               _i2.TrainingAdjustment adjustment,
               _i2.FeasibilityResult feasibility,
-              _i3.TestWeekResult testResult
-            })>.value((
-          adaptedPlan: <_i2.AdaptiveWeek>[],
-          adjustment: _FakeTrainingAdjustment_0(
-            this,
-            Invocation.method(
-              #calculateResults,
-              [],
-              {
-                #exercises: exercises,
-                #profile: profile,
-              },
-            ),
-          ),
-          feasibility: _FakeFeasibilityResult_1(
-            this,
-            Invocation.method(
-              #calculateResults,
-              [],
-              {
-                #exercises: exercises,
-                #profile: profile,
-              },
-            ),
-          ),
-          testResult: _FakeTestWeekResult_2(
-            this,
-            Invocation.method(
-              #calculateResults,
-              [],
-              {
-                #exercises: exercises,
-                #profile: profile,
-              },
-            ),
-          )
-        )),
-      ) as _i5.Future<
-          ({
-            List<_i2.AdaptiveWeek> adaptedPlan,
-            _i2.TrainingAdjustment adjustment,
-            _i2.FeasibilityResult feasibility,
-            _i3.TestWeekResult testResult
-          })>);
+              _i3.TestWeekResult testResult,
+            })
+          >);
 }
 
 /// A class which mocks [CompleteTestWeekUseCase].
@@ -152,11 +127,9 @@ class MockCompleteTestWeekUseCase extends _i1.Mock
   @override
   _i5.Future<void> execute(_i3.TestWeekResult? testResult) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #execute,
-          [testResult],
-        ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+            Invocation.method(#execute, [testResult]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
 }

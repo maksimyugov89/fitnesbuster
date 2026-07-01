@@ -2,13 +2,15 @@ part of 'workout_bloc.dart';
 
 sealed class WorkoutEvent extends Equatable {
   const WorkoutEvent();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
 
 class WorkoutStartRequested extends WorkoutEvent {
   final WorkoutSession? session;
   const WorkoutStartRequested({this.session});
-  @override List<Object?> get props => [session ?? ''];
+  @override
+  List<Object?> get props => [session ?? ''];
 }
 
 class WorkoutPauseRequested extends WorkoutEvent {
@@ -26,13 +28,15 @@ class WorkoutStopRequested extends WorkoutEvent {
 class WorkoutSetCompleted extends WorkoutEvent {
   final SetLog setLog;
   const WorkoutSetCompleted({required this.setLog});
-  @override List<Object?> get props => [setLog];
+  @override
+  List<Object?> get props => [setLog];
 }
 
 class WorkoutExerciseChanged extends WorkoutEvent {
   final int index;
   const WorkoutExerciseChanged({required this.index});
-  @override List<Object?> get props => [index];
+  @override
+  List<Object?> get props => [index];
 }
 
 class WorkoutTick extends WorkoutEvent {

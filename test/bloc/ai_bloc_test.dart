@@ -36,8 +36,9 @@ void main() {
       'emits Loading then Loaded on success',
       build: () => AiBloc(aiService: aiService),
       setUp: () {
-        when(aiService.generateWorkoutPlan(any))
-            .thenAnswer((_) async => '{"days": []}');
+        when(
+          aiService.generateWorkoutPlan(any),
+        ).thenAnswer((_) async => '{"days": []}');
       },
       act: (b) => b.add(const AiGenerateWorkoutPlan(profile: tProfile)),
       expect: () => [
@@ -52,8 +53,9 @@ void main() {
       'emits Loading then Error on AiException',
       build: () => AiBloc(aiService: aiService),
       setUp: () {
-        when(aiService.generateWorkoutPlan(any))
-            .thenThrow(const AiException('API key not set'));
+        when(
+          aiService.generateWorkoutPlan(any),
+        ).thenThrow(const AiException('API key not set'));
       },
       act: (b) => b.add(const AiGenerateWorkoutPlan(profile: tProfile)),
       expect: () => [
@@ -66,7 +68,9 @@ void main() {
       'emits Loading then generic Error on unknown exception',
       build: () => AiBloc(aiService: aiService),
       setUp: () {
-        when(aiService.generateWorkoutPlan(any)).thenThrow(Exception('timeout'));
+        when(
+          aiService.generateWorkoutPlan(any),
+        ).thenThrow(Exception('timeout'));
       },
       act: (b) => b.add(const AiGenerateWorkoutPlan(profile: tProfile)),
       expect: () => [
@@ -83,13 +87,18 @@ void main() {
       'emits Loading then Loaded on success',
       build: () => AiBloc(aiService: aiService),
       setUp: () {
-        when(aiService.generateMealPlan(any))
-            .thenAnswer((_) async => '{"meals": []}');
+        when(
+          aiService.generateMealPlan(any),
+        ).thenAnswer((_) async => '{"meals": []}');
       },
       act: (b) => b.add(const AiGenerateMealPlan(profile: tProfile)),
       expect: () => [
         const AiStateLoading(),
-        isA<AiStateLoaded>().having((s) => s.type, 'type', AiResultType.mealPlan),
+        isA<AiStateLoaded>().having(
+          (s) => s.type,
+          'type',
+          AiResultType.mealPlan,
+        ),
       ],
     );
   });
@@ -99,8 +108,9 @@ void main() {
       'emits Loading then Loaded on success',
       build: () => AiBloc(aiService: aiService),
       setUp: () {
-        when(aiService.askQuestion(any, profile: anyNamed('profile')))
-            .thenAnswer((_) async => 'Great answer!');
+        when(
+          aiService.askQuestion(any, profile: anyNamed('profile')),
+        ).thenAnswer((_) async => 'Great answer!');
       },
       act: (b) => b.add(const AiAskQuestion(question: 'How many reps?')),
       expect: () => [

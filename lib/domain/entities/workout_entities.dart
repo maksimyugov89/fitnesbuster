@@ -5,8 +5,11 @@ part 'workout_entities.freezed.dart';
 part 'workout_entities.g.dart';
 
 enum WorkoutDayType { workout, rest, activeRecovery, cardio }
+
 enum WorkoutPlanStatus { active, completed, paused }
+
 enum ExerciseType { strength, cardio, flexibility, balance, hiit, yoga }
+
 enum DifficultyLevel { beginner, intermediate, advanced, elite }
 
 @freezed
@@ -20,7 +23,8 @@ class TestWeekResult with _$TestWeekResult {
     String? feedback,
   }) = _TestWeekResult;
 
-  factory TestWeekResult.fromJson(Map<String, dynamic> json) => _$TestWeekResultFromJson(json);
+  factory TestWeekResult.fromJson(Map<String, dynamic> json) =>
+      _$TestWeekResultFromJson(json);
 }
 
 @freezed
@@ -38,7 +42,8 @@ class WorkoutPlan with _$WorkoutPlan {
     @Default(WorkoutPlanStatus.active) WorkoutPlanStatus status,
   }) = _WorkoutPlan;
 
-  factory WorkoutPlan.fromJson(Map<String, dynamic> json) => _$WorkoutPlanFromJson(json);
+  factory WorkoutPlan.fromJson(Map<String, dynamic> json) =>
+      _$WorkoutPlanFromJson(json);
 }
 
 @freezed
@@ -49,7 +54,8 @@ class WorkoutWeek with _$WorkoutWeek {
     String? weeklyFocus,
   }) = _WorkoutWeek;
 
-  factory WorkoutWeek.fromJson(Map<String, dynamic> json) => _$WorkoutWeekFromJson(json);
+  factory WorkoutWeek.fromJson(Map<String, dynamic> json) =>
+      _$WorkoutWeekFromJson(json);
 }
 
 @freezed
@@ -64,7 +70,8 @@ class WorkoutDay with _$WorkoutDay {
     WorkoutLog? log,
   }) = _WorkoutDay;
 
-  factory WorkoutDay.fromJson(Map<String, dynamic> json) => _$WorkoutDayFromJson(json);
+  factory WorkoutDay.fromJson(Map<String, dynamic> json) =>
+      _$WorkoutDayFromJson(json);
 
   bool get isCompleted => log != null;
   bool get isRest => type == WorkoutDayType.rest;
@@ -84,7 +91,8 @@ class WorkoutSession with _$WorkoutSession {
     required DifficultyLevel difficulty,
   }) = _WorkoutSession;
 
-  factory WorkoutSession.fromJson(Map<String, dynamic> json) => _$WorkoutSessionFromJson(json);
+  factory WorkoutSession.fromJson(Map<String, dynamic> json) =>
+      _$WorkoutSessionFromJson(json);
 }
 
 @freezed
@@ -96,7 +104,8 @@ class ExerciseSet with _$ExerciseSet {
     @Default(60) int restSeconds,
   }) = _ExerciseSet;
 
-  factory ExerciseSet.fromJson(Map<String, dynamic> json) => _$ExerciseSetFromJson(json);
+  factory ExerciseSet.fromJson(Map<String, dynamic> json) =>
+      _$ExerciseSetFromJson(json);
 }
 
 @freezed
@@ -111,7 +120,8 @@ class SetData with _$SetData {
     int? actualReps,
   }) = _SetData;
 
-  factory SetData.fromJson(Map<String, dynamic> json) => _$SetDataFromJson(json);
+  factory SetData.fromJson(Map<String, dynamic> json) =>
+      _$SetDataFromJson(json);
 }
 
 @freezed
@@ -131,7 +141,8 @@ class Exercise with _$Exercise {
     List<String>? contraindications,
   }) = _Exercise;
 
-  factory Exercise.fromJson(Map<String, dynamic> json) => _$ExerciseFromJson(json);
+  factory Exercise.fromJson(Map<String, dynamic> json) =>
+      _$ExerciseFromJson(json);
 }
 
 @freezed
@@ -152,7 +163,8 @@ class WorkoutLog with _$WorkoutLog {
     int? perceivedEffort,
   }) = _WorkoutLog;
 
-  factory WorkoutLog.fromJson(Map<String, dynamic> json) => _$WorkoutLogFromJson(json);
+  factory WorkoutLog.fromJson(Map<String, dynamic> json) =>
+      _$WorkoutLogFromJson(json);
 
   int get durationMinutes =>
       endTime != null ? endTime!.difference(startTime).inMinutes : 0;
@@ -167,7 +179,8 @@ class ExerciseLog with _$ExerciseLog {
     required List<SetLog> sets,
   }) = _ExerciseLog;
 
-  factory ExerciseLog.fromJson(Map<String, dynamic> json) => _$ExerciseLogFromJson(json);
+  factory ExerciseLog.fromJson(Map<String, dynamic> json) =>
+      _$ExerciseLogFromJson(json);
 }
 
 @freezed

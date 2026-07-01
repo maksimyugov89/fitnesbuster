@@ -24,13 +24,8 @@ import 'package:mockito/mockito.dart' as _i1;
 
 class _FakeSyncedHealthData_0 extends _i1.SmartFake
     implements _i2.SyncedHealthData {
-  _FakeSyncedHealthData_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeSyncedHealthData_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [HealthConnectService].
@@ -43,44 +38,38 @@ class MockHealthConnectService extends _i1.Mock
   }
 
   @override
-  bool get isAvailable => (super.noSuchMethod(
-        Invocation.getter(#isAvailable),
-        returnValue: false,
-      ) as bool);
+  bool get isAvailable =>
+      (super.noSuchMethod(Invocation.getter(#isAvailable), returnValue: false)
+          as bool);
 
   @override
-  _i4.Future<bool> isHealthConnectAvailable() => (super.noSuchMethod(
-        Invocation.method(
-          #isHealthConnectAvailable,
-          [],
-        ),
-        returnValue: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+  _i4.Future<bool> isHealthConnectAvailable() =>
+      (super.noSuchMethod(
+            Invocation.method(#isHealthConnectAvailable, []),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
 
   @override
-  _i4.Future<bool> initialize() => (super.noSuchMethod(
-        Invocation.method(
-          #initialize,
-          [],
-        ),
-        returnValue: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+  _i4.Future<bool> initialize() =>
+      (super.noSuchMethod(
+            Invocation.method(#initialize, []),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
 
   @override
-  _i4.Future<_i2.SyncedHealthData> readAllToday() => (super.noSuchMethod(
-        Invocation.method(
-          #readAllToday,
-          [],
-        ),
-        returnValue:
-            _i4.Future<_i2.SyncedHealthData>.value(_FakeSyncedHealthData_0(
-          this,
-          Invocation.method(
-            #readAllToday,
-            [],
-          ),
-        )),
-      ) as _i4.Future<_i2.SyncedHealthData>);
+  _i4.Future<_i2.SyncedHealthData> readAllToday() =>
+      (super.noSuchMethod(
+            Invocation.method(#readAllToday, []),
+            returnValue: _i4.Future<_i2.SyncedHealthData>.value(
+              _FakeSyncedHealthData_0(
+                this,
+                Invocation.method(#readAllToday, []),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.SyncedHealthData>);
 
   @override
   _i4.Future<_i2.SyncedHealthData> readDateRange({
@@ -88,34 +77,22 @@ class MockHealthConnectService extends _i1.Mock
     required DateTime? end,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #readDateRange,
-          [],
-          {
-            #start: start,
-            #end: end,
-          },
-        ),
-        returnValue:
-            _i4.Future<_i2.SyncedHealthData>.value(_FakeSyncedHealthData_0(
-          this,
-          Invocation.method(
-            #readDateRange,
-            [],
-            {
-              #start: start,
-              #end: end,
-            },
-          ),
-        )),
-      ) as _i4.Future<_i2.SyncedHealthData>);
+            Invocation.method(#readDateRange, [], {#start: start, #end: end}),
+            returnValue: _i4.Future<_i2.SyncedHealthData>.value(
+              _FakeSyncedHealthData_0(
+                this,
+                Invocation.method(#readDateRange, [], {
+                  #start: start,
+                  #end: end,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.SyncedHealthData>);
 
   @override
   void dispose() => super.noSuchMethod(
-        Invocation.method(
-          #dispose,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
+    Invocation.method(#dispose, []),
+    returnValueForMissingStub: null,
+  );
 }

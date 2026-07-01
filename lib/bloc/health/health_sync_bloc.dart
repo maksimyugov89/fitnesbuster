@@ -14,8 +14,8 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
   final IHealthConnectService _hcService;
 
   HealthSyncBloc({required IHealthConnectService hcService})
-      : _hcService = hcService,
-        super(const HealthSyncStateInitial()) {
+    : _hcService = hcService,
+      super(const HealthSyncStateInitial()) {
     on<HealthSyncInitializeRequested>(_onInitialize);
     on<HealthSyncReadToday>(_onReadToday);
     on<HealthSyncReadDateRange>(_onReadDateRange);
@@ -33,20 +33,26 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       } else {
         final installed = await _hcService.isHealthConnectAvailable();
         if (!installed) {
-          emit(HealthSyncStateError(
-            message: AppLocalizations.tl('healthConnectNotInstalled'),
-          ));
+          emit(
+            HealthSyncStateError(
+              message: AppLocalizations.tl('healthConnectNotInstalled'),
+            ),
+          );
         } else {
-          emit(HealthSyncStateError(
-            message: AppLocalizations.tl('healthConnectAccessDenied'),
-          ));
+          emit(
+            HealthSyncStateError(
+              message: AppLocalizations.tl('healthConnectAccessDenied'),
+            ),
+          );
         }
       }
     } catch (e, st) {
       appLogger.w('[HealthSyncBloc] init failed', error: e, stackTrace: st);
-      emit(HealthSyncStateError(
-        message: AppLocalizations.tl('healthConnectInitError'),
-      ));
+      emit(
+        HealthSyncStateError(
+          message: AppLocalizations.tl('healthConnectInitError'),
+        ),
+      );
     }
   }
 
@@ -57,13 +63,18 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     emit(const HealthSyncStateLoading());
     try {
       final data = await _hcService.readAllToday();
-      emit(HealthSyncStateLoaded(
-        data: data,
-        lastSyncAt: DateTime.now(),
-      ));
+      emit(HealthSyncStateLoaded(data: data, lastSyncAt: DateTime.now()));
     } catch (e, st) {
-      appLogger.w('[HealthSyncBloc] read today failed', error: e, stackTrace: st);
-      emit(HealthSyncStateError(message: AppLocalizations.tl('healthSyncReadError')));
+      appLogger.w(
+        '[HealthSyncBloc] read today failed',
+        error: e,
+        stackTrace: st,
+      );
+      emit(
+        HealthSyncStateError(
+          message: AppLocalizations.tl('healthSyncReadError'),
+        ),
+      );
     }
   }
 
@@ -77,13 +88,18 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         start: event.start,
         end: event.end,
       );
-      emit(HealthSyncStateLoaded(
-        data: data,
-        lastSyncAt: DateTime.now(),
-      ));
+      emit(HealthSyncStateLoaded(data: data, lastSyncAt: DateTime.now()));
     } catch (e, st) {
-      appLogger.w('[HealthSyncBloc] read range failed', error: e, stackTrace: st);
-      emit(HealthSyncStateError(message: AppLocalizations.tl('healthSyncRangeError')));
+      appLogger.w(
+        '[HealthSyncBloc] read range failed',
+        error: e,
+        stackTrace: st,
+      );
+      emit(
+        HealthSyncStateError(
+          message: AppLocalizations.tl('healthSyncRangeError'),
+        ),
+      );
     }
   }
 }

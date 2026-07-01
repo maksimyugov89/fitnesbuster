@@ -7,28 +7,28 @@ part of 'nutrition_entities.dart';
 // **************************************************************************
 
 _$NutritionPer100gImpl _$$NutritionPer100gImplFromJson(
-        Map<String, dynamic> json) =>
-    _$NutritionPer100gImpl(
-      calories: (json['calories'] as num).toDouble(),
-      protein: (json['protein'] as num).toDouble(),
-      carbs: (json['carbs'] as num).toDouble(),
-      fat: (json['fat'] as num).toDouble(),
-      fiber: (json['fiber'] as num?)?.toDouble(),
-      sugar: (json['sugar'] as num?)?.toDouble(),
-      sodium: (json['sodium'] as num?)?.toDouble(),
-    );
+  Map<String, dynamic> json,
+) => _$NutritionPer100gImpl(
+  calories: (json['calories'] as num).toDouble(),
+  protein: (json['protein'] as num).toDouble(),
+  carbs: (json['carbs'] as num).toDouble(),
+  fat: (json['fat'] as num).toDouble(),
+  fiber: (json['fiber'] as num?)?.toDouble(),
+  sugar: (json['sugar'] as num?)?.toDouble(),
+  sodium: (json['sodium'] as num?)?.toDouble(),
+);
 
 Map<String, dynamic> _$$NutritionPer100gImplToJson(
-        _$NutritionPer100gImpl instance) =>
-    <String, dynamic>{
-      'calories': instance.calories,
-      'protein': instance.protein,
-      'carbs': instance.carbs,
-      'fat': instance.fat,
-      'fiber': instance.fiber,
-      'sugar': instance.sugar,
-      'sodium': instance.sodium,
-    };
+  _$NutritionPer100gImpl instance,
+) => <String, dynamic>{
+  'calories': instance.calories,
+  'protein': instance.protein,
+  'carbs': instance.carbs,
+  'fat': instance.fat,
+  'fiber': instance.fiber,
+  'sugar': instance.sugar,
+  'sodium': instance.sodium,
+};
 
 _$FoodItemImpl _$$FoodItemImplFromJson(Map<String, dynamic> json) =>
     _$FoodItemImpl(
@@ -36,8 +36,9 @@ _$FoodItemImpl _$$FoodItemImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       brand: json['brand'] as String?,
       barcode: json['barcode'] as String?,
-      nutrition:
-          NutritionPer100g.fromJson(json['nutrition'] as Map<String, dynamic>),
+      nutrition: NutritionPer100g.fromJson(
+        json['nutrition'] as Map<String, dynamic>,
+      ),
       imageUrl: json['imageUrl'] as String?,
     );
 
@@ -58,10 +59,7 @@ _$FoodEntryImpl _$$FoodEntryImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$FoodEntryImplToJson(_$FoodEntryImpl instance) =>
-    <String, dynamic>{
-      'food': instance.food,
-      'grams': instance.grams,
-    };
+    <String, dynamic>{'food': instance.food, 'grams': instance.grams};
 
 _$MealLogImpl _$$MealLogImplFromJson(Map<String, dynamic> json) =>
     _$MealLogImpl(
@@ -123,29 +121,29 @@ Map<String, dynamic> _$$MealPlanItemImplToJson(_$MealPlanItemImpl instance) =>
     };
 
 _$DailyNutritionPlanImpl _$$DailyNutritionPlanImplFromJson(
-        Map<String, dynamic> json) =>
-    _$DailyNutritionPlanImpl(
-      id: json['id'] as String,
-      userId: json['userId'] as String,
-      date: DateTime.parse(json['date'] as String),
-      targetCalories: (json['targetCalories'] as num).toDouble(),
-      targetProtein: (json['targetProtein'] as num).toDouble(),
-      targetCarbs: (json['targetCarbs'] as num).toDouble(),
-      targetFat: (json['targetFat'] as num).toDouble(),
-      meals: (json['meals'] as List<dynamic>)
-          .map((e) => MealPlan.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
+  Map<String, dynamic> json,
+) => _$DailyNutritionPlanImpl(
+  id: json['id'] as String,
+  userId: json['userId'] as String,
+  date: DateTime.parse(json['date'] as String),
+  targetCalories: (json['targetCalories'] as num).toDouble(),
+  targetProtein: (json['targetProtein'] as num).toDouble(),
+  targetCarbs: (json['targetCarbs'] as num).toDouble(),
+  targetFat: (json['targetFat'] as num).toDouble(),
+  meals: (json['meals'] as List<dynamic>)
+      .map((e) => MealPlan.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
 
 Map<String, dynamic> _$$DailyNutritionPlanImplToJson(
-        _$DailyNutritionPlanImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'userId': instance.userId,
-      'date': instance.date.toIso8601String(),
-      'targetCalories': instance.targetCalories,
-      'targetProtein': instance.targetProtein,
-      'targetCarbs': instance.targetCarbs,
-      'targetFat': instance.targetFat,
-      'meals': instance.meals,
-    };
+  _$DailyNutritionPlanImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'userId': instance.userId,
+  'date': instance.date.toIso8601String(),
+  'targetCalories': instance.targetCalories,
+  'targetProtein': instance.targetProtein,
+  'targetCarbs': instance.targetCarbs,
+  'targetFat': instance.targetFat,
+  'meals': instance.meals,
+};

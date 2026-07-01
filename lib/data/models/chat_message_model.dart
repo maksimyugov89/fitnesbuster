@@ -18,11 +18,8 @@ class ChatMessageModel {
     timestamp: entity.timestamp,
   );
 
-  ChatMessage toEntity() => ChatMessage(
-    role: role,
-    content: content,
-    timestamp: timestamp,
-  );
+  ChatMessage toEntity() =>
+      ChatMessage(role: role, content: content, timestamp: timestamp);
 
   Map<String, dynamic> toJson() => {
     'role': role,
@@ -36,13 +33,17 @@ class ChatMessageModel {
     timestamp: DateTime.parse(j['timestamp'] as String),
   );
 
-  static String encodeList(List<ChatMessage> messages) =>
-      jsonEncode(messages.map((m) => ChatMessageModel.fromEntity(m).toJson()).toList());
+  static String encodeList(List<ChatMessage> messages) => jsonEncode(
+    messages.map((m) => ChatMessageModel.fromEntity(m).toJson()).toList(),
+  );
 
   static List<ChatMessage> decodeList(String raw) {
     final list = jsonDecode(raw) as List<dynamic>;
     return list
-        .map((e) => ChatMessageModel.fromJson(e as Map<String, dynamic>).toEntity())
+        .map(
+          (e) =>
+              ChatMessageModel.fromJson(e as Map<String, dynamic>).toEntity(),
+        )
         .toList();
   }
 }

@@ -59,8 +59,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
   void _loadHistory() {
     if (_uid == null) return;
     setState(() => _messages = HiveCache.getChatHistory(_uid!));
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _scrollToBottom(animate: false));
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _scrollToBottom(animate: false),
+    );
   }
 
   Future<void> _saveHistory() async {
@@ -104,8 +105,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
       _isLoading = true;
     });
     await _saveHistory();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _scrollToBottom());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
 
     try {
       final response = await sl<IDeepSeekService>().askWithHistory(
@@ -124,26 +124,29 @@ class _AiChatScreenState extends State<AiChatScreen> {
           _isLoading = false;
         });
         await _saveHistory();
-        WidgetsBinding.instance
-            .addPostFrameCallback((_) => _scrollToBottom());
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
       }
     } on AiException catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(e.message),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Ошибка: $e'),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Ошибка: $e'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     }
   }
@@ -157,9 +160,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
         title: Text(
           'Очистить историю?',
           style: TextStyle(
-              color: colors.textPrimary,
-              fontFamily: 'Syne',
-              fontWeight: FontWeight.w700),
+            color: colors.textPrimary,
+            fontFamily: 'Syne',
+            fontWeight: FontWeight.w700,
+          ),
         ),
         content: Text(
           'Все сообщения будут удалены.',
@@ -168,13 +172,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child:
-                Text('Отмена', style: TextStyle(color: colors.textMuted)),
+            child: Text('Отмена', style: TextStyle(color: colors.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('Очистить',
-                style: TextStyle(color: colors.error)),
+            child: Text('Очистить', style: TextStyle(color: colors.error)),
           ),
         ],
       ),
@@ -199,8 +201,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: colors.textPrimary, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: colors.textPrimary,
+            size: 20,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Column(
@@ -224,8 +229,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
         actions: [
           if (_messages.isNotEmpty)
             IconButton(
-              icon: Icon(Icons.delete_outline_rounded,
-                  color: colors.textMuted, size: 22),
+              icon: Icon(
+                Icons.delete_outline_rounded,
+                color: colors.textMuted,
+                size: 22,
+              ),
               onPressed: _confirmClear,
             ),
         ],
@@ -236,14 +244,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
             child: ListView.builder(
               controller: _scrollCtrl,
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-              itemCount:
-                  _messages.length + 1 + (_isLoading ? 1 : 0),
+              itemCount: _messages.length + 1 + (_isLoading ? 1 : 0),
               itemBuilder: (ctx, i) {
                 if (i == 0) {
                   return _WelcomeBubble(
                     text: _welcomeText,
-                    showSuggestions:
-                        _messages.isEmpty && !_isLoading,
+                    showSuggestions: _messages.isEmpty && !_isLoading,
                     suggestions: _suggestions,
                     onSuggestion: _send,
                     colors: colors,
@@ -313,14 +319,16 @@ class _WelcomeBubble extends StatelessWidget {
                       bottomLeft: Radius.circular(4),
                     ),
                     border: Border.all(
-                        color: colors.primary.withValues(alpha: 0.15)),
+                      color: colors.primary.withValues(alpha: 0.15),
+                    ),
                   ),
                   child: Text(
                     text,
                     style: TextStyle(
-                        color: colors.textPrimary,
-                        fontSize: 14,
-                        height: 1.5),
+                      color: colors.textPrimary,
+                      fontSize: 14,
+                      height: 1.5,
+                    ),
                   ),
                 ),
               ),
@@ -331,36 +339,42 @@ class _WelcomeBubble extends StatelessWidget {
             Text(
               'Попробуй спросить:',
               style: TextStyle(
-                  fontSize: 12,
-                  color: colors.textMuted,
-                  fontWeight: FontWeight.w600),
+                fontSize: 12,
+                color: colors.textMuted,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: suggestions
-                  .map((s) => GestureDetector(
-                        onTap: () => onSuggestion(s),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: colors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                                color: colors.primary
-                                    .withValues(alpha: 0.25)),
-                          ),
-                          child: Text(
-                            s,
-                            style: TextStyle(
-                                color: colors.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500),
+                  .map(
+                    (s) => GestureDetector(
+                      onTap: () => onSuggestion(s),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: colors.primary.withValues(alpha: 0.25),
                           ),
                         ),
-                      ))
+                        child: Text(
+                          s,
+                          style: TextStyle(
+                            color: colors.primary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ],
@@ -376,8 +390,7 @@ class _MessageBubble extends StatelessWidget {
   final ChatMessage message;
   final ThemePalette colors;
 
-  const _MessageBubble(
-      {required this.message, required this.colors});
+  const _MessageBubble({required this.message, required this.colors});
 
   bool get _isUser => message.role == 'user';
 
@@ -386,8 +399,9 @@ class _MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment:
-            _isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: _isUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!_isUser) ...[
@@ -396,31 +410,23 @@ class _MessageBubble extends StatelessWidget {
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color:
-                    _isUser ? colors.primary : colors.surfaceCard,
+                color: _isUser ? colors.primary : colors.surfaceCard,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(18),
                   topRight: const Radius.circular(18),
-                  bottomLeft:
-                      Radius.circular(_isUser ? 18 : 4),
-                  bottomRight:
-                      Radius.circular(_isUser ? 4 : 18),
+                  bottomLeft: Radius.circular(_isUser ? 18 : 4),
+                  bottomRight: Radius.circular(_isUser ? 4 : 18),
                 ),
                 border: _isUser
                     ? null
-                    : Border.all(
-                        color:
-                            Colors.white.withValues(alpha: 0.06)),
+                    : Border.all(color: Colors.white.withValues(alpha: 0.06)),
               ),
               child: Text(
                 message.content,
                 style: TextStyle(
-                  color: _isUser
-                      ? colors.textOnPrimary
-                      : colors.textPrimary,
+                  color: _isUser ? colors.textOnPrimary : colors.textPrimary,
                   fontSize: 14,
                   height: 1.5,
                 ),
@@ -452,9 +458,9 @@ class _TypingBubbleState extends State<_TypingBubble>
   void initState() {
     super.initState();
     _anim = AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 1200))
-      ..repeat();
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
   }
 
   @override
@@ -478,8 +484,7 @@ class _TypingBubbleState extends State<_TypingBubble>
           _AiAvatar(colors: widget.colors),
           const SizedBox(width: 8),
           Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 18, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             decoration: BoxDecoration(
               color: widget.colors.surfaceCard,
               borderRadius: const BorderRadius.only(
@@ -488,8 +493,7 @@ class _TypingBubbleState extends State<_TypingBubble>
                 bottomRight: Radius.circular(18),
                 bottomLeft: Radius.circular(4),
               ),
-              border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.06)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
             ),
             child: AnimatedBuilder(
               animation: _anim,
@@ -497,8 +501,7 @@ class _TypingBubbleState extends State<_TypingBubble>
                 mainAxisSize: MainAxisSize.min,
                 children: List.generate(3, (i) {
                   return Padding(
-                    padding:
-                        EdgeInsets.only(right: i < 2 ? 5.0 : 0),
+                    padding: EdgeInsets.only(right: i < 2 ? 5.0 : 0),
                     child: Opacity(
                       opacity: _dotOpacity(i, _anim.value),
                       child: Container(
@@ -542,13 +545,12 @@ class _InputBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     return Container(
-      padding:
-          EdgeInsets.fromLTRB(16, 10, 16, 10 + bottom),
+      padding: EdgeInsets.fromLTRB(16, 10, 16, 10 + bottom),
       decoration: BoxDecoration(
         color: colors.surface,
         border: Border(
-            top: BorderSide(
-                color: Colors.white.withValues(alpha: 0.08))),
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -562,16 +564,16 @@ class _InputBar extends StatelessWidget {
               onSubmitted: onSend,
               maxLines: 4,
               minLines: 1,
-              style:
-                  TextStyle(color: colors.textPrimary, fontSize: 15),
+              style: TextStyle(color: colors.textPrimary, fontSize: 15),
               decoration: InputDecoration(
                 hintText: 'Задать вопрос...',
-                hintStyle: TextStyle(
-                    color: colors.textMuted, fontSize: 15),
+                hintStyle: TextStyle(color: colors.textMuted, fontSize: 15),
                 filled: true,
                 fillColor: colors.surfaceCard,
                 contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
@@ -587,18 +589,12 @@ class _InputBar extends StatelessWidget {
               width: 46,
               height: 46,
               decoration: BoxDecoration(
-                color: isLoading
-                    ? colors.surfaceLight
-                    : colors.primary,
+                color: isLoading ? colors.surfaceLight : colors.primary,
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                isLoading
-                    ? Icons.hourglass_empty_rounded
-                    : Icons.send_rounded,
-                color: isLoading
-                    ? colors.textMuted
-                    : colors.textOnPrimary,
+                isLoading ? Icons.hourglass_empty_rounded : Icons.send_rounded,
+                color: isLoading ? colors.textMuted : colors.textOnPrimary,
                 size: 20,
               ),
             ),
@@ -632,9 +628,10 @@ class _AiAvatar extends StatelessWidget {
         child: Text(
           'AI',
           style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              color: Colors.white),
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
         ),
       ),
     );

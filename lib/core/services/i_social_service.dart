@@ -26,5 +26,7 @@ abstract interface class ISocialService {
   });
   Stream<List<Challenge>> publicChallengesStream();
   Stream<List<Challenge>> myChallengesStream();
-  Stream<List<ChallengeParticipant>> challengeLeaderboardStream(String challengeId);
+  Stream<List<ChallengeParticipant>> challengeLeaderboardStream(
+    String challengeId,
+  );
 }

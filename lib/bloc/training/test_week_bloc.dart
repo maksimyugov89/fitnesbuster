@@ -27,9 +27,9 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
   TestWeekBloc({
     required TestWeekWorkflowService workflowService,
     required CompleteTestWeekUseCase completeTestWeekUseCase,
-  })  : _workflowService = workflowService,
-        _completeTestWeekUseCase = completeTestWeekUseCase,
-        super(const TestWeekStateInitial()) {
+  }) : _workflowService = workflowService,
+       _completeTestWeekUseCase = completeTestWeekUseCase,
+       super(const TestWeekStateInitial()) {
     on<TestWeekStartDay>(_onStartDay);
     on<TestWeekRecordExercise>(_onRecordExercise);
     on<TestWeekFinishDay>(_onFinishDay);
@@ -44,16 +44,26 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
     final dayIdx = event.dayIndex;
     if (dayIdx >= 0 && dayIdx < _testDays.length) {
       _profile = event.profile;
-      _track(() => sl<IAnalyticsService>().logEvent(name: 'test_week_start', parameters: {'day': dayIdx.toString()}));
-      emit(TestWeekStateDayInProgress(
-        dayIndex: event.dayIndex,
-        dayExercises: _testDays[dayIdx],
-        completedExercises: const [],
-      ));
+      _track(
+        () => sl<IAnalyticsService>().logEvent(
+          name: 'test_week_start',
+          parameters: {'day': dayIdx.toString()},
+        ),
+      );
+      emit(
+        TestWeekStateDayInProgress(
+          dayIndex: event.dayIndex,
+          dayExercises: _testDays[dayIdx],
+          completedExercises: const [],
+        ),
+      );
     }
   }
 
-  void _onRecordExercise(TestWeekRecordExercise event, Emitter<TestWeekState> emit) {
+  void _onRecordExercise(
+    TestWeekRecordExercise event,
+    Emitter<TestWeekState> emit,
+  ) {
     if (state is! TestWeekStateDayInProgress) return;
     final current = state as TestWeekStateDayInProgress;
 
@@ -70,26 +80,38 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
     emit(current.copyWith(completedExercises: updated));
   }
 
-  Future<void> _onFinishDay(TestWeekFinishDay event, Emitter<TestWeekState> emit) async {
+  Future<void> _onFinishDay(
+    TestWeekFinishDay event,
+    Emitter<TestWeekState> emit,
+  ) async {
     if (state is! TestWeekStateDayInProgress) return;
     final current = state as TestWeekStateDayInProgress;
 
     // If more days remain, show next day prompt
     if (current.dayIndex < _testDays.length - 1) {
-      emit(TestWeekStateDayCompleted(
-        dayIndex: current.dayIndex,
-        exercisesCompleted: current.completedExercises,
-        nextDayIndex: current.dayIndex + 1,
-        totalDays: _testDays.length,
-      ));
+      emit(
+        TestWeekStateDayCompleted(
+          dayIndex: current.dayIndex,
+          exercisesCompleted: current.completedExercises,
+          nextDayIndex: current.dayIndex + 1,
+          totalDays: _testDays.length,
+        ),
+      );
     } else {
       // All days completed — show completion summary
       emit(const TestWeekStateCalculating());
-      await _calculateAndShowResults(current.completedExercises, _profile, emit);
+      await _calculateAndShowResults(
+        current.completedExercises,
+        _profile,
+        emit,
+      );
     }
   }
 
-  Future<void> _onComplete(TestWeekComplete event, Emitter<TestWeekState> emit) async {
+  Future<void> _onComplete(
+    TestWeekComplete event,
+    Emitter<TestWeekState> emit,
+  ) async {
     emit(const TestWeekStateCalculating());
     await _calculateAndShowResults(event.results, _profile, emit);
   }
@@ -105,15 +127,20 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
       profile: effectiveProfile,
     );
 
-    emit(TestWeekStateCompleted(
-      testResult: result.testResult,
-      adjustment: result.adjustment,
-      adaptedPlan: result.adaptedPlan,
-      feasibility: result.feasibility,
-    ));
+    emit(
+      TestWeekStateCompleted(
+        testResult: result.testResult,
+        adjustment: result.adjustment,
+        adaptedPlan: result.adaptedPlan,
+        feasibility: result.feasibility,
+      ),
+    );
   }
 
-  Future<void> _onAcceptPlan(TestWeekAcceptPlan event, Emitter<TestWeekState> emit) async {
+  Future<void> _onAcceptPlan(
+    TestWeekAcceptPlan event,
+    Emitter<TestWeekState> emit,
+  ) async {
     TestWeekResult? testResult;
     if (state is TestWeekStateCompleted) {
       testResult = (state as TestWeekStateCompleted).testResult;
@@ -124,25 +151,38 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
     try {
       if (testResult != null) {
         await _completeTestWeekUseCase.execute(testResult);
-        _track(() => sl<IAnalyticsService>().logEvent(name: 'test_week_complete', parameters: {'exercises': testResult!.exercises.length.toString()}));
+        _track(
+          () => sl<IAnalyticsService>().logEvent(
+            name: 'test_week_complete',
+            parameters: {'exercises': testResult!.exercises.length.toString()},
+          ),
+        );
       }
       emit(const TestWeekStatePlanAccepted());
     } catch (e, st) {
-      appLogger.w('[TestWeekBloc] _onAcceptPlan failed', error: e, stackTrace: st);
+      appLogger.w(
+        '[TestWeekBloc] _onAcceptPlan failed',
+        error: e,
+        stackTrace: st,
+      );
       emit(TestWeekStateError(AppLocalizations.tl('testWeekPlanNotAccepted')));
     }
   }
 
   void _onAdjustGoal(TestWeekAdjustGoal event, Emitter<TestWeekState> emit) {
-    emit(TestWeekStateNeedsAdjustment(
-      reason: event.reason,
-      suggestions: event.suggestions,
-    ));
+    emit(
+      TestWeekStateNeedsAdjustment(
+        reason: event.reason,
+        suggestions: event.suggestions,
+      ),
+    );
   }
 
   Future<void> _track(Future<void> Function() fn) async {
-    try { await fn(); } catch (_) { /* best-effort */ }
+    try {
+      await fn();
+    } catch (_) {
+      /* best-effort */
+    }
   }
 }
-
-

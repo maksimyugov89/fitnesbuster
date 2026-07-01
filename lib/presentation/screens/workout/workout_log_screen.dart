@@ -66,10 +66,10 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
     final settings = sl<ISettingsRepository>();
     final key = _resolveKey();
 
-    final done       = await settings.getWorkoutDone(key);
-    final kcal       = await settings.getWorkoutKcal(key);
-    final sets       = await settings.getWorkoutSets(key);
-    final rating     = await settings.getWorkoutRating(key);
+    final done = await settings.getWorkoutDone(key);
+    final kcal = await settings.getWorkoutKcal(key);
+    final sets = await settings.getWorkoutSets(key);
+    final rating = await settings.getWorkoutRating(key);
     final detailJson = await settings.getWorkoutLogDetail(key);
     final exerciseLogs = _parseSetLog(detailJson);
 
@@ -87,15 +87,15 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
 
     if (mounted) {
       setState(() {
-        _workoutDone  = done;
-        _kcal         = kcal;
-        _totalSets    = sets;
-        _rating       = rating;
+        _workoutDone = done;
+        _kcal = kcal;
+        _totalSets = sets;
+        _rating = rating;
         _exerciseLogs = exerciseLogs;
-        _weekDone     = weekDone;
-        _weekKcal     = weekKcal;
-        _dateLabel    = _formatDateLabel(key);
-        _loaded       = true;
+        _weekDone = weekDone;
+        _weekKcal = weekKcal;
+        _dateLabel = _formatDateLabel(key);
+        _loaded = true;
       });
     }
   }
@@ -108,11 +108,11 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
       final order = <String>[];
       final groups = <String, List<_SetEntry>>{};
       for (final item in list) {
-        final map  = item as Map<String, dynamic>;
+        final map = item as Map<String, dynamic>;
         final name = map['exercise'] as String? ?? '—';
-        final set  = (map['set'] as num?)?.toInt() ?? 0;
+        final set = (map['set'] as num?)?.toInt() ?? 0;
         final reps = map['reps'] as String? ?? '—';
-        final w    = (map['weight'] as num?)?.toDouble();
+        final w = (map['weight'] as num?)?.toDouble();
         if (!groups.containsKey(name)) {
           order.add(name);
           groups[name] = [];
@@ -131,18 +131,29 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
     final parts = key.split('_');
     if (parts.length != 3) return key;
     final d = DateTime(
-        int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
-    final now   = DateTime.now();
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+      int.parse(parts[2]),
+    );
+    final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     if (d == today) return AppLocalizations.tl('today');
-    if (d == today.subtract(const Duration(days: 1))) return AppLocalizations.tl('yesterday');
+    if (d == today.subtract(const Duration(days: 1)))
+      return AppLocalizations.tl('yesterday');
     final months = [
-      '', AppLocalizations.tl('janShort'), AppLocalizations.tl('febShort'),
-      AppLocalizations.tl('marShort'), AppLocalizations.tl('aprShort'),
-      AppLocalizations.tl('mayShort'), AppLocalizations.tl('junShort'),
-      AppLocalizations.tl('julShort'), AppLocalizations.tl('augShort'),
-      AppLocalizations.tl('sepShort'), AppLocalizations.tl('octShort'),
-      AppLocalizations.tl('novShort'), AppLocalizations.tl('decShort'),
+      '',
+      AppLocalizations.tl('janShort'),
+      AppLocalizations.tl('febShort'),
+      AppLocalizations.tl('marShort'),
+      AppLocalizations.tl('aprShort'),
+      AppLocalizations.tl('mayShort'),
+      AppLocalizations.tl('junShort'),
+      AppLocalizations.tl('julShort'),
+      AppLocalizations.tl('augShort'),
+      AppLocalizations.tl('sepShort'),
+      AppLocalizations.tl('octShort'),
+      AppLocalizations.tl('novShort'),
+      AppLocalizations.tl('decShort'),
     ];
     return '${d.day} ${months[d.month]}';
   }
@@ -166,147 +177,174 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
           child: Container(
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: colors.surfaceCard,
-                borderRadius: BorderRadius.circular(10)),
-            child: Icon(Icons.arrow_back_rounded,
-                color: colors.textPrimary, size: 20),
+              color: colors.surfaceCard,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.arrow_back_rounded,
+              color: colors.textPrimary,
+              size: 20,
+            ),
           ),
         ),
       ),
       body: _loaded
           ? _buildBody(colors)
-          : Center(
-              child: CircularProgressIndicator(color: colors.primary)),
+          : Center(child: CircularProgressIndicator(color: colors.primary)),
     );
   }
 
   Widget _buildBody(ThemePalette colors) {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 48),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-
-        // ── Hero card ──────────────────────────────────────────────────────────
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: _workoutDone
-                  ? [colors.primary, colors.primaryLight]
-                  : [colors.surfaceCard, colors.elevated],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Hero card ──────────────────────────────────────────────────────────
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(22),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: _workoutDone
+                    ? [colors.primary, colors.primaryLight]
+                    : [colors.surfaceCard, colors.elevated],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(24),
             ),
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(
-              _workoutDone ? context.l10n.workoutDoneStatus3 : context.l10n.workoutNotDoneStatus,
-              style: TextStyle(
-                  fontFamily: 'Syne',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: _workoutDone ? colors.textOnPrimary : colors.textPrimary),
-            ),
-            const SizedBox(height: 2),
-            Text(_dateLabel,
-                style: TextStyle(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _workoutDone
+                      ? context.l10n.workoutDoneStatus3
+                      : context.l10n.workoutNotDoneStatus,
+                  style: TextStyle(
+                    fontFamily: 'Syne',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: _workoutDone
+                        ? colors.textOnPrimary
+                        : colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _dateLabel,
+                  style: TextStyle(
                     fontSize: 12,
-                    color: _workoutDone ? colors.primaryDark : colors.textMuted)),
-            const SizedBox(height: 16),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              _HeroStat(
-                  label: context.l10n.kcalShort,
-                  value: _kcal > 0 ? '$_kcal' : '—',
-                  onPrimary: _workoutDone,
-                  colors: colors),
-              _HeroStat(
-                  label: context.l10n.setsLabel,
-                  value: _totalSets > 0 ? '$_totalSets' : '—',
-                  onPrimary: _workoutDone,
-                  colors: colors),
-              _HeroStat(
-                  label: context.l10n.exercisesLabel,
-                  value: _exerciseLogs.isNotEmpty
-                      ? '${_exerciseLogs.length}'
-                      : '—',
-                  onPrimary: _workoutDone,
-                  colors: colors),
-              _HeroStat(
-                  label: context.l10n.setsCompletedLabel,
-                  value: _workoutDone ? '✓' : '✗',
-                  onPrimary: _workoutDone,
-                  colors: colors),
-            ]),
-          ]),
-        ),
+                    color: _workoutDone ? colors.primaryDark : colors.textMuted,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _HeroStat(
+                      label: context.l10n.kcalShort,
+                      value: _kcal > 0 ? '$_kcal' : '—',
+                      onPrimary: _workoutDone,
+                      colors: colors,
+                    ),
+                    _HeroStat(
+                      label: context.l10n.setsLabel,
+                      value: _totalSets > 0 ? '$_totalSets' : '—',
+                      onPrimary: _workoutDone,
+                      colors: colors,
+                    ),
+                    _HeroStat(
+                      label: context.l10n.exercisesLabel,
+                      value: _exerciseLogs.isNotEmpty
+                          ? '${_exerciseLogs.length}'
+                          : '—',
+                      onPrimary: _workoutDone,
+                      colors: colors,
+                    ),
+                    _HeroStat(
+                      label: context.l10n.setsCompletedLabel,
+                      value: _workoutDone ? '✓' : '✗',
+                      onPrimary: _workoutDone,
+                      colors: colors,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
 
-        // ── Rating ────────────────────────────────────────────────────────────
-        if (_workoutDone) ...[
-          const SizedBox(height: 20),
-          Text(context.l10n.rateWorkoutTitle, style: AppTextStyles.titleM),
-          const SizedBox(height: 10),
-          Row(
-            children: List.generate(5, (i) {
-              final selected = _rating == i + 1;
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => _saveRating(i + 1),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    height: 52,
-                    margin: EdgeInsets.only(right: i < 4 ? 8 : 0),
-                    decoration: BoxDecoration(
-                      color: selected
-                          ? colors.primary.withValues(alpha: 0.15)
-                          : colors.surfaceCard,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
+          // ── Rating ────────────────────────────────────────────────────────────
+          if (_workoutDone) ...[
+            const SizedBox(height: 20),
+            Text(context.l10n.rateWorkoutTitle, style: AppTextStyles.titleM),
+            const SizedBox(height: 10),
+            Row(
+              children: List.generate(5, (i) {
+                final selected = _rating == i + 1;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => _saveRating(i + 1),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      height: 52,
+                      margin: EdgeInsets.only(right: i < 4 ? 8 : 0),
+                      decoration: BoxDecoration(
                         color: selected
-                            ? colors.primary
-                            : colors.textPrimary.withValues(alpha: 0.06),
-                        width: selected ? 2 : 1,
+                            ? colors.primary.withValues(alpha: 0.15)
+                            : colors.surfaceCard,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: selected
+                              ? colors.primary
+                              : colors.textPrimary.withValues(alpha: 0.06),
+                          width: selected ? 2 : 1,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          ['😞', '😐', '🙂', '💪', '🔥'][i],
+                          style: const TextStyle(fontSize: 22),
+                        ),
                       ),
                     ),
-                    child: Center(
-                      child: Text(
-                          ['😞', '😐', '🙂', '💪', '🔥'][i],
-                          style: const TextStyle(fontSize: 22)),
+                  ),
+                );
+              }),
+            ),
+          ],
+
+          // ── Per-exercise log ──────────────────────────────────────────────────
+          if (_exerciseLogs.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Text(context.l10n.exercisesLabel, style: AppTextStyles.titleM),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => setState(() {
+                    if (_expanded.length == _exerciseLogs.length) {
+                      _expanded.clear();
+                    } else {
+                      _expanded.addAll(_exerciseLogs.map((e) => e.name));
+                    }
+                  }),
+                  child: Text(
+                    _expanded.length == _exerciseLogs.length
+                        ? context.l10n.collapseAll
+                        : context.l10n.expandAll,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colors.primary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              );
-            }),
-          ),
-        ],
-
-        // ── Per-exercise log ──────────────────────────────────────────────────
-        if (_exerciseLogs.isNotEmpty) ...[
-          const SizedBox(height: 24),
-          Row(children: [
-            Text(context.l10n.exercisesLabel, style: AppTextStyles.titleM),
-            const Spacer(),
-            GestureDetector(
-              onTap: () => setState(() {
-                if (_expanded.length == _exerciseLogs.length) {
-                  _expanded.clear();
-                } else {
-                  _expanded.addAll(_exerciseLogs.map((e) => e.name));
-                }
-              }),
-              child: Text(
-                _expanded.length == _exerciseLogs.length
-                    ? context.l10n.collapseAll
-                    : context.l10n.expandAll,
-                style: TextStyle(
-                    fontSize: 12,
-                    color: colors.primary,
-                    fontWeight: FontWeight.w600),
-              ),
+              ],
             ),
-          ]),
-          const SizedBox(height: 10),
-          ..._exerciseLogs.map((log) => _ExerciseLogCard(
+            const SizedBox(height: 10),
+            ..._exerciseLogs.map(
+              (log) => _ExerciseLogCard(
                 log: log,
                 colors: colors,
                 isExpanded: _expanded.contains(log.name),
@@ -317,95 +355,121 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
                     _expanded.add(log.name);
                   }
                 }),
-              )),
-        ] else if (_workoutDone) ...[
+              ),
+            ),
+          ] else if (_workoutDone) ...[
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colors.surfaceCard,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: colors.textPrimary.withValues(alpha: 0.06),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    size: 18,
+                    color: colors.textMuted,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      context.l10n.detailLogNote,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          // ── Week summary ──────────────────────────────────────────────────────
           const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: colors.surfaceCard,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: colors.textPrimary.withValues(alpha: 0.06),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(context.l10n.last7DaysTitle, style: AppTextStyles.titleM),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _WeekStat(
+                        icon: '💪',
+                        label: context.l10n.taskWorkout,
+                        value: '$_weekDone / 7',
+                        colors: colors,
+                      ),
+                    ),
+                    Expanded(
+                      child: _WeekStat(
+                        icon: '🔥',
+                        label: context.l10n.kcalShort,
+                        value: '$_weekKcal',
+                        colors: colors,
+                      ),
+                    ),
+                    Expanded(
+                      child: _WeekStat(
+                        icon: '📊',
+                        label: context.l10n.setsCompletedLabel,
+                        value: '${(_weekDone / 7 * 100).round()}%',
+                        colors: colors,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // ── Tip ───────────────────────────────────────────────────────────────
+          const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: colors.surfaceCard,
-              borderRadius: BorderRadius.circular(16),
+              color: colors.accentPurple.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                  color: colors.textPrimary.withValues(alpha: 0.06)),
-            ),
-            child: Row(children: [
-              Icon(Icons.info_outline_rounded,
-                  size: 18, color: colors.textMuted),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  context.l10n.detailLogNote,
-                  style:
-                      TextStyle(fontSize: 12, color: colors.textSecondary),
-                ),
+                color: colors.accentPurple.withValues(alpha: 0.25),
               ),
-            ]),
+            ),
+            child: Row(
+              children: [
+                const Text('💡', style: TextStyle(fontSize: 20)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    _workoutDone
+                        ? context.l10n.greatJobMsg
+                        : context.l10n.noWorryMsg,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colors.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
-
-        // ── Week summary ──────────────────────────────────────────────────────
-        const SizedBox(height: 20),
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: colors.surfaceCard,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-                color: colors.textPrimary.withValues(alpha: 0.06)),
-          ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(context.l10n.last7DaysTitle, style: AppTextStyles.titleM),
-            const SizedBox(height: 14),
-            Row(children: [
-              Expanded(
-                  child: _WeekStat(
-                      icon: '💪',
-                      label: context.l10n.taskWorkout,
-                      value: '$_weekDone / 7',
-                      colors: colors)),
-              Expanded(
-                  child: _WeekStat(
-                      icon: '🔥',
-                      label: context.l10n.kcalShort,
-                      value: '$_weekKcal',
-                      colors: colors)),
-              Expanded(
-                  child: _WeekStat(
-                      icon: '📊',
-                      label: context.l10n.setsCompletedLabel,
-                      value: '${(_weekDone / 7 * 100).round()}%',
-                      colors: colors)),
-            ]),
-          ]),
-        ),
-
-        // ── Tip ───────────────────────────────────────────────────────────────
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colors.accentPurple.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-                color: colors.accentPurple.withValues(alpha: 0.25)),
-          ),
-          child: Row(children: [
-            const Text('💡', style: TextStyle(fontSize: 20)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                _workoutDone
-                    ? context.l10n.greatJobMsg
-                    : context.l10n.noWorryMsg,
-                style: TextStyle(
-                    fontSize: 12,
-                    color: colors.textSecondary,
-                    height: 1.5),
-              ),
-            ),
-          ]),
-        ),
-      ]),
+      ),
     );
   }
 }
@@ -434,8 +498,7 @@ class _ExerciseLogCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: colors.surfaceCard,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-              color: colors.textPrimary.withValues(alpha: 0.06)),
+          border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
         ),
         child: Column(
           children: [
@@ -451,8 +514,11 @@ class _ExerciseLogCard extends StatelessWidget {
                       color: colors.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(Icons.fitness_center_rounded,
-                        color: colors.primary, size: 18),
+                    child: Icon(
+                      Icons.fitness_center_rounded,
+                      color: colors.primary,
+                      size: 18,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -462,15 +528,18 @@ class _ExerciseLogCard extends StatelessWidget {
                         Text(
                           log.name,
                           style: TextStyle(
-                              fontFamily: 'Syne',
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: colors.textPrimary),
+                            fontFamily: 'Syne',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
+                          ),
                         ),
                         Text(
                           '${log.sets.length} ${context.l10n.setsLabel}',
                           style: TextStyle(
-                              fontSize: 11, color: colors.textMuted),
+                            fontSize: 11,
+                            color: colors.textMuted,
+                          ),
                         ),
                       ],
                     ),
@@ -492,8 +561,9 @@ class _ExerciseLogCard extends StatelessWidget {
             // Expanded: per-set table
             if (isExpanded) ...[
               Divider(
-                  height: 1,
-                  color: colors.textPrimary.withValues(alpha: 0.06)),
+                height: 1,
+                color: colors.textPrimary.withValues(alpha: 0.06),
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
                 child: Column(
@@ -501,12 +571,25 @@ class _ExerciseLogCard extends StatelessWidget {
                     // Table header
                     Row(
                       children: [
-                        _TableCell(context.l10n.setHeader, colors.textMuted,
-                            flex: 1, bold: true),
-                        _TableCell(context.l10n.repsHeader, colors.textMuted,
-                            flex: 2, bold: true),
-                        _TableCell(context.l10n.weightKgHeader, colors.textMuted,
-                            flex: 2, bold: true, align: TextAlign.right),
+                        _TableCell(
+                          context.l10n.setHeader,
+                          colors.textMuted,
+                          flex: 1,
+                          bold: true,
+                        ),
+                        _TableCell(
+                          context.l10n.repsHeader,
+                          colors.textMuted,
+                          flex: 2,
+                          bold: true,
+                        ),
+                        _TableCell(
+                          context.l10n.weightKgHeader,
+                          colors.textMuted,
+                          flex: 2,
+                          bold: true,
+                          align: TextAlign.right,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -516,7 +599,9 @@ class _ExerciseLogCard extends StatelessWidget {
                       return Container(
                         margin: const EdgeInsets.only(bottom: 2),
                         padding: const EdgeInsets.symmetric(
-                            vertical: 7, horizontal: 8),
+                          vertical: 7,
+                          horizontal: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: isOdd
                               ? colors.elevated.withValues(alpha: 0.5)
@@ -526,14 +611,16 @@ class _ExerciseLogCard extends StatelessWidget {
                         child: Row(
                           children: [
                             _TableCell(
-                                '${s.setNumber}', colors.textPrimary,
-                                flex: 1),
-                            _TableCell(s.reps, colors.textSecondary,
-                                flex: 2),
+                              '${s.setNumber}',
+                              colors.textPrimary,
+                              flex: 1,
+                            ),
+                            _TableCell(s.reps, colors.textSecondary, flex: 2),
                             _TableCell(
                               s.weight != null
                                   ? s.weight!.toStringAsFixed(
-                                      s.weight! % 1 == 0 ? 0 : 1)
+                                      s.weight! % 1 == 0 ? 0 : 1,
+                                    )
                                   : '—',
                               s.weight != null
                                   ? colors.primary
@@ -571,10 +658,10 @@ class _ExerciseLogCard extends StatelessWidget {
         ),
       );
     }
-    final maxWeight =
-        log.sets.where((s) => s.weight != null).map((s) => s.weight!).reduce(
-              (a, b) => a > b ? a : b,
-            );
+    final maxWeight = log.sets
+        .where((s) => s.weight != null)
+        .map((s) => s.weight!)
+        .reduce((a, b) => a > b ? a : b);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
@@ -582,11 +669,14 @@ class _ExerciseLogCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        context.l10n.maxWeightLabel(maxWeight.toStringAsFixed(maxWeight % 1 == 0 ? 0 : 1)),
+        context.l10n.maxWeightLabel(
+          maxWeight.toStringAsFixed(maxWeight % 1 == 0 ? 0 : 1),
+        ),
         style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: colors.primary),
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: colors.primary,
+        ),
       ),
     );
   }
@@ -632,55 +722,67 @@ class _HeroStat extends StatelessWidget {
   final String label, value;
   final bool onPrimary;
   final ThemePalette colors;
-  const _HeroStat(
-      {required this.label,
-      required this.value,
-      required this.onPrimary,
-      required this.colors});
+  const _HeroStat({
+    required this.label,
+    required this.value,
+    required this.onPrimary,
+    required this.colors,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final textColor =
-        onPrimary ? colors.textOnPrimary : colors.textPrimary;
-    final labelColor =
-        onPrimary ? colors.primaryDark : colors.textMuted;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label,
-          style: TextStyle(fontSize: 10, color: labelColor)),
-      const SizedBox(height: 2),
-      Text(value,
+    final textColor = onPrimary ? colors.textOnPrimary : colors.textPrimary;
+    final labelColor = onPrimary ? colors.primaryDark : colors.textMuted;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 10, color: labelColor)),
+        const SizedBox(height: 2),
+        Text(
+          value,
           style: TextStyle(
-              fontFamily: 'Syne',
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: textColor)),
-    ]);
+            fontFamily: 'Syne',
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: textColor,
+          ),
+        ),
+      ],
+    );
   }
 }
 
 class _WeekStat extends StatelessWidget {
   final String icon, label, value;
   final ThemePalette colors;
-  const _WeekStat(
-      {required this.icon,
-      required this.label,
-      required this.value,
-      required this.colors});
+  const _WeekStat({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.colors,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Text(icon, style: const TextStyle(fontSize: 20)),
-      const SizedBox(height: 4),
-      Text(value,
+    return Column(
+      children: [
+        Text(icon, style: const TextStyle(fontSize: 20)),
+        const SizedBox(height: 4),
+        Text(
+          value,
           style: TextStyle(
-              fontFamily: 'Syne',
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
-              color: colors.textPrimary)),
-      Text(label,
+            fontFamily: 'Syne',
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            color: colors.textPrimary,
+          ),
+        ),
+        Text(
+          label,
           style: TextStyle(fontSize: 9, color: colors.textMuted),
-          textAlign: TextAlign.center),
-    ]);
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
   }
 }

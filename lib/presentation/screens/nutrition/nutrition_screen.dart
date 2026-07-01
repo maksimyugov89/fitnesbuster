@@ -51,13 +51,23 @@ class _NutritionScreenState extends State<NutritionScreen>
   final List<_FoodEntry> _addedFoods = [];
 
   static const _mealIcons = {
-    'breakfast': '🌅', 'lunch': '☀️', 'dinner': '🌙', 'snack': '🍎',
-    'pre_workout': '🏋️', 'post_workout': '💪', 'evening_snack': '🌛',
+    'breakfast': '🌅',
+    'lunch': '☀️',
+    'dinner': '🌙',
+    'snack': '🍎',
+    'pre_workout': '🏋️',
+    'post_workout': '💪',
+    'evening_snack': '🌛',
     'morning_snack': '🌤️',
   };
   static const _mealLabels = {
-    'breakfast': 'Завтрак', 'lunch': 'Обед', 'dinner': 'Ужин', 'snack': 'Перекус',
-    'pre_workout': 'Предтрен', 'post_workout': 'Послетрен', 'evening_snack': 'Веч. перекус',
+    'breakfast': 'Завтрак',
+    'lunch': 'Обед',
+    'dinner': 'Ужин',
+    'snack': 'Перекус',
+    'pre_workout': 'Предтрен',
+    'post_workout': 'Послетрен',
+    'evening_snack': 'Веч. перекус',
     'morning_snack': 'Утр. перекус',
   };
   static const _mealColors = {
@@ -72,8 +82,12 @@ class _NutritionScreenState extends State<NutritionScreen>
   };
 
   // ── Calories ───────────────────────────────────────────────────────────────
-  int get _planCaloriesEaten =>
-      _completedMeals.fold(0, (s, i) => i < _meals.length ? s + ((_meals[i]['calories'] as num?)?.toInt() ?? 0) : s);
+  int get _planCaloriesEaten => _completedMeals.fold(
+    0,
+    (s, i) => i < _meals.length
+        ? s + ((_meals[i]['calories'] as num?)?.toInt() ?? 0)
+        : s,
+  );
   int get _manualCaloriesEaten => _addedFoods.fold(0, (s, f) => s + f.kcal);
   int get _totalEaten => _planCaloriesEaten + _manualCaloriesEaten;
 
@@ -85,7 +99,6 @@ class _NutritionScreenState extends State<NutritionScreen>
     _loadAddedFoods();
     _loadWater();
   }
-
 
   // ── Water persistence ─────────────────────────────────────────────────────
   Future<void> _loadWater() async {
@@ -99,7 +112,8 @@ class _NutritionScreenState extends State<NutritionScreen>
     await sl<ISettingsRepository>().setWaterMl(todayKey(), next);
   }
 
-  String _normalizeMealType(String raw) => raw.replaceAll(' ', '').toLowerCase();
+  String _normalizeMealType(String raw) =>
+      raw.replaceAll(' ', '').toLowerCase();
 
   void _toggleMealCompletion(int index) {
     if (_completedMeals.contains(index)) {
@@ -119,26 +133,50 @@ class _NutritionScreenState extends State<NutritionScreen>
     await settings.setMealsDone(k, _completedMeals.map((i) => '$i').toList());
     await settings.setEatenCal(k, _totalEaten);
     if (_targetCal > 0) await settings.setTargetCal(k, _targetCal);
-    final foods = _addedFoods.map((f) => jsonEncode({'name': f.name, 'grams': f.grams, 'kcal': f.kcal, 'type': f.mealType})).toList();
+    final foods = _addedFoods
+        .map(
+          (f) => jsonEncode({
+            'name': f.name,
+            'grams': f.grams,
+            'kcal': f.kcal,
+            'type': f.mealType,
+          }),
+        )
+        .toList();
     await settings.setManualFoods(k, foods);
   }
 
   Future<void> _loadMealCompletion() async {
     final k = todayKey();
     final raw = await sl<ISettingsRepository>().getMealsDone(k);
-    final done = raw.map((s) => int.tryParse(s)).whereType<int>().where((i) => i < _meals.length).toSet();
-    if (mounted && done.isNotEmpty) setState(() => _completedMeals.addAll(done));
+    final done = raw
+        .map((s) => int.tryParse(s))
+        .whereType<int>()
+        .where((i) => i < _meals.length)
+        .toSet();
+    if (mounted && done.isNotEmpty)
+      setState(() => _completedMeals.addAll(done));
   }
 
   Future<void> _loadAddedFoods() async {
     final k = todayKey();
     final raw = await sl<ISettingsRepository>().getManualFoods(k);
-    final foods = raw.map((s) {
-      try {
-        final m = jsonDecode(s) as Map<String, dynamic>;
-        return _FoodEntry(name: m['name'] as String, grams: (m['grams'] as num).toInt(), kcal: (m['kcal'] as num).toInt(), mealType: m['type'] as String);
-      } catch (_) { return null; }
-    }).whereType<_FoodEntry>().toList();
+    final foods = raw
+        .map((s) {
+          try {
+            final m = jsonDecode(s) as Map<String, dynamic>;
+            return _FoodEntry(
+              name: m['name'] as String,
+              grams: (m['grams'] as num).toInt(),
+              kcal: (m['kcal'] as num).toInt(),
+              mealType: m['type'] as String,
+            );
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<_FoodEntry>()
+        .toList();
     if (mounted && foods.isNotEmpty) setState(() => _addedFoods.addAll(foods));
   }
 
@@ -146,21 +184,32 @@ class _NutritionScreenState extends State<NutritionScreen>
     try {
       final authState = context.read<AuthBloc>().state;
       if (authState is! AuthStateAuthenticated) {
-        if (mounted) { setState(() => _mealLoading = false); }
+        if (mounted) {
+          setState(() => _mealLoading = false);
+        }
         return;
       }
       final uid = authState.userId;
       final plans = await sl<UserRepository>().getAiPlans(uid);
       final jsonStr = plans['mealPlan'];
       if (jsonStr == null) {
-        if (mounted) { setState(() => _mealLoading = false); }
+        if (mounted) {
+          setState(() => _mealLoading = false);
+        }
         return;
       }
       final data = jsonDecode(jsonStr) as Map<String, dynamic>;
       final meals = (data['meals'] as List).cast<Map<String, dynamic>>();
       final water = (data['water_target_ml'] as num?)?.toInt() ?? 2500;
-      final recs = (data['recommendations'] as List? ?? data['daily_tips'] as List? ?? []).cast<String>();
-      final totalCal = meals.fold(0, (s, m) => s + ((m['calories'] as num?)?.toInt() ?? 0));
+      final recs =
+          (data['recommendations'] as List? ??
+                  data['daily_tips'] as List? ??
+                  [])
+              .cast<String>();
+      final totalCal = meals.fold(
+        0,
+        (s, m) => s + ((m['calories'] as num?)?.toInt() ?? 0),
+      );
       final suppsRaw = data['supplements'] as List? ?? [];
       final supplements = suppsRaw
           .whereType<Map<String, dynamic>>()
@@ -179,7 +228,9 @@ class _NutritionScreenState extends State<NutritionScreen>
       // Load which meals were completed today AFTER meals list is set
       await _loadMealCompletion();
     } catch (_) {
-      if (mounted) { setState(() => _mealLoading = false); }
+      if (mounted) {
+        setState(() => _mealLoading = false);
+      }
     }
   }
 
@@ -201,7 +252,10 @@ class _NutritionScreenState extends State<NutritionScreen>
   }
 
   @override
-  void dispose() { _tabCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _tabCtrl.dispose();
+    super.dispose();
+  }
 
   // ─── Build ────────────────────────────────────────────────────────────────
 
@@ -211,44 +265,60 @@ class _NutritionScreenState extends State<NutritionScreen>
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: Column(children: [
-          NutritionHeader(
-            completedCount: _completedMeals.length,
-            totalMeals: _meals.length,
-            onShoppingListTap: () => context.push(AppRouter.shoppingList),
-          ),
-          DailyProgressCard(
-            totalEaten: _totalEaten,
-            targetCal: _targetCal,
-            manualCalories: _manualCaloriesEaten,
-            hasAddedFoods: _addedFoods.isNotEmpty,
-          ),
-          TabBar(
-            controller: _tabCtrl,
-            indicator: BoxDecoration(color: colors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-            indicatorPadding: const EdgeInsets.all(4),
-            labelColor: colors.primary,
-            unselectedLabelColor: colors.textMuted,
-            labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Inter'),
-            tabs: const [Tab(text: 'На сегодня'), Tab(text: 'На неделю'), Tab(text: 'Добавить еду')],
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-          ),
-          Expanded(
-            child: TabBarView(controller: _tabCtrl, children: [
-              _buildMealPlan(colors),
-              WeeklyPlanView(
-                isLoading: _mealLoading,
-                meals: _meals,
-                targetCal: _targetCal,
-                mealIcons: _mealIcons,
-                mealLabels: _mealLabels,
-                mealColors: _mealColors,
-                normalizeMealType: _normalizeMealType,
+        child: Column(
+          children: [
+            NutritionHeader(
+              completedCount: _completedMeals.length,
+              totalMeals: _meals.length,
+              onShoppingListTap: () => context.push(AppRouter.shoppingList),
+            ),
+            DailyProgressCard(
+              totalEaten: _totalEaten,
+              targetCal: _targetCal,
+              manualCalories: _manualCaloriesEaten,
+              hasAddedFoods: _addedFoods.isNotEmpty,
+            ),
+            TabBar(
+              controller: _tabCtrl,
+              indicator: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
               ),
-              _buildAddFood(colors),
-            ]),
-          ),
-        ]),
+              indicatorPadding: const EdgeInsets.all(4),
+              labelColor: colors.primary,
+              unselectedLabelColor: colors.textMuted,
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                fontFamily: 'Inter',
+              ),
+              tabs: const [
+                Tab(text: 'На сегодня'),
+                Tab(text: 'На неделю'),
+                Tab(text: 'Добавить еду'),
+              ],
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabCtrl,
+                children: [
+                  _buildMealPlan(colors),
+                  WeeklyPlanView(
+                    isLoading: _mealLoading,
+                    meals: _meals,
+                    targetCal: _targetCal,
+                    mealIcons: _mealIcons,
+                    mealLabels: _mealLabels,
+                    mealColors: _mealColors,
+                    normalizeMealType: _normalizeMealType,
+                  ),
+                  _buildAddFood(colors),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -261,12 +331,26 @@ class _NutritionScreenState extends State<NutritionScreen>
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(Icons.restaurant_rounded, size: 64, color: colors.textMuted.withValues(alpha: 0.35)),
-            const SizedBox(height: 16),
-            Text('ИИ-план питания не сгенерирован.\nПройдите онбординг и создайте план питания.',
-              style: TextStyle(fontSize: 14, color: colors.textMuted, height: 1.5), textAlign: TextAlign.center),
-          ]),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.restaurant_rounded,
+                size: 64,
+                color: colors.textMuted.withValues(alpha: 0.35),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'ИИ-план питания не сгенерирован.\nПройдите онбординг и создайте план питания.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: colors.textMuted,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -312,51 +396,125 @@ class _NutritionScreenState extends State<NutritionScreen>
           const SizedBox(height: 16),
           const Text('Спортивное питание', style: AppTextStyles.titleM),
           const SizedBox(height: 10),
-          ..._supplements.map((s) => Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colors.accentPurple.withValues(alpha: 0.07),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: colors.accentPurple.withValues(alpha: 0.2)),
-            ),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('💊', style: TextStyle(fontSize: 18)),
-              const SizedBox(width: 10),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [
-                  Flexible(child: Text(s.name, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary), overflow: TextOverflow.ellipsis)),
-                  if (s.dose.isNotEmpty) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                      decoration: BoxDecoration(color: colors.accentPurple.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
-                      child: Text(s.dose, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: colors.accentPurple)),
+          ..._supplements.map(
+            (s) => Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colors.accentPurple.withValues(alpha: 0.07),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: colors.accentPurple.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('💊', style: TextStyle(fontSize: 18)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                s.name,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.textPrimary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (s.dose.isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 1,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.accentPurple.withValues(
+                                    alpha: 0.15,
+                                  ),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  s.dose,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: colors.accentPurple,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        if (s.timing.isNotEmpty)
+                          Text(
+                            s.timing,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colors.textMuted,
+                            ),
+                          ),
+                        if (s.purpose.isNotEmpty) ...[
+                          const SizedBox(height: 3),
+                          Text(
+                            s.purpose,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colors.textSecondary,
+                              height: 1.35,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                  ],
-                ]),
-                if (s.timing.isNotEmpty) Text(s.timing, style: TextStyle(fontSize: 11, color: colors.textMuted)),
-                if (s.purpose.isNotEmpty) ...[
-                  const SizedBox(height: 3),
-                  Text(s.purpose, style: TextStyle(fontSize: 12, color: colors.textSecondary, height: 1.35)),
+                  ),
                 ],
-              ])),
-            ]),
-          )),
+              ),
+            ),
+          ),
         ],
 
         // Recommendations
         if (_mealRecs.isNotEmpty) ...[
           const Text('Советы по питанию', style: AppTextStyles.titleM),
           const SizedBox(height: 10),
-          ..._mealRecs.map((rec) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(width: 6, height: 6, margin: const EdgeInsets.only(top: 5, right: 10),
-                decoration: BoxDecoration(shape: BoxShape.circle, color: colors.primary)),
-              Expanded(child: Text(rec, style: TextStyle(fontSize: 13, color: colors.textSecondary, height: 1.45))),
-            ]),
-          )),
+          ..._mealRecs.map(
+            (rec) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    margin: const EdgeInsets.only(top: 5, right: 10),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: colors.primary,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      rec,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colors.textSecondary,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ],
     );
@@ -375,25 +533,42 @@ class _NutritionScreenState extends State<NutritionScreen>
         // Manual entry
         _ManualFoodForm(
           colors: colors,
-          onAdd: (entry) { setState(() => _addedFoods.insert(0, entry)); _saveProgress(); },
+          onAdd: (entry) {
+            setState(() => _addedFoods.insert(0, entry));
+            _saveProgress();
+          },
         ),
         const SizedBox(height: 20),
 
         // Added foods list
         if (_addedFoods.isNotEmpty) ...[
-          Row(children: [
-            const Text('Добавленная еда', style: AppTextStyles.titleM),
-            const Spacer(),
-            Text('$_manualCaloriesEaten ккал', style: TextStyle(fontSize: 13, color: colors.accentOrange, fontWeight: FontWeight.w700)),
-          ]),
+          Row(
+            children: [
+              const Text('Добавленная еда', style: AppTextStyles.titleM),
+              const Spacer(),
+              Text(
+                '$_manualCaloriesEaten ккал',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: colors.accentOrange,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 10),
-          ..._addedFoods.asMap().entries.map((e) => AddedFoodTile(
-            name: e.value.name,
-            mealType: e.value.mealType,
-            grams: e.value.grams,
-            kcal: e.value.kcal,
-            onDelete: () { setState(() => _addedFoods.removeAt(e.key)); _saveProgress(); },
-          )),
+          ..._addedFoods.asMap().entries.map(
+            (e) => AddedFoodTile(
+              name: e.value.name,
+              mealType: e.value.mealType,
+              grams: e.value.grams,
+              kcal: e.value.kcal,
+              onDelete: () {
+                setState(() => _addedFoods.removeAt(e.key));
+                _saveProgress();
+              },
+            ),
+          ),
         ],
       ],
     );
@@ -440,120 +615,181 @@ class _WaterCard extends StatelessWidget {
           width: done ? 1.5 : 1,
         ),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // ── Header ──
-        Row(children: [
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: Text(done ? '✅' : '💧',
-                key: ValueKey(done), style: const TextStyle(fontSize: 24)),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Вода', style: TextStyle(
-                  fontFamily: 'Syne', fontSize: 15,
-                  fontWeight: FontWeight.w800, color: c.textPrimary)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Header ──
+          Row(
+            children: [
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 300),
                 child: Text(
-                  done
-                      ? 'Цель достигнута!'
-                      : 'Выпито $intakeLiters л из $targetLiters л',
-                  key: ValueKey('$intakeMl/$targetMl'),
-                  style: TextStyle(fontSize: 12, color: done ? c.info : c.textMuted),
+                  done ? '✅' : '💧',
+                  key: ValueKey(done),
+                  style: const TextStyle(fontSize: 24),
                 ),
               ),
-            ]),
-          ),
-          // Undo last 200 ml
-          if (intakeMl > 0)
-            Semantics(
-              label: '−200 мл',
-              button: true,
-              child: GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                onAdd(-200);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                decoration: BoxDecoration(
-                  color: c.elevated,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text('−200', style: TextStyle(fontSize: 11, color: c.textMuted, fontWeight: FontWeight.w600)),
-              ),
-            ),
-            ),
-        ]),
-
-        const SizedBox(height: 12),
-
-        // ── Progress bar ──
-        Stack(children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOutCubic,
-              height: 14,
-              child: LinearProgressIndicator(
-                value: pct,
-                minHeight: 14,
-                backgroundColor: c.elevated,
-                valueColor: AlwaysStoppedAnimation(done ? c.info : c.info.withValues(alpha: 0.8)),
-              ),
-            ),
-          ),
-          if (!done)
-            Positioned.fill(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Text('ещё $remaining мл',
-                      style: TextStyle(fontSize: 9, color: c.textMuted, fontWeight: FontWeight.w600)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Вода',
+                      style: TextStyle(
+                        fontFamily: 'Syne',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: c.textPrimary,
+                      ),
+                    ),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: Text(
+                        done
+                            ? 'Цель достигнута!'
+                            : 'Выпито $intakeLiters л из $targetLiters л',
+                        key: ValueKey('$intakeMl/$targetMl'),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: done ? c.info : c.textMuted,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-        ]),
-
-        const SizedBox(height: 14),
-
-        // ── Quick-add buttons ──
-        Row(children: [
-          ..._quickAmounts.map((ml) => Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: Semantics(
-                label: '+$ml мл',
-                button: true,
-                child: GestureDetector(
-                  onTap: () {
-                    HapticFeedback.mediumImpact();
-                    onAdd(ml);
-                  },
-                  child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: c.info.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: c.info.withValues(alpha: 0.3)),
+              // Undo last 200 ml
+              if (intakeMl > 0)
+                Semantics(
+                  label: '−200 мл',
+                  button: true,
+                  child: GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      onAdd(-200);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: c.elevated,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '−200',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: c.textMuted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Text('+$ml', style: TextStyle(
-                        fontFamily: 'Syne', fontSize: 14,
-                        fontWeight: FontWeight.w800, color: c.info)),
-                    Text('мл', style: TextStyle(fontSize: 9, color: c.info.withValues(alpha: 0.7))),
-                  ]),
+                ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          // ── Progress bar ──
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeOutCubic,
+                  height: 14,
+                  child: LinearProgressIndicator(
+                    value: pct,
+                    minHeight: 14,
+                    backgroundColor: c.elevated,
+                    valueColor: AlwaysStoppedAnimation(
+                      done ? c.info : c.info.withValues(alpha: 0.8),
+                    ),
+                  ),
                 ),
               ),
-            ),
-            ),
-          )),
-        ]),
-      ]),
+              if (!done)
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Text(
+                        'ещё $remaining мл',
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: c.textMuted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+
+          // ── Quick-add buttons ──
+          Row(
+            children: [
+              ..._quickAmounts.map(
+                (ml) => Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: Semantics(
+                      label: '+$ml мл',
+                      button: true,
+                      child: GestureDetector(
+                        onTap: () {
+                          HapticFeedback.mediumImpact();
+                          onAdd(ml);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: c.info.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: c.info.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '+$ml',
+                                style: TextStyle(
+                                  fontFamily: 'Syne',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: c.info,
+                                ),
+                              ),
+                              Text(
+                                'мл',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  color: c.info.withValues(alpha: 0.7),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -578,15 +814,24 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
   static const _mealTypes = ['Завтрак', 'Обед', 'Перекус', 'Ужин'];
 
   @override
-  void dispose() { _nameCtrl.dispose(); _gramsCtrl.dispose(); _kcalCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _nameCtrl.dispose();
+    _gramsCtrl.dispose();
+    _kcalCtrl.dispose();
+    super.dispose();
+  }
 
   void _submit() {
     final name = _nameCtrl.text.trim();
     final grams = int.tryParse(_gramsCtrl.text.trim()) ?? 0;
     final kcal = int.tryParse(_kcalCtrl.text.trim()) ?? 0;
     if (name.isEmpty || grams <= 0) return;
-    widget.onAdd(_FoodEntry(name: name, grams: grams, kcal: kcal, mealType: _mealType));
-    _nameCtrl.clear(); _gramsCtrl.clear(); _kcalCtrl.clear();
+    widget.onAdd(
+      _FoodEntry(name: name, grams: grams, kcal: kcal, mealType: _mealType),
+    );
+    _nameCtrl.clear();
+    _gramsCtrl.clear();
+    _kcalCtrl.clear();
     HapticFeedback.lightImpact();
     FocusScope.of(context).unfocus();
   }
@@ -596,67 +841,127 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
     final c = widget.colors;
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: c.surfaceCard, borderRadius: BorderRadius.circular(20), border: Border.all(color: c.textPrimary.withValues(alpha: 0.06))),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Ввести вручную', style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
-        const SizedBox(height: 14),
-
-        // Meal type chips
-        SizedBox(
-          height: 34,
-          child: ListView(scrollDirection: Axis.horizontal, children: _mealTypes.map((t) =>
-            Semantics(
-              label: t,
-              button: true,
-              child: GestureDetector(
-                onTap: () => setState(() => _mealType = t),
-                child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _mealType == t ? c.primary : c.elevated,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(t, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
-                  color: _mealType == t ? c.textOnPrimary : c.textMuted)),
-              ),
-            ),
-            ),
-          ).toList()),
-        ),
-        const SizedBox(height: 12),
-
-        // Food name
-        _FormField(ctrl: _nameCtrl, hint: 'Название продукта или блюда', icon: Icons.fastfood_rounded, colors: c, textInput: TextInputType.text),
-        const SizedBox(height: 10),
-
-        // Grams + Kcal in a row
-        Row(children: [
-          Expanded(child: _FormField(ctrl: _gramsCtrl, hint: 'Граммы (г)', icon: Icons.scale_rounded, colors: c, textInput: TextInputType.number)),
-          const SizedBox(width: 10),
-          Expanded(child: _FormField(ctrl: _kcalCtrl, hint: 'Калории (ккал)', icon: Icons.local_fire_department_rounded, colors: c, textInput: TextInputType.number)),
-        ]),
-        const SizedBox(height: 14),
-
-        SizedBox(
-          width: double.infinity,
-          child: Semantics(
-            label: 'Добавить',
-            button: true,
-            child: FilledButton.icon(
-            onPressed: _submit,
-            icon: const Icon(Icons.add_rounded, size: 18),
-            label: const Text('Добавить', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-            style: FilledButton.styleFrom(
-              backgroundColor: c.primary,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: c.surfaceCard,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: c.textPrimary.withValues(alpha: 0.06)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Ввести вручную',
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: c.textPrimary,
             ),
           ),
-        ),
-        ),
-      ]),
+          const SizedBox(height: 14),
+
+          // Meal type chips
+          SizedBox(
+            height: 34,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: _mealTypes
+                  .map(
+                    (t) => Semantics(
+                      label: t,
+                      button: true,
+                      child: GestureDetector(
+                        onTap: () => setState(() => _mealType = t),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _mealType == t ? c.primary : c.elevated,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            t,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: _mealType == t
+                                  ? c.textOnPrimary
+                                  : c.textMuted,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Food name
+          _FormField(
+            ctrl: _nameCtrl,
+            hint: 'Название продукта или блюда',
+            icon: Icons.fastfood_rounded,
+            colors: c,
+            textInput: TextInputType.text,
+          ),
+          const SizedBox(height: 10),
+
+          // Grams + Kcal in a row
+          Row(
+            children: [
+              Expanded(
+                child: _FormField(
+                  ctrl: _gramsCtrl,
+                  hint: 'Граммы (г)',
+                  icon: Icons.scale_rounded,
+                  colors: c,
+                  textInput: TextInputType.number,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _FormField(
+                  ctrl: _kcalCtrl,
+                  hint: 'Калории (ккал)',
+                  icon: Icons.local_fire_department_rounded,
+                  colors: c,
+                  textInput: TextInputType.number,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          SizedBox(
+            width: double.infinity,
+            child: Semantics(
+              label: 'Добавить',
+              button: true,
+              child: FilledButton.icon(
+                onPressed: _submit,
+                icon: const Icon(Icons.add_rounded, size: 18),
+                label: const Text(
+                  'Добавить',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: c.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -669,7 +974,13 @@ class _FormField extends StatelessWidget {
   final IconData icon;
   final ThemePalette colors;
   final TextInputType textInput;
-  const _FormField({required this.ctrl, required this.hint, required this.icon, required this.colors, required this.textInput});
+  const _FormField({
+    required this.ctrl,
+    required this.hint,
+    required this.icon,
+    required this.colors,
+    required this.textInput,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -683,8 +994,14 @@ class _FormField extends StatelessWidget {
         prefixIcon: Icon(icon, size: 18, color: colors.textMuted),
         filled: true,
         fillColor: colors.elevated,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
       ),
     );
   }
@@ -695,5 +1012,10 @@ class _FormField extends StatelessWidget {
 class _FoodEntry {
   final String name, mealType;
   final int grams, kcal;
-  const _FoodEntry({required this.name, required this.grams, required this.kcal, required this.mealType});
+  const _FoodEntry({
+    required this.name,
+    required this.grams,
+    required this.kcal,
+    required this.mealType,
+  });
 }

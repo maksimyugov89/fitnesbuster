@@ -11,23 +11,24 @@ class ExerciseGifService implements IExerciseService {
   ExerciseGifService();
 
   @override
-  ExerciseInfo? findByRuName(String ruName) => ExerciseMatcher.instance.findByRuName(ruName)?.toExerciseInfo();
+  ExerciseInfo? findByRuName(String ruName) =>
+      ExerciseMatcher.instance.findByRuName(ruName)?.toExerciseInfo();
 
   @override
   Future<void> init() => ExerciseMatcher.instance.init();
 
   // Popular exercises to pre-cache after onboarding for a smooth first run.
   static const preloadExercises = <({String id, String name})>[
-    (id: 'push_up',         name: 'Push Up'),
+    (id: 'push_up', name: 'Push Up'),
     (id: 'bodyweight_squat', name: 'Bodyweight Squat'),
     (id: 'barbell_bench_press', name: 'Barbell Bench Press'),
     (id: 'barbell_deadlift', name: 'Barbell Deadlift'),
-    (id: 'pull_up',         name: 'Pull Up'),
-    (id: 'lat_pulldown',    name: 'Lat Pulldown'),
+    (id: 'pull_up', name: 'Pull Up'),
+    (id: 'lat_pulldown', name: 'Lat Pulldown'),
     (id: 'barbell_overhead_press', name: 'Barbell Overhead Press'),
     (id: 'barbell_biceps_curl', name: 'Barbell Biceps Curl'),
     (id: 'cable_tricep_pushdown', name: 'Cable Tricep Pushdown'),
-    (id: 'plank',           name: 'Plank'),
+    (id: 'plank', name: 'Plank'),
   ];
 
   Future<Directory> _gifsDir() async {
@@ -74,10 +75,12 @@ class ExerciseGifService implements IExerciseService {
 
   Future<String?> _fetchGifUrl(String exerciseName) async {
     try {
-      final callable = FirebaseFunctions.instanceFor(region: 'europe-west1')
-          .httpsCallable('exerciseDbProxy');
-      final result =
-          await callable.call<Map<String, dynamic>>({'exerciseName': exerciseName});
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'europe-west1',
+      ).httpsCallable('exerciseDbProxy');
+      final result = await callable.call<Map<String, dynamic>>({
+        'exerciseName': exerciseName,
+      });
       return result.data['gifUrl'] as String?;
     } catch (e) {
       appLogger.d('[ExerciseGifService] API error: $e');

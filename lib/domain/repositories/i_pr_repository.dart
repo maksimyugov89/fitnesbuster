@@ -14,5 +14,7 @@ abstract interface class IPrRepository {
   Future<void> delete(String id);
   Future<List<PersonalRecord>> getForExercise(String exerciseName);
   PersonalRecord? getBest(List<PersonalRecord> records);
-  Map<String, List<PersonalRecord>> groupByExercise(List<PersonalRecord> records);
+  Map<String, List<PersonalRecord>> groupByExercise(
+    List<PersonalRecord> records,
+  );
 }

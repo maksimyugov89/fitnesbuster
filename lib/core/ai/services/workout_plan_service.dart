@@ -19,9 +19,13 @@ class WorkoutPlanService {
     final targetBlock2 = targetBlock(profile);
     final locationBlock2 = locationBlock(profile.workoutLocation);
     final runningBlock2 = runningBlock(profile.runningPreference);
-    final healthBlock2 = healthBlock(profile.medicalRestrictions, profile.exerciseRestrictions);
+    final healthBlock2 = healthBlock(
+      profile.medicalRestrictions,
+      profile.exerciseRestrictions,
+    );
 
-    final prompt = '''
+    final prompt =
+        '''
 Ты — сертифицированный персональный тренер (NSCA-CPT) и специалист по силовой подготовке.
 Составь тренировочную программу на неделю №$weekNumber.
 
@@ -97,15 +101,21 @@ ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕ�
 
   String weeklyVolumeBlock(IntensityLevel intensity, int weekNumber) {
     final sets = switch (intensity) {
-      IntensityLevel.relaxed  => '10-12 рабочих подходов/мышечную группу/неделю',
-      IntensityLevel.gradual  => '12-15 рабочих подходов/мышечную группу/неделю',
-      IntensityLevel.balanced => '15-18 рабочих подходов/мышечную группу/неделю',
-      IntensityLevel.intensive => '18-22 рабочих подхода/мышечную группу/неделю',
-      IntensityLevel.hardcore => '22-30 рабочих подходов/мышечную группу/неделю',
+      IntensityLevel.relaxed => '10-12 рабочих подходов/мышечную группу/неделю',
+      IntensityLevel.gradual => '12-15 рабочих подходов/мышечную группу/неделю',
+      IntensityLevel.balanced =>
+        '15-18 рабочих подходов/мышечную группу/неделю',
+      IntensityLevel.intensive =>
+        '18-22 рабочих подхода/мышечную группу/неделю',
+      IntensityLevel.hardcore =>
+        '22-30 рабочих подходов/мышечную группу/неделю',
     };
-    final phase = weekNumber <= 4  ? 'Адаптация (сниженный объём, отработка техники)'
-        : weekNumber <= 8  ? 'Прогресс (наращивание объёма)'
-        : weekNumber <= 12 ? 'Интенсификация (максимальный объём)'
+    final phase = weekNumber <= 4
+        ? 'Адаптация (сниженный объём, отработка техники)'
+        : weekNumber <= 8
+        ? 'Прогресс (наращивание объёма)'
+        : weekNumber <= 12
+        ? 'Интенсификация (максимальный объём)'
         : 'Пик (снижение объёма, максимальные веса)';
     return 'Целевой объём: $sets\nФаза мезоцикла: $phase (неделя $weekNumber из 12)';
   }
@@ -126,13 +136,19 @@ ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕ�
     final buf = StringBuffer();
     if (health.sleepMinutes != null) {
       final hours = (health.sleepMinutes! / 60).toStringAsFixed(1);
-      buf.writeln('Сон: $hours ч — ${health.sleepMinutes! < 420 ? "НЕДОСТАТОЧНО — снизь интенсивность на 15%, избегай тяжёлых базовых упражнений" : "в норме"}');
+      buf.writeln(
+        'Сон: $hours ч — ${health.sleepMinutes! < 420 ? "НЕДОСТАТОЧНО — снизь интенсивность на 15%, избегай тяжёлых базовых упражнений" : "в норме"}',
+      );
     }
     if (health.heartRateResting != null) {
-      buf.writeln('Пульс покоя: ${health.heartRateResting} уд/мин — ${health.heartRateResting! > 70 ? "повышен, возможно накопленная усталость — увеличь время разминки" : "в норме"}');
+      buf.writeln(
+        'Пульс покоя: ${health.heartRateResting} уд/мин — ${health.heartRateResting! > 70 ? "повышен, возможно накопленная усталость — увеличь время разминки" : "в норме"}',
+      );
     }
     if (health.steps != null) {
-      buf.writeln('Средняя активность: ${(health.steps! / 7).round()} шаг/день');
+      buf.writeln(
+        'Средняя активность: ${(health.steps! / 7).round()} шаг/день',
+      );
     }
     return buf.toString();
   }
@@ -144,8 +160,12 @@ ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕ�
         ? (profile.weight - profile.targetWeight!).abs()
         : null;
     if (profile.targetWeight != null) {
-      final direction = profile.weight > profile.targetWeight! ? 'снизить' : 'набрать';
-      buf.writeln('Целевой вес: ${profile.targetWeight!.toStringAsFixed(1)} кг (нужно $direction ${diff!.toStringAsFixed(1)} кг)');
+      final direction = profile.weight > profile.targetWeight!
+          ? 'снизить'
+          : 'набрать';
+      buf.writeln(
+        'Целевой вес: ${profile.targetWeight!.toStringAsFixed(1)} кг (нужно $direction ${diff!.toStringAsFixed(1)} кг)',
+      );
     }
     if (profile.targetDate != null) {
       final weeks = profile.targetDate!.difference(DateTime.now()).inDays ~/ 7;
@@ -156,7 +176,9 @@ ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕ�
         buf.writeln('Дедлайн: $weeks нед$rateNote');
       }
     }
-    buf.writeln('Дневной калораж: ${profile.dailyCalorieTarget.toStringAsFixed(0)} ккал (TDEE = ${profile.tdee.toStringAsFixed(0)})');
+    buf.writeln(
+      'Дневной калораж: ${profile.dailyCalorieTarget.toStringAsFixed(0)} ккал (TDEE = ${profile.tdee.toStringAsFixed(0)})',
+    );
     return buf.toString();
   }
 
@@ -194,35 +216,51 @@ ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕ�
 
   String healthBlock(List<String> medical, List<String> exercise) {
     if (medical.isEmpty && exercise.isEmpty) return '';
-    final buf = StringBuffer('Ограничения по здоровью (СТРОГО СОБЛЮДАТЬ — нарушение опасно для пользователя):');
+    final buf = StringBuffer(
+      'Ограничения по здоровью (СТРОГО СОБЛЮДАТЬ — нарушение опасно для пользователя):',
+    );
     if (medical.isNotEmpty) {
       buf.write('\n- Медицинские ограничения: ${medical.join(', ')}');
-      buf.write('\n  → Исключи все упражнения и нагрузки, противопоказанные при этих состояниях.');
+      buf.write(
+        '\n  → Исключи все упражнения и нагрузки, противопоказанные при этих состояниях.',
+      );
     }
     if (exercise.isNotEmpty) {
       buf.write('\n- Запрещённые упражнения: ${exercise.join(', ')}');
-      buf.write('\n  → Эти упражнения НЕЛЬЗЯ включать в программу ни в каком виде.');
+      buf.write(
+        '\n  → Эти упражнения НЕЛЬЗЯ включать в программу ни в каком виде.',
+      );
     }
     return buf.toString();
   }
 
   String fitnessGoalLabel(FitnessGoal goal) {
     switch (goal) {
-      case FitnessGoal.loseWeight: return 'Снижение веса';
-      case FitnessGoal.gainWeight: return 'Набор массы';
-      case FitnessGoal.maintain: return 'Поддержание формы';
-      case FitnessGoal.beachBody: return 'К пляжному сезону';
-      case FitnessGoal.sportPerformance: return 'Спортивные результаты';
+      case FitnessGoal.loseWeight:
+        return 'Снижение веса';
+      case FitnessGoal.gainWeight:
+        return 'Набор массы';
+      case FitnessGoal.maintain:
+        return 'Поддержание формы';
+      case FitnessGoal.beachBody:
+        return 'К пляжному сезону';
+      case FitnessGoal.sportPerformance:
+        return 'Спортивные результаты';
     }
   }
 
   String intensityLabel(IntensityLevel intensity) {
     switch (intensity) {
-      case IntensityLevel.hardcore: return 'Хардкор';
-      case IntensityLevel.intensive: return 'Интенсив';
-      case IntensityLevel.balanced: return 'Баланс';
-      case IntensityLevel.gradual: return 'Постепенный';
-      case IntensityLevel.relaxed: return 'Лайт';
+      case IntensityLevel.hardcore:
+        return 'Хардкор';
+      case IntensityLevel.intensive:
+        return 'Интенсив';
+      case IntensityLevel.balanced:
+        return 'Баланс';
+      case IntensityLevel.gradual:
+        return 'Постепенный';
+      case IntensityLevel.relaxed:
+        return 'Лайт';
     }
   }
 }

@@ -15,5 +15,9 @@ class HealthServiceAdapter implements IHealthService {
     required DateTime startTime,
     required DateTime endTime,
     required List<HealthDataType> types,
-  }) => _health.getHealthDataFromTypes(startTime: startTime, endTime: endTime, types: types);
+  }) => _health.getHealthDataFromTypes(
+    startTime: startTime,
+    endTime: endTime,
+    types: types,
+  );
 }

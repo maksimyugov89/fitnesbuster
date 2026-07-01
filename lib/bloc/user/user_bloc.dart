@@ -12,8 +12,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final IUserRepository _userRepository;
 
   UserBloc({required IUserRepository userRepository})
-      : _userRepository = userRepository,
-        super(const UserStateUnknown()) {
+    : _userRepository = userRepository,
+      super(const UserStateUnknown()) {
     on<UserLoadRequested>(_onLoadRequested);
     on<UserUpdateProfile>(_onUpdateProfile);
     on<UserUpdateBodyParams>(_onUpdateBodyParams);
@@ -21,7 +21,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UserUpdateSettings>(_onUpdateSettings);
   }
 
-  Future<void> _onLoadRequested(UserLoadRequested event, Emitter<UserState> emit) async {
+  Future<void> _onLoadRequested(
+    UserLoadRequested event,
+    Emitter<UserState> emit,
+  ) async {
     emit(const UserStateLoading());
     try {
       final user = await _userRepository.getUser(event.userId);
@@ -32,7 +35,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  Future<void> _onUpdateProfile(UserUpdateProfile event, Emitter<UserState> emit) async {
+  Future<void> _onUpdateProfile(
+    UserUpdateProfile event,
+    Emitter<UserState> emit,
+  ) async {
     if (state is! UserStateLoaded) return;
     final current = (state as UserStateLoaded).user;
     try {
@@ -46,18 +52,28 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  Future<void> _onUpdateBodyParams(UserUpdateBodyParams event, Emitter<UserState> emit) async {
+  Future<void> _onUpdateBodyParams(
+    UserUpdateBodyParams event,
+    Emitter<UserState> emit,
+  ) async {
     if (state is! UserStateLoaded) return;
     final current = (state as UserStateLoaded).user;
-    final profile = current.profile ?? UserProfile(
-      weight: event.weight, height: event.height, age: event.age,
-      gender: event.gender, goal: FitnessGoal.loseWeight,
-      intensity: IntensityLevel.balanced,
-      activityLevel: ActivityLevel.moderatelyActive,
-    );
+    final profile =
+        current.profile ??
+        UserProfile(
+          weight: event.weight,
+          height: event.height,
+          age: event.age,
+          gender: event.gender,
+          goal: FitnessGoal.loseWeight,
+          intensity: IntensityLevel.balanced,
+          activityLevel: ActivityLevel.moderatelyActive,
+        );
     final updatedProfile = profile.copyWith(
-      weight: event.weight, height: event.height,
-      age: event.age, gender: event.gender,
+      weight: event.weight,
+      height: event.height,
+      age: event.age,
+      gender: event.gender,
     );
     try {
       final updated = await _userRepository.updateProfile(
@@ -65,19 +81,23 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
       emit(UserStateLoaded(user: updated));
     } catch (e, st) {
-      appLogger.w('[UserBloc] updateBodyParams failed', error: e, stackTrace: st);
+      appLogger.w(
+        '[UserBloc] updateBodyParams failed',
+        error: e,
+        stackTrace: st,
+      );
       emit(UserStateError(message: AppLocalizations.tl('userParamsFailed')));
     }
   }
 
-  Future<void> _onUpdateGoal(UserUpdateGoal event, Emitter<UserState> emit) async {
+  Future<void> _onUpdateGoal(
+    UserUpdateGoal event,
+    Emitter<UserState> emit,
+  ) async {
     if (state is! UserStateLoaded) return;
     final current = (state as UserStateLoaded).user;
     try {
-      await _userRepository.updateGoal(
-        userId: current.id,
-        goal: event.goal,
-      );
+      await _userRepository.updateGoal(userId: current.id, goal: event.goal);
       final updatedProfile = (current.profile ?? UserProfile.defaults).copyWith(
         goal: event.goal,
         intensity: event.intensity,
@@ -92,7 +112,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  Future<void> _onUpdateSettings(UserUpdateSettings event, Emitter<UserState> emit) async {
+  Future<void> _onUpdateSettings(
+    UserUpdateSettings event,
+    Emitter<UserState> emit,
+  ) async {
     if (state is! UserStateLoaded) return;
     final current = (state as UserStateLoaded).user;
     try {

@@ -13,6 +13,11 @@ permissions:
   contents: read
 
 jobs:
+  # SARIF-загрузка в Security → Code scanning и actions/dependency-review-action
+  # требуют GitHub Advanced Security, которая для приватных репозиториев платная.
+  # Поэтому upload-sarif выключен и job dependency-review убран — OSV-Scanner
+  # сам по себе уже проверяет pubspec.lock и functions/package-lock.json на
+  # известные CVE и валит job при находках (см. вывод в логе/summary run'а).
   osv-scan:
     name: OSV vulnerability scan (pub + npm)
     permissions:
@@ -24,20 +29,8 @@ jobs:
       scan-args: |-
         --lockfile=./pubspec.lock
         --lockfile=./functions/package-lock.json
-      upload-sarif: true
+      upload-sarif: false
       fail-on-vuln: true
-
-  dependency-review:
-    name: Dependency review (PR diff)
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Dependency Review
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
 
   notify-on-vulnerabilities:
     name: Notify Telegram
@@ -54,4 +47,4 @@ jobs:
           chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
           status: failure
           title: 'Найдены уязвимости в зависимостях'
-          message: 'OSV-Scanner нашёл известные CVE в pubspec.lock или functions/package-lock.json. Подробности — во вкладке Security → Code scanning.'
+          message: 'OSV-Scanner нашёл известные CVE в pubspec.lock или functions/package-lock.json. Подробности — в логе job "OSV vulnerability scan" в Actions.'

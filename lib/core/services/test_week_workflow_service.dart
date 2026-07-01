@@ -7,9 +7,17 @@ class TestWeekWorkflowService {
   final IAdaptiveTrainingService _trainingService;
 
   TestWeekWorkflowService({required IAdaptiveTrainingService trainingService})
-      : _trainingService = trainingService;
+    : _trainingService = trainingService;
 
-  Future<({TrainingAdjustment adjustment, FeasibilityResult feasibility, List<AdaptiveWeek> adaptedPlan, TestWeekResult testResult})> calculateResults({
+  Future<
+    ({
+      TrainingAdjustment adjustment,
+      FeasibilityResult feasibility,
+      List<AdaptiveWeek> adaptedPlan,
+      TestWeekResult testResult,
+    })
+  >
+  calculateResults({
     required List<TestExerciseResult> exercises,
     required UserProfile profile,
   }) async {
@@ -33,7 +41,11 @@ class TestWeekWorkflowService {
         adjustment: adjustment,
       );
     } catch (e, st) {
-      appLogger.w('[TestWeekWorkflow] feasibility check failed', error: e, stackTrace: st);
+      appLogger.w(
+        '[TestWeekWorkflow] feasibility check failed',
+        error: e,
+        stackTrace: st,
+      );
       feasibility = FeasibilityResult(
         isFeasible: true,
         reason: AppLocalizations.tl('testWeekPlanReady'),

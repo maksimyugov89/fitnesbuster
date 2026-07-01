@@ -136,8 +136,8 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
                       style: AppTextStyles.bodyL,
                     ),
                     const SizedBox(height: 32),
-                    ..._goals.asMap().entries.map((e) =>
-                      _buildGoalCard(e.value, e.key, colors),
+                    ..._goals.asMap().entries.map(
+                      (e) => _buildGoalCard(e.value, e.key, colors),
                     ),
                     const SizedBox(height: 24),
                   ],
@@ -165,8 +165,11 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
                 color: colors.surfaceLight,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.arrow_back_rounded,
-                color: colors.textPrimary, size: 20),
+              child: Icon(
+                Icons.arrow_back_rounded,
+                color: colors.textPrimary,
+                size: 20,
+              ),
             ),
           ),
           const Spacer(),
@@ -178,15 +181,18 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
 
   Widget _buildStepIndicator(dynamic colors) {
     return Row(
-      children: List.generate(4, (i) => Container(
-        width: i == 0 ? 20 : 8,
-        height: 8,
-        margin: const EdgeInsets.only(left: 4),
-        decoration: BoxDecoration(
-          color: i == 0 ? colors.primary : colors.surfaceLight,
-          borderRadius: BorderRadius.circular(4),
+      children: List.generate(
+        4,
+        (i) => Container(
+          width: i == 0 ? 20 : 8,
+          height: 8,
+          margin: const EdgeInsets.only(left: 4),
+          decoration: BoxDecoration(
+            color: i == 0 ? colors.primary : colors.surfaceLight,
+            borderRadius: BorderRadius.circular(4),
+          ),
         ),
-      )),
+      ),
     );
   }
 
@@ -223,24 +229,23 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isSelected
-                  ? colors.textPrimary.withValues(alpha: 0.2)
-                  : colors.textPrimary.withValues(alpha: 0.05),
+                    ? colors.textPrimary.withValues(alpha: 0.2)
+                    : colors.textPrimary.withValues(alpha: 0.05),
                 width: 1,
               ),
               boxShadow: isSelected
-                ? [BoxShadow(
-                    color: gradient.colors.first.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  )]
-                : [],
+                  ? [
+                      BoxShadow(
+                        color: gradient.colors.first.withValues(alpha: 0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ]
+                  : [],
             ),
             child: Row(
               children: [
-                Text(
-                  option.emoji,
-                  style: const TextStyle(fontSize: 40),
-                ),
+                Text(option.emoji, style: const TextStyle(fontSize: 40)),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -253,8 +258,8 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: isSelected
-                            ? colors.textPrimary
-                            : colors.textPrimary,
+                              ? colors.textPrimary
+                              : colors.textPrimary,
                           height: 1.2,
                         ),
                       ),
@@ -265,8 +270,8 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
                           fontFamily: 'Inter',
                           fontSize: 13,
                           color: isSelected
-                            ? colors.textPrimary.withValues(alpha: 0.8)
-                            : colors.textSecondary,
+                              ? colors.textPrimary.withValues(alpha: 0.8)
+                              : colors.textSecondary,
                         ),
                       ),
                     ],
@@ -279,19 +284,20 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isSelected
-                      ? colors.textPrimary
-                      : colors.surfaceLight,
+                        ? colors.textPrimary
+                        : colors.surfaceLight,
                     border: Border.all(
-                      color: isSelected
-                        ? Colors.transparent
-                        : colors.textMuted,
+                      color: isSelected ? Colors.transparent : colors.textMuted,
                       width: 2,
                     ),
                   ),
                   child: isSelected
-                    ? Icon(Icons.check_rounded,
-                        color: colors.background, size: 16)
-                    : null,
+                      ? Icon(
+                          Icons.check_rounded,
+                          color: colors.background,
+                          size: 16,
+                        )
+                      : null,
                 ),
               ],
             ),
@@ -314,18 +320,20 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
               duration: const Duration(milliseconds: 300),
               child: ElevatedButton(
                 onPressed: enabled
-                  ? () {
-                      context.read<OnboardingBloc>().add(OnboardingSetGoal(_selectedGoal!));
-                      context.push('/onboarding/intensity');
-                    }
-                  : null,
+                    ? () {
+                        context.read<OnboardingBloc>().add(
+                          OnboardingSetGoal(_selectedGoal!),
+                        );
+                        context.push('/onboarding/intensity');
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: enabled
-                    ? colors.primary
-                    : colors.surfaceLight,
+                      ? colors.primary
+                      : colors.surfaceLight,
                   foregroundColor: enabled
-                    ? colors.textPrimary
-                    : colors.textMuted,
+                      ? colors.textPrimary
+                      : colors.textMuted,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),

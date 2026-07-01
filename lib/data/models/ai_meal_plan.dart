@@ -12,10 +12,15 @@ class MealMacros {
   });
 
   factory MealMacros.fromJson(Map<String, dynamic> j) => MealMacros(
-    protein: (j['protein'] as num?)?.toInt() ?? (j['protein_g'] as num?)?.toInt() ?? 0,
-    carbs: (j['carbs'] as num?)?.toInt() ?? (j['carbs_g'] as num?)?.toInt() ?? 0,
+    protein:
+        (j['protein'] as num?)?.toInt() ??
+        (j['protein_g'] as num?)?.toInt() ??
+        0,
+    carbs:
+        (j['carbs'] as num?)?.toInt() ?? (j['carbs_g'] as num?)?.toInt() ?? 0,
     fat: (j['fat'] as num?)?.toInt() ?? (j['fat_g'] as num?)?.toInt() ?? 0,
-    fiber: (j['fiber'] as num?)?.toInt() ?? (j['fiber_g'] as num?)?.toInt() ?? 0,
+    fiber:
+        (j['fiber'] as num?)?.toInt() ?? (j['fiber_g'] as num?)?.toInt() ?? 0,
   );
 
   bool get isEmpty => protein == 0 && carbs == 0 && fat == 0;
@@ -58,9 +63,16 @@ class DailyTargets {
   });
 
   factory DailyTargets.fromJson(Map<String, dynamic> j) => DailyTargets(
-    calories: (j['calories'] as num?)?.toInt() ?? (j['total_calories'] as num?)?.toInt() ?? 0,
-    protein: (j['protein'] as num?)?.toInt() ?? (j['protein_g'] as num?)?.toInt() ?? 0,
-    carbs: (j['carbs'] as num?)?.toInt() ?? (j['carbs_g'] as num?)?.toInt() ?? 0,
+    calories:
+        (j['calories'] as num?)?.toInt() ??
+        (j['total_calories'] as num?)?.toInt() ??
+        0,
+    protein:
+        (j['protein'] as num?)?.toInt() ??
+        (j['protein_g'] as num?)?.toInt() ??
+        0,
+    carbs:
+        (j['carbs'] as num?)?.toInt() ?? (j['carbs_g'] as num?)?.toInt() ?? 0,
     fat: (j['fat'] as num?)?.toInt() ?? (j['fat_g'] as num?)?.toInt() ?? 0,
     waterMl: (j['water_ml'] as num?)?.toInt() ?? 2500,
   );
@@ -84,13 +96,22 @@ class AiMeal {
   });
 
   factory AiMeal.fromJson(Map<String, dynamic> j) {
-    final macroRaw = j['macros'] as Map<String, dynamic>? ?? j['macro_breakdown'] as Map<String, dynamic>?;
+    final macroRaw =
+        j['macros'] as Map<String, dynamic>? ??
+        j['macro_breakdown'] as Map<String, dynamic>?;
     return AiMeal(
       type: (j['type'] as String? ?? '').toLowerCase(),
       time: j['time'] as String? ?? '',
-      foods: (j['foods'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-      calories: (j['calories'] as num?)?.toInt() ?? (j['total_calories'] as num?)?.toInt() ?? 0,
-      macros: macroRaw != null ? MealMacros.fromJson(macroRaw) : const MealMacros(),
+      foods:
+          (j['foods'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+          [],
+      calories:
+          (j['calories'] as num?)?.toInt() ??
+          (j['total_calories'] as num?)?.toInt() ??
+          0,
+      macros: macroRaw != null
+          ? MealMacros.fromJson(macroRaw)
+          : const MealMacros(),
     );
   }
 }
@@ -123,13 +144,18 @@ class AiMealPlan {
         : const DailyTargets();
 
     final suppsRaw = data['supplements'] as List<dynamic>?;
-    final supplements = suppsRaw
-        ?.map((e) => AiSupplement.fromJson(e as Map<String, dynamic>))
-        .toList() ?? [];
+    final supplements =
+        suppsRaw
+            ?.map((e) => AiSupplement.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
 
-    final recs = (data['recommendations'] as List<dynamic>? ?? data['daily_tips'] as List<dynamic>? ?? [])
-        .map((e) => e.toString())
-        .toList();
+    final recs =
+        (data['recommendations'] as List<dynamic>? ??
+                data['daily_tips'] as List<dynamic>? ??
+                [])
+            .map((e) => e.toString())
+            .toList();
 
     final water = (data['water_target_ml'] as num?)?.toInt() ?? 2500;
 

@@ -11,17 +11,12 @@ class ExerciseMatcher {
 
   Future<void> init() async {
     if (_db.isNotEmpty) return;
-    await Future.wait([
-      _loadDb(),
-      FreeExerciseDb.instance.load(),
-    ]);
+    await Future.wait([_loadDb(), FreeExerciseDb.instance.load()]);
   }
 
   Future<void> _loadDb() async {
     _db = await ExerciseDatabase.load();
-    _exactIndex = {
-      for (final ex in _db) ex.nameRu.toLowerCase().trim(): ex,
-    };
+    _exactIndex = {for (final ex in _db) ex.nameRu.toLowerCase().trim(): ex};
   }
 
   /// Finds best matching ExerciseDbModel for a Russian AI name. Returns null if no match.
@@ -39,13 +34,14 @@ class ExerciseMatcher {
     }
 
     // 3. Word overlap — count common words, return best if ≥ 2 words match
-    final queryWords =
-        key.split(RegExp(r'\s+')).where((w) => w.length > 2).toSet();
+    final queryWords = key
+        .split(RegExp(r'\s+'))
+        .where((w) => w.length > 2)
+        .toSet();
     ExerciseDbModel? best;
     int bestScore = 1; // minimum 2 matching words
     for (final ex in _db) {
-      final dbWords =
-          ex.nameRu.toLowerCase().split(RegExp(r'\s+')).toSet();
+      final dbWords = ex.nameRu.toLowerCase().split(RegExp(r'\s+')).toSet();
       final overlap = queryWords.intersection(dbWords).length;
       if (overlap > bestScore) {
         bestScore = overlap;

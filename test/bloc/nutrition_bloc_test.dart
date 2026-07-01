@@ -25,7 +25,12 @@ void main() {
   const tFood = FoodItem(
     id: 'food-1',
     name: 'Banana',
-    nutrition: NutritionPer100g(calories: 89, protein: 1.1, carbs: 23, fat: 0.3),
+    nutrition: NutritionPer100g(
+      calories: 89,
+      protein: 1.1,
+      carbs: 23,
+      fat: 0.3,
+    ),
   );
 
   final tMealLog = MealLog(
@@ -37,12 +42,12 @@ void main() {
   );
 
   NutritionState makeLoadedState() => NutritionStateLoaded(
-        logs: [tMealLog],
-        targetCalories: 2000,
-        targetProtein: 150,
-        targetCarbs: 200,
-        targetFat: 70,
-      );
+    logs: [tMealLog],
+    targetCalories: 2000,
+    targetProtein: 150,
+    targetCarbs: 200,
+    targetFat: 70,
+  );
 
   setUp(() {
     nutritionService = MockNutritionService();
@@ -74,7 +79,8 @@ void main() {
     blocTest<NutritionBloc, NutritionState>(
       'no extra state emitted when shouldRegenerate is true but profile is null',
       build: makeBloc,
-      setUp: () => when(nutritionService.shouldRegenerate(any)).thenReturn(true),
+      setUp: () =>
+          when(nutritionService.shouldRegenerate(any)).thenReturn(true),
       act: (b) => b.add(const NutritionLoadRequested(userId: 'uid-1')),
       wait: const Duration(milliseconds: 600),
       expect: () => [
@@ -90,8 +96,9 @@ void main() {
       build: makeBloc,
       seed: makeLoadedState,
       setUp: () {
-        when(nutritionService.generateMealPlan(any))
-            .thenAnswer((_) async => '{"meals": []}');
+        when(
+          nutritionService.generateMealPlan(any),
+        ).thenAnswer((_) async => '{"meals": []}');
       },
       act: (b) => b.add(const NutritionRegenerateMealPlan(profile: tProfile)),
       expect: () => [
@@ -106,8 +113,9 @@ void main() {
       build: makeBloc,
       seed: makeLoadedState,
       setUp: () {
-        when(nutritionService.generateMealPlan(any))
-            .thenThrow(Exception('network error'));
+        when(
+          nutritionService.generateMealPlan(any),
+        ).thenThrow(Exception('network error'));
       },
       act: (b) => b.add(const NutritionRegenerateMealPlan(profile: tProfile)),
       expect: () => [
@@ -138,11 +146,13 @@ void main() {
       'appends FoodEntry to matching MealLog',
       build: makeBloc,
       seed: makeLoadedState,
-      act: (b) => b.add(const NutritionAddFood(
-        mealType: MealType.breakfast,
-        food: tFood,
-        grams: 150,
-      )),
+      act: (b) => b.add(
+        const NutritionAddFood(
+          mealType: MealType.breakfast,
+          food: tFood,
+          grams: 150,
+        ),
+      ),
       expect: () => [
         isA<NutritionStateLoaded>().having(
           (s) => s.logs.first.foods.length,
@@ -156,11 +166,13 @@ void main() {
       'food entry has correct grams',
       build: makeBloc,
       seed: makeLoadedState,
-      act: (b) => b.add(const NutritionAddFood(
-        mealType: MealType.breakfast,
-        food: tFood,
-        grams: 200,
-      )),
+      act: (b) => b.add(
+        const NutritionAddFood(
+          mealType: MealType.breakfast,
+          food: tFood,
+          grams: 200,
+        ),
+      ),
       expect: () => [
         isA<NutritionStateLoaded>().having(
           (s) => s.logs.first.foods.first.grams,
@@ -173,11 +185,13 @@ void main() {
     blocTest<NutritionBloc, NutritionState>(
       'does nothing when state is not Loaded',
       build: makeBloc,
-      act: (b) => b.add(const NutritionAddFood(
-        mealType: MealType.breakfast,
-        food: tFood,
-        grams: 100,
-      )),
+      act: (b) => b.add(
+        const NutritionAddFood(
+          mealType: MealType.breakfast,
+          food: tFood,
+          grams: 100,
+        ),
+      ),
       expect: () => [],
     );
   });
@@ -192,21 +206,23 @@ void main() {
     );
 
     NutritionState loadedWithFood() => NutritionStateLoaded(
-          logs: [logWithFood],
-          targetCalories: 2000,
-          targetProtein: 150,
-          targetCarbs: 200,
-          targetFat: 70,
-        );
+      logs: [logWithFood],
+      targetCalories: 2000,
+      targetProtein: 150,
+      targetCarbs: 200,
+      targetFat: 70,
+    );
 
     blocTest<NutritionBloc, NutritionState>(
       'removes FoodEntry by foodId',
       build: makeBloc,
       seed: loadedWithFood,
-      act: (b) => b.add(const NutritionRemoveFood(
-        mealType: MealType.breakfast,
-        foodId: 'food-1',
-      )),
+      act: (b) => b.add(
+        const NutritionRemoveFood(
+          mealType: MealType.breakfast,
+          foodId: 'food-1',
+        ),
+      ),
       expect: () => [
         isA<NutritionStateLoaded>().having(
           (s) => s.logs.first.foods,
@@ -219,10 +235,12 @@ void main() {
     blocTest<NutritionBloc, NutritionState>(
       'does nothing when state is not Loaded',
       build: makeBloc,
-      act: (b) => b.add(const NutritionRemoveFood(
-        mealType: MealType.breakfast,
-        foodId: 'food-1',
-      )),
+      act: (b) => b.add(
+        const NutritionRemoveFood(
+          mealType: MealType.breakfast,
+          foodId: 'food-1',
+        ),
+      ),
       expect: () => [],
     );
 
@@ -230,10 +248,12 @@ void main() {
       'does not emit when foodId does not match (state unchanged)',
       build: makeBloc,
       seed: loadedWithFood,
-      act: (b) => b.add(const NutritionRemoveFood(
-        mealType: MealType.breakfast,
-        foodId: 'nonexistent',
-      )),
+      act: (b) => b.add(
+        const NutritionRemoveFood(
+          mealType: MealType.breakfast,
+          foodId: 'nonexistent',
+        ),
+      ),
       // NutritionStateLoaded uses Equatable — no emission when state is unchanged
       expect: () => [],
     );

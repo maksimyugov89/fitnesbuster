@@ -23,10 +23,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     required IUserRepository userRepo,
     required OnboardingWorkflowService workflowService,
     required IAuthRepository authRepo,
-  })  : _userRepo = userRepo,
-        _workflowService = workflowService,
-        _authRepo = authRepo,
-        super(const OnboardingCollecting()) {
+  }) : _userRepo = userRepo,
+       _workflowService = workflowService,
+       _authRepo = authRepo,
+       super(const OnboardingCollecting()) {
     on<OnboardingSetGoal>(_onSetGoal);
     on<OnboardingSetIntensity>(_onSetIntensity);
     on<OnboardingSetLocation>(_onSetLocation);
@@ -34,14 +34,18 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<OnboardingFinalize>(_onFinalize);
   }
 
-  OnboardingCollecting _collecting() =>
-      state is OnboardingCollecting ? state as OnboardingCollecting : const OnboardingCollecting();
+  OnboardingCollecting _collecting() => state is OnboardingCollecting
+      ? state as OnboardingCollecting
+      : const OnboardingCollecting();
 
   void _onSetGoal(OnboardingSetGoal e, Emitter<OnboardingState> emit) {
     emit(_collecting().copyWith(goal: e.goal));
   }
 
-  void _onSetIntensity(OnboardingSetIntensity e, Emitter<OnboardingState> emit) {
+  void _onSetIntensity(
+    OnboardingSetIntensity e,
+    Emitter<OnboardingState> emit,
+  ) {
     emit(_collecting().copyWith(intensity: e.intensity));
   }
 
@@ -51,16 +55,18 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   void _onSetProfile(OnboardingSetProfile e, Emitter<OnboardingState> emit) {
     final s = _collecting();
-    emit(s.copyWith(
-      name: e.name,
-      age: e.age,
-      weight: e.weight,
-      height: e.height,
-      gender: e.gender,
-      activity: e.activity,
-      restrictions: e.restrictions,
-      city: e.city,
-    ));
+    emit(
+      s.copyWith(
+        name: e.name,
+        age: e.age,
+        weight: e.weight,
+        height: e.height,
+        gender: e.gender,
+        activity: e.activity,
+        restrictions: e.restrictions,
+        city: e.city,
+      ),
+    );
   }
 
   Future<void> _onFinalize(
@@ -107,18 +113,32 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         city: data.city.isNotEmpty ? data.city : null,
       );
 
-      emit(OnboardingComplete(
-        workoutPlanJson: plans.workoutPlanJson,
-        mealPlanJson: plans.mealPlanJson,
-      ));
-      _track(() => sl<IAnalyticsService>().logOnboardingCompleted(goal: data.goal?.name ?? 'unknown'));
+      emit(
+        OnboardingComplete(
+          workoutPlanJson: plans.workoutPlanJson,
+          mealPlanJson: plans.mealPlanJson,
+        ),
+      );
+      _track(
+        () => sl<IAnalyticsService>().logOnboardingCompleted(
+          goal: data.goal?.name ?? 'unknown',
+        ),
+      );
     } catch (e, st) {
-      appLogger.w('[OnboardingBloc] plan generation failed', error: e, stackTrace: st);
+      appLogger.w(
+        '[OnboardingBloc] plan generation failed',
+        error: e,
+        stackTrace: st,
+      );
       emit(OnboardingError(AppLocalizations.tl('onboardingPlanFailed')));
     }
   }
 
   Future<void> _track(Future<void> Function() fn) async {
-    try { await fn(); } catch (_) { /* best-effort */ }
+    try {
+      await fn();
+    } catch (_) {
+      /* best-effort */
+    }
   }
 }

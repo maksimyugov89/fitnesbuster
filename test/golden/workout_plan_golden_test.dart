@@ -60,8 +60,12 @@ void main() {
 
     GetIt.instance.registerLazySingleton<IAuthRepository>(() => mockAuthRepo);
     GetIt.instance.registerLazySingleton<IUserRepository>(() => mockUserRepo);
-    GetIt.instance.registerLazySingleton<ISettingsRepository>(() => mockSettingsRepo);
-    GetIt.instance.registerLazySingleton<IExerciseService>(() => mockExerciseService);
+    GetIt.instance.registerLazySingleton<ISettingsRepository>(
+      () => mockSettingsRepo,
+    );
+    GetIt.instance.registerLazySingleton<IExerciseService>(
+      () => mockExerciseService,
+    );
 
     when(mockAuthRepo.currentUser).thenReturn(testUser);
     when(mockAuthRepo.userChanges).thenAnswer((_) => Stream.value(testUser));
@@ -89,9 +93,7 @@ void main() {
             value: authBloc,
             child: const MaterialApp(
               home: WorkoutPlanScreen(),
-              localizationsDelegates: [
-                AppLocalizations.delegate,
-              ],
+              localizationsDelegates: [AppLocalizations.delegate],
               supportedLocales: [Locale('en'), Locale('ru')],
             ),
           ),

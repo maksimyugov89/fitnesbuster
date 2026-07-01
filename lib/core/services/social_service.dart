@@ -30,11 +30,15 @@ class SocialService implements ISocialService {
       await messaging.requestPermission(alert: true, badge: true, sound: true);
       final token = await messaging.getToken();
       if (token != null) {
-        await _db.doc('${FirestoreCollections.users}/$uid').set({'fcmToken': token}, SetOptions(merge: true));
+        await _db.doc('${FirestoreCollections.users}/$uid').set({
+          'fcmToken': token,
+        }, SetOptions(merge: true));
       }
       // Refresh token when it rotates
       messaging.onTokenRefresh.listen((newToken) async {
-        await _db.doc('${FirestoreCollections.users}/$uid').set({'fcmToken': newToken}, SetOptions(merge: true));
+        await _db.doc('${FirestoreCollections.users}/$uid').set({
+          'fcmToken': newToken,
+        }, SetOptions(merge: true));
       });
     } catch (e, st) {
       appLogger.w('SocialService: FCM init failed', error: e, stackTrace: st);
@@ -55,7 +59,11 @@ class SocialService implements ISocialService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('social_username', username);
     } catch (e, st) {
-      appLogger.w('SocialService: setUsername failed', error: e, stackTrace: st);
+      appLogger.w(
+        'SocialService: setUsername failed',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -72,7 +80,11 @@ class SocialService implements ISocialService {
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e, st) {
-      appLogger.w('SocialService: publish activity failed', error: e, stackTrace: st);
+      appLogger.w(
+        'SocialService: publish activity failed',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -83,7 +95,11 @@ class SocialService implements ISocialService {
     try {
       await _call('sendFriendRequest', {'toUid': toUid});
     } catch (e, st) {
-      appLogger.w('SocialService: sendFriendRequest failed', error: e, stackTrace: st);
+      appLogger.w(
+        'SocialService: sendFriendRequest failed',
+        error: e,
+        stackTrace: st,
+      );
       rethrow;
     }
   }
@@ -93,7 +109,11 @@ class SocialService implements ISocialService {
     try {
       await _call('acceptFriendRequest', {'requestId': requestId});
     } catch (e, st) {
-      appLogger.w('SocialService: acceptFriendRequest failed', error: e, stackTrace: st);
+      appLogger.w(
+        'SocialService: acceptFriendRequest failed',
+        error: e,
+        stackTrace: st,
+      );
       rethrow;
     }
   }
@@ -103,7 +123,11 @@ class SocialService implements ISocialService {
     try {
       await _call('declineFriendRequest', {'requestId': requestId});
     } catch (e, st) {
-      appLogger.w('SocialService: declineFriendRequest failed', error: e, stackTrace: st);
+      appLogger.w(
+        'SocialService: declineFriendRequest failed',
+        error: e,
+        stackTrace: st,
+      );
       rethrow;
     }
   }
@@ -113,7 +137,11 @@ class SocialService implements ISocialService {
     try {
       await _call('removeFriend', {'friendUid': friendUid});
     } catch (e, st) {
-      appLogger.w('SocialService: removeFriend failed', error: e, stackTrace: st);
+      appLogger.w(
+        'SocialService: removeFriend failed',
+        error: e,
+        stackTrace: st,
+      );
       rethrow;
     }
   }
@@ -123,10 +151,17 @@ class SocialService implements ISocialService {
     try {
       final result = await _call('searchUsers', {'query': query});
       return (result.data as List? ?? [])
-          .map((e) => UserSearchResult.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map(
+            (e) =>
+                UserSearchResult.fromJson(Map<String, dynamic>.from(e as Map)),
+          )
           .toList();
     } catch (e, st) {
-      appLogger.w('SocialService: searchUsers failed', error: e, stackTrace: st);
+      appLogger.w(
+        'SocialService: searchUsers failed',
+        error: e,
+        stackTrace: st,
+      );
       rethrow;
     }
   }
@@ -176,7 +211,11 @@ class SocialService implements ISocialService {
     try {
       await _call('joinChallenge', {'challengeId': challengeId});
     } catch (e, st) {
-      appLogger.w('SocialService: joinChallenge failed', error: e, stackTrace: st);
+      appLogger.w(
+        'SocialService: joinChallenge failed',
+        error: e,
+        stackTrace: st,
+      );
       rethrow;
     }
   }
@@ -186,7 +225,11 @@ class SocialService implements ISocialService {
     try {
       await _call('seedChallenges', {});
     } catch (e, st) {
-      appLogger.w('SocialService: seedChallenges failed', error: e, stackTrace: st);
+      appLogger.w(
+        'SocialService: seedChallenges failed',
+        error: e,
+        stackTrace: st,
+      );
       rethrow;
     }
   }
@@ -208,7 +251,11 @@ class SocialService implements ISocialService {
       final data = result.data as Map<String, dynamic>?;
       return ((data?['completed'] as List?) ?? []).cast<String>();
     } catch (e, st) {
-      appLogger.w('SocialService: recordWorkout failed', error: e, stackTrace: st);
+      appLogger.w(
+        'SocialService: recordWorkout failed',
+        error: e,
+        stackTrace: st,
+      );
       rethrow;
     }
   }
@@ -237,7 +284,9 @@ class SocialService implements ISocialService {
   }
 
   @override
-  Stream<List<ChallengeParticipant>> challengeLeaderboardStream(String challengeId) {
+  Stream<List<ChallengeParticipant>> challengeLeaderboardStream(
+    String challengeId,
+  ) {
     return _db
         .collection(FirestoreCollections.challengeProgress(challengeId))
         .orderBy('currentValue', descending: true)

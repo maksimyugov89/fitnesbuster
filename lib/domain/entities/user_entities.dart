@@ -14,13 +14,7 @@ enum FitnessGoal {
   sportPerformance,
 }
 
-enum IntensityLevel {
-  hardcore,
-  intensive,
-  balanced,
-  gradual,
-  relaxed,
-}
+enum IntensityLevel { hardcore, intensive, balanced, gradual, relaxed }
 
 enum ActivityLevel {
   sedentary(1.2),
@@ -34,18 +28,34 @@ enum ActivityLevel {
 
   String get label {
     switch (this) {
-      case ActivityLevel.sedentary: return AppLocalizations.tl('activitySedentaryLabel');
-      case ActivityLevel.lightlyActive: return AppLocalizations.tl('activityLightLabel');
-      case ActivityLevel.moderatelyActive: return AppLocalizations.tl('activityModerateLabel');
-      case ActivityLevel.veryActive: return AppLocalizations.tl('activityHighLabel');
-      case ActivityLevel.extraActive: return AppLocalizations.tl('activityVeryHighLabel');
+      case ActivityLevel.sedentary:
+        return AppLocalizations.tl('activitySedentaryLabel');
+      case ActivityLevel.lightlyActive:
+        return AppLocalizations.tl('activityLightLabel');
+      case ActivityLevel.moderatelyActive:
+        return AppLocalizations.tl('activityModerateLabel');
+      case ActivityLevel.veryActive:
+        return AppLocalizations.tl('activityHighLabel');
+      case ActivityLevel.extraActive:
+        return AppLocalizations.tl('activityVeryHighLabel');
     }
   }
 }
 
 enum MuscleGroup {
-  chest, back, shoulders, biceps, triceps, forearms,
-  abs, glutes, quads, hamstrings, calves, fullBody, cardio
+  chest,
+  back,
+  shoulders,
+  biceps,
+  triceps,
+  forearms,
+  abs,
+  glutes,
+  quads,
+  hamstrings,
+  calves,
+  fullBody,
+  cardio,
 }
 
 @freezed
@@ -59,7 +69,8 @@ class UserEntity with _$UserEntity {
     required DateTime createdAt,
   }) = _UserEntity;
 
-  factory UserEntity.fromJson(Map<String, dynamic> json) => _$UserEntityFromJson(json);
+  factory UserEntity.fromJson(Map<String, dynamic> json) =>
+      _$UserEntityFromJson(json);
 }
 
 @freezed
@@ -85,7 +96,8 @@ class UserProfile with _$UserProfile {
     String? city,
   }) = _UserProfile;
 
-  factory UserProfile.fromJson(Map<String, dynamic> json) => _$UserProfileFromJson(json);
+  factory UserProfile.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileFromJson(json);
 
   static const defaults = UserProfile(
     weight: 80,
@@ -126,11 +138,16 @@ class UserProfile with _$UserProfile {
 
   double get dailyCalorieTarget {
     switch (goal) {
-      case FitnessGoal.loseWeight: return tdee - 500;
-      case FitnessGoal.gainWeight: return tdee + 500;
-      case FitnessGoal.maintain: return tdee;
-      case FitnessGoal.beachBody: return tdee - 300;
-      case FitnessGoal.sportPerformance: return tdee + 200;
+      case FitnessGoal.loseWeight:
+        return tdee - 500;
+      case FitnessGoal.gainWeight:
+        return tdee + 500;
+      case FitnessGoal.maintain:
+        return tdee;
+      case FitnessGoal.beachBody:
+        return tdee - 300;
+      case FitnessGoal.sportPerformance:
+        return tdee + 200;
     }
   }
 }
@@ -146,5 +163,6 @@ class TestExerciseResult with _$TestExerciseResult {
     String? notes,
   }) = _TestExerciseResult;
 
-  factory TestExerciseResult.fromJson(Map<String, dynamic> json) => _$TestExerciseResultFromJson(json);
+  factory TestExerciseResult.fromJson(Map<String, dynamic> json) =>
+      _$TestExerciseResultFromJson(json);
 }

@@ -36,13 +36,17 @@ String validateWorkoutJson(String raw) {
     data = jsonDecode(raw) as Map<String, dynamic>;
   } catch (e) {
     appLogger.d('[DeepSeek] Malformed workout JSON: $raw', error: e);
-    throw const AiException('AI вернул некорректный JSON плана тренировок. Попробуйте ещё раз.');
+    throw const AiException(
+      'AI вернул некорректный JSON плана тренировок. Попробуйте ещё раз.',
+    );
   }
 
   final plan = data['plan'];
   if (plan == null || plan is! List || plan.isEmpty) {
     appLogger.d('[DeepSeek] Missing or empty "plan" in workout JSON: $raw');
-    throw const AiException('AI не вернул план тренировок. Попробуйте ещё раз.');
+    throw const AiException(
+      'AI не вернул план тренировок. Попробуйте ещё раз.',
+    );
   }
 
   for (final item in plan) {
@@ -61,7 +65,9 @@ String validateMealJson(String raw) {
     data = jsonDecode(raw) as Map<String, dynamic>;
   } catch (e) {
     appLogger.d('[DeepSeek] Malformed meal JSON: $raw', error: e);
-    throw const AiException('AI вернул некорректный JSON плана питания. Попробуйте ещё раз.');
+    throw const AiException(
+      'AI вернул некорректный JSON плана питания. Попробуйте ещё раз.',
+    );
   }
 
   final meals = data['meals'];

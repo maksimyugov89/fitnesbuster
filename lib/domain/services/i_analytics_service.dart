@@ -20,7 +20,10 @@ abstract interface class IAnalyticsService {
   Future<void> logDeviceConnected({required String deviceName});
   Future<void> logHealthDataSynced({required String source});
   Future<void> logShare({required String contentType});
-  Future<void> logEvent({required String name, Map<String, Object>? parameters});
+  Future<void> logEvent({
+    required String name,
+    Map<String, Object>? parameters,
+  });
   Future<void> setUserProperty({required String name, required String value});
   Future<void> setAnalyticsEnabled(bool enabled);
 }

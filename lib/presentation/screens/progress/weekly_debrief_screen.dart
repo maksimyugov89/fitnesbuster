@@ -85,9 +85,11 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
 
       final allPrs = await PrRepository().getAll();
       final weekPrNames = allPrs
-          .where((r) =>
-              !r.date.isBefore(monday) &&
-              r.date.isBefore(monday.add(const Duration(days: 7))))
+          .where(
+            (r) =>
+                !r.date.isBefore(monday) &&
+                r.date.isBefore(monday.add(const Duration(days: 7))),
+          )
           .map((r) => r.exerciseName)
           .toSet()
           .toList();
@@ -106,7 +108,8 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
       );
 
       final debrief = WeeklyDebrief.fromJson(
-          jsonDecode(raw) as Map<String, dynamic>);
+        jsonDecode(raw) as Map<String, dynamic>,
+      );
       await HiveCache.saveDebrief(_uid!, _weekStart, debrief);
 
       if (mounted) {
@@ -148,9 +151,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
             ),
         ],
       ),
-      body: SafeArea(
-        child: _buildBody(colors),
-      ),
+      body: SafeArea(child: _buildBody(colors)),
     );
   }
 
@@ -207,7 +208,8 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
                 style: FilledButton.styleFrom(
                   backgroundColor: colors.primary,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: const Text('Попробовать снова'),
               ),
@@ -258,10 +260,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
           colors: colors,
         ),
         const SizedBox(height: 16),
-        _FocusCard(
-          text: _debrief!.nextWeekFocus,
-          colors: colors,
-        ),
+        _FocusCard(text: _debrief!.nextWeekFocus, colors: colors),
         const SizedBox(height: 12),
         _BulletSection(
           label: 'Восстановление',
@@ -557,8 +556,11 @@ class _FocusCard extends StatelessWidget {
               color: colors.primary.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(Icons.center_focus_strong_rounded,
-                color: colors.primary, size: 22),
+            child: Icon(
+              Icons.center_focus_strong_rounded,
+              color: colors.primary,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(

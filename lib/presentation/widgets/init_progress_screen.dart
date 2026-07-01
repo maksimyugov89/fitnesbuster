@@ -54,11 +54,19 @@ class _InitProgressScreenState extends State<InitProgressScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (_errorMode) ...[
-                const Icon(Icons.error_outline_rounded, color: Colors.orangeAccent, size: 64),
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.orangeAccent,
+                  size: 64,
+                ),
                 const SizedBox(height: 24),
                 Text(
                   AppLocalizations.tl('appInitError'),
-                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
@@ -70,7 +78,11 @@ class _InitProgressScreenState extends State<InitProgressScreen> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
-                    setState(() { _errorMode = false; _error = null; _currentStage = ''; });
+                    setState(() {
+                      _errorMode = false;
+                      _error = null;
+                      _currentStage = '';
+                    });
                     _runInit();
                   },
                   style: ElevatedButton.styleFrom(
@@ -80,7 +92,14 @@ class _InitProgressScreenState extends State<InitProgressScreen> {
                   child: Text(AppLocalizations.tl('retry')),
                 ),
               ] else ...[
-                const SizedBox(width: 36, height: 36, child: CircularProgressIndicator(color: Colors.orangeAccent, strokeWidth: 2.5)),
+                const SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: CircularProgressIndicator(
+                    color: Colors.orangeAccent,
+                    strokeWidth: 2.5,
+                  ),
+                ),
                 const SizedBox(height: 24),
                 Text(
                   _stageLabel(_currentStage),
@@ -96,12 +115,18 @@ class _InitProgressScreenState extends State<InitProgressScreen> {
 
   String _stageLabel(String stage) {
     switch (stage) {
-      case 'Firebase': return 'Firebase...';
-      case 'Storage': return 'Storage...';
-      case 'Services': return 'Services...';
-      case 'Exercises': return 'Exercises...';
-      case 'Locale': return 'Locale...';
-      default: return '';
+      case 'Firebase':
+        return 'Firebase...';
+      case 'Storage':
+        return 'Storage...';
+      case 'Services':
+        return 'Services...';
+      case 'Exercises':
+        return 'Exercises...';
+      case 'Locale':
+        return 'Locale...';
+      default:
+        return '';
     }
   }
 }

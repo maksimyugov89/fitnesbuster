@@ -77,7 +77,9 @@ class PrRepository implements IPrRepository {
   Future<List<PersonalRecord>> getForExercise(String exerciseName) async {
     final all = await getAll();
     return all
-        .where((r) => r.exerciseName.toLowerCase() == exerciseName.toLowerCase())
+        .where(
+          (r) => r.exerciseName.toLowerCase() == exerciseName.toLowerCase(),
+        )
         .toList()
       ..sort((a, b) => b.date.compareTo(a.date));
   }
@@ -91,7 +93,9 @@ class PrRepository implements IPrRepository {
 
   // Returns map: exerciseName → sorted records (newest first)
   @override
-  Map<String, List<PersonalRecord>> groupByExercise(List<PersonalRecord> records) {
+  Map<String, List<PersonalRecord>> groupByExercise(
+    List<PersonalRecord> records,
+  ) {
     final map = <String, List<PersonalRecord>>{};
     for (final r in records) {
       (map[r.exerciseName] ??= []).add(r);

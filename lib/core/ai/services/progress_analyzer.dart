@@ -18,7 +18,8 @@ class ProgressAnalyzer {
     if (latest['chest'] != null) buf.writeln('- Грудь: ${latest['chest']} см');
     if (latest['waist'] != null) buf.writeln('- Талия: ${latest['waist']} см');
     if (latest['hips'] != null) buf.writeln('- Бёдра: ${latest['hips']} см');
-    if (latest['bodyFat'] != null) buf.writeln('- Жир тела: ${latest['bodyFat']}%');
+    if (latest['bodyFat'] != null)
+      buf.writeln('- Жир тела: ${latest['bodyFat']}%');
 
     String changesBlock = '';
     if (previous != null) {
@@ -31,6 +32,7 @@ class ProgressAnalyzer {
           any = true;
         }
       }
+
       diff('chest', 'Грудь, см');
       diff('waist', 'Талия, см');
       diff('hips', 'Бёдра, см');
@@ -38,7 +40,8 @@ class ProgressAnalyzer {
       if (any) changesBlock = ch.toString();
     }
 
-    final prompt = '''
+    final prompt =
+        '''
 Ты — AI-тренер FitnesBuster. Проанализируй прогресс пользователя на основе замеров тела.
 
 Данные пользователя:
@@ -69,7 +72,8 @@ ${_client.languageInstruction} Будь конкретным, ссылайся �
     required int dailyWaterTarget,
     required List<String> weekPrNames,
   }) async {
-    final prompt = '''
+    final prompt =
+        '''
 Ты — персональный AI-тренер FitnesBuster. Проанализируй прошедшую неделю пользователя и дай объективный дебриф.
 
 ═══ ПРОФИЛЬ ═══
@@ -109,21 +113,31 @@ ${weekPrNames.isNotEmpty ? 'Личные рекорды: ${weekPrNames.join(", "
 
   String _fitnessGoalLabel(FitnessGoal goal) {
     switch (goal) {
-      case FitnessGoal.loseWeight: return 'Снижение веса';
-      case FitnessGoal.gainWeight: return 'Набор массы';
-      case FitnessGoal.maintain: return 'Поддержание формы';
-      case FitnessGoal.beachBody: return 'К пляжному сезону';
-      case FitnessGoal.sportPerformance: return 'Спортивные результаты';
+      case FitnessGoal.loseWeight:
+        return 'Снижение веса';
+      case FitnessGoal.gainWeight:
+        return 'Набор массы';
+      case FitnessGoal.maintain:
+        return 'Поддержание формы';
+      case FitnessGoal.beachBody:
+        return 'К пляжному сезону';
+      case FitnessGoal.sportPerformance:
+        return 'Спортивные результаты';
     }
   }
 
   String _intensityLabel(IntensityLevel intensity) {
     switch (intensity) {
-      case IntensityLevel.hardcore: return 'Хардкор';
-      case IntensityLevel.intensive: return 'Интенсив';
-      case IntensityLevel.balanced: return 'Баланс';
-      case IntensityLevel.gradual: return 'Постепенный';
-      case IntensityLevel.relaxed: return 'Лайт';
+      case IntensityLevel.hardcore:
+        return 'Хардкор';
+      case IntensityLevel.intensive:
+        return 'Интенсив';
+      case IntensityLevel.balanced:
+        return 'Баланс';
+      case IntensityLevel.gradual:
+        return 'Постепенный';
+      case IntensityLevel.relaxed:
+        return 'Лайт';
     }
   }
 }

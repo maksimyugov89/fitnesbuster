@@ -53,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Set<String> _profileUnlocked = {};
 
   // ── Avatar ──────────────────────────────────────────────────────────────────
-  int _avatarPresetIndex = -1;   // -1 = use initials
+  int _avatarPresetIndex = -1; // -1 = use initials
   String _avatarCustomPath = ''; // non-empty = custom photo
 
   @override
@@ -82,11 +82,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (!mounted) return;
     if (mode == 'preset') {
       final idx = await settings.getAvatarPresetIndex() ?? -1;
-      setState(() { _avatarPresetIndex = idx; _avatarCustomPath = ''; });
+      setState(() {
+        _avatarPresetIndex = idx;
+        _avatarCustomPath = '';
+      });
     } else if (mode == 'custom') {
       final path = await settings.getAvatarCustomPath() ?? '';
       if (path.isNotEmpty && File(path).existsSync()) {
-        setState(() { _avatarCustomPath = path; _avatarPresetIndex = -1; });
+        setState(() {
+          _avatarCustomPath = path;
+          _avatarPresetIndex = -1;
+        });
       }
     }
   }
@@ -96,7 +102,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await settings.setAvatarMode('preset');
     await settings.setAvatarPresetIndex(index);
     await settings.removeAvatarCustomPath();
-    if (mounted) setState(() { _avatarPresetIndex = index; _avatarCustomPath = ''; });
+    if (mounted)
+      setState(() {
+        _avatarPresetIndex = index;
+        _avatarCustomPath = '';
+      });
   }
 
   Future<void> _saveAvatarCustom(String sourcePath) async {
@@ -107,7 +117,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await settings.setAvatarMode('custom');
     await settings.setAvatarCustomPath(dest);
     await settings.setAvatarPresetIndex(-1);
-    if (mounted) setState(() { _avatarCustomPath = dest; _avatarPresetIndex = -1; });
+    if (mounted)
+      setState(() {
+        _avatarCustomPath = dest;
+        _avatarPresetIndex = -1;
+      });
   }
 
   void _openAvatarPicker(BuildContext context) {
@@ -118,8 +132,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (_) => AvatarPickerSheet(
         currentPresetIndex: _avatarPresetIndex,
         currentCustomPath: _avatarCustomPath,
-        onPresetSelected: (i) { Navigator.of(context).pop(); _saveAvatarPreset(i); },
-        onCustomSelected: (path) { Navigator.of(context).pop(); _saveAvatarCustom(path); },
+        onPresetSelected: (i) {
+          Navigator.of(context).pop();
+          _saveAvatarPreset(i);
+        },
+        onCustomSelected: (path) {
+          Navigator.of(context).pop();
+          _saveAvatarCustom(path);
+        },
       ),
     );
   }
@@ -135,8 +155,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _weight = user.profile?.weight ?? 0;
         _height = user.profile?.height ?? 0;
         _age = user.profile?.age ?? 0;
-        _gender = user.profile?.gender == Gender.male ? 'Мужской' : (user.profile?.gender == Gender.female ? 'Женский' : '');
-        _goal = user.profile?.goal != null ? _fitnessGoalLabel(user.profile!.goal) : '';
+        _gender = user.profile?.gender == Gender.male
+            ? 'Мужской'
+            : (user.profile?.gender == Gender.female ? 'Женский' : '');
+        _goal = user.profile?.goal != null
+            ? _fitnessGoalLabel(user.profile!.goal)
+            : '';
         _dataLoaded = true;
       });
     }
@@ -145,7 +169,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _refreshFromFirestore() async {
-    final uid = (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
+    final uid =
+        (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
     if (uid == null) return;
     try {
       final user = await sl<IUserRepository>().getUser(uid);
@@ -163,7 +188,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _workoutLocation = _parseLocation(user.profile!.workoutLocation!);
           }
           if (user.profile!.runningPreference != null) {
-            _runningPreference = _parseRunning(user.profile!.runningPreference!);
+            _runningPreference = _parseRunning(
+              user.profile!.runningPreference!,
+            );
           }
         }
         _dataLoaded = true;
@@ -189,14 +216,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final genderEnum = _gender == 'Мужской' ? Gender.male : Gender.female;
         final goalEnum = _fitnessGoalFromLabel(_goal);
         final profile = UserProfile(
-          weight: _weight, height: _height, age: _age,
-          gender: genderEnum, goal: goalEnum,
+          weight: _weight,
+          height: _height,
+          age: _age,
+          gender: genderEnum,
+          goal: goalEnum,
           intensity: IntensityLevel.balanced,
           activityLevel: ActivityLevel.moderatelyActive,
         );
         // Pass local _name and _email to Firestore
         final updatedUser = authState.user.copyWith(
-          name: _name, email: _email, profile: profile,
+          name: _name,
+          email: _email,
+          profile: profile,
         );
         await repo.updateProfile(updatedUser);
         // Also update Firebase Auth display name
@@ -215,30 +247,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   WorkoutLocation _parseLocation(String s) {
     switch (s) {
-      case 'outdoor': return WorkoutLocation.outdoor;
-      case 'home': return WorkoutLocation.home;
-      default: return WorkoutLocation.gym;
+      case 'outdoor':
+        return WorkoutLocation.outdoor;
+      case 'home':
+        return WorkoutLocation.home;
+      default:
+        return WorkoutLocation.gym;
     }
   }
 
-  RunningPreference _parseRunning(String s) =>
-      s == 'noRunning' ? RunningPreference.noRunning : RunningPreference.withRunning;
+  RunningPreference _parseRunning(String s) => s == 'noRunning'
+      ? RunningPreference.noRunning
+      : RunningPreference.withRunning;
 
   FitnessGoal _fitnessGoalFromLabel(String label) {
-    if (label == AppLocalizations.tl('goalMuscleMass')) return FitnessGoal.gainWeight;
-    if (label == AppLocalizations.tl('goalMaintainWeight')) return FitnessGoal.maintain;
-    if (label == AppLocalizations.tl('goalBeachSeason')) return FitnessGoal.beachBody;
-    if (label == AppLocalizations.tl('goalSportsRecords')) return FitnessGoal.sportPerformance;
+    if (label == AppLocalizations.tl('goalMuscleMass'))
+      return FitnessGoal.gainWeight;
+    if (label == AppLocalizations.tl('goalMaintainWeight'))
+      return FitnessGoal.maintain;
+    if (label == AppLocalizations.tl('goalBeachSeason'))
+      return FitnessGoal.beachBody;
+    if (label == AppLocalizations.tl('goalSportsRecords'))
+      return FitnessGoal.sportPerformance;
     return FitnessGoal.loseWeight;
   }
 
   String _fitnessGoalLabel(FitnessGoal goal) {
     switch (goal) {
-      case FitnessGoal.loseWeight: return AppLocalizations.tl('goalWeightLoss');
-      case FitnessGoal.gainWeight: return AppLocalizations.tl('goalMuscleMass');
-      case FitnessGoal.maintain: return AppLocalizations.tl('goalMaintainWeight');
-      case FitnessGoal.beachBody: return AppLocalizations.tl('goalBeachSeason');
-      case FitnessGoal.sportPerformance: return AppLocalizations.tl('goalSportsRecords');
+      case FitnessGoal.loseWeight:
+        return AppLocalizations.tl('goalWeightLoss');
+      case FitnessGoal.gainWeight:
+        return AppLocalizations.tl('goalMuscleMass');
+      case FitnessGoal.maintain:
+        return AppLocalizations.tl('goalMaintainWeight');
+      case FitnessGoal.beachBody:
+        return AppLocalizations.tl('goalBeachSeason');
+      case FitnessGoal.sportPerformance:
+        return AppLocalizations.tl('goalSportsRecords');
     }
   }
 
@@ -257,36 +302,118 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             _StatsRowWidget(weight: _weight, height: _height, age: _age),
             const SizedBox(height: 20),
-            _CurrentProgramWidget(goal: _localizeGoal(l10n, _goal), dataLoaded: _dataLoaded),
+            _CurrentProgramWidget(
+              goal: _localizeGoal(l10n, _goal),
+              dataLoaded: _dataLoaded,
+            ),
             const SizedBox(height: 20),
-            _AchievementsSectionWidget(profileLevel: _profileLevel, unlockedIds: _profileUnlocked),
+            _AchievementsSectionWidget(
+              profileLevel: _profileLevel,
+              unlockedIds: _profileUnlocked,
+            ),
             const SizedBox(height: 24),
-            _ProfileSection(title: l10n.yourDataLabel, items: [
-              ProfileMenuItem(icon: Icons.person_outline_rounded, label: l10n.editProfileLabel, color: colors.primary, onTap: () => _openEditProfile(context)),
-              ProfileMenuItem(icon: Icons.monitor_weight_outlined, label: l10n.bodyParamsLabel, color: colors.accentPurple, onTap: () => _openBodyParams(context)),
-              ProfileMenuItem(icon: Icons.flag_outlined, label: l10n.fitnessGoalLabel, color: colors.accentOrange, onTap: () => _openGoalEdit(context)),
-              ProfileMenuItem(icon: Icons.location_on_outlined, label: l10n.workoutLocationLabel, color: colors.info, onTap: () => _openWorkoutSettings(context)),
-            ]),
+            _ProfileSection(
+              title: l10n.yourDataLabel,
+              items: [
+                ProfileMenuItem(
+                  icon: Icons.person_outline_rounded,
+                  label: l10n.editProfileLabel,
+                  color: colors.primary,
+                  onTap: () => _openEditProfile(context),
+                ),
+                ProfileMenuItem(
+                  icon: Icons.monitor_weight_outlined,
+                  label: l10n.bodyParamsLabel,
+                  color: colors.accentPurple,
+                  onTap: () => _openBodyParams(context),
+                ),
+                ProfileMenuItem(
+                  icon: Icons.flag_outlined,
+                  label: l10n.fitnessGoalLabel,
+                  color: colors.accentOrange,
+                  onTap: () => _openGoalEdit(context),
+                ),
+                ProfileMenuItem(
+                  icon: Icons.location_on_outlined,
+                  label: l10n.workoutLocationLabel,
+                  color: colors.info,
+                  onTap: () => _openWorkoutSettings(context),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
-            _ProfileSection(title: l10n.settingsLabel, items: [
-              ProfileMenuItem(icon: Icons.sync_rounded, label: l10n.healthConnectLabel, color: const Color(0xFF10B981), onTap: () => context.push('/health-sync')),
-              ProfileMenuItem(icon: Icons.notifications_outlined, label: l10n.notificationsLabel, color: colors.info, onTap: () => _openNotifications(context)),
-              ProfileMenuItem(icon: Icons.language_rounded, label: '${l10n.languageLabel} - ${LanguageService.current.nativeName}', color: colors.accentPurple, onTap: () => _openLanguageSelection(context)),
-              ProfileMenuItem(icon: Icons.palette_outlined, label: '${l10n.themeLabel} - ${ThemeService.current.displayName}', color: colors.textSecondary, onTap: () => _openThemeSelection(context)),
-            ]),
+            _ProfileSection(
+              title: l10n.settingsLabel,
+              items: [
+                ProfileMenuItem(
+                  icon: Icons.sync_rounded,
+                  label: l10n.healthConnectLabel,
+                  color: const Color(0xFF10B981),
+                  onTap: () => context.push('/health-sync'),
+                ),
+                ProfileMenuItem(
+                  icon: Icons.notifications_outlined,
+                  label: l10n.notificationsLabel,
+                  color: colors.info,
+                  onTap: () => _openNotifications(context),
+                ),
+                ProfileMenuItem(
+                  icon: Icons.language_rounded,
+                  label:
+                      '${l10n.languageLabel} - ${LanguageService.current.nativeName}',
+                  color: colors.accentPurple,
+                  onTap: () => _openLanguageSelection(context),
+                ),
+                ProfileMenuItem(
+                  icon: Icons.palette_outlined,
+                  label:
+                      '${l10n.themeLabel} - ${ThemeService.current.displayName}',
+                  color: colors.textSecondary,
+                  onTap: () => _openThemeSelection(context),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
-            _ProfileSection(title: l10n.otherSectionLabel, items: [
-              ProfileMenuItem(icon: Icons.security_rounded, label: l10n.securityLabel, color: colors.warning, onTap: () => _openSecurity(context)),
-              ProfileMenuItem(icon: Icons.help_outline_rounded, label: l10n.helpSupportLabel, color: colors.textMuted, onTap: () {}),
-              ProfileMenuItem(icon: Icons.article_outlined, label: l10n.licensesLabel, color: colors.textMuted, onTap: () => _showLicenses(context)),
-              ProfileMenuItem(icon: Icons.info_outline_rounded, label: l10n.aboutAppLabel, color: colors.textMuted, onTap: () => _showAbout(context)),
-            ]),
+            _ProfileSection(
+              title: l10n.otherSectionLabel,
+              items: [
+                ProfileMenuItem(
+                  icon: Icons.security_rounded,
+                  label: l10n.securityLabel,
+                  color: colors.warning,
+                  onTap: () => _openSecurity(context),
+                ),
+                ProfileMenuItem(
+                  icon: Icons.help_outline_rounded,
+                  label: l10n.helpSupportLabel,
+                  color: colors.textMuted,
+                  onTap: () {},
+                ),
+                ProfileMenuItem(
+                  icon: Icons.article_outlined,
+                  label: l10n.licensesLabel,
+                  color: colors.textMuted,
+                  onTap: () => _showLicenses(context),
+                ),
+                ProfileMenuItem(
+                  icon: Icons.info_outline_rounded,
+                  label: l10n.aboutAppLabel,
+                  color: colors.textMuted,
+                  onTap: () => _showAbout(context),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
             LogoutButton(onTap: () => _confirmLogout(context)),
             const SizedBox(height: 12),
             DeleteAccountButton(onTap: () => _confirmDeleteAccount(context)),
             const SizedBox(height: 24),
-            Center(child: Text('FitnesBuster v1.0.0', style: TextStyle(fontSize: 11, color: colors.textMuted))),
+            Center(
+              child: Text(
+                'FitnesBuster v1.0.0',
+                style: TextStyle(fontSize: 11, color: colors.textMuted),
+              ),
+            ),
             const SizedBox(height: 80),
           ],
         ),
@@ -300,14 +427,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (_avatarCustomPath.isNotEmpty) {
       return Container(
-        width: size, height: size,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          boxShadow: [BoxShadow(color: colors.primary.withValues(alpha: 0.3), blurRadius: 16, spreadRadius: 2)],
+          boxShadow: [
+            BoxShadow(
+              color: colors.primary.withValues(alpha: 0.3),
+              blurRadius: 16,
+              spreadRadius: 2,
+            ),
+          ],
         ),
         child: ClipOval(
-          child: Image.file(File(_avatarCustomPath), fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => _buildInitialsCircle(size, fontSize, colors)),
+          child: Image.file(
+            File(_avatarCustomPath),
+            fit: BoxFit.cover,
+            errorBuilder: (_, _, _) =>
+                _buildInitialsCircle(size, fontSize, colors),
+          ),
         ),
       );
     }
@@ -315,31 +453,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_avatarPresetIndex >= 0 && _avatarPresetIndex < kAvatarPresets.length) {
       final preset = kAvatarPresets[_avatarPresetIndex];
       return Container(
-        width: size, height: size,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: preset.gradientColors, begin: Alignment.topLeft, end: Alignment.bottomRight),
+          gradient: LinearGradient(
+            colors: preset.gradientColors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           shape: BoxShape.circle,
-          boxShadow: [BoxShadow(color: preset.gradientColors.first.withValues(alpha: 0.4), blurRadius: 16, spreadRadius: 2)],
+          boxShadow: [
+            BoxShadow(
+              color: preset.gradientColors.first.withValues(alpha: 0.4),
+              blurRadius: 16,
+              spreadRadius: 2,
+            ),
+          ],
         ),
-        child: Center(child: Text(preset.emoji, style: TextStyle(fontSize: fontSize * 1.1))),
+        child: Center(
+          child: Text(preset.emoji, style: TextStyle(fontSize: fontSize * 1.1)),
+        ),
       );
     }
 
     return _buildInitialsCircle(size, fontSize, colors);
   }
 
-  Widget _buildInitialsCircle(double size, double fontSize, ThemePalette colors) {
+  Widget _buildInitialsCircle(
+    double size,
+    double fontSize,
+    ThemePalette colors,
+  ) {
     return Container(
-      width: size, height: size,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         gradient: colors.primaryGradient,
         shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: colors.primary.withValues(alpha: 0.35), blurRadius: 20, spreadRadius: 4)],
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: 0.35),
+            blurRadius: 20,
+            spreadRadius: 4,
+          ),
+        ],
       ),
-      child: Center(child: Text(
-        _name.isNotEmpty ? _name[0].toUpperCase() : 'U',
-        style: TextStyle(fontFamily: 'Syne', fontSize: fontSize, fontWeight: FontWeight.w800, color: colors.textOnPrimary),
-      )),
+      child: Center(
+        child: Text(
+          _name.isNotEmpty ? _name[0].toUpperCase() : 'U',
+          style: TextStyle(
+            fontFamily: 'Syne',
+            fontSize: fontSize,
+            fontWeight: FontWeight.w800,
+            color: colors.textOnPrimary,
+          ),
+        ),
+      ),
     );
   }
 
@@ -347,41 +516,82 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final colors = AppTheme.of(context);
     return Row(
       children: [
-        Stack(children: [
-          _buildAvatarCircle(80),
-          Positioned(
-            bottom: 0, right: 0,
-            child: GestureDetector(
-              onTap: () => _openAvatarPicker(context),
-              child: Container(
-                width: 28, height: 28,
-                decoration: BoxDecoration(
-                  color: colors.primary,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: colors.background, width: 2),
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 6)],
+        Stack(
+          children: [
+            _buildAvatarCircle(80),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () => _openAvatarPicker(context),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: colors.background, width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.camera_alt_rounded,
+                    size: 14,
+                    color: colors.textOnPrimary,
+                  ),
                 ),
-                child: Icon(Icons.camera_alt_rounded, size: 14, color: colors.textOnPrimary),
               ),
             ),
-          ),
-        ]),
+          ],
+        ),
         const SizedBox(width: 16),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(_name, style: TextStyle(fontFamily: 'Syne', fontSize: 20, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-          const SizedBox(height: 2),
-          Text(_email, style: TextStyle(fontSize: 13, color: colors.textMuted)),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: colors.primary.withValues(alpha: 0.3)),
-            ),
-            child: Text(_dataLoaded ? context.l10n.activeProgram12week : '', style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.w700)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _name,
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                _email,
+                style: TextStyle(fontSize: 13, color: colors.textMuted),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: colors.primary.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Text(
+                  _dataLoaded ? context.l10n.activeProgram12week : '',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ])),
+        ),
       ],
     );
   }
@@ -394,11 +604,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => ProfileEditSheet(
-        name: _name, email: _email,
+        name: _name,
+        email: _email,
         avatarPresetIndex: _avatarPresetIndex,
         avatarCustomPath: _avatarCustomPath,
         onSave: (name, email) {
-          setState(() { _name = name; _email = email; });
+          setState(() {
+            _name = name;
+            _email = email;
+          });
           _saveProfileToFirestore();
         },
         onAvatarTap: () {
@@ -415,9 +629,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => BodyParamsSheet(
-        weight: _weight, height: _height, age: _age,
+        weight: _weight,
+        height: _height,
+        age: _age,
         onSave: (w, h, a) {
-          setState(() { _weight = w; _height = h; _age = a; });
+          setState(() {
+            _weight = w;
+            _height = h;
+            _age = a;
+          });
           _saveProfileToFirestore();
         },
       ),
@@ -460,7 +680,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // Сохраняет новую цель в Firestore (точечное обновление) и запускает AI.
   void _saveGoalAndRegeneratePlans(String goalLabel) async {
-    final uid = (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
+    final uid =
+        (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
     if (uid == null) return;
     try {
       final goalEnum = _fitnessGoalFromLabel(goalLabel);
@@ -479,18 +700,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // Сохраняет место/бег в Firestore и запускает AI только для тренировочного плана.
-  void _saveWorkoutSettingsAndRegenerate(WorkoutLocation loc, RunningPreference run) async {
-    final uid = (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
+  void _saveWorkoutSettingsAndRegenerate(
+    WorkoutLocation loc,
+    RunningPreference run,
+  ) async {
+    final uid =
+        (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
     if (uid == null) return;
     try {
-      appLogger.d('[WorkoutSettings] Saving location=${loc.name} running=${run.name}');
+      appLogger.d(
+        '[WorkoutSettings] Saving location=${loc.name} running=${run.name}',
+      );
       await sl<IUserRepository>().updateWorkoutSettings(
-        userId: uid, location: loc.name, running: run.name,
+        userId: uid,
+        location: loc.name,
+        running: run.name,
       );
       final freshUser = await sl<IUserRepository>().getUser(uid);
       if (!mounted) return;
       final profile = freshUser.profile;
-      appLogger.d('[WorkoutSettings] Profile fetched, profile=${profile != null ? "OK" : "NULL"}');
+      appLogger.d(
+        '[WorkoutSettings] Profile fetched, profile=${profile != null ? "OK" : "NULL"}',
+      );
       if (profile != null) {
         await _regeneratePlans(profile, includeMeal: false);
       } else {
@@ -502,7 +733,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // Показывает диалог прогресса, вызывает DeepSeek, сохраняет результат в Firestore.
-  Future<void> _regeneratePlans(UserProfile profile, {bool includeMeal = false}) async {
+  Future<void> _regeneratePlans(
+    UserProfile profile, {
+    bool includeMeal = false,
+  }) async {
     if (!mounted) return;
     showDialog(
       context: context,
@@ -510,7 +744,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (_) => const AiProgressDialog(),
     );
     try {
-      final uid = (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
+      final uid =
+          (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
       if (uid == null) return;
       final aiService = sl<IDeepSeekService>();
       final repo = sl<IUserRepository>();
@@ -518,11 +753,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final workoutJson = await aiService.generateWorkoutPlan(profile);
         final mealJson = await aiService.generateMealPlan(profile);
         await repo.saveAiPlans(
-          userId: uid, workoutPlanJson: workoutJson, mealPlanJson: mealJson,
+          userId: uid,
+          workoutPlanJson: workoutJson,
+          mealPlanJson: mealJson,
         );
       } else {
         final workoutJson = await aiService.generateWorkoutPlan(profile);
-        appLogger.d('[Regenerate] Workout plan generated, length=${workoutJson.length}');
+        appLogger.d(
+          '[Regenerate] Workout plan generated, length=${workoutJson.length}',
+        );
         await repo.updateWorkoutPlan(userId: uid, workoutPlanJson: workoutJson);
         appLogger.d('[Regenerate] Workout plan saved to HiveCache + Firestore');
       }
@@ -531,22 +770,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
       WorkoutPlanScreen.planVersion.value++;
       showProfileSuccess(
         context,
-        includeMeal ? AppLocalizations.tl('programAndMealsUpdated') : AppLocalizations.tl('workoutProgramUpdated'),
+        includeMeal
+            ? AppLocalizations.tl('programAndMealsUpdated')
+            : AppLocalizations.tl('workoutProgramUpdated'),
       );
     } catch (e) {
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
       final colors = AppTheme.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Row(children: [
-          const Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
-          const SizedBox(width: 10),
-          Expanded(child: Text(AppLocalizations.tl('planUpdateFailed'), style: const TextStyle(fontWeight: FontWeight.w600))),
-        ]),
-        backgroundColor: colors.error,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  AppLocalizations.tl('planUpdateFailed'),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: colors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
       appLogger.d('AI regeneration error', error: e);
     }
   }
@@ -595,7 +851,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: colors.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (_) => DraggableScrollableSheet(
         initialChildSize: 0.6,
         minChildSize: 0.4,
@@ -604,29 +862,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (_, scrollController) => SingleChildScrollView(
           controller: scrollController,
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20), decoration: BoxDecoration(color: colors.textMuted.withValues(alpha: 0.4), borderRadius: BorderRadius.circular(2)))),
-            Text(context.l10n.licensesLabel, style: TextStyle(fontFamily: 'Syne', fontSize: 22, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-            const SizedBox(height: 24),
-            _LicenseBlock(
-              title: 'Z-Anatomy',
-              body: 'Анатомические 3D-модели в приложении созданы на основе проекта Z-Anatomy и адаптированы для использования в FitnesBuster.\n\n'
-                  '© Z-Anatomy Project\n'
-                  'Лицензия: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)\n'
-                  'https://www.z-anatomy.com/\n\n'
-                  'Внесённые изменения: модели экспортированы в формат GLB, применено Draco-сжатие, '
-                  'добавлена двусторонняя подсветка мышц и X-ray эффект для нужд приложения.\n\n'
-                  'Производные материалы распространяются на условиях CC BY-SA 4.0.',
-              colors: colors,
-            ),
-            const SizedBox(height: 20),
-            _LicenseBlock(
-              title: 'Прочие компоненты',
-              body: 'Приложение использует пакеты с открытым исходным кодом. '
-                  'Полный список лицензий доступен в исходном коде проекта (pubspec.yaml).',
-              colors: colors,
-            ),
-          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: colors.textMuted.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Text(
+                context.l10n.licensesLabel,
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _LicenseBlock(
+                title: 'Z-Anatomy',
+                body:
+                    'Анатомические 3D-модели в приложении созданы на основе проекта Z-Anatomy и адаптированы для использования в FitnesBuster.\n\n'
+                    '© Z-Anatomy Project\n'
+                    'Лицензия: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)\n'
+                    'https://www.z-anatomy.com/\n\n'
+                    'Внесённые изменения: модели экспортированы в формат GLB, применено Draco-сжатие, '
+                    'добавлена двусторонняя подсветка мышц и X-ray эффект для нужд приложения.\n\n'
+                    'Производные материалы распространяются на условиях CC BY-SA 4.0.',
+                colors: colors,
+              ),
+              const SizedBox(height: 20),
+              _LicenseBlock(
+                title: 'Прочие компоненты',
+                body:
+                    'Приложение использует пакеты с открытым исходным кодом. '
+                    'Полный список лицензий доступен в исходном коде проекта (pubspec.yaml).',
+                colors: colors,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -643,10 +924,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-              child: Text('FitnesBuster', style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w800, color: colors.textPrimary), softWrap: false, overflow: TextOverflow.ellipsis),
+              child: Text(
+                'FitnesBuster',
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontWeight: FontWeight.w800,
+                  color: colors.textPrimary,
+                ),
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             const SizedBox(width: 8),
-            Text('v1.0.0', style: TextStyle(fontSize: 13, color: colors.textMuted, fontWeight: FontWeight.w500)),
+            Text(
+              'v1.0.0',
+              style: TextStyle(
+                fontSize: 13,
+                color: colors.textMuted,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
         content: SingleChildScrollView(
@@ -669,7 +966,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 'нагрузку под реальные возможности пользователя.\n\n'
                 'Челленджи, еженедельные дебрифы и анализ прогресса по замерам тела '
                 'помогают сохранять мотивацию и видеть результаты.',
-                style: TextStyle(color: colors.textSecondary, height: 1.55, fontSize: 13),
+                style: TextStyle(
+                  color: colors.textSecondary,
+                  height: 1.55,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: 16),
               Container(
@@ -680,12 +981,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 12),
               Text(
                 'Разработчик: Югов Максим',
-                style: TextStyle(color: colors.primary, fontWeight: FontWeight.w600, fontSize: 13),
+                style: TextStyle(
+                  color: colors.primary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
             ],
           ),
         ),
-        actions: [TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: Text('OK', style: TextStyle(color: colors.primary)))],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: Text('OK', style: TextStyle(color: colors.primary)),
+          ),
+        ],
       ),
     );
   }
@@ -698,14 +1008,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(l10n.logoutTitle, style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w800, color: colors.textPrimary)),
-        content: Text(l10n.logoutBody, style: TextStyle(color: colors.textSecondary)),
+        title: Text(
+          l10n.logoutTitle,
+          style: TextStyle(
+            fontFamily: 'Syne',
+            fontWeight: FontWeight.w800,
+            color: colors.textPrimary,
+          ),
+        ),
+        content: Text(
+          l10n.logoutBody,
+          style: TextStyle(color: colors.textSecondary),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: Text(l10n.cancel, style: TextStyle(color: colors.textMuted))),
-          TextButton(onPressed: () {
+          TextButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: Text(l10n.cancel, style: TextStyle(color: colors.textMuted)),
+          ),
+          TextButton(
+            onPressed: () {
               Navigator.of(context, rootNavigator: true).pop();
               context.read<AuthBloc>().add(const AuthLogoutRequested());
-            }, child: Text(l10n.logoutBtn, style: TextStyle(color: colors.error, fontWeight: FontWeight.w700))),
+            },
+            child: Text(
+              l10n.logoutBtn,
+              style: TextStyle(
+                color: colors.error,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -713,12 +1045,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _localizeGoal(AppLocalizations l10n, String goal) {
     return switch (goal) {
-      'Похудение веса'    => l10n.goalWeightLoss,
-      'Набор массы'       => l10n.goalMuscleMass,
-      'Поддержание веса'  => l10n.goalMaintainWeight,
+      'Похудение веса' => l10n.goalWeightLoss,
+      'Набор массы' => l10n.goalMuscleMass,
+      'Поддержание веса' => l10n.goalMaintainWeight,
       'К пляжному сезону' => l10n.goalBeachSeason,
-      'Спортивные рекорды'=> l10n.goalSportsRecords,
-      _                   => goal,
+      'Спортивные рекорды' => l10n.goalSportsRecords,
+      _ => goal,
     };
   }
 
@@ -730,11 +1062,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(l10n.deleteAccountBtn, style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w800, color: colors.error)),
-        content: Text(l10n.deleteAccountConfirm, style: TextStyle(color: colors.textSecondary, height: 1.5)),
+        title: Text(
+          l10n.deleteAccountBtn,
+          style: TextStyle(
+            fontFamily: 'Syne',
+            fontWeight: FontWeight.w800,
+            color: colors.error,
+          ),
+        ),
+        content: Text(
+          l10n.deleteAccountConfirm,
+          style: TextStyle(color: colors.textSecondary, height: 1.5),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(), child: Text(l10n.cancel, style: TextStyle(color: colors.textMuted))),
-          TextButton(onPressed: () { context.go('/login'); }, child: Text(l10n.delete, style: TextStyle(color: colors.error, fontWeight: FontWeight.w700))),
+          TextButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: Text(l10n.cancel, style: TextStyle(color: colors.textMuted)),
+          ),
+          TextButton(
+            onPressed: () {
+              context.go('/login');
+            },
+            child: Text(
+              l10n.delete,
+              style: TextStyle(
+                color: colors.error,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -747,7 +1103,11 @@ class _LicenseBlock extends StatelessWidget {
   final String title;
   final String body;
   final ThemePalette colors;
-  const _LicenseBlock({required this.title, required this.body, required this.colors});
+  const _LicenseBlock({
+    required this.title,
+    required this.body,
+    required this.colors,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -758,11 +1118,29 @@ class _LicenseBlock extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.textMuted.withValues(alpha: 0.15)),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(title, style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-        const SizedBox(height: 10),
-        Text(body, style: TextStyle(fontSize: 13, color: colors.textSecondary, height: 1.6)),
-      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: colors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            body,
+            style: TextStyle(
+              fontSize: 13,
+              color: colors.textSecondary,
+              height: 1.6,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -771,21 +1149,59 @@ class _StatsRowWidget extends StatelessWidget {
   final double weight;
   final double height;
   final int age;
-  const _StatsRowWidget({required this.weight, required this.height, required this.age});
+  const _StatsRowWidget({
+    required this.weight,
+    required this.height,
+    required this.age,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = AppTheme.of(context);
-    return Row(children: [
-      Expanded(child: StatBox(label: l10n.weightLabel, number: weight.toStringAsFixed(1), unit: l10n.dashboardKg, color: colors.primary)),
-      const SizedBox(width: 10),
-      Expanded(child: StatBox(label: 'Рост', number: '${height.toInt()}', unit: l10n.cmUnit, color: colors.accent)),
-      const SizedBox(width: 10),
-      Expanded(child: StatBox(label: 'BMI', number: height > 0 ? (weight / ((height / 100) * (height / 100))).toStringAsFixed(1) : '-', unit: '', color: colors.info)),
-      const SizedBox(width: 10),
-      Expanded(child: StatBox(label: l10n.ageLabel, number: '$age', unit: l10n.yearsUnit, color: colors.accentOrange)),
-    ]);
+    return Row(
+      children: [
+        Expanded(
+          child: StatBox(
+            label: l10n.weightLabel,
+            number: weight.toStringAsFixed(1),
+            unit: l10n.dashboardKg,
+            color: colors.primary,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: StatBox(
+            label: 'Рост',
+            number: '${height.toInt()}',
+            unit: l10n.cmUnit,
+            color: colors.accent,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: StatBox(
+            label: 'BMI',
+            number: height > 0
+                ? (weight / ((height / 100) * (height / 100))).toStringAsFixed(
+                    1,
+                  )
+                : '-',
+            unit: '',
+            color: colors.info,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: StatBox(
+            label: l10n.ageLabel,
+            number: '$age',
+            unit: l10n.yearsUnit,
+            color: colors.accentOrange,
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -800,37 +1216,82 @@ class _CurrentProgramWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF1A1A2E), Color(0xFF16213E)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: colors.accentPurple.withValues(alpha: 0.3)),
       ),
-      child: Row(children: [
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Icon(Icons.bolt_rounded, color: colors.accentPurple, size: 16),
-            const SizedBox(width: 6),
-            Text(context.l10n.activeProgramLabel, style: TextStyle(fontSize: 12, color: colors.textMuted)),
-          ]),
-          const SizedBox(height: 6),
-          Text(goal, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-          const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(value: 0, backgroundColor: colors.surfaceLight, valueColor: AlwaysStoppedAnimation<Color>(colors.accentPurple), minHeight: 5),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.bolt_rounded,
+                      color: colors.accentPurple,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      context.l10n.activeProgramLabel,
+                      style: TextStyle(fontSize: 12, color: colors.textMuted),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  goal,
+                  style: TextStyle(
+                    fontFamily: 'Syne',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: 0,
+                    backgroundColor: colors.surfaceLight,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      colors.accentPurple,
+                    ),
+                    minHeight: 5,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  dataLoaded ? context.l10n.fillProfileProgress : '',
+                  style: TextStyle(fontSize: 11, color: colors.textMuted),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-          Text(dataLoaded ? context.l10n.fillProfileProgress : '', style: TextStyle(fontSize: 11, color: colors.textMuted)),
-        ])),
-        const SizedBox(width: 12),
-        GestureDetector(
-          onTap: () => context.go('/workout'),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: colors.accentPurple.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
-            child: Icon(Icons.arrow_forward_rounded, color: colors.accentPurple, size: 20),
+          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: () => context.go('/workout'),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: colors.accentPurple.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.arrow_forward_rounded,
+                color: colors.accentPurple,
+                size: 20,
+              ),
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }
@@ -838,7 +1299,10 @@ class _CurrentProgramWidget extends StatelessWidget {
 class _AchievementsSectionWidget extends StatelessWidget {
   final UserLevel? profileLevel;
   final Set<String> unlockedIds;
-  const _AchievementsSectionWidget({required this.profileLevel, required this.unlockedIds});
+  const _AchievementsSectionWidget({
+    required this.profileLevel,
+    required this.unlockedIds,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -847,8 +1311,12 @@ class _AchievementsSectionWidget extends StatelessWidget {
     final unlocked = unlockedIds;
 
     // Pick up to 6 most-recently unlocked achievements to show as badges
-    final allIds = GamificationService.allAchievements.map((a) => a.id).toList();
-    final unlockedOrdered = allIds.where((id) => unlocked.contains(id)).toList();
+    final allIds = GamificationService.allAchievements
+        .map((a) => a.id)
+        .toList();
+    final unlockedOrdered = allIds
+        .where((id) => unlocked.contains(id))
+        .toList();
     final preview = unlockedOrdered.take(6).map((id) {
       return GamificationService.allAchievements.firstWhere((a) => a.id == id);
     }).toList();
@@ -866,55 +1334,94 @@ class _AchievementsSectionWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: colors.primary.withValues(alpha: 0.22)),
         ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Text(
-              lvl?.emoji ?? '🌱',
-              style: const TextStyle(fontSize: 22),
-            ),
-            const SizedBox(width: 10),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                lvl != null ? 'Ур. ${lvl.level} · ${lvl.name}' : 'Загрузка...',
-                style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: colors.textPrimary),
-              ),
-              if (lvl != null)
-                Text(
-                  '${lvl.totalXp} XP · ${unlocked.length} / ${GamificationService.allAchievements.length} значков',
-                  style: TextStyle(fontSize: 11, color: colors.textMuted),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(lvl?.emoji ?? '🌱', style: const TextStyle(fontSize: 22)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        lvl != null
+                            ? 'Ур. ${lvl.level} · ${lvl.name}'
+                            : 'Загрузка...',
+                        style: TextStyle(
+                          fontFamily: 'Syne',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      if (lvl != null)
+                        Text(
+                          '${lvl.totalXp} XP · ${unlocked.length} / ${GamificationService.allAchievements.length} значков',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: colors.textMuted,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-            ])),
-            Row(children: [
-              Text(context.l10n.allBadgesBtn, style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.w600)),
-              Icon(Icons.chevron_right_rounded, color: colors.primary, size: 18),
-            ]),
-          ]),
-          if (lvl != null) ...[
-            const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: lvl.progress,
-                backgroundColor: colors.primary.withValues(alpha: 0.1),
-                valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                minHeight: 4,
+                Row(
+                  children: [
+                    Text(
+                      context.l10n.allBadgesBtn,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: colors.primary,
+                      size: 18,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            if (lvl != null) ...[
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: lvl.progress,
+                  backgroundColor: colors.primary.withValues(alpha: 0.1),
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                  minHeight: 4,
+                ),
               ),
-            ),
+            ],
+            if (preview.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: preview
+                    .map(
+                      (a) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Text(
+                          a.emoji,
+                          style: const TextStyle(fontSize: 22),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ] else ...[
+              const SizedBox(height: 10),
+              Text(
+                context.l10n.earnBadgesHint,
+                style: TextStyle(fontSize: 12, color: colors.textMuted),
+              ),
+            ],
           ],
-          if (preview.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Row(children: preview.map((a) => Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Text(a.emoji, style: const TextStyle(fontSize: 22)),
-            )).toList()),
-          ] else ...[
-            const SizedBox(height: 10),
-            Text(
-              context.l10n.earnBadgesHint,
-              style: TextStyle(fontSize: 12, color: colors.textMuted),
-            ),
-          ],
-        ]),
+        ),
       ),
     );
   }
@@ -928,60 +1435,92 @@ class _ProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(title, style: AppTextStyles.titleM),
-      const SizedBox(height: 10),
-      Container(
-        decoration: BoxDecoration(
-          color: colors.surfaceCard,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
-        ),
-        child: Column(
-          children: items.asMap().entries.map((e) => Column(children: [
-            GestureDetector(
-              onTap: e.value.onTap ?? () {},
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(children: [
-                  Container(
-                    width: 36, height: 36,
-                    decoration: BoxDecoration(color: e.value.color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
-                    child: Icon(e.value.icon, color: e.value.color, size: 18),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTextStyles.titleM),
+        const SizedBox(height: 10),
+        Container(
+          decoration: BoxDecoration(
+            color: colors.surfaceCard,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+          ),
+          child: Column(
+            children: items
+                .asMap()
+                .entries
+                .map(
+                  (e) => Column(
+                    children: [
+                      GestureDetector(
+                        onTap: e.value.onTap ?? () {},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: e.value.color.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  e.value.icon,
+                                  color: e.value.color,
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Text(
+                                  e.value.label,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: colors.textPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: colors.textMuted,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (e.key < items.length - 1)
+                        Divider(
+                          height: 1,
+                          color: Colors.white.withValues(alpha: 0.04),
+                          indent: 66,
+                        ),
+                    ],
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(child: Text(e.value.label, style: TextStyle(fontSize: 15, color: colors.textPrimary, fontWeight: FontWeight.w500))),
-                  Icon(Icons.chevron_right_rounded, color: colors.textMuted, size: 20),
-                ]),
-              ),
-            ),
-            if (e.key < items.length - 1)
-              Divider(height: 1, color: Colors.white.withValues(alpha: 0.04), indent: 66),
-          ])).toList(),
+                )
+                .toList(),
+          ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 class ProfileMenuItem {
   final IconData icon;
   final String label;
   final Color color;
   final VoidCallback? onTap;
-  const ProfileMenuItem({required this.icon, required this.label, required this.color, this.onTap});
+  const ProfileMenuItem({
+    required this.icon,
+    required this.label,
+    required this.color,
+    this.onTap,
+  });
 }
-

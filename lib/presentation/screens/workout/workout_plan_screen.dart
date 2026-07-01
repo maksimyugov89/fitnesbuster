@@ -45,8 +45,13 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
   bool _matcherReady = false;
 
   List<String> _getWeekLabels(AppLocalizations l10n) => [
-    l10n.monShort, l10n.tueShort, l10n.wedShort, l10n.thuShort,
-    l10n.friShort, l10n.satShort, l10n.sunShort,
+    l10n.monShort,
+    l10n.tueShort,
+    l10n.wedShort,
+    l10n.thuShort,
+    l10n.friShort,
+    l10n.satShort,
+    l10n.sunShort,
   ];
 
   @override
@@ -93,11 +98,16 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
   Future<void> _load() async {
     try {
       final authState = context.read<AuthBloc>().state;
-      final uid = authState is AuthStateAuthenticated ? authState.user.id : null;
+      final uid = authState is AuthStateAuthenticated
+          ? authState.user.id
+          : null;
       if (uid == null) {
         appLogger.d('[WorkoutPlan] _load: uid is null');
         if (mounted) {
-          setState(() { _loading = false; _error = AppLocalizations.tl('loginRequired'); });
+          setState(() {
+            _loading = false;
+            _error = AppLocalizations.tl('loginRequired');
+          });
         }
         return;
       }
@@ -105,18 +115,27 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
       appLogger.d('[WorkoutPlan] _load: calling getAiPlans for $uid');
       final plans = await repo.getAiPlans(uid);
       final jsonStr = plans['workoutPlan'];
-      appLogger.d('[WorkoutPlan] _load: workoutPlan=${jsonStr != null ? "OK len=${jsonStr.length}" : "NULL"} mealPlan=${plans["mealPlan"] != null ? "OK" : "NULL"}');
+      appLogger.d(
+        '[WorkoutPlan] _load: workoutPlan=${jsonStr != null ? "OK len=${jsonStr.length}" : "NULL"} mealPlan=${plans["mealPlan"] != null ? "OK" : "NULL"}',
+      );
       if (jsonStr == null) {
         if (mounted) {
-          setState(() { _loading = false; _error = AppLocalizations.tl('planNotGeneratedMsg'); });
+          setState(() {
+            _loading = false;
+            _error = AppLocalizations.tl('planNotGeneratedMsg');
+          });
         }
         return;
       }
       final data = jsonDecode(jsonStr) as Map<String, dynamic>;
-      appLogger.d('[WorkoutPlan] _load: jsonDecode OK, keys=${data.keys.join(",")}');
+      appLogger.d(
+        '[WorkoutPlan] _load: jsonDecode OK, keys=${data.keys.join(",")}',
+      );
       final rawPlan = data['plan'];
       final planList = rawPlan is List
-          ? rawPlan.map((e) => e is Map<String, dynamic> ? e : <String, dynamic>{}).toList()
+          ? rawPlan
+                .map((e) => e is Map<String, dynamic> ? e : <String, dynamic>{})
+                .toList()
           : <Map<String, dynamic>>[];
       appLogger.d('[WorkoutPlan] _load: planList length=${planList.length}');
       final meta = WorkoutPlanMeta.fromPlanJson(data);
@@ -145,34 +164,53 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
     } on FormatException catch (e) {
       appLogger.d('[WorkoutPlan] _load: FormatException', error: e);
       if (mounted) {
-        setState(() { _loading = false; _error = AppLocalizations.tl('planDamagedMsg'); });
+        setState(() {
+          _loading = false;
+          _error = AppLocalizations.tl('planDamagedMsg');
+        });
       }
     } catch (e) {
       appLogger.d('[WorkoutPlan] _load: Exception', error: e);
       if (mounted) {
-        setState(() { _loading = false; _error = AppLocalizations.tl('planLoadFailMsg'); });
+        setState(() {
+          _loading = false;
+          _error = AppLocalizations.tl('planLoadFailMsg');
+        });
       }
     }
   }
 
   bool _isRest(Map<String, dynamic> day) {
     final exercises = day['exercises'] as List? ?? [];
-    final focus = (day['focus'] as String? ?? day['name'] as String? ?? '').toLowerCase();
+    final focus = (day['focus'] as String? ?? day['name'] as String? ?? '')
+        .toLowerCase();
     final type = (day['type'] as String? ?? '').toLowerCase();
     return exercises.isEmpty ||
         focus.contains(AppLocalizations.tl('restDayKeyword')) ||
-        focus.contains(AppLocalizations.tl('recoveryKeyword'))
-        || type == 'rest' || type == 'active_recovery';
+        focus.contains(AppLocalizations.tl('recoveryKeyword')) ||
+        type == 'rest' ||
+        type == 'active_recovery';
   }
 
   String _dayIcon(Map<String, dynamic> day) {
     if (_isRest(day)) return '😴';
-    final focus = (day['focus'] as String? ?? day['name'] as String? ?? '').toLowerCase();
-    if (focus.contains(AppLocalizations.tl('cardioKeyword')) || focus.contains(AppLocalizations.tl('intervalKeyword'))) return '🏃';
-    if (focus.contains(AppLocalizations.tl('legDayKeyword')) || focus.contains(AppLocalizations.tl('glutesKeyword'))) return '🦵';
-    if (focus.contains(AppLocalizations.tl('chestKeyword')) || focus.contains(AppLocalizations.tl('tricepsKeyword'))) return '💪';
-    if (focus.contains(AppLocalizations.tl('backKeyword')) || focus.contains(AppLocalizations.tl('bicepsKeyword'))) return '🏋️';
-    if (focus.contains(AppLocalizations.tl('shouldersKeyword')) || focus.contains(AppLocalizations.tl('absKeyword'))) return '⚡';
+    final focus = (day['focus'] as String? ?? day['name'] as String? ?? '')
+        .toLowerCase();
+    if (focus.contains(AppLocalizations.tl('cardioKeyword')) ||
+        focus.contains(AppLocalizations.tl('intervalKeyword')))
+      return '🏃';
+    if (focus.contains(AppLocalizations.tl('legDayKeyword')) ||
+        focus.contains(AppLocalizations.tl('glutesKeyword')))
+      return '🦵';
+    if (focus.contains(AppLocalizations.tl('chestKeyword')) ||
+        focus.contains(AppLocalizations.tl('tricepsKeyword')))
+      return '💪';
+    if (focus.contains(AppLocalizations.tl('backKeyword')) ||
+        focus.contains(AppLocalizations.tl('bicepsKeyword')))
+      return '🏋️';
+    if (focus.contains(AppLocalizations.tl('shouldersKeyword')) ||
+        focus.contains(AppLocalizations.tl('absKeyword')))
+      return '⚡';
     return '🏋️';
   }
 
@@ -183,7 +221,11 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
     return colors.error as Color;
   }
 
-  void _showExercise3D(String exerciseName, Set<String> primaryZones, Set<String> secondaryZones) {
+  void _showExercise3D(
+    String exerciseName,
+    Set<String> primaryZones,
+    Set<String> secondaryZones,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -196,7 +238,12 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
     );
   }
 
-  void _showExerciseTechnique(String exerciseName, String techniqueCue, String progression, String weightGuideline) {
+  void _showExerciseTechnique(
+    String exerciseName,
+    String techniqueCue,
+    String progression,
+    String weightGuideline,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -219,32 +266,44 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? _buildError(colors)
-                : Column(children: [
-                    WorkoutPlanHeader(colors: colors, onOpenImport: _openImport),
-                    if (!_testWeekCompleted) _buildTestWeekCard(colors),
-                    TabBar(
-                      controller: _tabCtrl,
-                      indicator: BoxDecoration(
-                        color: colors.primary.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      indicatorPadding: const EdgeInsets.symmetric(vertical: 4),
-                      dividerColor: Colors.transparent,
-                      labelColor: colors.primary,
-                      unselectedLabelColor: colors.textMuted,
-                      labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Inter'),
-                      tabs: [Tab(text: context.l10n.weekTab), Tab(text: context.l10n.fullPlanTab)],
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+            ? _buildError(colors)
+            : Column(
+                children: [
+                  WorkoutPlanHeader(colors: colors, onOpenImport: _openImport),
+                  if (!_testWeekCompleted) _buildTestWeekCard(colors),
+                  TabBar(
+                    controller: _tabCtrl,
+                    indicator: BoxDecoration(
+                      color: colors.primary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    Expanded(
-                      child: TabBarView(controller: _tabCtrl, children: [
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorPadding: const EdgeInsets.symmetric(vertical: 4),
+                    dividerColor: Colors.transparent,
+                    labelColor: colors.primary,
+                    unselectedLabelColor: colors.textMuted,
+                    labelStyle: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      fontFamily: 'Inter',
+                    ),
+                    tabs: [
+                      Tab(text: context.l10n.weekTab),
+                      Tab(text: context.l10n.fullPlanTab),
+                    ],
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabCtrl,
+                      children: [
                         _buildWeekView(colors),
                         _buildFullPlan(colors),
-                      ]),
+                      ],
                     ),
-                  ]),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -253,18 +312,38 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(Icons.fitness_center_rounded, size: 64, color: colors.textMuted.withValues(alpha: 0.4)),
-          const SizedBox(height: 16),
-          Text(_error!, style: TextStyle(fontSize: 15, color: colors.textMuted), textAlign: TextAlign.center),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () { setState(() { _loading = true; _error = null; }); _load(); },
-            icon: const Icon(Icons.refresh_rounded, size: 18),
-            label: Text(context.l10n.retry),
-            style: ElevatedButton.styleFrom(backgroundColor: colors.primary, foregroundColor: colors.textOnPrimary),
-          ),
-        ]),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.fitness_center_rounded,
+              size: 64,
+              color: colors.textMuted.withValues(alpha: 0.4),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _error!,
+              style: TextStyle(fontSize: 15, color: colors.textMuted),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
+                  _loading = true;
+                  _error = null;
+                });
+                _load();
+              },
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: Text(context.l10n.retry),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colors.primary,
+                foregroundColor: colors.textOnPrimary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -278,28 +357,64 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
         decoration: BoxDecoration(
           color: colors.info.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.info.withValues(alpha: 0.3), width: 1.5),
-        ),
-        child: Row(children: [
-          const Text('🎯', style: TextStyle(fontSize: 20)),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(context.l10n.testWeekTitle, style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-            Text(context.l10n.testWeekSubtitle, style: TextStyle(fontSize: 11, color: colors.textMuted)),
-          ])),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(color: colors.info, borderRadius: BorderRadius.circular(8)),
-            child: Text(context.l10n.startTestBtn, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.textOnPrimary)),
+          border: Border.all(
+            color: colors.info.withValues(alpha: 0.3),
+            width: 1.5,
           ),
-        ]),
+        ),
+        child: Row(
+          children: [
+            const Text('🎯', style: TextStyle(fontSize: 20)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.testWeekTitle,
+                    style: TextStyle(
+                      fontFamily: 'Syne',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    context.l10n.testWeekSubtitle,
+                    style: TextStyle(fontSize: 11, color: colors.textMuted),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: colors.info,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                context.l10n.startTestBtn,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textOnPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildWeekView(dynamic colors) {
     if (_days.isEmpty) {
-      return Center(child: Text(context.l10n.noData, style: TextStyle(color: colors.textMuted)));
+      return Center(
+        child: Text(
+          context.l10n.noData,
+          style: TextStyle(color: colors.textMuted),
+        ),
+      );
     }
     final todayIdx = (DateTime.now().weekday - 1).clamp(0, 6);
 
@@ -332,20 +447,43 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
             isRest: _isRest(_days[_selectedDay]),
             onShow3D: _showExercise3D,
             onShowTechnique: _showExerciseTechnique,
-            onWorkoutCompleted: () { if (mounted) setState(() => _todayWorkoutDone = true); },
+            onWorkoutCompleted: () {
+              if (mounted) setState(() => _todayWorkoutDone = true);
+            },
           ),
         if (_meta.recommendations.isNotEmpty) ...[
           const SizedBox(height: 24),
           Text(context.l10n.weeklyRecsTitle, style: AppTextStyles.titleM),
           const SizedBox(height: 12),
-          ..._meta.recommendations.map((rec) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('•', style: TextStyle(color: colors.primary, fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(width: 10),
-              Expanded(child: Text(rec, style: TextStyle(fontSize: 13, color: colors.textSecondary, height: 1.45))),
-            ]),
-          )),
+          ..._meta.recommendations.map(
+            (rec) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '•',
+                    style: TextStyle(
+                      color: colors.primary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      rec,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colors.textSecondary,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
         if (_meta.nextWeekPreview.isNotEmpty) ...[
           const SizedBox(height: 20),
@@ -354,17 +492,41 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
             decoration: BoxDecoration(
               color: colors.accentPurple.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.accentPurple.withValues(alpha: 0.25)),
+              border: Border.all(
+                color: colors.accentPurple.withValues(alpha: 0.25),
+              ),
             ),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('🔮', style: TextStyle(fontSize: 18)),
-              const SizedBox(width: 10),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(context.l10n.nextWeekTitle, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.accentPurple)),
-                const SizedBox(height: 4),
-                Text(_meta.nextWeekPreview, style: TextStyle(fontSize: 12, color: colors.textSecondary, height: 1.4)),
-              ])),
-            ]),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('🔮', style: TextStyle(fontSize: 18)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.l10n.nextWeekTitle,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: colors.accentPurple,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _meta.nextWeekPreview,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colors.textSecondary,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ],
@@ -373,7 +535,12 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
 
   Widget _buildFullPlan(dynamic colors) {
     if (_days.isEmpty) {
-      return Center(child: Text(context.l10n.noData, style: TextStyle(color: colors.textMuted)));
+      return Center(
+        child: Text(
+          context.l10n.noData,
+          style: TextStyle(color: colors.textMuted),
+        ),
+      );
     }
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 80),
@@ -381,7 +548,8 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
       itemBuilder: (ctx, i) {
         final day = _days[i];
         final focus = day['focus'] as String? ?? day['name'] as String? ?? '';
-        final exercises = (day['exercises'] as List? ?? []).cast<Map<String, dynamic>>();
+        final exercises = (day['exercises'] as List? ?? [])
+            .cast<Map<String, dynamic>>();
         final cardio = (day['cardio_minutes'] as num?)?.toInt() ?? 0;
         final isRest = _isRest(day);
         final label = context.l10n.dayLabel(i + 1);
@@ -391,50 +559,100 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
           decoration: BoxDecoration(
             color: colors.surfaceCard,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
+            border: Border.all(
+              color: colors.textPrimary.withValues(alpha: 0.06),
+            ),
           ),
           child: ExpansionTile(
             tilePadding: const EdgeInsets.fromLTRB(14, 4, 14, 4),
             childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
             leading: Container(
-              width: 40, height: 40,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: isRest ? colors.surfaceLight : colors.primary.withValues(alpha: 0.12),
+                color: isRest
+                    ? colors.surfaceLight
+                    : colors.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Center(child: Text(_dayIcon(day), style: const TextStyle(fontSize: 20))),
+              child: Center(
+                child: Text(
+                  _dayIcon(day),
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ),
             ),
             title: Text(
               '$label — $focus',
-              style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary),
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: colors.textPrimary,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
             subtitle: Text(
-              isRest ? context.l10n.restDayTitle : (cardio > 0 ? '${context.l10n.exercisesCount(exercises.length)} · ${context.l10n.cardioMinutes(cardio)}' : context.l10n.exercisesCount(exercises.length)),
+              isRest
+                  ? context.l10n.restDayTitle
+                  : (cardio > 0
+                        ? '${context.l10n.exercisesCount(exercises.length)} · ${context.l10n.cardioMinutes(cardio)}'
+                        : context.l10n.exercisesCount(exercises.length)),
               style: TextStyle(fontSize: 11, color: colors.textMuted),
             ),
             children: isRest
-                ? [Text(day['notes'] as String? ?? context.l10n.restDayTitle, style: TextStyle(fontSize: 13, color: colors.textMuted))]
+                ? [
+                    Text(
+                      day['notes'] as String? ?? context.l10n.restDayTitle,
+                      style: TextStyle(fontSize: 13, color: colors.textMuted),
+                    ),
+                  ]
                 : exercises.map((ex) {
                     final rpe = (ex['rpe'] as num?)?.toInt() ?? 0;
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Icon(Icons.radio_button_unchecked, size: 14, color: colors.primary),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(
-                          '${ex['name']} — ${ex['sets']}×${ex['reps']}',
-                          style: TextStyle(fontSize: 13, color: colors.textSecondary),
-                        )),
-                        if (rpe > 0) Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: _rpeColor(rpe, colors).withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.radio_button_unchecked,
+                            size: 14,
+                            color: colors.primary,
                           ),
-                          child: Text('RPE $rpe', style: TextStyle(fontSize: 10, color: _rpeColor(rpe, colors), fontWeight: FontWeight.w700)),
-                        ),
-                      ]),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '${ex['name']} — ${ex['sets']}×${ex['reps']}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: colors.textSecondary,
+                              ),
+                            ),
+                          ),
+                          if (rpe > 0)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 1,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _rpeColor(
+                                  rpe,
+                                  colors,
+                                ).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'RPE $rpe',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: _rpeColor(rpe, colors),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     );
                   }).toList(),
           ),

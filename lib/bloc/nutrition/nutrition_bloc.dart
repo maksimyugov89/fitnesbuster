@@ -13,31 +13,39 @@ class NutritionBloc extends Bloc<NutritionEvent, NutritionState> {
   DateTime? _lastMealPlanGenerated;
 
   NutritionBloc({required INutritionService nutritionService})
-      : _nutritionService = nutritionService,
-        super(const NutritionStateInitial()) {
+    : _nutritionService = nutritionService,
+      super(const NutritionStateInitial()) {
     on<NutritionLoadRequested>(_onLoad);
     on<NutritionAddFood>(_onAddFood);
     on<NutritionRemoveFood>(_onRemoveFood);
     on<NutritionRegenerateMealPlan>(_onRegenerateMealPlan);
   }
 
-  Future<void> _onLoad(NutritionLoadRequested event, Emitter<NutritionState> emit) async {
+  Future<void> _onLoad(
+    NutritionLoadRequested event,
+    Emitter<NutritionState> emit,
+  ) async {
     emit(const NutritionStateLoading());
 
     try {
       await Future<void>.delayed(const Duration(milliseconds: 50));
       final profile = event.profile;
-      final macros = profile != null ? _nutritionService.calculateMacros(profile) : const Macros(protein: 0, carbs: 0, fat: 0, totalCalories: 0);
+      final macros = profile != null
+          ? _nutritionService.calculateMacros(profile)
+          : const Macros(protein: 0, carbs: 0, fat: 0, totalCalories: 0);
 
-      emit(NutritionStateLoaded(
-        logs: [],
-        targetCalories: macros.totalCalories.toDouble(),
-        targetProtein: macros.protein.toDouble(),
-        targetCarbs: macros.carbs.toDouble(),
-        targetFat: macros.fat.toDouble(),
-      ));
+      emit(
+        NutritionStateLoaded(
+          logs: [],
+          targetCalories: macros.totalCalories.toDouble(),
+          targetProtein: macros.protein.toDouble(),
+          targetCarbs: macros.carbs.toDouble(),
+          targetFat: macros.fat.toDouble(),
+        ),
+      );
 
-      if (profile != null && _nutritionService.shouldRegenerate(_lastMealPlanGenerated)) {
+      if (profile != null &&
+          _nutritionService.shouldRegenerate(_lastMealPlanGenerated)) {
         add(NutritionRegenerateMealPlan(profile: profile));
       }
     } catch (e, st) {
@@ -46,15 +54,23 @@ class NutritionBloc extends Bloc<NutritionEvent, NutritionState> {
     }
   }
 
-  Future<void> _onAddFood(NutritionAddFood event, Emitter<NutritionState> emit) async {
+  Future<void> _onAddFood(
+    NutritionAddFood event,
+    Emitter<NutritionState> emit,
+  ) async {
     if (state is! NutritionStateLoaded) return;
     final current = state as NutritionStateLoaded;
     final logs = current.logs.map((meal) {
       if (meal.mealType == event.mealType) {
         return MealLog(
-          id: meal.id, userId: meal.userId,
-          date: meal.date, mealType: meal.mealType,
-          foods: [...meal.foods, FoodEntry(food: event.food, grams: event.grams)],
+          id: meal.id,
+          userId: meal.userId,
+          date: meal.date,
+          mealType: meal.mealType,
+          foods: [
+            ...meal.foods,
+            FoodEntry(food: event.food, grams: event.grams),
+          ],
         );
       }
       return meal;
@@ -68,8 +84,10 @@ class NutritionBloc extends Bloc<NutritionEvent, NutritionState> {
     final logs = current.logs.map((meal) {
       if (meal.mealType == event.mealType) {
         return MealLog(
-          id: meal.id, userId: meal.userId,
-          date: meal.date, mealType: meal.mealType,
+          id: meal.id,
+          userId: meal.userId,
+          date: meal.date,
+          mealType: meal.mealType,
           foods: meal.foods.where((f) => f.food.id != event.foodId).toList(),
         );
       }
@@ -93,8 +111,16 @@ class NutritionBloc extends Bloc<NutritionEvent, NutritionState> {
       _lastMealPlanGenerated = DateTime.now();
       emit(current.copyWith(mealPlanJson: mealPlan, clearMealPlanError: true));
     } catch (e, st) {
-      appLogger.w('[NutritionBloc] generateMealPlan failed', error: e, stackTrace: st);
-      emit(current.copyWith(mealPlanError: AppLocalizations.tl('mealPlanUpdateFailed')));
+      appLogger.w(
+        '[NutritionBloc] generateMealPlan failed',
+        error: e,
+        stackTrace: st,
+      );
+      emit(
+        current.copyWith(
+          mealPlanError: AppLocalizations.tl('mealPlanUpdateFailed'),
+        ),
+      );
     }
   }
 }

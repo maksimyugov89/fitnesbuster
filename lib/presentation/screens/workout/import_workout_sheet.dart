@@ -44,6 +44,7 @@ void showImportWorkoutSheet(BuildContext context) =>
 // ─── State types ──────────────────────────────────────────────────────────────
 
 enum _ImportSource { text, url, file, qr, sharedApp, postWorkout }
+
 enum _ImportStep { selectSource, enterContent, parsing, preview, error }
 
 // ─── Main widget ──────────────────────────────────────────────────────────────
@@ -91,7 +92,10 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
         // Auto-start analysis for post-workout flow
         _source = _ImportSource.postWorkout;
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _runCorrection(widget.initialContent!, AppLocalizations.tl('sourceHintPostWorkout'));
+          _runCorrection(
+            widget.initialContent!,
+            AppLocalizations.tl('sourceHintPostWorkout'),
+          );
         });
       } else {
         _source = _ImportSource.sharedApp;
@@ -112,7 +116,10 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
 
   Future<void> _runCorrection(String userInput, String sourceHint) async {
     if (userInput.trim().isEmpty) return;
-    setState(() { _step = _ImportStep.parsing; _errorMsg = null; });
+    setState(() {
+      _step = _ImportStep.parsing;
+      _errorMsg = null;
+    });
     try {
       final service = sl<IDeepSeekService>();
       final authState = context.read<AuthBloc>().state;
@@ -155,7 +162,10 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
         _step = _ImportStep.preview;
       });
     } on AiException catch (e) {
-      setState(() { _errorMsg = e.message; _step = _ImportStep.error; });
+      setState(() {
+        _errorMsg = e.message;
+        _step = _ImportStep.error;
+      });
     } catch (_) {
       setState(() {
         _errorMsg = AppLocalizations.tl('correctionRetryMsg');
@@ -179,24 +189,47 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
   Future<void> _fetchUrl() async {
     final url = _urlCtrl.text.trim();
     if (url.isEmpty) return;
-    setState(() { _step = _ImportStep.parsing; _errorMsg = null; });
+    setState(() {
+      _step = _ImportStep.parsing;
+      _errorMsg = null;
+    });
     try {
       final uri = Uri.parse(url.startsWith('http') ? url : 'https://$url');
-      final resp = await http.get(uri, headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; FitnesBuster/1.0)',
-      }).timeout(const Duration(seconds: 15));
+      final resp = await http
+          .get(
+            uri,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (compatible; FitnesBuster/1.0)',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
       String body = resp.body
-          .replaceAll(RegExp(r'<style[^>]*>[\s\S]*?</style>', caseSensitive: false), '')
-          .replaceAll(RegExp(r'<script[^>]*>[\s\S]*?</script>', caseSensitive: false), '')
+          .replaceAll(
+            RegExp(r'<style[^>]*>[\s\S]*?</style>', caseSensitive: false),
+            '',
+          )
+          .replaceAll(
+            RegExp(r'<script[^>]*>[\s\S]*?</script>', caseSensitive: false),
+            '',
+          )
           .replaceAll(RegExp(r'<[^>]+>'), ' ')
           .replaceAll(RegExp(r'\s{2,}'), ' ')
           .trim();
       if (body.length > 8000) body = body.substring(0, 8000);
-      await _runCorrection('URL: $url\n\n$body', '${AppLocalizations.tl("sourceHintLink")}: $url');
+      await _runCorrection(
+        'URL: $url\n\n$body',
+        '${AppLocalizations.tl("sourceHintLink")}: $url',
+      );
     } on SocketException {
-      setState(() { _errorMsg = AppLocalizations.tl('networkError'); _step = _ImportStep.error; });
+      setState(() {
+        _errorMsg = AppLocalizations.tl('networkError');
+        _step = _ImportStep.error;
+      });
     } catch (e) {
-      setState(() { _errorMsg = AppLocalizations.tl('pageLoadError'); _step = _ImportStep.error; });
+      setState(() {
+        _errorMsg = AppLocalizations.tl('pageLoadError');
+        _step = _ImportStep.error;
+      });
     }
   }
 
@@ -213,11 +246,17 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
       final file = result.files.first;
       final bytes = file.bytes;
       if (bytes == null) {
-        setState(() { _errorMsg = AppLocalizations.tl('fileReadError'); _step = _ImportStep.error; });
+        setState(() {
+          _errorMsg = AppLocalizations.tl('fileReadError');
+          _step = _ImportStep.error;
+        });
         return;
       }
     } catch (e) {
-      setState(() { _errorMsg = AppLocalizations.tl('fileOpenError'); _step = _ImportStep.error; });
+      setState(() {
+        _errorMsg = AppLocalizations.tl('fileOpenError');
+        _step = _ImportStep.error;
+      });
     }
   }
 
@@ -229,7 +268,10 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
     if (text.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.tl('clipboardEmpty')), duration: const Duration(seconds: 2)),
+          SnackBar(
+            content: Text(AppLocalizations.tl('clipboardEmpty')),
+            duration: const Duration(seconds: 2),
+          ),
         );
       }
       return;
@@ -251,9 +293,16 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
       final repo = sl<IUserRepository>();
       final planData = _correctedPlan!;
       final workoutPlanJson = jsonEncode(planData);
-      await repo.updateWorkoutPlan(userId: uid, workoutPlanJson: workoutPlanJson);
+      await repo.updateWorkoutPlan(
+        userId: uid,
+        workoutPlanJson: workoutPlanJson,
+      );
     } catch (e) {
-      setState(() { _saving = false; _errorMsg = AppLocalizations.tl('planSaveFailed'); _step = _ImportStep.error; });
+      setState(() {
+        _saving = false;
+        _errorMsg = AppLocalizations.tl('planSaveFailed');
+        _step = _ImportStep.error;
+      });
     }
   }
 
@@ -271,16 +320,19 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
     _textCtrl.clear();
   });
 
-  void _back() => setState(() => _step == _ImportStep.enterContent
-      ? _step = _ImportStep.selectSource
-      : _reset());
+  void _back() => setState(
+    () => _step == _ImportStep.enterContent
+        ? _step = _ImportStep.selectSource
+        : _reset(),
+  );
 
   // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
-    final isQr = _step == _ImportStep.enterContent && _source == _ImportSource.qr;
+    final isQr =
+        _step == _ImportStep.enterContent && _source == _ImportSource.qr;
     return DraggableScrollableSheet(
       initialChildSize: isQr ? 0.92 : 0.80,
       minChildSize: 0.4,
@@ -291,23 +343,26 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
           color: colors.surfaceCard,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        child: Column(children: [
-          const SizedBox(height: 10),
-          Container(
-            width: 38, height: 4,
-            decoration: BoxDecoration(
-              color: colors.textMuted.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            Container(
+              width: 38,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colors.textMuted.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 220),
-              child: _buildStep(colors, scrollCtrl),
+            const SizedBox(height: 4),
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                child: _buildStep(colors, scrollCtrl),
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -315,67 +370,77 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
   Widget _buildStep(dynamic colors, ScrollController scrollCtrl) {
     return switch (_step) {
       _ImportStep.selectSource => _SourceSelector(
-          key: const ValueKey('select'),
-          colors: colors,
-          scrollCtrl: scrollCtrl,
-          onSelected: (source) {
-            setState(() { _source = source; });
-            if (source == _ImportSource.sharedApp) {
-              _pasteClipboard();
-            } else {
-              setState(() => _step = _ImportStep.enterContent);
-            }
-          },
-        ),
+        key: const ValueKey('select'),
+        colors: colors,
+        scrollCtrl: scrollCtrl,
+        onSelected: (source) {
+          setState(() {
+            _source = source;
+          });
+          if (source == _ImportSource.sharedApp) {
+            _pasteClipboard();
+          } else {
+            setState(() => _step = _ImportStep.enterContent);
+          }
+        },
+      ),
       _ImportStep.enterContent => _ContentInput(
-          key: ValueKey('input_$_source'),
-          colors: colors,
-          source: _source!,
-          urlCtrl: _urlCtrl,
-          textCtrl: _textCtrl,
-          scrollCtrl: scrollCtrl,
-          scanCtrl: _scanCtrl,
-          qrScanned: _qrScanned,
-          onBack: _back,
-          onSubmitText: (text) => _runCorrection(text, _sourceLabelFor(_source!)),
-          onSubmitUrl: _fetchUrl,
-          onPickFile: _pickFile,
-          onQrDetect: (value) {
-            if (_qrScanned) return;
-            setState(() => _qrScanned = true);
-            HapticFeedback.mediumImpact();
-            final isUrl = value.startsWith('http://') || value.startsWith('https://');
-            if (isUrl) { _urlCtrl.text = value; _fetchUrl(); }
-            else { _runCorrection(value, AppLocalizations.tl('sourceHintQr')); }
-          },
-        ),
-      _ImportStep.parsing => _ParsingView(key: const ValueKey('parsing'), colors: colors),
-      _ImportStep.preview  => _PreviewView(
-          key: const ValueKey('preview'),
-          colors: colors,
-          plan: _correctedPlan!,
-          changes: _changes,
-          reasoning: _reasoningText,
-          saving: _saving,
-          scrollCtrl: scrollCtrl,
-          onSave: _savePlan,
-          onCancel: _reset,
-        ),
+        key: ValueKey('input_$_source'),
+        colors: colors,
+        source: _source!,
+        urlCtrl: _urlCtrl,
+        textCtrl: _textCtrl,
+        scrollCtrl: scrollCtrl,
+        scanCtrl: _scanCtrl,
+        qrScanned: _qrScanned,
+        onBack: _back,
+        onSubmitText: (text) => _runCorrection(text, _sourceLabelFor(_source!)),
+        onSubmitUrl: _fetchUrl,
+        onPickFile: _pickFile,
+        onQrDetect: (value) {
+          if (_qrScanned) return;
+          setState(() => _qrScanned = true);
+          HapticFeedback.mediumImpact();
+          final isUrl =
+              value.startsWith('http://') || value.startsWith('https://');
+          if (isUrl) {
+            _urlCtrl.text = value;
+            _fetchUrl();
+          } else {
+            _runCorrection(value, AppLocalizations.tl('sourceHintQr'));
+          }
+        },
+      ),
+      _ImportStep.parsing => _ParsingView(
+        key: const ValueKey('parsing'),
+        colors: colors,
+      ),
+      _ImportStep.preview => _PreviewView(
+        key: const ValueKey('preview'),
+        colors: colors,
+        plan: _correctedPlan!,
+        changes: _changes,
+        reasoning: _reasoningText,
+        saving: _saving,
+        scrollCtrl: scrollCtrl,
+        onSave: _savePlan,
+        onCancel: _reset,
+      ),
       _ImportStep.error => _ErrorView(
-          key: const ValueKey('error'),
-          colors: colors,
-          message: _errorMsg ?? AppLocalizations.tl('unknownErrorMsg'),
-          onRetry: _back,
-        ),
+        key: const ValueKey('error'),
+        colors: colors,
+        message: _errorMsg ?? AppLocalizations.tl('unknownErrorMsg'),
+        onRetry: _back,
+      ),
     };
   }
 
   static String _sourceLabelFor(_ImportSource src) => switch (src) {
-    _ImportSource.text       => AppLocalizations.tl('sourceHintPreference'),
-    _ImportSource.url        => AppLocalizations.tl('sourceHintLink'),
-    _ImportSource.file       => AppLocalizations.tl('sourceHintFile'),
-    _ImportSource.qr         => AppLocalizations.tl('sourceHintQr'),
-    _ImportSource.sharedApp  => AppLocalizations.tl('sourceHintOtherApp'),
+    _ImportSource.text => AppLocalizations.tl('sourceHintPreference'),
+    _ImportSource.url => AppLocalizations.tl('sourceHintLink'),
+    _ImportSource.file => AppLocalizations.tl('sourceHintFile'),
+    _ImportSource.qr => AppLocalizations.tl('sourceHintQr'),
+    _ImportSource.sharedApp => AppLocalizations.tl('sourceHintOtherApp'),
     _ImportSource.postWorkout => AppLocalizations.tl('sourceHintPostWorkout'),
   };
 }
@@ -402,22 +467,43 @@ class _SourceSelector extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
       children: [
         // Header
-        Row(children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: c.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: c.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.auto_fix_high_rounded,
+                color: c.primary,
+                size: 20,
+              ),
             ),
-            child: Icon(Icons.auto_fix_high_rounded, color: c.primary, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(AppLocalizations.of(context).correctPlan,
-                style: TextStyle(fontFamily: 'Syne', fontSize: 17, fontWeight: FontWeight.w800, color: c.textPrimary)),
-            Text(AppLocalizations.of(context).aiAdaptsPlanHint, style: TextStyle(fontSize: 12, color: c.textMuted)),
-          ])),
-        ]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context).correctPlan,
+                    style: TextStyle(
+                      fontFamily: 'Syne',
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: c.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    AppLocalizations.of(context).aiAdaptsPlanHint,
+                    style: TextStyle(fontSize: 12, color: c.textMuted),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 20),
 
         // AI analysis hint
@@ -428,14 +514,23 @@ class _SourceSelector extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: c.primary.withValues(alpha: 0.18)),
           ),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Icon(Icons.psychology_rounded, color: c.primary, size: 18),
-            const SizedBox(width: 8),
-            Expanded(child: Text(
-              AppLocalizations.of(context).aiDeepSeekHint,
-              style: TextStyle(fontSize: 11, color: c.textSecondary, height: 1.45),
-            )),
-          ]),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.psychology_rounded, color: c.primary, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context).aiDeepSeekHint,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: c.textSecondary,
+                    height: 1.45,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 20),
 
@@ -496,7 +591,14 @@ class _SourceSelector extends StatelessWidget {
               color: c.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Text(AppLocalizations.of(context).autoLabel, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: c.primary)),
+            child: Text(
+              AppLocalizations.of(context).autoLabel,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: c.primary,
+              ),
+            ),
           ),
           onTap: () => onSelected(_ImportSource.sharedApp),
         ),
@@ -535,23 +637,49 @@ class _OptionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: colors.textPrimary.withValues(alpha: 0.07)),
         ),
-        child: Row(children: [
-          Container(
-            width: 40, height: 40,
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
             ),
-            child: Icon(icon, color: iconColor, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-            Text(subtitle, style: TextStyle(fontSize: 11, color: colors.textMuted)),
-          ])),
-          if (trailing != null) ...[const SizedBox(width: 8), trailing!]
-          else Icon(Icons.arrow_forward_ios_rounded, size: 14, color: colors.textMuted),
-        ]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontFamily: 'Syne',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 11, color: colors.textMuted),
+                  ),
+                ],
+              ),
+            ),
+            if (trailing != null) ...[
+              const SizedBox(width: 8),
+              trailing!,
+            ] else
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: colors.textMuted,
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -605,54 +733,73 @@ class _ContentInputState extends State<_ContentInput> {
   @override
   Widget build(BuildContext context) {
     final c = widget.colors;
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(8, 4, 20, 0),
-        child: Row(children: [
-          IconButton(
-            onPressed: widget.onBack,
-            icon: Icon(Icons.arrow_back_ios_rounded, color: c.textMuted, size: 20),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 4, 20, 0),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: widget.onBack,
+                icon: Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: c.textMuted,
+                  size: 20,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  _title(widget.source),
+                  style: TextStyle(
+                    fontFamily: 'Syne',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: c.textPrimary,
+                  ),
+                ),
+              ),
+            ],
           ),
-          Expanded(child: Text(
-            _title(widget.source),
-            style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w800, color: c.textPrimary),
-          )),
-        ]),
-      ),
-      const SizedBox(height: 8),
-      Expanded(child: _buildBody(c)),
-    ]);
+        ),
+        const SizedBox(height: 8),
+        Expanded(child: _buildBody(c)),
+      ],
+    );
   }
 
   Widget _buildBody(dynamic c) => switch (widget.source) {
-    _ImportSource.qr   => _buildQr(c),
-    _ImportSource.url  => _buildUrl(c),
+    _ImportSource.qr => _buildQr(c),
+    _ImportSource.url => _buildUrl(c),
     _ImportSource.file => _buildFileWait(c),
-    _                  => _buildText(c),
+    _ => _buildText(c),
   };
 
-  Widget _buildQr(dynamic c) => Column(children: [
-    Expanded(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: MobileScanner(
-          controller: widget.scanCtrl,
-          onDetect: (capture) {
-            final code = capture.barcodes.firstOrNull?.rawValue;
-            if (code != null) widget.onQrDetect(code);
-          },
+  Widget _buildQr(dynamic c) => Column(
+    children: [
+      Expanded(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: MobileScanner(
+            controller: widget.scanCtrl,
+            onDetect: (capture) {
+              final code = capture.barcodes.firstOrNull?.rawValue;
+              if (code != null) widget.onQrDetect(code);
+            },
+          ),
         ),
       ),
-    ),
-    Padding(
-      padding: const EdgeInsets.all(16),
-      child: Text(
-        widget.qrScanned ? AppLocalizations.of(context).qrScannedAnalyzing : AppLocalizations.of(context).qrPointCamera,
-        style: TextStyle(fontSize: 13, color: c.textMuted),
-        textAlign: TextAlign.center,
+      Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          widget.qrScanned
+              ? AppLocalizations.of(context).qrScannedAnalyzing
+              : AppLocalizations.of(context).qrPointCamera,
+          style: TextStyle(fontSize: 13, color: c.textMuted),
+          textAlign: TextAlign.center,
+        ),
       ),
-    ),
-  ]);
+    ],
+  );
 
   Widget _buildUrl(dynamic c) => ListView(
     controller: widget.scrollCtrl,
@@ -664,42 +811,65 @@ class _ContentInputState extends State<_ContentInput> {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: c.textPrimary.withValues(alpha: 0.1)),
         ),
-        child: Row(children: [
-          const SizedBox(width: 14),
-          Icon(Icons.link_rounded, color: c.textMuted, size: 18),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextField(
-              controller: widget.urlCtrl,
-              keyboardType: TextInputType.url,
-              style: TextStyle(fontSize: 13, color: c.textPrimary),
-              decoration: InputDecoration(
-                hintText: 'https://...',
-                hintStyle: TextStyle(color: c.textMuted),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
+          children: [
+            const SizedBox(width: 14),
+            Icon(Icons.link_rounded, color: c.textMuted, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                controller: widget.urlCtrl,
+                keyboardType: TextInputType.url,
+                style: TextStyle(fontSize: 13, color: c.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'https://...',
+                  hintStyle: TextStyle(color: c.textMuted),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onSubmitted: (_) => widget.onSubmitUrl(),
               ),
-              onSubmitted: (_) => widget.onSubmitUrl(),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
       const SizedBox(height: 10),
-      Wrap(spacing: 8, runSpacing: 8, children: [
-        for (final s in ['YouTube', 'Strava', 'Hevy', 'Garmin', 'GymShark', 'Reddit', AppLocalizations.of(context).anySiteLabel])
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: c.surfaceCard,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: c.textPrimary.withValues(alpha: 0.08)),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          for (final s in [
+            'YouTube',
+            'Strava',
+            'Hevy',
+            'Garmin',
+            'GymShark',
+            'Reddit',
+            AppLocalizations.of(context).anySiteLabel,
+          ])
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: c.surfaceCard,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: c.textPrimary.withValues(alpha: 0.08),
+                ),
+              ),
+              child: Text(
+                s,
+                style: TextStyle(fontSize: 11, color: c.textMuted),
+              ),
             ),
-            child: Text(s, style: TextStyle(fontSize: 11, color: c.textMuted)),
-          ),
-      ]),
+        ],
+      ),
       const SizedBox(height: 24),
-      _ActionButton(colors: c, label: AppLocalizations.of(context).loadAndCorrectPlanBtn,
-          icon: Icons.auto_fix_high_rounded, onTap: widget.onSubmitUrl),
+      _ActionButton(
+        colors: c,
+        label: AppLocalizations.of(context).loadAndCorrectPlanBtn,
+        icon: Icons.auto_fix_high_rounded,
+        onTap: widget.onSubmitUrl,
+      ),
     ],
   );
 
@@ -742,11 +912,16 @@ class _ContentInputState extends State<_ContentInput> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: c.textPrimary.withValues(alpha: 0.07)),
           ),
-          child: Row(children: [
-            Icon(Icons.content_paste_rounded, color: c.textMuted, size: 16),
-            const SizedBox(width: 8),
-            Text(AppLocalizations.of(context).pasteFromClipboard, style: TextStyle(fontSize: 12, color: c.textSecondary)),
-          ]),
+          child: Row(
+            children: [
+              Icon(Icons.content_paste_rounded, color: c.textMuted, size: 16),
+              const SizedBox(width: 8),
+              Text(
+                AppLocalizations.of(context).pasteFromClipboard,
+                style: TextStyle(fontSize: 12, color: c.textSecondary),
+              ),
+            ],
+          ),
         ),
       ),
       if (widget.source == _ImportSource.text) ...[
@@ -771,32 +946,50 @@ class _ContentInputState extends State<_ContentInput> {
   Widget _buildFileWait(dynamic c) => Center(
     child: Padding(
       padding: const EdgeInsets.all(32),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Icon(Icons.folder_open_rounded, size: 56, color: c.textMuted.withValues(alpha: 0.4)),
-        const SizedBox(height: 16),
-        Text(AppLocalizations.of(context).openingFilePicker, style: TextStyle(fontSize: 14, color: c.textMuted)),
-        const SizedBox(height: 24),
-        OutlinedButton.icon(
-          onPressed: widget.onPickFile,
-          icon: Icon(Icons.upload_file_rounded, size: 18, color: c.primary),
-          label: Text(AppLocalizations.of(context).selectFileAgain, style: TextStyle(color: c.primary)),
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(color: c.primary.withValues(alpha: 0.4)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.folder_open_rounded,
+            size: 56,
+            color: c.textMuted.withValues(alpha: 0.4),
           ),
-        ),
-        const SizedBox(height: 12),
-        Text(AppLocalizations.of(context).supportedFormatsHint, style: TextStyle(fontSize: 12, color: c.textMuted)),
-      ]),
+          const SizedBox(height: 16),
+          Text(
+            AppLocalizations.of(context).openingFilePicker,
+            style: TextStyle(fontSize: 14, color: c.textMuted),
+          ),
+          const SizedBox(height: 24),
+          OutlinedButton.icon(
+            onPressed: widget.onPickFile,
+            icon: Icon(Icons.upload_file_rounded, size: 18, color: c.primary),
+            label: Text(
+              AppLocalizations.of(context).selectFileAgain,
+              style: TextStyle(color: c.primary),
+            ),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: c.primary.withValues(alpha: 0.4)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            AppLocalizations.of(context).supportedFormatsHint,
+            style: TextStyle(fontSize: 12, color: c.textMuted),
+          ),
+        ],
+      ),
     ),
   );
 
   static String _title(_ImportSource src) => switch (src) {
-    _ImportSource.text       => AppLocalizations.tl('yourWishTitle'),
-    _ImportSource.url        => AppLocalizations.tl('programLinkTitle'),
-    _ImportSource.file       => AppLocalizations.tl('fromFileTitle'),
-    _ImportSource.qr         => AppLocalizations.tl('qrCodeTitle'),
-    _ImportSource.sharedApp  => AppLocalizations.tl('pasteWorkoutTitle'),
+    _ImportSource.text => AppLocalizations.tl('yourWishTitle'),
+    _ImportSource.url => AppLocalizations.tl('programLinkTitle'),
+    _ImportSource.file => AppLocalizations.tl('fromFileTitle'),
+    _ImportSource.qr => AppLocalizations.tl('qrCodeTitle'),
+    _ImportSource.sharedApp => AppLocalizations.tl('pasteWorkoutTitle'),
     _ImportSource.postWorkout => AppLocalizations.tl('workoutAnalysisTitle'),
   };
 }
@@ -817,25 +1010,54 @@ class _ExamplesHint extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: c.info.withValues(alpha: 0.15)),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(AppLocalizations.of(context).exampleRequestsLabel, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c.info)),
-        const SizedBox(height: 6),
-        for (final ex in [
-          '"Замени жим штанги на жим гантелей — болят запястья"',
-          '"Хочу больше упражнений на ноги и ягодицы"',
-          '"Убери кардио, я бегаю отдельно"',
-          '"Добавь суперсеты для плеч и трицепса"',
-          '"Уменьши интенсивность — я только начинаю"',
-        ])
-          Padding(
-            padding: const EdgeInsets.only(bottom: 3),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(width: 4, height: 4, margin: const EdgeInsets.only(top: 5, right: 6),
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: c.info)),
-              Expanded(child: Text(ex, style: TextStyle(fontSize: 11, color: c.textMuted, height: 1.4))),
-            ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppLocalizations.of(context).exampleRequestsLabel,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: c.info,
+            ),
           ),
-      ]),
+          const SizedBox(height: 6),
+          for (final ex in [
+            '"Замени жим штанги на жим гантелей — болят запястья"',
+            '"Хочу больше упражнений на ноги и ягодицы"',
+            '"Убери кардио, я бегаю отдельно"',
+            '"Добавь суперсеты для плеч и трицепса"',
+            '"Уменьши интенсивность — я только начинаю"',
+          ])
+            Padding(
+              padding: const EdgeInsets.only(bottom: 3),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 4,
+                    height: 4,
+                    margin: const EdgeInsets.only(top: 5, right: 6),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: c.info,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      ex,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: c.textMuted,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -851,20 +1073,36 @@ class _ParsingView extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          SizedBox(
-            width: 52, height: 52,
-            child: CircularProgressIndicator(strokeWidth: 3, color: colors.primary),
-          ),
-          const SizedBox(height: 24),
-          Text(AppLocalizations.of(context).aiCorrectingPlan,
-              style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary),
-              textAlign: TextAlign.center),
-          const SizedBox(height: 8),
-          Text(AppLocalizations.of(context).aiAnalyzingQuery,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 52,
+              height: 52,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                color: colors.primary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              AppLocalizations.of(context).aiCorrectingPlan,
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: colors.textPrimary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              AppLocalizations.of(context).aiAnalyzingQuery,
               style: TextStyle(fontSize: 13, color: colors.textMuted),
-              textAlign: TextAlign.center),
-        ]),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -898,7 +1136,10 @@ class _PreviewView extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = colors;
     final days = (plan['plan'] as List? ?? []).cast<Map<String, dynamic>>();
-    final totalEx = days.fold<int>(0, (s, d) => s + ((d['exercises'] as List?)?.length ?? 0));
+    final totalEx = days.fold<int>(
+      0,
+      (s, d) => s + ((d['exercises'] as List?)?.length ?? 0),
+    );
     final recs = (plan['recommendations'] as List? ?? []).cast<String>();
 
     return ListView(
@@ -913,45 +1154,98 @@ class _PreviewView extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: c.primary.withValues(alpha: 0.2)),
           ),
-          child: Row(children: [
-            Container(
-              width: 40, height: 40,
-              decoration: BoxDecoration(color: c.primary.withValues(alpha: 0.15), shape: BoxShape.circle),
-              child: Icon(Icons.auto_fix_high_rounded, color: c.primary, size: 22),
-            ),
-            const SizedBox(width: 12),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(AppLocalizations.of(context).planCorrectedTitle,
-                  style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: c.textPrimary)),
-              Text(AppLocalizations.of(context).planCorrectedSummary('${days.length}', '$totalEx', '${changes.length}'),
-                  style: TextStyle(fontSize: 12, color: c.textMuted)),
-            ])),
-          ]),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: c.primary.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.auto_fix_high_rounded,
+                  color: c.primary,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context).planCorrectedTitle,
+                      style: TextStyle(
+                        fontFamily: 'Syne',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: c.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      AppLocalizations.of(context).planCorrectedSummary(
+                        '${days.length}',
+                        '$totalEx',
+                        '${changes.length}',
+                      ),
+                      style: TextStyle(fontSize: 12, color: c.textMuted),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 16),
 
         // ── Changes list (most important!) ──
         if (changes.isNotEmpty) ...[
-          Text(AppLocalizations.of(context).changesTitle,
-              style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: c.textPrimary)),
-          const SizedBox(height: 10),
-          ...changes.map((ch) => Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: c.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: c.primary.withValues(alpha: 0.12)),
+          Text(
+            AppLocalizations.of(context).changesTitle,
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: c.textPrimary,
             ),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(
-                width: 6, height: 6,
-                margin: const EdgeInsets.only(top: 5, right: 10),
-                decoration: BoxDecoration(color: c.primary, shape: BoxShape.circle),
+          ),
+          const SizedBox(height: 10),
+          ...changes.map(
+            (ch) => Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: c.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: c.primary.withValues(alpha: 0.12)),
               ),
-              Expanded(child: Text(ch, style: TextStyle(fontSize: 12, color: c.textSecondary, height: 1.45))),
-            ]),
-          )),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    margin: const EdgeInsets.only(top: 5, right: 10),
+                    decoration: BoxDecoration(
+                      color: c.primary,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      ch,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: c.textSecondary,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 6),
         ],
 
@@ -964,33 +1258,79 @@ class _PreviewView extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: c.accentPurple.withValues(alpha: 0.18)),
             ),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Icon(Icons.psychology_rounded, color: c.accentPurple, size: 16),
-              const SizedBox(width: 8),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(AppLocalizations.of(context).aiLogicTitle, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c.accentPurple)),
-                const SizedBox(height: 3),
-                Text(reasoning, style: TextStyle(fontSize: 11, color: c.textMuted, height: 1.4)),
-              ])),
-            ]),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.psychology_rounded, color: c.accentPurple, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).aiLogicTitle,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: c.accentPurple,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        reasoning,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: c.textMuted,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 12),
         ],
 
         // ── Updated plan overview ──
-        Text(AppLocalizations.of(context).updatedPlanTitle,
-            style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: c.textPrimary)),
+        Text(
+          AppLocalizations.of(context).updatedPlanTitle,
+          style: TextStyle(
+            fontFamily: 'Syne',
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: c.textPrimary,
+          ),
+        ),
         const SizedBox(height: 10),
         ...days.asMap().entries.map((e) {
           final i = e.key;
           final day = e.value;
           final l10n = AppLocalizations.of(context);
-          final dayLabels = [l10n.monShort, l10n.tueShort, l10n.wedShort, l10n.thuShort, l10n.friShort, l10n.satShort, l10n.sunShort];
-          final label = i < dayLabels.length ? dayLabels[i] : l10n.dayLabel(i + 1);
-          final focus = day['focus'] as String? ?? day['name'] as String? ?? l10n.dayLabel(i + 1);
-          final exercises = (day['exercises'] as List? ?? []).cast<Map<String, dynamic>>();
-          final isRest = exercises.isEmpty ||
-              focus.toLowerCase().contains(AppLocalizations.tl('restDayKeyword')) ||
+          final dayLabels = [
+            l10n.monShort,
+            l10n.tueShort,
+            l10n.wedShort,
+            l10n.thuShort,
+            l10n.friShort,
+            l10n.satShort,
+            l10n.sunShort,
+          ];
+          final label = i < dayLabels.length
+              ? dayLabels[i]
+              : l10n.dayLabel(i + 1);
+          final focus =
+              day['focus'] as String? ??
+              day['name'] as String? ??
+              l10n.dayLabel(i + 1);
+          final exercises = (day['exercises'] as List? ?? [])
+              .cast<Map<String, dynamic>>();
+          final isRest =
+              exercises.isEmpty ||
+              focus.toLowerCase().contains(
+                AppLocalizations.tl('restDayKeyword'),
+              ) ||
               (day['type'] as String? ?? '') == 'rest';
           return Container(
             margin: const EdgeInsets.only(bottom: 6),
@@ -1000,17 +1340,40 @@ class _PreviewView extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: c.textPrimary.withValues(alpha: 0.06)),
             ),
-            child: Row(children: [
-              Text(isRest ? '😴' : '💪', style: const TextStyle(fontSize: 14)),
-              const SizedBox(width: 8),
-              Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c.textMuted)),
-              const SizedBox(width: 6),
-              Expanded(child: Text(focus,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: c.textSecondary),
-                  overflow: TextOverflow.ellipsis)),
-              if (!isRest)
-                Text(l10n.exercisesShortCount('${exercises.length}'), style: TextStyle(fontSize: 11, color: c.textMuted)),
-            ]),
+            child: Row(
+              children: [
+                Text(
+                  isRest ? '😴' : '💪',
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: c.textMuted,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    focus,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: c.textSecondary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (!isRest)
+                  Text(
+                    l10n.exercisesShortCount('${exercises.length}'),
+                    style: TextStyle(fontSize: 11, color: c.textMuted),
+                  ),
+              ],
+            ),
           );
         }),
 
@@ -1024,19 +1387,48 @@ class _PreviewView extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: c.info.withValues(alpha: 0.15)),
             ),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(AppLocalizations.of(context).weeklyRecsTitle, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c.info)),
-              const SizedBox(height: 6),
-              for (final r in recs.take(3))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Container(width: 4, height: 4, margin: const EdgeInsets.only(top: 5, right: 6),
-                        decoration: BoxDecoration(shape: BoxShape.circle, color: c.info)),
-                    Expanded(child: Text(r, style: TextStyle(fontSize: 11, color: c.textMuted, height: 1.4))),
-                  ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppLocalizations.of(context).weeklyRecsTitle,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: c.info,
+                  ),
                 ),
-            ]),
+                const SizedBox(height: 6),
+                for (final r in recs.take(3))
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 4,
+                          margin: const EdgeInsets.only(top: 5, right: 6),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: c.info,
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            r,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: c.textMuted,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
         ],
 
@@ -1048,17 +1440,30 @@ class _PreviewView extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: c.accentOrange.withValues(alpha: 0.2)),
           ),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Icon(Icons.warning_amber_rounded, color: c.accentOrange, size: 16),
-            const SizedBox(width: 8),
-            Expanded(child: Text(AppLocalizations.of(context).planReplacementWarning,
-                style: TextStyle(fontSize: 11, color: c.textMuted))),
-          ]),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: c.accentOrange,
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context).planReplacementWarning,
+                  style: TextStyle(fontSize: 11, color: c.textMuted),
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 16),
         _ActionButton(
           colors: c,
-          label: saving ? AppLocalizations.of(context).savingLabel : AppLocalizations.of(context).applyChangesBtn,
+          label: saving
+              ? AppLocalizations.of(context).savingLabel
+              : AppLocalizations.of(context).applyChangesBtn,
           icon: saving ? null : Icons.check_rounded,
           loading: saving,
           onTap: saving ? null : onSave,
@@ -1066,7 +1471,10 @@ class _PreviewView extends StatelessWidget {
         const SizedBox(height: 10),
         TextButton(
           onPressed: saving ? null : onCancel,
-          child: Text(AppLocalizations.of(context).cancel, style: TextStyle(color: c.textMuted, fontSize: 14)),
+          child: Text(
+            AppLocalizations.of(context).cancel,
+            style: TextStyle(color: c.textMuted, fontSize: 14),
+          ),
         ),
       ],
     );
@@ -1079,7 +1487,12 @@ class _ErrorView extends StatelessWidget {
   final dynamic colors;
   final String message;
   final VoidCallback onRetry;
-  const _ErrorView({super.key, required this.colors, required this.message, required this.onRetry});
+  const _ErrorView({
+    super.key,
+    required this.colors,
+    required this.message,
+    required this.onRetry,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1087,13 +1500,33 @@ class _ErrorView extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.error_outline_rounded, size: 56, color: c.error.withValues(alpha: 0.6)),
-          const SizedBox(height: 16),
-          Text(AppLocalizations.tl('errorTitle'), style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: c.textPrimary)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              size: 56,
+              color: c.error.withValues(alpha: 0.6),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              AppLocalizations.tl('errorTitle'),
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: c.textPrimary,
+              ),
+            ),
 
-          _ActionButton(colors: c, label: AppLocalizations.tl('tryAgainBtn'), icon: Icons.refresh_rounded, onTap: onRetry),
-        ]),
+            _ActionButton(
+              colors: c,
+              label: AppLocalizations.tl('tryAgainBtn'),
+              icon: Icons.refresh_rounded,
+              onTap: onRetry,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1127,28 +1560,54 @@ class _ActionButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         decoration: BoxDecoration(
           gradient: enabled
-              ? LinearGradient(colors: [c.primary, c.primary.withValues(alpha: 0.75)],
-                  begin: Alignment.centerLeft, end: Alignment.centerRight)
+              ? LinearGradient(
+                  colors: [c.primary, c.primary.withValues(alpha: 0.75)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                )
               : null,
           color: enabled ? null : c.textMuted.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(16),
           boxShadow: enabled
-              ? [BoxShadow(color: c.primary.withValues(alpha: 0.3), blurRadius: 14, offset: const Offset(0, 5))]
+              ? [
+                  BoxShadow(
+                    color: c.primary.withValues(alpha: 0.3),
+                    blurRadius: 14,
+                    offset: const Offset(0, 5),
+                  ),
+                ]
               : null,
         ),
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          if (loading)
-            SizedBox(width: 18, height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2, color: c.textOnPrimary))
-          else if (icon != null)
-            Icon(icon, color: enabled ? c.textOnPrimary : c.textMuted, size: 18),
-          const SizedBox(width: 10),
-          Text(label,
-              style: TextStyle(
-                fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w700,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (loading)
+              SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: c.textOnPrimary,
+                ),
+              )
+            else if (icon != null)
+              Icon(
+                icon,
                 color: enabled ? c.textOnPrimary : c.textMuted,
-              )),
-        ]),
+                size: 18,
+              ),
+            const SizedBox(width: 10),
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: enabled ? c.textOnPrimary : c.textMuted,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

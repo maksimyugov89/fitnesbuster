@@ -23,7 +23,10 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
 
   @override
   void dispose() {
-    _chest.dispose(); _waist.dispose(); _hips.dispose(); _fat.dispose();
+    _chest.dispose();
+    _waist.dispose();
+    _hips.dispose();
+    _fat.dispose();
     super.dispose();
   }
 
@@ -41,7 +44,8 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
     if (mounted) Navigator.pop(context);
   }
 
-  double? _parseField(String s) => s.trim().isEmpty ? null : double.tryParse(s.trim().replaceAll(',', '.'));
+  double? _parseField(String s) =>
+      s.trim().isEmpty ? null : double.tryParse(s.trim().replaceAll(',', '.'));
 
   void _calcBodyFat() {
     final p = widget.profile;
@@ -60,82 +64,172 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
     return AlertDialog(
       backgroundColor: colors.surfaceCard,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      title: Row(children: [
-        Icon(Icons.straighten_rounded, color: colors.primary, size: 22),
-        const SizedBox(width: 8),
-        Text(AppLocalizations.tl('bodyMeasurements'), style: TextStyle(color: colors.textPrimary, fontFamily: 'Syne', fontWeight: FontWeight.w700, fontSize: 18)),
-      ]),
+      title: Row(
+        children: [
+          Icon(Icons.straighten_rounded, color: colors.primary, size: 22),
+          const SizedBox(width: 8),
+          Text(
+            AppLocalizations.tl('bodyMeasurements'),
+            style: TextStyle(
+              color: colors.textPrimary,
+              fontFamily: 'Syne',
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
       content: Form(
         key: _form,
         child: SingleChildScrollView(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(AppLocalizations.tl('measurementsHint'), style: TextStyle(fontSize: 12, color: colors.textMuted), textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            _buildField(AppLocalizations.tl('chest'), 'см', _chest, colors, Icons.circle_outlined),
-            const SizedBox(height: 12),
-            _buildField(AppLocalizations.tl('waist'), 'см', _waist, colors, Icons.circle_outlined),
-            const SizedBox(height: 12),
-            _buildField(AppLocalizations.tl('hips'), 'см', _hips, colors, Icons.circle_outlined),
-            const SizedBox(height: 12),
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Expanded(child: _buildField(AppLocalizations.tl('bodyFat'), '%', _fat, colors, Icons.percent_rounded)),
-              if (widget.profile != null) ...[
-                const SizedBox(width: 8),
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Semantics(
-                    label: AppLocalizations.tl('calculate'),
-                    button: true,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                      backgroundColor: colors.primary.withValues(alpha: 0.12),
-                      foregroundColor: colors.primary,
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppLocalizations.tl('measurementsHint'),
+                style: TextStyle(fontSize: 12, color: colors.textMuted),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              _buildField(
+                AppLocalizations.tl('chest'),
+                'см',
+                _chest,
+                colors,
+                Icons.circle_outlined,
+              ),
+              const SizedBox(height: 12),
+              _buildField(
+                AppLocalizations.tl('waist'),
+                'см',
+                _waist,
+                colors,
+                Icons.circle_outlined,
+              ),
+              const SizedBox(height: 12),
+              _buildField(
+                AppLocalizations.tl('hips'),
+                'см',
+                _hips,
+                colors,
+                Icons.circle_outlined,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: _buildField(
+                      AppLocalizations.tl('bodyFat'),
+                      '%',
+                      _fat,
+                      colors,
+                      Icons.percent_rounded,
                     ),
-                    onPressed: _calcBodyFat,
-                    child: Text(AppLocalizations.tl('calculate'), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
                   ),
+                  if (widget.profile != null) ...[
+                    const SizedBox(width: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Semantics(
+                        label: AppLocalizations.tl('calculate'),
+                        button: true,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: colors.primary.withValues(
+                              alpha: 0.12,
+                            ),
+                            foregroundColor: colors.primary,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 14,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: _calcBodyFat,
+                          child: Text(
+                            AppLocalizations.tl('calculate'),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 4),
+              if (widget.profile != null)
+                Text(
+                  AppLocalizations.tl('bmiCalculation'),
+                  style: TextStyle(fontSize: 10, color: colors.textMuted),
                 ),
+              const SizedBox(height: 8),
+              Text(
+                '💡 Измеряйте сантиметровой лентой утром натощак в одних и тех же условиях',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: colors.textMuted,
+                  height: 1.5,
                 ),
-              ],
-            ]),
-            const SizedBox(height: 4),
-            if (widget.profile != null)
-              Text(AppLocalizations.tl('bmiCalculation'), style: TextStyle(fontSize: 10, color: colors.textMuted)),
-            const SizedBox(height: 8),
-            Text(
-              '💡 Измеряйте сантиметровой лентой утром натощак в одних и тех же условиях',
-              style: TextStyle(fontSize: 11, color: colors.textMuted, height: 1.5),
-              textAlign: TextAlign.center,
-            ),
-          ]),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
       actions: [
         Semantics(
           label: AppLocalizations.tl('cancel'),
           button: true,
-          child: TextButton(onPressed: _saving ? null : () => Navigator.pop(context), child: Text(AppLocalizations.tl('cancel'), style: TextStyle(color: colors.textMuted))),
+          child: TextButton(
+            onPressed: _saving ? null : () => Navigator.pop(context),
+            child: Text(
+              AppLocalizations.tl('cancel'),
+              style: TextStyle(color: colors.textMuted),
+            ),
+          ),
         ),
         Semantics(
           label: AppLocalizations.tl('save'),
           button: true,
           child: FilledButton(
-          style: FilledButton.styleFrom(backgroundColor: colors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-          onPressed: _saving ? null : _save,
-          child: _saving
-              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-              : Text(AppLocalizations.tl('save')),
-        ),
+            style: FilledButton.styleFrom(
+              backgroundColor: colors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: _saving ? null : _save,
+            child: _saving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(AppLocalizations.tl('save')),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildField(String label, String unit, TextEditingController ctrl, ThemePalette colors, IconData icon) {
+  Widget _buildField(
+    String label,
+    String unit,
+    TextEditingController ctrl,
+    ThemePalette colors,
+    IconData icon,
+  ) {
     return TextFormField(
       controller: ctrl,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -147,13 +241,20 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
         suffixStyle: TextStyle(color: colors.textMuted),
         filled: true,
         fillColor: colors.elevated,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
       ),
       validator: (v) {
         if (v != null && v.trim().isNotEmpty) {
           final d = double.tryParse(v.trim().replaceAll(',', '.'));
-          if (d == null || d <= 0) return AppLocalizations.tl('enterValidValue');
+          if (d == null || d <= 0)
+            return AppLocalizations.tl('enterValidValue');
         }
         return null;
       },

@@ -2,7 +2,8 @@ part of 'test_week_bloc.dart';
 
 sealed class TestWeekState extends Equatable {
   const TestWeekState();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
 
 class TestWeekStateInitial extends TestWeekState {
@@ -33,7 +34,8 @@ class TestWeekStateDayInProgress extends TestWeekState {
     );
   }
 
-  @override List<Object?> get props => [dayIndex, dayExercises, completedExercises];
+  @override
+  List<Object?> get props => [dayIndex, dayExercises, completedExercises];
 }
 
 /// A day was completed, showing summary before next day.
@@ -49,7 +51,13 @@ class TestWeekStateDayCompleted extends TestWeekState {
     required this.nextDayIndex,
     required this.totalDays,
   });
-  @override List<Object?> get props => [dayIndex, exercisesCompleted, nextDayIndex, totalDays];
+  @override
+  List<Object?> get props => [
+    dayIndex,
+    exercisesCompleted,
+    nextDayIndex,
+    totalDays,
+  ];
 }
 
 /// AI is calculating the adapted plan.
@@ -70,7 +78,8 @@ class TestWeekStateCompleted extends TestWeekState {
     required this.adaptedPlan,
     required this.feasibility,
   });
-  @override List<Object?> get props => [testResult, adjustment, adaptedPlan, feasibility];
+  @override
+  List<Object?> get props => [testResult, adjustment, adaptedPlan, feasibility];
 }
 
 /// User accepted the adapted plan.
@@ -87,12 +96,14 @@ class TestWeekStateNeedsAdjustment extends TestWeekState {
     required this.reason,
     required this.suggestions,
   });
-  @override List<Object?> get props => [reason, suggestions];
+  @override
+  List<Object?> get props => [reason, suggestions];
 }
 
 /// Error during plan acceptance.
 class TestWeekStateError extends TestWeekState {
   final String message;
   const TestWeekStateError(this.message);
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }

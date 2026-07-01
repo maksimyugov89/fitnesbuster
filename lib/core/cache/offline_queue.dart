@@ -46,7 +46,11 @@ class OfflineQueue {
 
   Future<void> enqueue(String type, Map<String, dynamic> data) async {
     if (_box == null) return;
-    final entry = _QueueEntry(type: type, data: data, createdAt: DateTime.now());
+    final entry = _QueueEntry(
+      type: type,
+      data: data,
+      createdAt: DateTime.now(),
+    );
     await _box!.add(jsonEncode(entry.toJson()));
     tryFlush();
   }

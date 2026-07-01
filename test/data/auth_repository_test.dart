@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:fitnesbuster/data/repositories/auth_repository.dart';
+import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
 import 'auth_repository_test.mocks.dart';
 
 class _FakeUserCredential implements fb.UserCredential {
@@ -92,10 +93,12 @@ void main() {
 
   group('login', () {
     test('returns UserEntity on successful login', () async {
-      when(mockAuth.signInWithEmailAndPassword(
-        email: tEmail,
-        password: 'password',
-      )).thenAnswer((_) async => _FakeUserCredential(mockFbUser));
+      when(
+        mockAuth.signInWithEmailAndPassword(
+          email: tEmail,
+          password: 'password',
+        ),
+      ).thenAnswer((_) async => _FakeUserCredential(mockFbUser));
 
       final user = await repo.login(email: tEmail, password: 'password');
       expect(user.id, tUid);
@@ -103,24 +106,28 @@ void main() {
     });
 
     test('throws on FirebaseAuthException', () async {
-      when(mockAuth.signInWithEmailAndPassword(
-        email: 'bad@test.com',
-        password: 'wrong',
-      )).thenThrow(fb.FirebaseAuthException(code: 'wrong-password'));
+      when(
+        mockAuth.signInWithEmailAndPassword(
+          email: 'bad@test.com',
+          password: 'wrong',
+        ),
+      ).thenThrow(fb.FirebaseAuthException(code: 'wrong-password'));
 
       expect(
         () => repo.login(email: 'bad@test.com', password: 'wrong'),
-        throwsA(isA<fb.FirebaseAuthException>()),
+        throwsA(isA<WrongPasswordException>()),
       );
     });
   });
 
   group('register', () {
     test('creates Firestore doc and returns UserEntity', () async {
-      when(mockAuth.createUserWithEmailAndPassword(
-        email: tEmail,
-        password: 'password',
-      )).thenAnswer((_) async => _FakeUserCredential(mockFbUser));
+      when(
+        mockAuth.createUserWithEmailAndPassword(
+          email: tEmail,
+          password: 'password',
+        ),
+      ).thenAnswer((_) async => _FakeUserCredential(mockFbUser));
 
       when(mockFbUser.updateDisplayName(any)).thenAnswer((_) async {});
 
@@ -153,8 +160,9 @@ void main() {
 
   group('resetPassword', () {
     test('calls sendPasswordResetEmail', () async {
-      when(mockAuth.sendPasswordResetEmail(email: tEmail))
-          .thenAnswer((_) async {});
+      when(
+        mockAuth.sendPasswordResetEmail(email: tEmail),
+      ).thenAnswer((_) async {});
       await repo.resetPassword(tEmail);
       verify(mockAuth.sendPasswordResetEmail(email: tEmail)).called(1);
     });
