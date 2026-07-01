@@ -8,6 +8,10 @@ on:
 
 env:
   FLUTTER_VERSION: '3.38.5'
+  # Placeholder so the GitHub Actions VS Code extension recognizes ${{ env.FLUTTER_ROOT }}
+  # as a known context — subosito/flutter-action overwrites this with the real SDK path
+  # at runtime (via $GITHUB_ENV) before the Cache pub dependencies step reads it.
+  FLUTTER_ROOT: ''
 
 jobs:
   flutter:
