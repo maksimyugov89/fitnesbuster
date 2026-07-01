@@ -15,7 +15,7 @@
 
 FitnesBuster — Flutter-приложение (Android / iOS), которое генерирует персонализированные программы тренировок и питания на базе целей пользователя, уровня подготовки, доступного оборудования и медицинских ограничений. Используется **DeepSeek AI** для создания и корректировки планов, **Google Health Connect / Apple HealthKit** для синхронизации данных здоровья, **Firebase** (Firestore, Auth, Cloud Functions, FCM, Hosting) для бэкенда, **Hive** для офлайн-кэша, **OpenFoodFacts** для сканирования штрих-кодов. Интерактивная **3D анатомическая модель** на базе Z-Anatomy визуализирует задействованные мышцы с X-ray эффектом. База из **1 346 упражнений** с GIF-демонстрациями (100% покрытие) раздаётся через **Firebase Hosting CDN** с immutable-кэшированием.
 
-Версия: `1.0.0+1` | **Рефакторинг завершён** (28.06.2026): 73/73 проблем закрыто, `dart analyze` — 0 ошибок
+Версия: `1.0.0+1` | **Рефакторинг завершён** (28.06.2026): 73/73 проблем закрыто, `dart analyze` — 0 ошибок | **CI/CD-инфраструктура введена в строй** (01.07.2026): 4 workflow на GitHub Actions, `dart analyze` — 0 замечаний (было 61)
 
 | Метрика | До рефакторинга | После |
 |---------|----------------|-------|
@@ -24,9 +24,10 @@ FitnesBuster — Flutter-приложение (Android / iOS), которое г
 | Хардкодированных `Color(0x…)` | 125+ | ~65 → SemanticColors |
 | Хардкодированных UI-строк | 50+ | **0** |
 | Неиспользуемых зависимостей | 8 | **0** |
-| Тестов | 225 | **337** (321 + 16 E2E) |
+| Тестов | 225 | **336 проходят** + 2 golden (см. [Тестирование](#тестирование)) |
 | Локализаций | 632 ключа | **845+** ключей |
-| `dart analyze` | — | **0 ошибок** |
+| `dart analyze` | — | **0 замечаний** (включая info-уровень) |
+| CI/CD | — | **GitHub Actions**: analyze/format/test/coverage, сборка APK/AAB, подписанные релизы, сканирование уязвимостей |
 
 ---
 
@@ -167,7 +168,7 @@ lib/
 
 **Data → Domain:** `BodyMeasurement`, `PersonalRecord`, `TestDayExercise`, `ExerciseInfo` — в `domain/entities/`. `ChatMessageModel` — в data-слое, domain `ChatMessage` — чистая сущность без сериализации.
 
-**Строгий линтер:** 8 правил (`prefer_const_constructors`, `avoid_print` и др.), `dart fix --apply` — 117 авто-исправлений; `dart analyze` → «No issues found!»
+**Строгий линтер:** 8 правил (`prefer_const_constructors`, `avoid_print` и др.), `dart fix --apply` — 178 авто-исправлений за два прохода (117 при рефакторинге + 61 `curly_braces_in_flow_control_structures` при внедрении CI/CD); `dart analyze --no-fatal-infos --no-fatal-warnings` → «No issues found!» (0 замечаний любого уровня, проверено в реальном CI)
 
 **Навигация:** go_router с ShellRoute (bottom navigation) + WorkoutMiniPlayer поверх всех табов. Виджеты навигации (`MainShell`, `RouterBottomNav`, `RouterWorkoutMiniPlayer`) вынесены в `widgets/router/` и используют локализацию через `AppLocalizations.tl()`.
 
@@ -675,7 +676,7 @@ https://fitnesbuster.web.app/gifs/{exerciseDbId}.gif
 flutter test
 ```
 
-**337 тестов** (321 unit/widget + 16 E2E) в ~22 файлах:
+**336 unit/widget/E2E тестов проходят** (+ 13 skipped — требуют реального устройства, Firebase или отсутствующего в тестовом окружении `BlocProvider`) в ~22 файлах, плюс 2 golden-теста отдельно (см. ниже):
 
 | Файл | Покрытие |
 |---|---|
@@ -711,11 +712,12 @@ Mock-файлы генерируются через `mockito` + `build_runner`.
 # Только E2E тесты
 flutter test test/integration/
 
-# Golden тесты (требуют display-сервер)
+# Golden тесты (требуют display-сервер; ⚠️ виснут на 10 минут даже на
+# ubuntu-latest CI, поэтому исключены из автопрогона — гоняйте только локально)
 flutter test test/golden/
 ```
 
-Все 337 тестов гоняются автоматически в CI на каждый push/PR, с отчётом о покрытии — см. [docs/CI_CD.md](docs/CI_CD.md).
+`ci.yml` и `release.yml` автоматически запускают все unit/widget/E2E тесты (без `test/golden/`) на каждый push/PR, с `dart analyze`, проверкой формата и отчётом о покрытии в комментарии PR — см. [docs/CI_CD.md](docs/CI_CD.md).
 
 ---
 
@@ -815,7 +817,7 @@ function isIn(matName, list) {
 | Задача | Статус | Описание |
 | --- | --- | --- |
 | Рефакторинг (Фазы 1–15) | ✅ | 73/73 проблем закрыто. Clean Architecture, freezed-сущности, декомпозиция God-классов, DI-интерфейсы, Cloud Functions безопасность, 8 пакетов удалено, 337 тестов |
-| CI/CD | ✅ | GitHub Actions: flutter analyze + flutter test на каждый PR |
+| CI/CD (черновик) | ✅ | Первая версия `ci.yml`; полноценная рабочая инфраструктура — см. раздел ниже (1 июля 2026) |
 | DeepSeekService разделение | ✅ | 5 AI-сервисов + BaseClient + фасад (110 строк) |
 | Use Cases | ✅ | CompleteTestWeekUseCase, TestWeekWorkflowService, OnboardingWorkflowService |
 | Локализация | ✅ | 845+ ключей, 0 хардкодированных строк |
@@ -828,6 +830,23 @@ function isIn(matName, list) {
 | LoadingShimmer | ✅ | Переиспользуемый shimmer на 5 экранах |
 | SemanticColors | ✅ | 11 констант, ~60 хардкодов заменено |
 
+### ✅ Завершено (1 июля 2026) — CI/CD-инфраструктура
+
+Полноценная инженерная инфраструктура коммерческого уровня, проверенная в реальной эксплуатации (не только настроена — прогнана на живом GitHub Actions, найденные баги исправлены).
+
+| Задача | Статус | Описание |
+| --- | --- | --- |
+| GitHub Actions — 4 workflow | ✅ | `ci.yml` (analyze/format/test/coverage), `build.yml` (APK/AAB артефакты), `release.yml` (подписанный релиз + GitHub Release), `security.yml` (сканирование уязвимостей) |
+| Release-подпись | ✅ | `android/app/build.gradle.kts` — release keystore из `key.properties` с fallback на debug-подпись; секреты через GitHub Secrets |
+| Автоматические GitHub Release | ✅ | По git-тегу `v*.*.*` или вручную (`workflow_dispatch`), гейт качества (analyze+test), автосгенерированный changelog |
+| Отчёты о покрытии | ✅ | Комментарий с покрытием в каждом PR (без стороннего сервиса — Codecov заблокирован в РФ) |
+| Сканирование уязвимостей | ✅ | OSV-Scanner на `pubspec.lock` и `functions/package-lock.json`, уже поймал реальную CVE в `uuid` |
+| Telegram-уведомления | ✅ | О падениях CI и о выпущенных релизах |
+| Dependabot | ✅ | Автообновление зависимостей (pub/npm/github-actions), 10 PR уже смерджено |
+| Исправлены реальные баги, найденные при первом прогоне | ✅ | Нерабочий branch-триггер (`main` вместо `master`), хардкод локального JDK-пути, неотформатированный код (275 файлов), OOM при сборке на CI-раннере (лишний `-Xmx8G`), зависающие golden-тесты, пустая `assets/animations/`, 10 сломанных тестов (устаревшие моки/ассершены после рефакторинга auth-исключений и локализации) |
+| `dart analyze` — 0 замечаний | ✅ | 61 `curly_braces_in_flow_control_structures` устранены через `dart fix --apply` |
+| Документация | ✅ | [docs/CI_CD.md](docs/CI_CD.md) — секреты, релизы, покрытие, известные ограничения |
+
 ### Ближайшие задачи
 
 | Задача | Приоритет | Описание |
@@ -835,6 +854,7 @@ function isIn(matName, list) {
 | Аудит безопасности | Высокий | GDPR, Firestore rules, Hive шифрование |
 | Email-подтверждение | Средний | `sendEmailVerification()` + блокировка до подтверждения |
 | Бета-тестирование | Высокий | 50–100 пользователей, Crashlytics, Retention D1/D7/D30 |
+| Миграция `firebase-admin` на v14 | Низкий | Не срочно: v14 несовместим с текущим `firebase-functions@7.2.5` (peer dependency), нужна миграция 5 файлов `functions/src/` на модульный API. Ждём релиза `firebase-functions` с поддержкой v14 |
 
 ### Дальнейшее развитие
 
