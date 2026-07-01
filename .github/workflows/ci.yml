@@ -64,7 +64,7 @@ jobs:
 
       - name: Report coverage in PR comment
         if: github.event_name == 'pull_request'
-        uses: zgosalvez/github-actions-report-lcov@v4
+        uses: zgosalvez/github-actions-report-lcov@v7
         with:
           coverage-files: coverage/lcov.info
           artifact-name: coverage-html-report
