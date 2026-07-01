@@ -14,21 +14,22 @@ class ChatService {
   }) async {
     final systemContent = profile != null
         ? 'Ты — персональный фитнес-эксперт и нутрициолог FitnesBuster с 15-летним опытом.\n'
-            'Ты сертифицирован NSCA, ISSN, обладаешь знаниями в спортивной физиологии и диетологии.\n'
-            '${_client.languageInstruction} Будь конкретным, используй цифры и факты.\n\n'
-            '━━━ ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ━━━\n'
-            'Пол: ${profile.gender == Gender.male ? "Мужской" : "Женский"} | Возраст: ${profile.age} лет\n'
-            'Вес: ${profile.weight} кг | Рост: ${profile.height} см | ИМТ: ${profile.bmi.toStringAsFixed(1)}\n'
-            'Цель: ${_fitnessGoalLabel(profile.goal)} | Интенсивность: ${_intensityLabel(profile.intensity)}\n'
-            'Активность: ${profile.activityLevel.label}\n'
-            'Калораж: ${profile.dailyCalorieTarget.toStringAsFixed(0)} ккал/день'
-            '${profile.medicalRestrictions.isNotEmpty ? "\nОграничения: ${profile.medicalRestrictions.join(", ")}" : ""}'
+              'Ты сертифицирован NSCA, ISSN, обладаешь знаниями в спортивной физиологии и диетологии.\n'
+              '${_client.languageInstruction} Будь конкретным, используй цифры и факты.\n\n'
+              '━━━ ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ━━━\n'
+              'Пол: ${profile.gender == Gender.male ? "Мужской" : "Женский"} | Возраст: ${profile.age} лет\n'
+              'Вес: ${profile.weight} кг | Рост: ${profile.height} см | ИМТ: ${profile.bmi.toStringAsFixed(1)}\n'
+              'Цель: ${_fitnessGoalLabel(profile.goal)} | Интенсивность: ${_intensityLabel(profile.intensity)}\n'
+              'Активность: ${profile.activityLevel.label}\n'
+              'Калораж: ${profile.dailyCalorieTarget.toStringAsFixed(0)} ккал/день'
+              '${profile.medicalRestrictions.isNotEmpty ? "\nОграничения: ${profile.medicalRestrictions.join(", ")}" : ""}'
         : 'Ты — персональный фитнес-эксперт и нутрициолог FitnesBuster с 15-летним опытом.\n'
-            'Ты сертифицирован NSCA, ISSN, обладаешь знаниями в спортивной физиологии и диетологии.\n'
-            '${_client.languageInstruction} Будь конкретным, используй цифры и факты.';
+              'Ты сертифицирован NSCA, ISSN, обладаешь знаниями в спортивной физиологии и диетологии.\n'
+              '${_client.languageInstruction} Будь конкретным, используй цифры и факты.';
 
-    final recentHistory =
-        history.length > 20 ? history.sublist(history.length - 20) : history;
+    final recentHistory = history.length > 20
+        ? history.sublist(history.length - 20)
+        : history;
 
     final messages = <Map<String, String>>[
       {'role': 'system', 'content': systemContent},
@@ -44,7 +45,8 @@ class ChatService {
     UserProfile? profile,
     List<String>? recentTopics,
   }) async {
-    final context = profile != null ? '''
+    final context = profile != null
+        ? '''
 ━━━ КОНТЕКСТ ПОЛЬЗОВАТЕЛЯ ━━━
 Пол: ${profile.gender == Gender.male ? 'Мужской' : 'Женский'} | Возраст: ${profile.age} лет
 Вес: ${profile.weight} кг | Рост: ${profile.height} см | ИМТ: ${profile.bmi.toStringAsFixed(1)}
@@ -52,13 +54,15 @@ class ChatService {
 Активность: ${profile.activityLevel.label}
 Калораж: ${profile.dailyCalorieTarget.toStringAsFixed(0)} ккал/день (TDEE: ${profile.tdee.toStringAsFixed(0)})
 ${profile.medicalRestrictions.isNotEmpty ? 'Ограничения: ${profile.medicalRestrictions.join(", ")}' : ''}
-''' : '';
+'''
+        : '';
 
     final topicsContext = recentTopics != null && recentTopics.isNotEmpty
         ? '\n━━━ ТЕМЫ ТЕКУЩЕЙ СЕССИИ ━━━\n${recentTopics.join(', ')}\n'
         : '';
 
-    final prompt = '''
+    final prompt =
+        '''
 Ты — персональный фитнес-эксперт и нутрициолог FitnesBuster с 15-летним опытом.
 Ты сертифицирован NSCA, ISSN, обладаешь знаниями в спортивной физиологии и диетологии.
 
@@ -85,9 +89,12 @@ $question
     String content, {
     String sourceHint = 'текст',
   }) async {
-    final truncated = content.length > 8000 ? content.substring(0, 8000) : content;
+    final truncated = content.length > 8000
+        ? content.substring(0, 8000)
+        : content;
 
-    final prompt = '''
+    final prompt =
+        '''
 Ты — AI-тренер FitnesBuster. Пользователь импортирует тренировочную программу.
 
 ИСТОЧНИК: $sourceHint
@@ -149,7 +156,8 @@ $truncated
     final messages = <Map<String, String>>[
       {
         'role': 'system',
-        'content': 'Ты — профессиональный AI-тренер. Преобразуй любой формат описания тренировок в структурированный JSON. ${_client.languageInstruction}',
+        'content':
+            'Ты — профессиональный AI-тренер. Преобразуй любой формат описания тренировок в структурированный JSON. ${_client.languageInstruction}',
       },
       {'role': 'user', 'content': prompt},
     ];
@@ -164,21 +172,31 @@ $truncated
 
   String _fitnessGoalLabel(FitnessGoal goal) {
     switch (goal) {
-      case FitnessGoal.loseWeight: return 'Снижение веса';
-      case FitnessGoal.gainWeight: return 'Набор массы';
-      case FitnessGoal.maintain: return 'Поддержание формы';
-      case FitnessGoal.beachBody: return 'К пляжному сезону';
-      case FitnessGoal.sportPerformance: return 'Спортивные результаты';
+      case FitnessGoal.loseWeight:
+        return 'Снижение веса';
+      case FitnessGoal.gainWeight:
+        return 'Набор массы';
+      case FitnessGoal.maintain:
+        return 'Поддержание формы';
+      case FitnessGoal.beachBody:
+        return 'К пляжному сезону';
+      case FitnessGoal.sportPerformance:
+        return 'Спортивные результаты';
     }
   }
 
   String _intensityLabel(IntensityLevel intensity) {
     switch (intensity) {
-      case IntensityLevel.hardcore: return 'Хардкор';
-      case IntensityLevel.intensive: return 'Интенсив';
-      case IntensityLevel.balanced: return 'Баланс';
-      case IntensityLevel.gradual: return 'Постепенный';
-      case IntensityLevel.relaxed: return 'Лайт';
+      case IntensityLevel.hardcore:
+        return 'Хардкор';
+      case IntensityLevel.intensive:
+        return 'Интенсив';
+      case IntensityLevel.balanced:
+        return 'Баланс';
+      case IntensityLevel.gradual:
+        return 'Постепенный';
+      case IntensityLevel.relaxed:
+        return 'Лайт';
     }
   }
 

@@ -22,11 +22,11 @@ class DeepSeekService implements IDeepSeekService {
     required PlanRefinementService refinement,
     required ProgressAnalyzer progress,
     required ChatService chat,
-  })  : _workoutPlan = workoutPlan,
-        _mealPlan = mealPlan,
-        _refinement = refinement,
-        _progress = progress,
-        _chat = chat;
+  }) : _workoutPlan = workoutPlan,
+       _mealPlan = mealPlan,
+       _refinement = refinement,
+       _progress = progress,
+       _chat = chat;
 
   @override
   Future<String> generateWorkoutPlan(
@@ -34,8 +34,12 @@ class DeepSeekService implements IDeepSeekService {
     HealthData? recentHealth,
     int weekNumber = 1,
     String? previousPlanFeedback,
-  }) => _workoutPlan.generateWorkoutPlan(profile,
-      recentHealth: recentHealth, weekNumber: weekNumber, previousPlanFeedback: previousPlanFeedback);
+  }) => _workoutPlan.generateWorkoutPlan(
+    profile,
+    recentHealth: recentHealth,
+    weekNumber: weekNumber,
+    previousPlanFeedback: previousPlanFeedback,
+  );
 
   @override
   Future<String> generateMealPlan(
@@ -45,13 +49,20 @@ class DeepSeekService implements IDeepSeekService {
     List<String>? dislikedFoods,
     String? cuisinePreference,
     String? city,
-  }) => _mealPlan.generateMealPlan(profile,
-      stepsToday: stepsToday, recentHealth: recentHealth,
-      dislikedFoods: dislikedFoods, cuisinePreference: cuisinePreference, city: city);
+  }) => _mealPlan.generateMealPlan(
+    profile,
+    stepsToday: stepsToday,
+    recentHealth: recentHealth,
+    dislikedFoods: dislikedFoods,
+    cuisinePreference: cuisinePreference,
+    city: city,
+  );
 
   @override
-  Future<String> refineWorkoutPlan(UserProfile profile, List<TestExerciseResult> exercises) =>
-      _refinement.refineWorkoutPlan(profile, exercises);
+  Future<String> refineWorkoutPlan(
+    UserProfile profile,
+    List<TestExerciseResult> exercises,
+  ) => _refinement.refineWorkoutPlan(profile, exercises);
 
   @override
   Future<String> analyzeProgress({
@@ -59,7 +70,12 @@ class DeepSeekService implements IDeepSeekService {
     required Map<String, double?> latest,
     Map<String, double?>? previous,
     bool hasPhotos = false,
-  }) => _progress.analyzeProgress(profile: profile, latest: latest, previous: previous, hasPhotos: hasPhotos);
+  }) => _progress.analyzeProgress(
+    profile: profile,
+    latest: latest,
+    previous: previous,
+    hasPhotos: hasPhotos,
+  );
 
   @override
   Future<String> generateWeeklyDebrief({
@@ -72,9 +88,15 @@ class DeepSeekService implements IDeepSeekService {
     required int dailyWaterTarget,
     required List<String> weekPrNames,
   }) => _progress.generateWeeklyDebrief(
-      profile: profile, workoutsDone: workoutsDone, dailyWorkoutKcal: dailyWorkoutKcal,
-      dailyWaterMl: dailyWaterMl, dailyEatenCal: dailyEatenCal,
-      dailyCalTarget: dailyCalTarget, dailyWaterTarget: dailyWaterTarget, weekPrNames: weekPrNames);
+    profile: profile,
+    workoutsDone: workoutsDone,
+    dailyWorkoutKcal: dailyWorkoutKcal,
+    dailyWaterMl: dailyWaterMl,
+    dailyEatenCal: dailyEatenCal,
+    dailyCalTarget: dailyCalTarget,
+    dailyWaterTarget: dailyWaterTarget,
+    weekPrNames: weekPrNames,
+  );
 
   @override
   Future<String> askWithHistory(
@@ -88,7 +110,8 @@ class DeepSeekService implements IDeepSeekService {
     String question, {
     UserProfile? profile,
     List<String>? recentTopics,
-  }) => _chat.askQuestion(question, profile: profile, recentTopics: recentTopics);
+  }) =>
+      _chat.askQuestion(question, profile: profile, recentTopics: recentTopics);
 
   @override
   Future<String> parseWorkoutFromContent(
@@ -103,8 +126,11 @@ class DeepSeekService implements IDeepSeekService {
     String correctionType = 'merge',
     String sourceHint = '',
   }) => _refinement.correctWorkoutPlan(
-      currentPlanJson: currentPlanJson, userInput: userInput,
-      correctionType: correctionType, sourceHint: sourceHint);
+    currentPlanJson: currentPlanJson,
+    userInput: userInput,
+    correctionType: correctionType,
+    sourceHint: sourceHint,
+  );
 
   @override
   void dispose() => _chat.dispose();

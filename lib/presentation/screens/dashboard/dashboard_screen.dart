@@ -74,16 +74,31 @@ class _DashboardScreenState extends State<DashboardScreen>
   String _avatarCustomPath = '';
 
   bool get _hasSyncedData =>
-      _steps > 0 || _caloriesBurned > 0 || _workoutKcalToday > 0 || _waterMl > 0;
+      _steps > 0 ||
+      _caloriesBurned > 0 ||
+      _workoutKcalToday > 0 ||
+      _waterMl > 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _headerCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 600))..forward();
-    _ringsCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400));
-    _cardsCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
-    _ringsAnim = CurvedAnimation(parent: _ringsCtrl, curve: Curves.easeOutCubic);
+    _headerCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    )..forward();
+    _ringsCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    );
+    _cardsCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _ringsAnim = CurvedAnimation(
+      parent: _ringsCtrl,
+      curve: Curves.easeOutCubic,
+    );
 
     Future.delayed(const Duration(milliseconds: 300), () {
       _ringsCtrl.forward();
@@ -118,7 +133,9 @@ class _DashboardScreenState extends State<DashboardScreen>
     _plansTimer?.cancel();
     _requestsSub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
-    _headerCtrl.dispose(); _ringsCtrl.dispose(); _cardsCtrl.dispose();
+    _headerCtrl.dispose();
+    _ringsCtrl.dispose();
+    _cardsCtrl.dispose();
     super.dispose();
   }
 
@@ -152,7 +169,11 @@ class _DashboardScreenState extends State<DashboardScreen>
       final k = todayKey();
       final eaten = await settings.getEatenCal(k);
       final target = await settings.getTargetCal(k);
-      if (mounted) setState(() { _eatenCal = eaten; _targetNutCal = target; });
+      if (mounted)
+        setState(() {
+          _eatenCal = eaten;
+          _targetNutCal = target;
+        });
     } catch (e, st) {
       appLogger.w('Dashboard: load nutrition prefs', error: e, stackTrace: st);
     }
@@ -195,16 +216,19 @@ class _DashboardScreenState extends State<DashboardScreen>
     if (authState is! AuthStateAuthenticated) return;
     final userId = authState.userId;
     final repo = sl<IUserRepository>();
-    repo.isTestWeekCompleted(userId).then((completed) {
-      if (mounted) {
-        setState(() {
-          _testWeekCompleted = completed;
-          _testWeekCheckDone = true;
+    repo
+        .isTestWeekCompleted(userId)
+        .then((completed) {
+          if (mounted) {
+            setState(() {
+              _testWeekCompleted = completed;
+              _testWeekCheckDone = true;
+            });
+          }
+        })
+        .catchError((_) {
+          if (mounted) setState(() => _testWeekCheckDone = true);
         });
-      }
-    }).catchError((_) {
-      if (mounted) setState(() => _testWeekCheckDone = true);
-    });
     int attempts = 0;
     _plansTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
       attempts++;
@@ -221,9 +245,16 @@ class _DashboardScreenState extends State<DashboardScreen>
           _plansTimer = null;
         }
       } catch (e, st) {
-        appLogger.w('Dashboard: load AI plans (retry)', error: e, stackTrace: st);
+        appLogger.w(
+          'Dashboard: load AI plans (retry)',
+          error: e,
+          stackTrace: st,
+        );
       }
-      if (attempts >= 5) { timer.cancel(); _plansTimer = null; }
+      if (attempts >= 5) {
+        timer.cancel();
+        _plansTimer = null;
+      }
     });
   }
 
@@ -237,11 +268,15 @@ class _DashboardScreenState extends State<DashboardScreen>
           if (data.steps > 0) _steps = data.steps;
           if (data.caloriesBurned > 0) _caloriesBurned = data.caloriesBurned;
           if (data.heartRateAvg != null) _heartRate = data.heartRateAvg!;
-          if ((data.waterIntakeMl ?? 0) > _waterMl) _waterMl = data.waterIntakeMl!;
+          if ((data.waterIntakeMl ?? 0) > _waterMl)
+            _waterMl = data.waterIntakeMl!;
           if (data.weight != null && data.weight! > 0) {
             final newWeight = data.weight!;
             if ((newWeight - _weight).abs() > 1.0 && _weight > 0) {
-              _triggerPlanRegeneration(weightChanged: true, newWeight: newWeight);
+              _triggerPlanRegeneration(
+                weightChanged: true,
+                newWeight: newWeight,
+              );
             }
             _weight = newWeight;
           }
@@ -268,7 +303,11 @@ class _DashboardScreenState extends State<DashboardScreen>
         if (w > 0 && mounted) setState(() => _weight = w);
       }
     } catch (e, st) {
-      appLogger.w('Dashboard: load weight from profile', error: e, stackTrace: st);
+      appLogger.w(
+        'Dashboard: load weight from profile',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -281,7 +320,11 @@ class _DashboardScreenState extends State<DashboardScreen>
         final d = now.subtract(Duration(days: i));
         final k = dateKey(d);
         final done = await settings.getWorkoutDone(k);
-        if (done) { streak++; } else if (i > 0) { break; }
+        if (done) {
+          streak++;
+        } else if (i > 0) {
+          break;
+        }
       }
       if (mounted) setState(() => _streak = streak);
     } catch (e, st) {
@@ -306,7 +349,11 @@ class _DashboardScreenState extends State<DashboardScreen>
         DailyTaskItem(text: l10n.taskWorkout, xp: 100, done: workoutDone),
         DailyTaskItem(text: l10n.taskWater, xp: 20, done: waterMl >= 2000),
         DailyTaskItem(text: l10n.taskMeals, xp: 30, done: allMealsDone),
-        DailyTaskItem(text: AppLocalizations.tl('dashboardWalkSteps'), xp: 40, done: steps >= 8000),
+        DailyTaskItem(
+          text: AppLocalizations.tl('dashboardWalkSteps'),
+          xp: 40,
+          done: steps >= 8000,
+        ),
       ];
       if (mounted) {
         setState(() {
@@ -315,11 +362,18 @@ class _DashboardScreenState extends State<DashboardScreen>
         });
       }
     } catch (e, st) {
-      appLogger.w('Dashboard: load gamification data', error: e, stackTrace: st);
+      appLogger.w(
+        'Dashboard: load gamification data',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
-  void _triggerPlanRegeneration({bool weightChanged = false, double? newWeight}) {
+  void _triggerPlanRegeneration({
+    bool weightChanged = false,
+    double? newWeight,
+  }) {
     final userState = context.read<UserBloc>().state;
     if (userState is! UserStateLoaded || userState.user.profile == null) return;
     final profile = userState.user.profile!;
@@ -343,12 +397,17 @@ class _DashboardScreenState extends State<DashboardScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              context.l10n.dashboardWeightUpdated(newWeight.toStringAsFixed(1), '$target'),
+              context.l10n.dashboardWeightUpdated(
+                newWeight.toStringAsFixed(1),
+                '$target',
+              ),
               style: const TextStyle(color: Colors.white),
             ),
             backgroundColor: const Color(0xFF131619),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             duration: const Duration(seconds: 4),
           ),
         );
@@ -399,7 +458,11 @@ class _DashboardScreenState extends State<DashboardScreen>
       }
       if (mounted) {
         setState(() {
-          if (isPulse) { _heartRate = result; } else { _steps = result; }
+          if (isPulse) {
+            _heartRate = result;
+          } else {
+            _steps = result;
+          }
         });
       }
     }
@@ -493,7 +556,12 @@ class _DashboardScreenState extends State<DashboardScreen>
 class _ManualInputSheet extends StatefulWidget {
   final String title, unit, hint;
   final TextEditingController ctrl;
-  const _ManualInputSheet({required this.title, required this.unit, required this.hint, required this.ctrl});
+  const _ManualInputSheet({
+    required this.title,
+    required this.unit,
+    required this.hint,
+    required this.ctrl,
+  });
 
   @override
   State<_ManualInputSheet> createState() => _ManualInputSheetState();
@@ -511,52 +579,94 @@ class _ManualInputSheetState extends State<_ManualInputSheet> {
         color: p.surfaceCard,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Text(widget.title, style: TextStyle(fontFamily: 'Syne', fontSize: 20, fontWeight: FontWeight.w800, color: p.textPrimary)),
-          const Spacer(),
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Icon(Icons.close_rounded, color: p.textMuted, size: 22),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                widget.title,
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: p.textPrimary,
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Icon(Icons.close_rounded, color: p.textMuted, size: 22),
+              ),
+            ],
           ),
-        ]),
-        const SizedBox(height: 6),
-        Text(l10n.enterValueManualHint(widget.unit), style: TextStyle(fontSize: 13, color: p.textMuted)),
-        const SizedBox(height: 20),
-        TextField(
-          controller: widget.ctrl,
-          autofocus: true,
-          keyboardType: TextInputType.number,
-          style: TextStyle(fontFamily: 'Syne', fontSize: 28, fontWeight: FontWeight.w800, color: p.textPrimary),
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-            hintText: widget.hint,
-            hintStyle: TextStyle(fontFamily: 'Syne', fontSize: 28, fontWeight: FontWeight.w300, color: p.textMuted),
-            suffixText: widget.unit,
-            suffixStyle: TextStyle(fontSize: 14, color: p.textMuted),
-            filled: true,
-            fillColor: p.surfaceLight,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          const SizedBox(height: 6),
+          Text(
+            l10n.enterValueManualHint(widget.unit),
+            style: TextStyle(fontSize: 13, color: p.textMuted),
           ),
-        ),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: () {
-              final v = int.tryParse(widget.ctrl.text.trim()) ?? 0;
-              Navigator.pop(context, v);
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: p.primary,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          const SizedBox(height: 20),
+          TextField(
+            controller: widget.ctrl,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              color: p.textPrimary,
             ),
-            child: Text(l10n.save, style: const TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              hintStyle: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 28,
+                fontWeight: FontWeight.w300,
+                color: p.textMuted,
+              ),
+              suffixText: widget.unit,
+              suffixStyle: TextStyle(fontSize: 14, color: p.textMuted),
+              filled: true,
+              fillColor: p.surfaceLight,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 16,
+              ),
+            ),
           ),
-        ),
-      ]),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () {
+                final v = int.tryParse(widget.ctrl.text.trim()) ?? 0;
+                Navigator.pop(context, v);
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: p.primary,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: Text(
+                l10n.save,
+                style: const TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

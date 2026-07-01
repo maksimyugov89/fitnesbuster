@@ -35,7 +35,13 @@ class _DayStats {
   final int workoutKcal;
   final int waterMl;
   final int eatenCal;
-  const _DayStats({required this.date, required this.workoutDone, required this.workoutKcal, required this.waterMl, required this.eatenCal});
+  const _DayStats({
+    required this.date,
+    required this.workoutDone,
+    required this.workoutKcal,
+    required this.waterMl,
+    required this.eatenCal,
+  });
 }
 
 class ProgressScreen extends StatefulWidget {
@@ -85,7 +91,10 @@ class _ProgressScreenState extends State<ProgressScreen>
   String? _aiAnalysis;
   bool _aiAnalyzing = false;
 
-  String? get _userId => context.read<AuthBloc>().state is AuthStateAuthenticated ? (context.read<AuthBloc>().state as AuthStateAuthenticated).userId : null;
+  String? get _userId =>
+      context.read<AuthBloc>().state is AuthStateAuthenticated
+      ? (context.read<AuthBloc>().state as AuthStateAuthenticated).userId
+      : null;
 
   @override
   void initState() {
@@ -111,11 +120,19 @@ class _ProgressScreenState extends State<ProgressScreen>
       for (int i = 0; i < 365; i++) {
         final day = now.subtract(Duration(days: i));
         final k = dateKey(day);
-        final done  = await settings.getWorkoutDone(k);
-        final kcal  = await settings.getWorkoutKcal(k);
+        final done = await settings.getWorkoutDone(k);
+        final kcal = await settings.getWorkoutKcal(k);
         final water = await settings.getWaterMl(k);
         final eaten = await settings.getEatenCal(k);
-        yearlyStats.add(_DayStats(date: day, workoutDone: done, workoutKcal: kcal, waterMl: water, eatenCal: eaten));
+        yearlyStats.add(
+          _DayStats(
+            date: day,
+            workoutDone: done,
+            workoutKcal: kcal,
+            waterMl: water,
+            eatenCal: eaten,
+          ),
+        );
         if (done) {
           if (!streakBroken) currentStreak++;
         } else if (i > 0) {
@@ -132,10 +149,12 @@ class _ProgressScreenState extends State<ProgressScreen>
 
       if (mounted) {
         setState(() {
-          _yearlyStats        = yearlyStats;
-          _weekWorkouts       = weekWorkouts;
-          _workoutKcalToday   = yearlyStats.isNotEmpty ? yearlyStats[0].workoutKcal : 0;
-          _waterMlToday       = yearlyStats.isNotEmpty ? yearlyStats[0].waterMl     : 0;
+          _yearlyStats = yearlyStats;
+          _weekWorkouts = weekWorkouts;
+          _workoutKcalToday = yearlyStats.isNotEmpty
+              ? yearlyStats[0].workoutKcal
+              : 0;
+          _waterMlToday = yearlyStats.isNotEmpty ? yearlyStats[0].waterMl : 0;
           _currentStreak = currentStreak;
         });
       }
@@ -152,7 +171,11 @@ class _ProgressScreenState extends State<ProgressScreen>
         if (w > 0 && mounted) setState(() => _weight = w);
       }
     } catch (e, st) {
-      appLogger.w('Progress: load weight from profile', error: e, stackTrace: st);
+      appLogger.w(
+        'Progress: load weight from profile',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -162,22 +185,32 @@ class _ProgressScreenState extends State<ProgressScreen>
     final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
     return switch (_selectedPeriod) {
       StatPeriod.today => _yearlyStats.take(1).toList(),
-      StatPeriod.week  => _yearlyStats.take(7).toList(),
+      StatPeriod.week => _yearlyStats.take(7).toList(),
       StatPeriod.month => _yearlyStats.take(daysInMonth).toList(),
-      StatPeriod.year  => _yearlyStats,
+      StatPeriod.year => _yearlyStats,
     };
   }
 
-  ({int done, int total, double kcal, int waterMl, int eatenCal}) get _periodSummary {
+  ({int done, int total, double kcal, int waterMl, int eatenCal})
+  get _periodSummary {
     final data = _periodData;
-    int done = 0; double kcal = 0; int water = 0; int eaten = 0;
+    int done = 0;
+    double kcal = 0;
+    int water = 0;
+    int eaten = 0;
     for (final s in data) {
       if (s.workoutDone) done++;
-      kcal  += s.workoutKcal;
+      kcal += s.workoutKcal;
       water += s.waterMl;
       eaten += s.eatenCal;
     }
-    return (done: done, total: data.length, kcal: kcal, waterMl: water, eatenCal: eaten);
+    return (
+      done: done,
+      total: data.length,
+      kcal: kcal,
+      waterMl: water,
+      eatenCal: eaten,
+    );
   }
 
   List<({String label, int done, int total, double kcal})> get _chartBars {
@@ -187,33 +220,54 @@ class _ProgressScreenState extends State<ProgressScreen>
     switch (_selectedPeriod) {
       case StatPeriod.today:
         final s = _yearlyStats[0];
-        return [(label: context.l10n.todayShort, done: s.workoutDone ? 1 : 0, total: 1, kcal: s.workoutKcal.toDouble())];
+        return [
+          (
+            label: context.l10n.todayShort,
+            done: s.workoutDone ? 1 : 0,
+            total: 1,
+            kcal: s.workoutKcal.toDouble(),
+          ),
+        ];
 
       case StatPeriod.week:
-        final labels = [context.l10n.monShort, context.l10n.tueShort, context.l10n.wedShort, context.l10n.thuShort, context.l10n.friShort, context.l10n.satShort, context.l10n.sunShort];
+        final labels = [
+          context.l10n.monShort,
+          context.l10n.tueShort,
+          context.l10n.wedShort,
+          context.l10n.thuShort,
+          context.l10n.friShort,
+          context.l10n.satShort,
+          context.l10n.sunShort,
+        ];
         final weekday = now.weekday;
         final weekStart = now.subtract(Duration(days: weekday - 1));
         return List.generate(7, (i) {
-          final day    = weekStart.add(Duration(days: i));
+          final day = weekStart.add(Duration(days: i));
           final daysAgo = now.difference(day).inDays;
           if (daysAgo < 0 || daysAgo >= _yearlyStats.length) {
             return (label: labels[i], done: 0, total: 1, kcal: 0.0);
           }
           final s = _yearlyStats[daysAgo];
-          return (label: labels[i], done: s.workoutDone ? 1 : 0, total: 1, kcal: s.workoutKcal.toDouble());
+          return (
+            label: labels[i],
+            done: s.workoutDone ? 1 : 0,
+            total: 1,
+            kcal: s.workoutKcal.toDouble(),
+          );
         });
 
       case StatPeriod.month:
         final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
-        final monthStart  = DateTime(now.year, now.month, 1);
+        final monthStart = DateTime(now.year, now.month, 1);
         final bars = <({String label, int done, int total, double kcal})>[];
         int weekNum = 1;
-        int wStart  = 0;
+        int wStart = 0;
         while (wStart < daysInMonth) {
           final wEnd = (wStart + 7).clamp(0, daysInMonth);
-          int d = 0; double k = 0;
+          int d = 0;
+          double k = 0;
           for (int di = wStart; di < wEnd; di++) {
-            final day     = monthStart.add(Duration(days: di));
+            final day = monthStart.add(Duration(days: di));
             final daysAgo = now.difference(day).inDays;
             if (daysAgo >= 0 && daysAgo < _yearlyStats.length) {
               final s = _yearlyStats[daysAgo];
@@ -221,26 +275,52 @@ class _ProgressScreenState extends State<ProgressScreen>
               k += s.workoutKcal;
             }
           }
-          bars.add((label: context.l10n.weekNumShort(weekNum), done: d, total: wEnd - wStart, kcal: k));
-          wStart = wEnd; weekNum++;
+          bars.add((
+            label: context.l10n.weekNumShort(weekNum),
+            done: d,
+            total: wEnd - wStart,
+            kcal: k,
+          ));
+          wStart = wEnd;
+          weekNum++;
         }
         return bars;
 
       case StatPeriod.year:
-        final mLabels = [context.l10n.janShort, context.l10n.febShort, context.l10n.marShort, context.l10n.aprShort, context.l10n.mayShort, context.l10n.junShort, context.l10n.julShort, context.l10n.augShort, context.l10n.sepShort, context.l10n.octShort, context.l10n.novShort, context.l10n.decShort];
+        final mLabels = [
+          context.l10n.janShort,
+          context.l10n.febShort,
+          context.l10n.marShort,
+          context.l10n.aprShort,
+          context.l10n.mayShort,
+          context.l10n.junShort,
+          context.l10n.julShort,
+          context.l10n.augShort,
+          context.l10n.sepShort,
+          context.l10n.octShort,
+          context.l10n.novShort,
+          context.l10n.decShort,
+        ];
         return List.generate(12, (i) {
           final offset = 11 - i;
           final dt = DateTime(now.year, now.month - offset, 1);
-          final yr = dt.year; final mo = dt.month;
+          final yr = dt.year;
+          final mo = dt.month;
           final daysInM = DateTime(yr, mo + 1, 0).day;
-          int done = 0; double kcal = 0;
+          int done = 0;
+          double kcal = 0;
           for (final s in _yearlyStats) {
             if (s.date.year == yr && s.date.month == mo) {
               if (s.workoutDone) done++;
               kcal += s.workoutKcal;
             }
           }
-          return (label: mLabels[mo - 1], done: done, total: daysInM, kcal: kcal);
+          return (
+            label: mLabels[mo - 1],
+            done: done,
+            total: daysInM,
+            kcal: kcal,
+          );
         });
     }
   }
@@ -259,7 +339,8 @@ class _ProgressScreenState extends State<ProgressScreen>
           _heartRateVariability = data.heartRateVariability;
           _respiratoryRate = data.respiratoryRate;
           _sleepMinutes = data.sleepMinutes;
-          if ((data.waterIntakeMl ?? 0) > _waterMlToday) _waterIntakeMl = data.waterIntakeMl;
+          if ((data.waterIntakeMl ?? 0) > _waterMlToday)
+            _waterIntakeMl = data.waterIntakeMl;
           _healthLoaded = true;
           if (data.weight != null && data.weight! > 0) {
             _weight = data.weight;
@@ -283,7 +364,11 @@ class _ProgressScreenState extends State<ProgressScreen>
     if (uid == null) return;
     try {
       final list = await sl<IUserRepository>().getMeasurements(uid);
-      if (mounted) setState(() { _measurements = list; _measurementsLoaded = true; });
+      if (mounted)
+        setState(() {
+          _measurements = list;
+          _measurementsLoaded = true;
+        });
     } catch (_) {
       if (mounted) setState(() => _measurementsLoaded = true);
     }
@@ -310,23 +395,63 @@ class _ProgressScreenState extends State<ProgressScreen>
         final colors = AppTheme.of(ctx);
         return AlertDialog(
           backgroundColor: colors.surfaceCard,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(ctx.l10n.photoPickTitle(angle.label(ctx.l10n)), style: TextStyle(color: colors.textPrimary, fontFamily: 'Syne', fontWeight: FontWeight.w700)),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            Icon(angle.icon, size: 48, color: colors.primary),
-            const SizedBox(height: 12),
-            Text(angle.instruction(ctx.l10n), style: TextStyle(color: colors.textSecondary, fontSize: 14, height: 1.5)),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: colors.info.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-              child: Text(ctx.l10n.photoTips, style: TextStyle(fontSize: 12, color: colors.textMuted, height: 1.5)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            ctx.l10n.photoPickTitle(angle.label(ctx.l10n)),
+            style: TextStyle(
+              color: colors.textPrimary,
+              fontFamily: 'Syne',
+              fontWeight: FontWeight.w700,
             ),
-          ]),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(angle.icon, size: 48, color: colors.primary),
+              const SizedBox(height: 12),
+              Text(
+                angle.instruction(ctx.l10n),
+                style: TextStyle(
+                  color: colors.textSecondary,
+                  fontSize: 14,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colors.info.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  ctx.l10n.photoTips,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colors.textMuted,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(ctx.l10n.cancel, style: TextStyle(color: colors.textMuted))),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(
+                ctx.l10n.cancel,
+                style: TextStyle(color: colors.textMuted),
+              ),
+            ),
             FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: colors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+              style: FilledButton.styleFrom(
+                backgroundColor: colors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               onPressed: () => Navigator.pop(ctx, true),
               child: Text(ctx.l10n.selectPhotoBtn),
             ),
@@ -342,27 +467,43 @@ class _ProgressScreenState extends State<ProgressScreen>
       builder: (ctx) {
         final colors = AppTheme.of(ctx);
         return SafeArea(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const SizedBox(height: 8),
-            ListTile(
-              leading: Icon(Icons.camera_alt_rounded, color: colors.primary),
-              title: Text(ctx.l10n.takeCameraBtn, style: TextStyle(color: colors.textPrimary)),
-              onTap: () => Navigator.pop(ctx, ImageSource.camera),
-            ),
-            ListTile(
-              leading: Icon(Icons.photo_library_rounded, color: colors.primary),
-              title: Text(ctx.l10n.chooseGalleryBtn, style: TextStyle(color: colors.textPrimary)),
-              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
-            ),
-            const SizedBox(height: 8),
-          ]),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 8),
+              ListTile(
+                leading: Icon(Icons.camera_alt_rounded, color: colors.primary),
+                title: Text(
+                  ctx.l10n.takeCameraBtn,
+                  style: TextStyle(color: colors.textPrimary),
+                ),
+                onTap: () => Navigator.pop(ctx, ImageSource.camera),
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.photo_library_rounded,
+                  color: colors.primary,
+                ),
+                title: Text(
+                  ctx.l10n.chooseGalleryBtn,
+                  style: TextStyle(color: colors.textPrimary),
+                ),
+                onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         );
       },
     );
     if (source == null) return;
 
     try {
-      final picked = await _picker.pickImage(source: source, imageQuality: 85, maxWidth: 1080);
+      final picked = await _picker.pickImage(
+        source: source,
+        imageQuality: 85,
+        maxWidth: 1080,
+      );
       if (picked == null) return;
       final dir = await getApplicationDocumentsDirectory();
       final dest = File('${dir.path}/progress_${angle.name}.jpg');
@@ -377,7 +518,10 @@ class _ProgressScreenState extends State<ProgressScreen>
     final uid = _userId;
     if (uid == null || _measurements.isEmpty) return;
 
-    setState(() { _aiAnalyzing = true; _aiAnalysis = null; });
+    setState(() {
+      _aiAnalyzing = true;
+      _aiAnalysis = null;
+    });
 
     try {
       final latest = _measurements.first;
@@ -418,18 +562,28 @@ class _ProgressScreenState extends State<ProgressScreen>
           'hips': latest.hipsCm,
           'bodyFat': latest.bodyFatPercent,
         },
-        previous: previous != null ? {
-          'chest': previous.chestCm,
-          'waist': previous.waistCm,
-          'hips': previous.hipsCm,
-          'bodyFat': previous.bodyFatPercent,
-        } : null,
+        previous: previous != null
+            ? {
+                'chest': previous.chestCm,
+                'waist': previous.waistCm,
+                'hips': previous.hipsCm,
+                'bodyFat': previous.bodyFatPercent,
+              }
+            : null,
         hasPhotos: hasPhotos,
       );
 
-      if (mounted) setState(() { _aiAnalysis = result; _aiAnalyzing = false; });
+      if (mounted)
+        setState(() {
+          _aiAnalysis = result;
+          _aiAnalyzing = false;
+        });
     } catch (e) {
-      if (mounted) setState(() { _aiAnalysis = '${context.l10n.error}: $e'; _aiAnalyzing = false; });
+      if (mounted)
+        setState(() {
+          _aiAnalysis = '${context.l10n.error}: $e';
+          _aiAnalyzing = false;
+        });
     }
   }
 
@@ -437,13 +591,18 @@ class _ProgressScreenState extends State<ProgressScreen>
     final uid = _userId;
     if (uid == null) return;
     final userState = context.read<UserBloc>().state;
-    final profile = userState is UserStateLoaded ? userState.user.profile : null;
+    final profile = userState is UserStateLoaded
+        ? userState.user.profile
+        : null;
     await showDialog(
       context: context,
       builder: (ctx) => BodyMeasurementsDialog(
         profile: profile,
         onSave: (m) async {
-          await sl<IUserRepository>().saveMeasurement(userId: uid, measurement: m);
+          await sl<IUserRepository>().saveMeasurement(
+            userId: uid,
+            measurement: m,
+          );
           await _loadMeasurements();
         },
       ),
@@ -451,7 +610,10 @@ class _ProgressScreenState extends State<ProgressScreen>
   }
 
   @override
-  void dispose() { _tabCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _tabCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -459,28 +621,45 @@ class _ProgressScreenState extends State<ProgressScreen>
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: Column(children: [
-          const ProgressHeader(),
-          const DebriefCard(),
-          const SizedBox(height: 12),
-          TabBar(
-            controller: _tabCtrl,
-            indicator: BoxDecoration(color: colors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-            indicatorPadding: const EdgeInsets.all(4),
-            labelColor: colors.primary,
-            unselectedLabelColor: colors.textMuted,
-            labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Inter'),
-            tabs: [Tab(text: context.l10n.weightBodyTab), Tab(text: context.l10n.workoutsStatTab), Tab(text: context.l10n.healthTabLabel)],
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-          ),
-          const SizedBox(height: 4),
-          Expanded(
-            child: TabBarView(
+        child: Column(
+          children: [
+            const ProgressHeader(),
+            const DebriefCard(),
+            const SizedBox(height: 12),
+            TabBar(
               controller: _tabCtrl,
-              children: [_buildBodyTab(), _buildWorkoutsTab(), _buildHealthTab()],
+              indicator: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              indicatorPadding: const EdgeInsets.all(4),
+              labelColor: colors.primary,
+              unselectedLabelColor: colors.textMuted,
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                fontFamily: 'Inter',
+              ),
+              tabs: [
+                Tab(text: context.l10n.weightBodyTab),
+                Tab(text: context.l10n.workoutsStatTab),
+                Tab(text: context.l10n.healthTabLabel),
+              ],
+              padding: const EdgeInsets.symmetric(horizontal: 20),
             ),
-          ),
-        ]),
+            const SizedBox(height: 4),
+            Expanded(
+              child: TabBarView(
+                controller: _tabCtrl,
+                children: [
+                  _buildBodyTab(),
+                  _buildWorkoutsTab(),
+                  _buildHealthTab(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -503,22 +682,43 @@ class _ProgressScreenState extends State<ProgressScreen>
 
         const SizedBox(height: 20),
 
-        Row(children: [
-          Text(l10n.bodyMeasTitle, style: AppTextStyles.titleM),
-          const Spacer(),
-          GestureDetector(
-            onTap: _openMeasurementsDialog,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(color: AppTheme.of(context).primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-              child: Row(children: [
-                Icon(Icons.add_rounded, size: 16, color: AppTheme.of(context).primary),
-                const SizedBox(width: 4),
-                Text(l10n.add, style: TextStyle(fontSize: 12, color: AppTheme.of(context).primary, fontWeight: FontWeight.w700)),
-              ]),
+        Row(
+          children: [
+            Text(l10n.bodyMeasTitle, style: AppTextStyles.titleM),
+            const Spacer(),
+            GestureDetector(
+              onTap: _openMeasurementsDialog,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppTheme.of(context).primary.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.add_rounded,
+                      size: 16,
+                      color: AppTheme.of(context).primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      l10n.add,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.of(context).primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
         const SizedBox(height: 12),
         if (!_measurementsLoaded)
           const Padding(
@@ -527,14 +727,46 @@ class _ProgressScreenState extends State<ProgressScreen>
           )
         else
           GridView.count(
-            crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12,
-            shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             childAspectRatio: 1.8,
             children: [
-              ProgressMeasurementCard(displayLabel: l10n.chestMeasureLabel, value: _measurements.isNotEmpty ? _measurements.first.chestCm : null, prevValue: prevMeasurement?.chestCm, unit: l10n.cmUnit),
-              ProgressMeasurementCard(displayLabel: l10n.waistLabel, value: _measurements.isNotEmpty ? _measurements.first.waistCm : null, prevValue: prevMeasurement?.waistCm, unit: l10n.cmUnit),
-              ProgressMeasurementCard(displayLabel: l10n.hipsLabel, value: _measurements.isNotEmpty ? _measurements.first.hipsCm : null, prevValue: prevMeasurement?.hipsCm, unit: l10n.cmUnit),
-              ProgressMeasurementCard(displayLabel: l10n.bodyFatLabel, value: _measurements.isNotEmpty ? _measurements.first.bodyFatPercent : null, prevValue: prevMeasurement?.bodyFatPercent, unit: '%', isInverseGood: true),
+              ProgressMeasurementCard(
+                displayLabel: l10n.chestMeasureLabel,
+                value: _measurements.isNotEmpty
+                    ? _measurements.first.chestCm
+                    : null,
+                prevValue: prevMeasurement?.chestCm,
+                unit: l10n.cmUnit,
+              ),
+              ProgressMeasurementCard(
+                displayLabel: l10n.waistLabel,
+                value: _measurements.isNotEmpty
+                    ? _measurements.first.waistCm
+                    : null,
+                prevValue: prevMeasurement?.waistCm,
+                unit: l10n.cmUnit,
+              ),
+              ProgressMeasurementCard(
+                displayLabel: l10n.hipsLabel,
+                value: _measurements.isNotEmpty
+                    ? _measurements.first.hipsCm
+                    : null,
+                prevValue: prevMeasurement?.hipsCm,
+                unit: l10n.cmUnit,
+              ),
+              ProgressMeasurementCard(
+                displayLabel: l10n.bodyFatLabel,
+                value: _measurements.isNotEmpty
+                    ? _measurements.first.bodyFatPercent
+                    : null,
+                prevValue: prevMeasurement?.bodyFatPercent,
+                unit: '%',
+                isInverseGood: true,
+              ),
             ],
           ),
 
@@ -542,7 +774,10 @@ class _ProgressScreenState extends State<ProgressScreen>
           const SizedBox(height: 8),
           Text(
             l10n.prevMeasLabel(_formatDate(_measurements[1].date)),
-            style: TextStyle(fontSize: 11, color: AppTheme.of(context).textMuted),
+            style: TextStyle(
+              fontSize: 11,
+              color: AppTheme.of(context).textMuted,
+            ),
           ),
         ],
 
@@ -571,12 +806,24 @@ class _ProgressScreenState extends State<ProgressScreen>
     final colors = AppTheme.of(context);
     final now = DateTime.now();
     final weekday = now.weekday;
-    final dayLabels = [context.l10n.monShort, context.l10n.tueShort, context.l10n.wedShort, context.l10n.thuShort, context.l10n.friShort, context.l10n.satShort, context.l10n.sunShort];
+    final dayLabels = [
+      context.l10n.monShort,
+      context.l10n.tueShort,
+      context.l10n.wedShort,
+      context.l10n.thuShort,
+      context.l10n.friShort,
+      context.l10n.satShort,
+      context.l10n.sunShort,
+    ];
     final summary = _periodSummary;
     final bars = _chartBars;
 
-    final todayKcal  = _workoutKcalToday > 0 ? _workoutKcalToday : (_caloriesBurned > 0 ? _caloriesBurned.toInt() : 0);
-    final todayWater = _waterMlToday > 0 ? _waterMlToday : ((_waterIntakeMl ?? 0) > 0 ? _waterIntakeMl!.toInt() : 0);
+    final todayKcal = _workoutKcalToday > 0
+        ? _workoutKcalToday
+        : (_caloriesBurned > 0 ? _caloriesBurned.toInt() : 0);
+    final todayWater = _waterMlToday > 0
+        ? _waterMlToday
+        : ((_waterIntakeMl ?? 0) > 0 ? _waterIntakeMl!.toInt() : 0);
     final hasAnyActivity = todayKcal > 0 || todayWater > 0 || _steps > 0;
 
     final doneCount = _weekWorkouts.take(weekday).where((d) => d).length;
@@ -585,7 +832,6 @@ class _ProgressScreenState extends State<ProgressScreen>
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
       children: [
-
         ProgressPeriodSelector(
           selectedPeriod: _selectedPeriod,
           onChanged: (p) => setState(() => _selectedPeriod = p),
@@ -607,14 +853,28 @@ class _ProgressScreenState extends State<ProgressScreen>
         if (bars.isNotEmpty)
           Container(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06))),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(context.l10n.workoutsChartTitle(_chartPeriodLabel), style: AppTextStyles.titleM),
-              const SizedBox(height: 16),
-              SizedBox(height: 120, child: ProgressPeriodBarChart(bars: bars, colors: colors)),
-              const SizedBox(height: 4),
-            ]),
+            decoration: BoxDecoration(
+              color: colors.surfaceCard,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: colors.textPrimary.withValues(alpha: 0.06),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.workoutsChartTitle(_chartPeriodLabel),
+                  style: AppTextStyles.titleM,
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 120,
+                  child: ProgressPeriodBarChart(bars: bars, colors: colors),
+                ),
+                const SizedBox(height: 4),
+              ],
+            ),
           ),
 
         const SizedBox(height: 16),
@@ -637,16 +897,16 @@ class _ProgressScreenState extends State<ProgressScreen>
 
   String get _periodTitle => switch (_selectedPeriod) {
     StatPeriod.today => context.l10n.periodTodayLabel,
-    StatPeriod.week  => context.l10n.periodWeekLabel,
+    StatPeriod.week => context.l10n.periodWeekLabel,
     StatPeriod.month => context.l10n.periodMonthLabel,
-    StatPeriod.year  => context.l10n.periodYearLabel,
+    StatPeriod.year => context.l10n.periodYearLabel,
   };
 
   String get _chartPeriodLabel => switch (_selectedPeriod) {
     StatPeriod.today => context.l10n.periodTodayLabel,
-    StatPeriod.week  => context.l10n.periodWeekLabel,
+    StatPeriod.week => context.l10n.periodWeekLabel,
     StatPeriod.month => context.l10n.periodMonthLabel,
-    StatPeriod.year  => context.l10n.periodYearLabel,
+    StatPeriod.year => context.l10n.periodYearLabel,
   };
 
   Widget _buildHealthTab() {
@@ -662,5 +922,6 @@ class _ProgressScreenState extends State<ProgressScreen>
     );
   }
 
-  String _formatDate(DateTime d) => '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+  String _formatDate(DateTime d) =>
+      '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
 }

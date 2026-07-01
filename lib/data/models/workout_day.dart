@@ -43,12 +43,16 @@ class WorkoutExercise {
 
   bool get isTimedReps {
     final l = reps.toLowerCase();
-    return l.contains('сек') || l.contains('sec') || l.contains('мин') || l.contains('min');
+    return l.contains('сек') ||
+        l.contains('sec') ||
+        l.contains('мин') ||
+        l.contains('min');
   }
 
   int get durationSeconds {
     final l = reps.toLowerCase();
-    final firstNum = int.tryParse(RegExp(r'\d+').firstMatch(l)?.group(0) ?? '') ?? 30;
+    final firstNum =
+        int.tryParse(RegExp(r'\d+').firstMatch(l)?.group(0) ?? '') ?? 30;
     if (l.contains('мин') || l.contains('min')) {
       return firstNum * 60;
     }
@@ -60,12 +64,18 @@ class WorkoutExercise {
     sets: (j['sets'] as num?)?.toInt() ?? 3,
     reps: j['reps']?.toString() ?? '10',
     restSeconds: (j['rest_seconds'] as num?)?.toInt() ?? 60,
-    musclePrimary: _safeString(j['muscle_primary']) ?? _safeString(j['muscle_group']) ?? '',
+    musclePrimary:
+        _safeString(j['muscle_primary']) ??
+        _safeString(j['muscle_group']) ??
+        '',
     muscleSecondary: _safeStringOrList(j['muscle_secondary']),
     weightGuideline: _safeString(j['weight_guideline']) ?? '',
     rpe: (j['rpe'] as num?)?.toInt() ?? 0,
     tempo: _safeString(j['tempo']) ?? '',
-    techniqueCue: _safeString(j['technique_cue']) ?? _safeString(j['technique_tip']) ?? '',
+    techniqueCue:
+        _safeString(j['technique_cue']) ??
+        _safeString(j['technique_tip']) ??
+        '',
     progression: _safeString(j['progression']) ?? '',
   );
 }
@@ -103,18 +113,24 @@ class WorkoutDay {
   factory WorkoutDay.fromJson(Map<String, dynamic> j) => WorkoutDay(
     day: (j['day'] as num?)?.toInt() ?? 1,
     focus: j['focus'] as String? ?? j['name'] as String? ?? '',
-    exercises: (j['exercises'] as List<dynamic>?)
-        ?.map((e) => WorkoutExercise.fromJson(e as Map<String, dynamic>))
-        .toList() ??
+    exercises:
+        (j['exercises'] as List<dynamic>?)
+            ?.map((e) => WorkoutExercise.fromJson(e as Map<String, dynamic>))
+            .toList() ??
         [],
     cardioMinutes: (j['cardio_minutes'] as num?)?.toInt() ?? 0,
     notes: j['notes'] as String? ?? '',
     name: j['name'] as String? ?? j['focus'] as String? ?? '',
     type: j['type'] as String? ?? '',
     durationMinutes: (j['duration_minutes'] as num?)?.toInt() ?? 0,
-    warmup: (j['warmup'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-    cooldown: (j['cooldown'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-    estimatedCaloriesBurned: (j['estimated_calories_burned'] as num?)?.toInt() ?? 0,
+    warmup:
+        (j['warmup'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+        [],
+    cooldown:
+        (j['cooldown'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+        [],
+    estimatedCaloriesBurned:
+        (j['estimated_calories_burned'] as num?)?.toInt() ?? 0,
   );
 
   static WorkoutDay? todayFromPlanJson(String planJson) {
@@ -128,7 +144,10 @@ class WorkoutDay {
       for (final item in plan) {
         final d = WorkoutDay.fromJson(item as Map<String, dynamic>);
         first ??= d;
-        if (d.day == todayWeekday) { match = d; break; }
+        if (d.day == todayWeekday) {
+          match = d;
+          break;
+        }
       }
       return match ?? first;
     } catch (_) {
@@ -159,9 +178,11 @@ class WorkoutPlanMeta {
     phase: _safeString(j['phase']) ?? '',
     weeklyVolumeSets: (j['weekly_volume_sets'] as num?)?.toInt() ?? 0,
     weeklySummary: _safeString(j['weekly_summary']) ?? '',
-    recommendations: (j['recommendations'] as List<dynamic>?)
-        ?.map((e) => e.toString())
-        .toList() ?? [],
+    recommendations:
+        (j['recommendations'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        [],
     nextWeekPreview: _safeString(j['next_week_preview']) ?? '',
   );
 
@@ -174,17 +195,28 @@ class WorkoutPlanMeta {
   static WorkoutPlanMeta fromPlanJson(Map<String, dynamic> data) {
     final meta = data['meta'] as Map<String, dynamic>?;
     return WorkoutPlanMeta(
-      weekNumber: (data['week_number'] as num?)?.toInt() ??
-          (meta?['week_number'] as num?)?.toInt() ?? 1,
+      weekNumber:
+          (data['week_number'] as num?)?.toInt() ??
+          (meta?['week_number'] as num?)?.toInt() ??
+          1,
       phase: _safeString(data['phase']) ?? _safeString(meta?['phase']) ?? '',
-      weeklyVolumeSets: (data['weekly_volume_sets'] as num?)?.toInt() ??
-          (meta?['weekly_volume_sets'] as num?)?.toInt() ?? 0,
-      weeklySummary: _safeString(data['weekly_summary']) ??
-          _safeString(meta?['weekly_summary']) ?? '',
-      recommendations: (data['recommendations'] as List<dynamic>?)
-          ?.map((e) => e.toString()).toList() ?? [],
-      nextWeekPreview: _safeString(data['next_week_preview']) ??
-          _safeString(meta?['next_week_preview']) ?? '',
+      weeklyVolumeSets:
+          (data['weekly_volume_sets'] as num?)?.toInt() ??
+          (meta?['weekly_volume_sets'] as num?)?.toInt() ??
+          0,
+      weeklySummary:
+          _safeString(data['weekly_summary']) ??
+          _safeString(meta?['weekly_summary']) ??
+          '',
+      recommendations:
+          (data['recommendations'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      nextWeekPreview:
+          _safeString(data['next_week_preview']) ??
+          _safeString(meta?['next_week_preview']) ??
+          '',
     );
   }
 }

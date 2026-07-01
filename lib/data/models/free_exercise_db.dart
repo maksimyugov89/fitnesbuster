@@ -27,16 +27,16 @@ class FreeExerciseDb {
     if (_loaded) return;
 
     // Load pre-computed mapping (primary)
-    final mapRaw =
-        await rootBundle.loadString('assets/data/exercise_image_map.json');
+    final mapRaw = await rootBundle.loadString(
+      'assets/data/exercise_image_map.json',
+    );
     final mapData = jsonDecode(mapRaw) as Map<String, dynamic>;
     for (final entry in mapData.entries) {
       _imageMap[entry.key.toLowerCase().trim()] = entry.value as String;
     }
 
     // Load free-exercise-db for fallback prefix matching
-    final raw =
-        await rootBundle.loadString('assets/data/free_exercises.json');
+    final raw = await rootBundle.loadString('assets/data/free_exercises.json');
     final list = jsonDecode(raw) as List;
     for (final entry in list) {
       if (entry is! Map<String, dynamic>) continue;

@@ -34,46 +34,67 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   String _city = '';
 
   final List<String> _commonRestrictions = const [
-    'Аллергия на орехи', 'Непереносимость лактозы', 'Без глютена',
-    'Вегетарианец', 'Без красного мяса', 'Диабетическая диета',
-    'Низкое содержание соли', 'Веган', 'Кето',
+    'Аллергия на орехи',
+    'Непереносимость лактозы',
+    'Без глютена',
+    'Вегетарианец',
+    'Без красного мяса',
+    'Диабетическая диета',
+    'Низкое содержание соли',
+    'Веган',
+    'Кето',
   ];
 
   @override
   void initState() {
     super.initState();
-    _fadeCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 400))..forward();
+    _fadeCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    )..forward();
   }
 
   @override
-  void dispose() { _fadeCtrl.dispose(); _pageCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _fadeCtrl.dispose();
+    _pageCtrl.dispose();
+    super.dispose();
+  }
 
   void _next() {
     if (_page < 4) {
       HapticFeedback.lightImpact();
       _fadeCtrl.reverse().then((_) {
-        _pageCtrl.nextPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+        _pageCtrl.nextPage(
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
         setState(() => _page++);
         _fadeCtrl.forward();
       });
     } else {
-      context.read<OnboardingBloc>().add(OnboardingSetProfile(
-        name: _name,
-        age: _age,
-        weight: _weight,
-        height: _height,
-        gender: _gender,
-        activity: _activity,
-        restrictions: _restrictions,
-        city: _city,
-      ));
+      context.read<OnboardingBloc>().add(
+        OnboardingSetProfile(
+          name: _name,
+          age: _age,
+          weight: _weight,
+          height: _height,
+          gender: _gender,
+          activity: _activity,
+          restrictions: _restrictions,
+          city: _city,
+        ),
+      );
       context.read<OnboardingBloc>().add(const OnboardingFinalize());
     }
   }
 
   void _back() {
     if (_page > 0) {
-      _pageCtrl.previousPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+      _pageCtrl.previousPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
       setState(() => _page--);
     } else {
       context.pop();
@@ -89,7 +110,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           context.go('/dashboard');
         } else if (state is OnboardingError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: AppColors.error),
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: AppColors.error,
+            ),
           );
         }
       },
@@ -97,7 +121,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
         backgroundColor: Colors.transparent,
         body: BlocBuilder<OnboardingBloc, OnboardingState>(
           builder: (context, state) {
-            final loading = state is OnboardingGeneratingPlan || state is OnboardingSaving;
+            final loading =
+                state is OnboardingGeneratingPlan || state is OnboardingSaving;
             return Stack(
               children: [
                 SafeArea(
@@ -110,15 +135,21 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
                             _PageBasicInfo(
-                              name: _name, age: _age, gender: _gender,
+                              name: _name,
+                              age: _age,
+                              gender: _gender,
                               onNameChanged: (v) => setState(() => _name = v),
                               onAgeChanged: (v) => setState(() => _age = v),
-                              onGenderChanged: (v) => setState(() => _gender = v),
+                              onGenderChanged: (v) =>
+                                  setState(() => _gender = v),
                             ),
                             _PageBodyStats(
-                              weight: _weight, height: _height,
-                              onWeightChanged: (v) => setState(() => _weight = v),
-                              onHeightChanged: (v) => setState(() => _height = v),
+                              weight: _weight,
+                              height: _height,
+                              onWeightChanged: (v) =>
+                                  setState(() => _weight = v),
+                              onHeightChanged: (v) =>
+                                  setState(() => _height = v),
                             ),
                             _PageActivity(
                               activity: _activity,
@@ -128,8 +159,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                               restrictions: _restrictions,
                               commonRestrictions: _commonRestrictions,
                               onToggle: (r) => setState(() {
-                                if (_restrictions.contains(r)) { _restrictions.remove(r); }
-                                else { _restrictions.add(r); }
+                                if (_restrictions.contains(r)) {
+                                  _restrictions.remove(r);
+                                } else {
+                                  _restrictions.add(r);
+                                }
                               }),
                             ),
                             _PageCity(
@@ -144,9 +178,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                   ),
                 ),
                 if (loading)
-                  const Positioned.fill(
-                    child: _AiGeneratingOverlay(),
-                  ),
+                  const Positioned.fill(child: _AiGeneratingOverlay()),
               ],
             );
           },
@@ -157,7 +189,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
 
   Widget _topBar(dynamic colors) {
     final l10n = context.l10n;
-    final titles = [l10n.step1About, l10n.step2Params, l10n.step3Activity, l10n.step4Restrictions, l10n.step5Location];
+    final titles = [
+      l10n.step1About,
+      l10n.step2Params,
+      l10n.step3Activity,
+      l10n.step4Restrictions,
+      l10n.step5Location,
+    ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Column(
@@ -167,13 +205,24 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
               GestureDetector(
                 onTap: _back,
                 child: Container(
-                  width: 44, height: 44,
-                  decoration: BoxDecoration(color: colors.surfaceLight, borderRadius: BorderRadius.circular(12)),
-                  child: Icon(Icons.arrow_back_rounded, color: colors.textPrimary, size: 20),
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: colors.surfaceLight,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.arrow_back_rounded,
+                    color: colors.textPrimary,
+                    size: 20,
+                  ),
                 ),
               ),
               const Spacer(),
-              Text('${_page + 1} of 5', style: TextStyle(color: colors.textMuted, fontSize: 13)),
+              Text(
+                '${_page + 1} of 5',
+                style: TextStyle(color: colors.textMuted, fontSize: 13),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -198,19 +247,35 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
 
   Widget _bottomArea(dynamic colors) {
     final l10n = context.l10n;
-    final labels = [l10n.continueLabel, l10n.continueLabel, l10n.continueLabel, l10n.continueLabel, l10n.startProgramBtn];
+    final labels = [
+      l10n.continueLabel,
+      l10n.continueLabel,
+      l10n.continueLabel,
+      l10n.continueLabel,
+      l10n.startProgramBtn,
+    ];
     return Padding(
       padding: const EdgeInsets.all(24),
       child: SizedBox(
-        width: double.infinity, height: 56,
+        width: double.infinity,
+        height: 56,
         child: ElevatedButton(
           onPressed: _next,
           style: ElevatedButton.styleFrom(
             backgroundColor: colors.primary,
             foregroundColor: colors.textPrimary,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
-          child: Text(labels[_page], style: const TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
+          child: Text(
+            labels[_page],
+            style: const TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
       ),
     );
@@ -227,8 +292,12 @@ class _PageBasicInfo extends StatelessWidget {
   final ValueChanged<Gender> onGenderChanged;
 
   const _PageBasicInfo({
-    required this.name, required this.age, required this.gender,
-    required this.onNameChanged, required this.onAgeChanged, required this.onGenderChanged,
+    required this.name,
+    required this.age,
+    required this.gender,
+    required this.onNameChanged,
+    required this.onAgeChanged,
+    required this.onGenderChanged,
   });
 
   @override
@@ -259,7 +328,12 @@ class _InputField extends StatelessWidget {
   final IconData icon;
   final ValueChanged<String> onChanged;
 
-  const _InputField({required this.label, required this.hint, required this.icon, required this.onChanged});
+  const _InputField({
+    required this.label,
+    required this.hint,
+    required this.icon,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -273,16 +347,22 @@ class _InputField extends StatelessWidget {
           decoration: BoxDecoration(
             color: colors.surfaceLight,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
+            border: Border.all(
+              color: colors.textPrimary.withValues(alpha: 0.06),
+            ),
           ),
           child: TextField(
             onChanged: onChanged,
             style: TextStyle(color: colors.textPrimary, fontSize: 16),
             decoration: InputDecoration(
-              hintText: hint, hintStyle: TextStyle(color: colors.textMuted),
+              hintText: hint,
+              hintStyle: TextStyle(color: colors.textMuted),
               prefixIcon: Icon(icon, color: colors.textMuted, size: 20),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 16,
+              ),
             ),
           ),
         ),
@@ -305,9 +385,21 @@ class _GenderSelector extends StatelessWidget {
         const SizedBox(height: 10),
         Row(
           children: [
-            _GenderCard(label: context.l10n.genderMale, emoji: '♂', gender: Gender.male, selected: selected, onTap: onChanged),
+            _GenderCard(
+              label: context.l10n.genderMale,
+              emoji: '♂',
+              gender: Gender.male,
+              selected: selected,
+              onTap: onChanged,
+            ),
             const SizedBox(width: 12),
-            _GenderCard(label: context.l10n.genderFemale, emoji: '♀', gender: Gender.female, selected: selected, onTap: onChanged),
+            _GenderCard(
+              label: context.l10n.genderFemale,
+              emoji: '♀',
+              gender: Gender.female,
+              selected: selected,
+              onTap: onChanged,
+            ),
           ],
         ),
       ],
@@ -319,7 +411,13 @@ class _GenderCard extends StatelessWidget {
   final String label, emoji;
   final Gender gender, selected;
   final ValueChanged<Gender> onTap;
-  const _GenderCard({required this.label, required this.emoji, required this.gender, required this.selected, required this.onTap});
+  const _GenderCard({
+    required this.label,
+    required this.emoji,
+    required this.gender,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -327,21 +425,40 @@ class _GenderCard extends StatelessWidget {
     final isSel = gender == selected;
     return Expanded(
       child: GestureDetector(
-        onTap: () { HapticFeedback.selectionClick(); onTap(gender); },
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap(gender);
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           height: 80,
           decoration: BoxDecoration(
-            color: isSel ? colors.primary.withValues(alpha: 0.15) : colors.surfaceCard,
+            color: isSel
+                ? colors.primary.withValues(alpha: 0.15)
+                : colors.surfaceCard,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isSel ? colors.primary : colors.textPrimary.withValues(alpha: 0.06), width: isSel ? 2 : 1),
+            border: Border.all(
+              color: isSel
+                  ? colors.primary
+                  : colors.textPrimary.withValues(alpha: 0.06),
+              width: isSel ? 2 : 1,
+            ),
           ),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text(emoji, style: const TextStyle(fontSize: 24)),
-            const SizedBox(height: 4),
-            Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
-              color: isSel ? colors.primary : colors.textSecondary)),
-          ]),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 24)),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: isSel ? colors.primary : colors.textSecondary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -359,15 +476,27 @@ class _AgeSlider extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(children: [
-          Text(context.l10n.onbAgeTitle, style: AppTextStyles.labelL),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(color: colors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-            child: Text('$age yrs', style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700, fontSize: 15)),
-          ),
-        ]),
+        Row(
+          children: [
+            Text(context.l10n.onbAgeTitle, style: AppTextStyles.labelL),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '$age yrs',
+                style: TextStyle(
+                  color: colors.primary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 10),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
@@ -380,7 +509,8 @@ class _AgeSlider extends StatelessWidget {
           ),
           child: Slider(
             value: age.toDouble(),
-            min: 14, max: 80,
+            min: 14,
+            max: 80,
             onChanged: (v) => onChanged(v.round()),
           ),
         ),
@@ -393,7 +523,12 @@ class _AgeSlider extends StatelessWidget {
 class _PageBodyStats extends StatelessWidget {
   final double weight, height;
   final ValueChanged<double> onWeightChanged, onHeightChanged;
-  const _PageBodyStats({required this.weight, required this.height, required this.onWeightChanged, required this.onHeightChanged});
+  const _PageBodyStats({
+    required this.weight,
+    required this.height,
+    required this.onWeightChanged,
+    required this.onHeightChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -401,9 +536,23 @@ class _PageBodyStats extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          _NumericSlider(label: context.l10n.onbWeightTitle, value: weight, min: 40, max: 200, unit: 'kg', onChanged: onWeightChanged),
+          _NumericSlider(
+            label: context.l10n.onbWeightTitle,
+            value: weight,
+            min: 40,
+            max: 200,
+            unit: 'kg',
+            onChanged: onWeightChanged,
+          ),
           const SizedBox(height: 28),
-          _NumericSlider(label: context.l10n.onbHeightTitle, value: height, min: 140, max: 220, unit: 'cm', onChanged: onHeightChanged),
+          _NumericSlider(
+            label: context.l10n.onbHeightTitle,
+            value: height,
+            min: 140,
+            max: 220,
+            unit: 'cm',
+            onChanged: onHeightChanged,
+          ),
           const SizedBox(height: 28),
           _BmiCard(weight: weight, height: height),
         ],
@@ -416,7 +565,14 @@ class _NumericSlider extends StatelessWidget {
   final String label, unit;
   final double value, min, max;
   final ValueChanged<double> onChanged;
-  const _NumericSlider({required this.label, required this.value, required this.min, required this.max, required this.unit, required this.onChanged});
+  const _NumericSlider({
+    required this.label,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.unit,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -424,16 +580,27 @@ class _NumericSlider extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(children: [
-          Text(label, style: AppTextStyles.labelL),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(color: colors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-            child: Text('${value.toStringAsFixed(1)} $unit',
-              style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700, fontSize: 15)),
-          ),
-        ]),
+        Row(
+          children: [
+            Text(label, style: AppTextStyles.labelL),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '${value.toStringAsFixed(1)} $unit',
+                style: TextStyle(
+                  color: colors.primary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 10),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
@@ -444,12 +611,27 @@ class _NumericSlider extends StatelessWidget {
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
             trackHeight: 6,
           ),
-          child: Slider(value: value, min: min, max: max, divisions: ((max - min) * 2).round(), onChanged: onChanged),
+          child: Slider(
+            value: value,
+            min: min,
+            max: max,
+            divisions: ((max - min) * 2).round(),
+            onChanged: onChanged,
+          ),
         ),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('${min.toInt()} $unit', style: TextStyle(fontSize: 11, color: colors.textMuted)),
-          Text('${max.toInt()} $unit', style: TextStyle(fontSize: 11, color: colors.textMuted)),
-        ]),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '${min.toInt()} $unit',
+              style: TextStyle(fontSize: 11, color: colors.textMuted),
+            ),
+            Text(
+              '${max.toInt()} $unit',
+              style: TextStyle(fontSize: 11, color: colors.textMuted),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -463,12 +645,22 @@ class _BmiCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
     final bmi = height > 0 ? weight / ((height / 100) * (height / 100)) : 0;
-    String category; Color bmiColor;
+    String category;
+    Color bmiColor;
     final l10n = context.l10n;
-    if (bmi < 18.5) { category = l10n.bmiUnderweight; bmiColor = colors.info; }
-    else if (bmi < 25) { category = l10n.bmiNormal; bmiColor = colors.success; }
-    else if (bmi < 30) { category = l10n.bmiOverweight; bmiColor = colors.warning; }
-    else { category = l10n.bmiObese; bmiColor = colors.error; }
+    if (bmi < 18.5) {
+      category = l10n.bmiUnderweight;
+      bmiColor = colors.info;
+    } else if (bmi < 25) {
+      category = l10n.bmiNormal;
+      bmiColor = colors.success;
+    } else if (bmi < 30) {
+      category = l10n.bmiOverweight;
+      bmiColor = colors.warning;
+    } else {
+      category = l10n.bmiObese;
+      bmiColor = colors.error;
+    }
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -477,17 +669,39 @@ class _BmiCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: bmiColor.withValues(alpha: 0.3)),
       ),
-      child: Row(children: [
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(l10n.bmiTitle, style: TextStyle(color: colors.textSecondary, fontSize: 12)),
-          const SizedBox(height: 4),
-          Text(bmi.toStringAsFixed(1), style: TextStyle(
-            fontFamily: 'Syne', fontSize: 36, fontWeight: FontWeight.w800, color: bmiColor)),
-          Text(category, style: TextStyle(color: bmiColor, fontWeight: FontWeight.w600, fontSize: 13)),
-        ]),
-        const Spacer(),
-        Icon(Icons.monitor_weight_outlined, color: bmiColor, size: 48),
-      ]),
+      child: Row(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.bmiTitle,
+                style: TextStyle(color: colors.textSecondary, fontSize: 12),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                bmi.toStringAsFixed(1),
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 36,
+                  fontWeight: FontWeight.w800,
+                  color: bmiColor,
+                ),
+              ),
+              Text(
+                category,
+                style: TextStyle(
+                  color: bmiColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Icon(Icons.monitor_weight_outlined, color: bmiColor, size: 48),
+        ],
+      ),
     );
   }
 }
@@ -509,31 +723,60 @@ class _PageActivity extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: GestureDetector(
-              onTap: () { HapticFeedback.selectionClick(); onChanged(lvl); },
+              onTap: () {
+                HapticFeedback.selectionClick();
+                onChanged(lvl);
+              },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isSel ? colors.primary.withValues(alpha: 0.1) : colors.surfaceCard,
+                  color: isSel
+                      ? colors.primary.withValues(alpha: 0.1)
+                      : colors.surfaceCard,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: isSel ? colors.primary : colors.textPrimary.withValues(alpha: 0.06), width: isSel ? 2 : 1),
-                ),
-                child: Row(children: [
-                  Container(
-                    width: 40, height: 40,
-                    decoration: BoxDecoration(
-                      color: isSel ? colors.primary : colors.surfaceLight,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(child: Text(_emoji(lvl), style: const TextStyle(fontSize: 20))),
+                  border: Border.all(
+                    color: isSel
+                        ? colors.primary
+                        : colors.textPrimary.withValues(alpha: 0.06),
+                    width: isSel ? 2 : 1,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(child: Text(lvl.label, style: TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w500,
-                    color: isSel ? colors.primary : colors.textSecondary,
-                  ))),
-                  if (isSel) Icon(Icons.check_circle_rounded, color: colors.primary, size: 22),
-                ]),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: isSel ? colors.primary : colors.surfaceLight,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          _emoji(lvl),
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        lvl.label,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: isSel ? colors.primary : colors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    if (isSel)
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: colors.primary,
+                        size: 22,
+                      ),
+                  ],
+                ),
               ),
             ),
           );
@@ -544,11 +787,16 @@ class _PageActivity extends StatelessWidget {
 
   String _emoji(ActivityLevel l) {
     switch (l) {
-      case ActivityLevel.sedentary: return '🪑';
-      case ActivityLevel.lightlyActive: return '🚶';
-      case ActivityLevel.moderatelyActive: return '🏃';
-      case ActivityLevel.veryActive: return '🔥';
-      case ActivityLevel.extraActive: return '⚡';
+      case ActivityLevel.sedentary:
+        return '🪑';
+      case ActivityLevel.lightlyActive:
+        return '🚶';
+      case ActivityLevel.moderatelyActive:
+        return '🏃';
+      case ActivityLevel.veryActive:
+        return '🔥';
+      case ActivityLevel.extraActive:
+        return '⚡';
     }
   }
 }
@@ -576,45 +824,76 @@ class _PageCityState extends State<_PageCity> {
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   Future<void> _detectCity() async {
-    setState(() { _detecting = true; _errorMsg = null; });
+    setState(() {
+      _detecting = true;
+      _errorMsg = null;
+    });
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        setState(() { _errorMsg = context.l10n.geoDisabledMsg; _detecting = false; });
+        setState(() {
+          _errorMsg = context.l10n.geoDisabledMsg;
+          _detecting = false;
+        });
         return;
       }
       var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-        setState(() { _errorMsg = context.l10n.geoPermissionDeniedMsg; _detecting = false; });
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        setState(() {
+          _errorMsg = context.l10n.geoPermissionDeniedMsg;
+          _detecting = false;
+        });
         return;
       }
-      final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.low, timeLimit: Duration(seconds: 10)));
-      final uri = Uri.parse('https://nominatim.openstreetmap.org/reverse?lat=${pos.latitude}&lon=${pos.longitude}&format=json&accept-language=ru');
-      final resp = await http.get(uri, headers: {'User-Agent': 'FitnesBuster/1.0'}).timeout(const Duration(seconds: 8));
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+          timeLimit: Duration(seconds: 10),
+        ),
+      );
+      final uri = Uri.parse(
+        'https://nominatim.openstreetmap.org/reverse?lat=${pos.latitude}&lon=${pos.longitude}&format=json&accept-language=ru',
+      );
+      final resp = await http
+          .get(uri, headers: {'User-Agent': 'FitnesBuster/1.0'})
+          .timeout(const Duration(seconds: 8));
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body) as Map<String, dynamic>;
         final addr = data['address'] as Map<String, dynamic>?;
-        final city = addr?['city'] as String?
-            ?? addr?['town'] as String?
-            ?? addr?['village'] as String?
-            ?? addr?['municipality'] as String?
-            ?? addr?['county'] as String?;
+        final city =
+            addr?['city'] as String? ??
+            addr?['town'] as String? ??
+            addr?['village'] as String? ??
+            addr?['municipality'] as String? ??
+            addr?['county'] as String?;
         if (city != null && city.isNotEmpty) {
           _ctrl.text = city;
           widget.onChanged(city);
-          setState(() { _detecting = false; });
+          setState(() {
+            _detecting = false;
+          });
           return;
         }
       }
-      setState(() { _errorMsg = context.l10n.geoCityNotFoundMsg; _detecting = false; });
+      setState(() {
+        _errorMsg = context.l10n.geoCityNotFoundMsg;
+        _detecting = false;
+      });
     } catch (_) {
-      setState(() { _errorMsg = context.l10n.geoErrorMsg; _detecting = false; });
+      setState(() {
+        _errorMsg = context.l10n.geoErrorMsg;
+        _detecting = false;
+      });
     }
   }
 
@@ -629,7 +908,11 @@ class _PageCityState extends State<_PageCity> {
         children: [
           Text(
             l10n.locationNote,
-            style: TextStyle(color: colors.textSecondary, fontSize: 13, height: 1.55),
+            style: TextStyle(
+              color: colors.textSecondary,
+              fontSize: 13,
+              height: 1.55,
+            ),
           ),
           const SizedBox(height: 20),
 
@@ -639,16 +922,33 @@ class _PageCityState extends State<_PageCity> {
             child: OutlinedButton.icon(
               onPressed: _detecting ? null : _detectCity,
               icon: _detecting
-                  ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: colors.primary))
-                  : Icon(Icons.my_location_rounded, size: 18, color: colors.primary),
+                  ? SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: colors.primary,
+                      ),
+                    )
+                  : Icon(
+                      Icons.my_location_rounded,
+                      size: 18,
+                      color: colors.primary,
+                    ),
               label: Text(
                 _detecting ? l10n.detectingLabel : l10n.detectAutoBtn,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.primary),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: colors.primary,
+                ),
               ),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: colors.primary.withValues(alpha: 0.5)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
             ),
           ),
@@ -662,23 +962,51 @@ class _PageCityState extends State<_PageCity> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: colors.error.withValues(alpha: 0.25)),
               ),
-              child: Row(children: [
-                Icon(Icons.warning_amber_rounded, size: 16, color: colors.error),
-                const SizedBox(width: 8),
-                Expanded(child: Text(_errorMsg!, style: TextStyle(fontSize: 12, color: colors.error, height: 1.4))),
-              ]),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 16,
+                    color: colors.error,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _errorMsg!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.error,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
 
           const SizedBox(height: 16),
-          Row(children: [
-            Expanded(child: Divider(color: colors.textPrimary.withValues(alpha: 0.1))),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(l10n.enterManuallyLabel, style: TextStyle(fontSize: 11, color: colors.textMuted)),
-            ),
-            Expanded(child: Divider(color: colors.textPrimary.withValues(alpha: 0.1))),
-          ]),
+          Row(
+            children: [
+              Expanded(
+                child: Divider(
+                  color: colors.textPrimary.withValues(alpha: 0.1),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  l10n.enterManuallyLabel,
+                  style: TextStyle(fontSize: 11, color: colors.textMuted),
+                ),
+              ),
+              Expanded(
+                child: Divider(
+                  color: colors.textPrimary.withValues(alpha: 0.1),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 16),
 
           // Manual input
@@ -686,7 +1014,9 @@ class _PageCityState extends State<_PageCity> {
             decoration: BoxDecoration(
               color: colors.surfaceLight,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
+              border: Border.all(
+                color: colors.textPrimary.withValues(alpha: 0.06),
+              ),
             ),
             child: TextField(
               controller: _ctrl,
@@ -694,9 +1024,16 @@ class _PageCityState extends State<_PageCity> {
               decoration: InputDecoration(
                 hintText: l10n.locationHint,
                 hintStyle: TextStyle(color: colors.textMuted),
-                prefixIcon: Icon(Icons.location_city_rounded, color: colors.textMuted, size: 20),
+                prefixIcon: Icon(
+                  Icons.location_city_rounded,
+                  color: colors.textMuted,
+                  size: 20,
+                ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
               ),
               textCapitalization: TextCapitalization.words,
             ),
@@ -710,20 +1047,33 @@ class _PageCityState extends State<_PageCity> {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: colors.info.withValues(alpha: 0.25)),
             ),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Icon(Icons.info_outline_rounded, color: colors.info, size: 18),
-              const SizedBox(width: 10),
-              Expanded(child: Text(
-                l10n.locationNote,
-                style: TextStyle(fontSize: 12, color: colors.info, height: 1.45),
-              )),
-            ]),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline_rounded, color: colors.info, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.locationNote,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colors.info,
+                      height: 1.45,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
 
           const SizedBox(height: 12),
           Text(
             l10n.locationSkipNote,
-            style: TextStyle(color: colors.textMuted, fontSize: 11, height: 1.5),
+            style: TextStyle(
+              color: colors.textMuted,
+              fontSize: 11,
+              height: 1.5,
+            ),
           ),
         ],
       ),
@@ -736,24 +1086,40 @@ class _PageRestrictions extends StatelessWidget {
   final List<String> restrictions;
   final List<String> commonRestrictions;
   final ValueChanged<String> onToggle;
-  const _PageRestrictions({required this.restrictions, required this.commonRestrictions, required this.onToggle});
+  const _PageRestrictions({
+    required this.restrictions,
+    required this.commonRestrictions,
+    required this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
     final l10n = context.l10n;
     final displayLabels = [
-      l10n.dietNutsAllergy, l10n.dietLactose, l10n.dietGlutenFree,
-      l10n.dietVegetarian, l10n.dietNoRedMeat, l10n.dietDiabetic,
-      l10n.dietLowSalt, l10n.dietVegan, l10n.dietKeto,
+      l10n.dietNutsAllergy,
+      l10n.dietLactose,
+      l10n.dietGlutenFree,
+      l10n.dietVegetarian,
+      l10n.dietNoRedMeat,
+      l10n.dietDiabetic,
+      l10n.dietLowSalt,
+      l10n.dietVegan,
+      l10n.dietKeto,
     ];
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.restrictionsNote1,
-            style: TextStyle(color: colors.textSecondary, fontSize: 13, height: 1.5)),
+          Text(
+            l10n.restrictionsNote1,
+            style: TextStyle(
+              color: colors.textSecondary,
+              fontSize: 13,
+              height: 1.5,
+            ),
+          ),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(14),
@@ -762,53 +1128,94 @@ class _PageRestrictions extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: colors.info.withValues(alpha: 0.3)),
             ),
-            child: Row(children: [
-              Icon(Icons.info_outline_rounded, color: colors.info, size: 18),
-              const SizedBox(width: 10),
-              Expanded(child: Text(
-                l10n.restrictionsNote2,
-                style: TextStyle(fontSize: 12, color: colors.info, height: 1.4),
-              )),
-            ]),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline_rounded, color: colors.info, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.restrictionsNote2,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colors.info,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           Wrap(
-            spacing: 8, runSpacing: 8,
+            spacing: 8,
+            runSpacing: 8,
             children: List.generate(commonRestrictions.length, (index) {
               final r = commonRestrictions[index];
-              final displayLabel = index < displayLabels.length ? displayLabels[index] : r;
+              final displayLabel = index < displayLabels.length
+                  ? displayLabels[index]
+                  : r;
               final isSel = restrictions.contains(r);
               return GestureDetector(
-                onTap: () { HapticFeedback.selectionClick(); onToggle(r); },
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  onToggle(r);
+                },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
-                    color: isSel ? colors.accentOrange.withValues(alpha: 0.15) : colors.surfaceCard,
+                    color: isSel
+                        ? colors.accentOrange.withValues(alpha: 0.15)
+                        : colors.surfaceCard,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSel ? colors.accentOrange : colors.textPrimary.withValues(alpha: 0.08),
+                      color: isSel
+                          ? colors.accentOrange
+                          : colors.textPrimary.withValues(alpha: 0.08),
                       width: isSel ? 1.5 : 1,
                     ),
                   ),
-                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    if (isSel) Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: Icon(Icons.close_rounded, size: 14, color: colors.accentOrange),
-                    ),
-                    Text(displayLabel, style: TextStyle(
-                      fontSize: 13, fontWeight: FontWeight.w500,
-                      color: isSel ? colors.accentOrange : colors.textSecondary,
-                    )),
-                  ]),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isSel)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: Icon(
+                            Icons.close_rounded,
+                            size: 14,
+                            color: colors.accentOrange,
+                          ),
+                        ),
+                      Text(
+                        displayLabel,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: isSel
+                              ? colors.accentOrange
+                              : colors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }),
           ),
           const SizedBox(height: 16),
           if (restrictions.isEmpty)
-            Text(l10n.restrictionsNote3,
-              style: TextStyle(color: colors.textMuted, fontSize: 12, height: 1.5)),
+            Text(
+              l10n.restrictionsNote3,
+              style: TextStyle(
+                color: colors.textMuted,
+                fontSize: 12,
+                height: 1.5,
+              ),
+            ),
         ],
       ),
     );
@@ -852,22 +1259,31 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
     super.initState();
 
     // Background gradient pulse (3 s cycle)
-    _bgCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 3))
-      ..repeat(reverse: true);
+    _bgCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
     _bgAnim = CurvedAnimation(parent: _bgCtrl, curve: Curves.easeInOut);
 
     // Icon scale pulse (1.5 s cycle)
-    _iconCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))
-      ..repeat(reverse: true);
-    _iconScale = Tween<double>(begin: 0.95, end: 1.05).animate(
-      CurvedAnimation(parent: _iconCtrl, curve: Curves.easeInOut),
-    );
+    _iconCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+    _iconScale = Tween<double>(
+      begin: 0.95,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _iconCtrl, curve: Curves.easeInOut));
 
     // Facts ticker: advance every 4 s
-    _factCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    _factCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
     _factTimer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (!mounted) return;
-      if (_facts.isNotEmpty) setState(() => _factIndex = (_factIndex + 1) % _facts.length);
+      if (_facts.isNotEmpty)
+        setState(() => _factIndex = (_factIndex + 1) % _facts.length);
     });
 
     // Step progression schedule
@@ -919,14 +1335,19 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
     if (state == 2) {
       // Done
       leading = Container(
-        width: 24, height: 24,
-        decoration: const BoxDecoration(color: Color(0xFF22C55E), shape: BoxShape.circle),
+        width: 24,
+        height: 24,
+        decoration: const BoxDecoration(
+          color: Color(0xFF22C55E),
+          shape: BoxShape.circle,
+        ),
         child: const Icon(Icons.check_rounded, color: Colors.white, size: 14),
       );
     } else if (state == 1) {
       // In progress
       leading = SizedBox(
-        width: 24, height: 24,
+        width: 24,
+        height: 24,
         child: CircularProgressIndicator(
           strokeWidth: 2.5,
           color: colors.primary,
@@ -935,14 +1356,19 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
     } else {
       // Waiting
       leading = Container(
-        width: 24, height: 24,
+        width: 24,
+        height: 24,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1.5),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.2),
+            width: 1.5,
+          ),
         ),
         child: Center(
           child: Container(
-            width: 6, height: 6,
+            width: 6,
+            height: 6,
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
@@ -968,8 +1394,8 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
                   color: state == 2
                       ? Colors.white.withValues(alpha: 0.5)
                       : state == 1
-                          ? Colors.white
-                          : Colors.white.withValues(alpha: 0.25),
+                      ? Colors.white
+                      : Colors.white.withValues(alpha: 0.25),
                   fontSize: 14,
                   fontWeight: state == 1 ? FontWeight.w600 : FontWeight.w400,
                   decoration: state == 2 ? TextDecoration.lineThrough : null,
@@ -994,8 +1420,12 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
       l10n.generatingFinalizing,
     ];
     _facts = [
-      l10n.funFact1, l10n.funFact2, l10n.funFact3,
-      l10n.funFact4, l10n.funFact5, l10n.funFact6,
+      l10n.funFact1,
+      l10n.funFact2,
+      l10n.funFact3,
+      l10n.funFact4,
+      l10n.funFact5,
+      l10n.funFact6,
     ];
 
     return AnimatedBuilder(
@@ -1006,7 +1436,11 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
           end: Alignment.bottomCenter,
           colors: [
             const Color(0xFF0A0A0F),
-            Color.lerp(const Color(0xFF1A0A2E), const Color(0xFF0A1F1A), _bgAnim.value)!,
+            Color.lerp(
+              const Color(0xFF1A0A2E),
+              const Color(0xFF0A1F1A),
+              _bgAnim.value,
+            )!,
           ],
         );
 
@@ -1027,7 +1461,8 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
               ScaleTransition(
                 scale: _iconScale,
                 child: Container(
-                  width: 120, height: 120,
+                  width: 120,
+                  height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.purple.withValues(alpha: 0.12),
@@ -1063,7 +1498,10 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
               const SizedBox(height: 6),
               Text(
                 l10n.about30sec,
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.5),
+                  fontSize: 13,
+                ),
               ),
 
               const SizedBox(height: 40),
@@ -1074,7 +1512,9 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.08),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1089,23 +1529,21 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
 
               // ── Facts ticker ──
               if (_facts.isNotEmpty)
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: child,
-                ),
-                child: Text(
-                  _facts[_factIndex % _facts.length],
-                  key: ValueKey<int>(_factIndex),
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.55),
-                    fontSize: 12,
-                    height: 1.5,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  transitionBuilder: (child, animation) =>
+                      FadeTransition(opacity: animation, child: child),
+                  child: Text(
+                    _facts[_factIndex % _facts.length],
+                    key: ValueKey<int>(_factIndex),
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.55),
+                      fontSize: 12,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ),
 
               const SizedBox(height: 32),
             ],

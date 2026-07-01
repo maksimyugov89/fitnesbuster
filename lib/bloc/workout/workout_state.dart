@@ -2,7 +2,8 @@ part of 'workout_bloc.dart';
 
 sealed class WorkoutState extends Equatable {
   const WorkoutState();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
 
 class WorkoutStateInitial extends WorkoutState {
@@ -40,7 +41,14 @@ class WorkoutStateInProgress extends WorkoutState {
     );
   }
 
-  @override List<Object?> get props => [session ?? '', currentExerciseIndex, completedSets, elapsedSeconds, isPaused];
+  @override
+  List<Object?> get props => [
+    session ?? '',
+    currentExerciseIndex,
+    completedSets,
+    elapsedSeconds,
+    isPaused,
+  ];
 }
 
 class WorkoutStateCompleted extends WorkoutState {
@@ -53,11 +61,13 @@ class WorkoutStateCompleted extends WorkoutState {
     required this.elapsedSeconds,
     required this.completedSets,
   });
-  @override List<Object?> get props => [sessionId, elapsedSeconds, completedSets];
+  @override
+  List<Object?> get props => [sessionId, elapsedSeconds, completedSets];
 }
 
 class WorkoutStateError extends WorkoutState {
   final String message;
   const WorkoutStateError({required this.message});
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }

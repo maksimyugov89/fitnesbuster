@@ -62,14 +62,14 @@ class AppRouter {
   static const String exerciseBrowser = '/exercises';
   static const String aiChat = '/chat';
   static const String weeklyDebrief = '/weekly-debrief';
-  static const String exerciseDetail   = '/exercises/:id';
-  static const String achievements      = '/achievements';
-  static const String shoppingList       = '/shopping-list';
-  static const String workoutCalendar    = '/workout/calendar';
-  static const String workoutExecution   = '/workout/execution';
-  static const String feed              = '/social/feed';
-  static const String friends           = '/social/friends';
-  static const String challenges        = '/social/challenges';
+  static const String exerciseDetail = '/exercises/:id';
+  static const String achievements = '/achievements';
+  static const String shoppingList = '/shopping-list';
+  static const String workoutCalendar = '/workout/calendar';
+  static const String workoutExecution = '/workout/execution';
+  static const String feed = '/social/feed';
+  static const String friends = '/social/friends';
+  static const String challenges = '/social/challenges';
 
   static late GoRouter router;
 
@@ -80,65 +80,101 @@ class AppRouter {
       refreshListenable: AuthRouterNotifier(),
       redirect: _redirect,
       routes: [
-      GoRoute(path: splash, builder: (_, _) => const SplashScreen()),
-      GoRoute(path: login, builder: (_, _) => const LoginScreen()),
-      GoRoute(path: register, builder: (_, _) => const RegisterScreen()),
-      GoRoute(
-        path: onboarding,
-        builder: (_, _) => const OnboardingScreen(),
-        routes: [
-          GoRoute(path: 'goal', builder: (_, _) => const GoalSelectionScreen()),
-          GoRoute(path: 'intensity', builder: (_, _) => const IntensitySelectionScreen()),
-          GoRoute(path: 'location', builder: (_, _) => const WorkoutLocationScreen()),
-          GoRoute(path: 'profile', builder: (_, _) => const ProfileSetupScreen()),
-        ],
-      ),
-      ShellRoute(
-        builder: (context, state, child) =>
-            MainShell(currentPath: state.matchedLocation, child: child),
-        routes: [
-          GoRoute(path: dashboard, builder: (_, _) => const DashboardScreen()),
-          GoRoute(path: workoutPlan, builder: (_, _) => const WorkoutPlanScreen()),
-          GoRoute(path: nutrition, builder: (_, _) => const NutritionScreen()),
-          GoRoute(path: progress, builder: (_, _) => const ProgressScreen()),
-          GoRoute(path: profile, builder: (_, _) => const ProfileScreen()),
-        ],
-      ),
-      GoRoute(
-        path: workoutSession,
-        builder: (context, state) =>
-            WorkoutSessionScreen(sessionId: state.pathParameters['id']!),
-      ),
-      GoRoute(
-        path: workoutLog,
-        builder: (context, state) =>
-            WorkoutLogScreen(logId: state.pathParameters['id']!),
-      ),
-      GoRoute(path: testWeek, builder: (_, _) => const TestWeekScreen()),
-      GoRoute(path: foodDiary, builder: (_, _) => const FoodDiaryScreen()),
-      GoRoute(path: mealPlan, builder: (_, _) => const MealPlanScreen()),
-      GoRoute(path: healthSync, builder: (_, _) => const HealthSyncScreen()),
-      GoRoute(path: prTracker, builder: (_, _) => const PrScreen()),
-      GoRoute(path: exerciseBrowser, builder: (_, _) => const ExerciseBrowserScreen()),
-      GoRoute(
-        path: exerciseDetail,
-        builder: (context, state) =>
-            ExerciseDetailScreen(exerciseId: state.pathParameters['id']!),
-      ),
-      GoRoute(path: aiChat, builder: (_, _) => const AiChatScreen()),
-      GoRoute(path: weeklyDebrief, builder: (_, _) => const WeeklyDebriefScreen()),
-      GoRoute(path: achievements, builder: (_, _) => const AchievementsScreen()),
-      GoRoute(path: shoppingList, builder: (_, _) => const ShoppingListScreen()),
-      GoRoute(path: workoutCalendar, builder: (_, _) => const WorkoutCalendarScreen()),
-      GoRoute(
-        path: workoutExecution,
-        builder: (context, state) =>
-            WorkoutExecutionScreen(workout: state.extra as WorkoutDay),
-      ),
-      GoRoute(path: feed, builder: (_, _) => const FeedScreen()),
-      GoRoute(path: friends, builder: (_, _) => const FriendsScreen()),
-      GoRoute(path: challenges, builder: (_, _) => const ChallengesScreen()),
-    ],
+        GoRoute(path: splash, builder: (_, _) => const SplashScreen()),
+        GoRoute(path: login, builder: (_, _) => const LoginScreen()),
+        GoRoute(path: register, builder: (_, _) => const RegisterScreen()),
+        GoRoute(
+          path: onboarding,
+          builder: (_, _) => const OnboardingScreen(),
+          routes: [
+            GoRoute(
+              path: 'goal',
+              builder: (_, _) => const GoalSelectionScreen(),
+            ),
+            GoRoute(
+              path: 'intensity',
+              builder: (_, _) => const IntensitySelectionScreen(),
+            ),
+            GoRoute(
+              path: 'location',
+              builder: (_, _) => const WorkoutLocationScreen(),
+            ),
+            GoRoute(
+              path: 'profile',
+              builder: (_, _) => const ProfileSetupScreen(),
+            ),
+          ],
+        ),
+        ShellRoute(
+          builder: (context, state, child) =>
+              MainShell(currentPath: state.matchedLocation, child: child),
+          routes: [
+            GoRoute(
+              path: dashboard,
+              builder: (_, _) => const DashboardScreen(),
+            ),
+            GoRoute(
+              path: workoutPlan,
+              builder: (_, _) => const WorkoutPlanScreen(),
+            ),
+            GoRoute(
+              path: nutrition,
+              builder: (_, _) => const NutritionScreen(),
+            ),
+            GoRoute(path: progress, builder: (_, _) => const ProgressScreen()),
+            GoRoute(path: profile, builder: (_, _) => const ProfileScreen()),
+          ],
+        ),
+        GoRoute(
+          path: workoutSession,
+          builder: (context, state) =>
+              WorkoutSessionScreen(sessionId: state.pathParameters['id']!),
+        ),
+        GoRoute(
+          path: workoutLog,
+          builder: (context, state) =>
+              WorkoutLogScreen(logId: state.pathParameters['id']!),
+        ),
+        GoRoute(path: testWeek, builder: (_, _) => const TestWeekScreen()),
+        GoRoute(path: foodDiary, builder: (_, _) => const FoodDiaryScreen()),
+        GoRoute(path: mealPlan, builder: (_, _) => const MealPlanScreen()),
+        GoRoute(path: healthSync, builder: (_, _) => const HealthSyncScreen()),
+        GoRoute(path: prTracker, builder: (_, _) => const PrScreen()),
+        GoRoute(
+          path: exerciseBrowser,
+          builder: (_, _) => const ExerciseBrowserScreen(),
+        ),
+        GoRoute(
+          path: exerciseDetail,
+          builder: (context, state) =>
+              ExerciseDetailScreen(exerciseId: state.pathParameters['id']!),
+        ),
+        GoRoute(path: aiChat, builder: (_, _) => const AiChatScreen()),
+        GoRoute(
+          path: weeklyDebrief,
+          builder: (_, _) => const WeeklyDebriefScreen(),
+        ),
+        GoRoute(
+          path: achievements,
+          builder: (_, _) => const AchievementsScreen(),
+        ),
+        GoRoute(
+          path: shoppingList,
+          builder: (_, _) => const ShoppingListScreen(),
+        ),
+        GoRoute(
+          path: workoutCalendar,
+          builder: (_, _) => const WorkoutCalendarScreen(),
+        ),
+        GoRoute(
+          path: workoutExecution,
+          builder: (context, state) =>
+              WorkoutExecutionScreen(workout: state.extra as WorkoutDay),
+        ),
+        GoRoute(path: feed, builder: (_, _) => const FeedScreen()),
+        GoRoute(path: friends, builder: (_, _) => const FriendsScreen()),
+        GoRoute(path: challenges, builder: (_, _) => const ChallengesScreen()),
+      ],
     );
   }
 
@@ -167,5 +203,3 @@ class AppRouter {
     return null;
   }
 }
-
-

@@ -12,7 +12,8 @@ part of 'personal_record.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 PersonalRecord _$PersonalRecordFromJson(Map<String, dynamic> json) {
   return _PersonalRecord.fromJson(json);
@@ -37,17 +38,19 @@ mixin _$PersonalRecord {
 /// @nodoc
 abstract class $PersonalRecordCopyWith<$Res> {
   factory $PersonalRecordCopyWith(
-          PersonalRecord value, $Res Function(PersonalRecord) then) =
-      _$PersonalRecordCopyWithImpl<$Res, PersonalRecord>;
+    PersonalRecord value,
+    $Res Function(PersonalRecord) then,
+  ) = _$PersonalRecordCopyWithImpl<$Res, PersonalRecord>;
   @useResult
-  $Res call(
-      {String id,
-      String exerciseName,
-      double? weightKg,
-      int? reps,
-      int? sets,
-      DateTime date,
-      String notes});
+  $Res call({
+    String id,
+    String exerciseName,
+    double? weightKg,
+    int? reps,
+    int? sets,
+    DateTime date,
+    String notes,
+  });
 }
 
 /// @nodoc
@@ -71,55 +74,60 @@ class _$PersonalRecordCopyWithImpl<$Res, $Val extends PersonalRecord>
     Object? date = null,
     Object? notes = null,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      exerciseName: null == exerciseName
-          ? _value.exerciseName
-          : exerciseName // ignore: cast_nullable_to_non_nullable
-              as String,
-      weightKg: freezed == weightKg
-          ? _value.weightKg
-          : weightKg // ignore: cast_nullable_to_non_nullable
-              as double?,
-      reps: freezed == reps
-          ? _value.reps
-          : reps // ignore: cast_nullable_to_non_nullable
-              as int?,
-      sets: freezed == sets
-          ? _value.sets
-          : sets // ignore: cast_nullable_to_non_nullable
-              as int?,
-      date: null == date
-          ? _value.date
-          : date // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      notes: null == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            exerciseName: null == exerciseName
+                ? _value.exerciseName
+                : exerciseName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            weightKg: freezed == weightKg
+                ? _value.weightKg
+                : weightKg // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            reps: freezed == reps
+                ? _value.reps
+                : reps // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            sets: freezed == sets
+                ? _value.sets
+                : sets // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            date: null == date
+                ? _value.date
+                : date // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            notes: null == notes
+                ? _value.notes
+                : notes // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$PersonalRecordImplCopyWith<$Res>
     implements $PersonalRecordCopyWith<$Res> {
-  factory _$$PersonalRecordImplCopyWith(_$PersonalRecordImpl value,
-          $Res Function(_$PersonalRecordImpl) then) =
-      __$$PersonalRecordImplCopyWithImpl<$Res>;
+  factory _$$PersonalRecordImplCopyWith(
+    _$PersonalRecordImpl value,
+    $Res Function(_$PersonalRecordImpl) then,
+  ) = __$$PersonalRecordImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      String exerciseName,
-      double? weightKg,
-      int? reps,
-      int? sets,
-      DateTime date,
-      String notes});
+  $Res call({
+    String id,
+    String exerciseName,
+    double? weightKg,
+    int? reps,
+    int? sets,
+    DateTime date,
+    String notes,
+  });
 }
 
 /// @nodoc
@@ -127,8 +135,9 @@ class __$$PersonalRecordImplCopyWithImpl<$Res>
     extends _$PersonalRecordCopyWithImpl<$Res, _$PersonalRecordImpl>
     implements _$$PersonalRecordImplCopyWith<$Res> {
   __$$PersonalRecordImplCopyWithImpl(
-      _$PersonalRecordImpl _value, $Res Function(_$PersonalRecordImpl) _then)
-      : super(_value, _then);
+    _$PersonalRecordImpl _value,
+    $Res Function(_$PersonalRecordImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -141,51 +150,53 @@ class __$$PersonalRecordImplCopyWithImpl<$Res>
     Object? date = null,
     Object? notes = null,
   }) {
-    return _then(_$PersonalRecordImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      exerciseName: null == exerciseName
-          ? _value.exerciseName
-          : exerciseName // ignore: cast_nullable_to_non_nullable
-              as String,
-      weightKg: freezed == weightKg
-          ? _value.weightKg
-          : weightKg // ignore: cast_nullable_to_non_nullable
-              as double?,
-      reps: freezed == reps
-          ? _value.reps
-          : reps // ignore: cast_nullable_to_non_nullable
-              as int?,
-      sets: freezed == sets
-          ? _value.sets
-          : sets // ignore: cast_nullable_to_non_nullable
-              as int?,
-      date: null == date
-          ? _value.date
-          : date // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      notes: null == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
+    return _then(
+      _$PersonalRecordImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        exerciseName: null == exerciseName
+            ? _value.exerciseName
+            : exerciseName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        weightKg: freezed == weightKg
+            ? _value.weightKg
+            : weightKg // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        reps: freezed == reps
+            ? _value.reps
+            : reps // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        sets: freezed == sets
+            ? _value.sets
+            : sets // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        date: null == date
+            ? _value.date
+            : date // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        notes: null == notes
+            ? _value.notes
+            : notes // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$PersonalRecordImpl extends _PersonalRecord {
-  const _$PersonalRecordImpl(
-      {required this.id,
-      required this.exerciseName,
-      this.weightKg,
-      this.reps,
-      this.sets,
-      required this.date,
-      this.notes = ''})
-      : super._();
+  const _$PersonalRecordImpl({
+    required this.id,
+    required this.exerciseName,
+    this.weightKg,
+    this.reps,
+    this.sets,
+    required this.date,
+    this.notes = '',
+  }) : super._();
 
   factory _$PersonalRecordImpl.fromJson(Map<String, dynamic> json) =>
       _$$PersonalRecordImplFromJson(json);
@@ -230,32 +241,41 @@ class _$PersonalRecordImpl extends _PersonalRecord {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, exerciseName, weightKg, reps, sets, date, notes);
+    runtimeType,
+    id,
+    exerciseName,
+    weightKg,
+    reps,
+    sets,
+    date,
+    notes,
+  );
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$PersonalRecordImplCopyWith<_$PersonalRecordImpl> get copyWith =>
       __$$PersonalRecordImplCopyWithImpl<_$PersonalRecordImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PersonalRecordImplToJson(
-      this,
-    );
+    return _$$PersonalRecordImplToJson(this);
   }
 }
 
 abstract class _PersonalRecord extends PersonalRecord {
-  const factory _PersonalRecord(
-      {required final String id,
-      required final String exerciseName,
-      final double? weightKg,
-      final int? reps,
-      final int? sets,
-      required final DateTime date,
-      final String notes}) = _$PersonalRecordImpl;
+  const factory _PersonalRecord({
+    required final String id,
+    required final String exerciseName,
+    final double? weightKg,
+    final int? reps,
+    final int? sets,
+    required final DateTime date,
+    final String notes,
+  }) = _$PersonalRecordImpl;
   const _PersonalRecord._() : super._();
 
   factory _PersonalRecord.fromJson(Map<String, dynamic> json) =

@@ -16,7 +16,9 @@ Future<T> withRetry<T>(
       lastError = e;
       if (shouldRethrow?.call(e) == true) rethrow;
       if (attempt < maxRetries) {
-        await Future.delayed(delay?.call(attempt) ?? Duration(seconds: attempt * 2));
+        await Future.delayed(
+          delay?.call(attempt) ?? Duration(seconds: attempt * 2),
+        );
       }
     }
   }

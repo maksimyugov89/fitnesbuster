@@ -36,7 +36,10 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
   Future<void> _load() async {
     final exercises = await ExerciseDatabase.load();
     if (mounted) {
-      setState(() { _all = exercises; _loading = false; });
+      setState(() {
+        _all = exercises;
+        _loading = false;
+      });
     }
   }
 
@@ -101,7 +104,9 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
           SliverToBoxAdapter(child: _buildMapPanel(c)),
           SliverToBoxAdapter(child: _buildControls(c)),
           if (_loading)
-            SliverFillRemaining(child: Center(child: LoadingShimmer.gridView(6)))
+            SliverFillRemaining(
+              child: Center(child: LoadingShimmer.gridView(6)),
+            )
           else
             _buildExerciseList(c),
         ],
@@ -115,7 +120,11 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
       pinned: true,
       elevation: 0,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: c.textPrimary, size: 20),
+        icon: Icon(
+          Icons.arrow_back_ios_new_rounded,
+          color: c.textPrimary,
+          size: 20,
+        ),
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: Text(
@@ -157,20 +166,24 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
                 ? _ExercisePill(
                     exercise: _focusedExercise!,
                     c: c,
-                    onClear: () => setState(() { _focusedExercise = null; }),
+                    onClear: () => setState(() {
+                      _focusedExercise = null;
+                    }),
                   )
                 : _selectedMuscle != null
-                    ? _MusclePill(
-                        muscle: _selectedMuscle!,
-                        c: c,
-                        onClear: () => setState(() { _selectedMuscle = null; }),
-                      )
-                    : Text(
-                        'Выберите мышцу или упражнение для подсветки',
-                        key: const ValueKey('hint'),
-                        style: TextStyle(fontSize: 12, color: c.textMuted),
-                        textAlign: TextAlign.center,
-                      ),
+                ? _MusclePill(
+                    muscle: _selectedMuscle!,
+                    c: c,
+                    onClear: () => setState(() {
+                      _selectedMuscle = null;
+                    }),
+                  )
+                : Text(
+                    'Выберите мышцу или упражнение для подсветки',
+                    key: const ValueKey('hint'),
+                    style: TextStyle(fontSize: 12, color: c.textMuted),
+                    textAlign: TextAlign.center,
+                  ),
           ),
         ],
       ),
@@ -204,14 +217,15 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
             label: 'Инвентарь',
             selected: _equipFilter,
             items: const [
-              (ExEquipment.barbell,    'Штанга'),
-              (ExEquipment.dumbbell,   'Гантели'),
-              (ExEquipment.machine,    'Тренажёр'),
+              (ExEquipment.barbell, 'Штанга'),
+              (ExEquipment.dumbbell, 'Гантели'),
+              (ExEquipment.machine, 'Тренажёр'),
               (ExEquipment.bodyweight, 'Без веса'),
-              (ExEquipment.cables,     'Блок'),
+              (ExEquipment.cables, 'Блок'),
               (ExEquipment.kettlebell, 'Гиря'),
             ],
-            onSelected: (v) => setState(() => _equipFilter = _equipFilter == v ? null : v),
+            onSelected: (v) =>
+                setState(() => _equipFilter = _equipFilter == v ? null : v),
             c: c,
           ),
           const SizedBox(height: 8),
@@ -220,11 +234,12 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
             label: 'Сложность',
             selected: _diffFilter,
             items: const [
-              (ExDifficulty.beginner,     'Начинающий'),
+              (ExDifficulty.beginner, 'Начинающий'),
               (ExDifficulty.intermediate, 'Средний'),
-              (ExDifficulty.advanced,     'Продвинутый'),
+              (ExDifficulty.advanced, 'Продвинутый'),
             ],
-            onSelected: (v) => setState(() => _diffFilter = _diffFilter == v ? null : v),
+            onSelected: (v) =>
+                setState(() => _diffFilter = _diffFilter == v ? null : v),
             c: c,
           ),
           const SizedBox(height: 12),
@@ -253,7 +268,10 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
             children: [
               Icon(Icons.fitness_center_rounded, size: 48, color: c.textMuted),
               const SizedBox(height: 12),
-              Text('Упражнений не найдено', style: TextStyle(color: c.textMuted, fontSize: 14)),
+              Text(
+                'Упражнений не найдено',
+                style: TextStyle(color: c.textMuted, fontSize: 14),
+              ),
             ],
           ),
         ),
@@ -283,7 +301,11 @@ class _MusclePill extends StatelessWidget {
   final ExMuscle muscle;
   final ThemePalette c;
   final VoidCallback onClear;
-  const _MusclePill({required this.muscle, required this.c, required this.onClear});
+  const _MusclePill({
+    required this.muscle,
+    required this.c,
+    required this.onClear,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -302,7 +324,12 @@ class _MusclePill extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             muscle.displayNameRu,
-            style: TextStyle(fontFamily: 'Syne', fontSize: 13, fontWeight: FontWeight.w700, color: c.primary),
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: c.primary,
+            ),
           ),
           const SizedBox(width: 8),
           GestureDetector(
@@ -319,7 +346,11 @@ class _ExercisePill extends StatelessWidget {
   final ExerciseDbModel exercise;
   final ThemePalette c;
   final VoidCallback onClear;
-  const _ExercisePill({required this.exercise, required this.c, required this.onClear});
+  const _ExercisePill({
+    required this.exercise,
+    required this.c,
+    required this.onClear,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -329,12 +360,18 @@ class _ExercisePill extends StatelessWidget {
       decoration: BoxDecoration(
         color: SemanticColors.primaryMuscle.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: SemanticColors.primaryMuscle.withValues(alpha: 0.4)),
+        border: Border.all(
+          color: SemanticColors.primaryMuscle.withValues(alpha: 0.4),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.fitness_center_rounded, size: 14, color: Color(0xFFE8453C)),
+          const Icon(
+            Icons.fitness_center_rounded,
+            size: 14,
+            color: Color(0xFFE8453C),
+          ),
           const SizedBox(width: 6),
           Flexible(
             child: Text(
@@ -352,7 +389,11 @@ class _ExercisePill extends StatelessWidget {
           const SizedBox(width: 8),
           GestureDetector(
             onTap: onClear,
-            child: const Icon(Icons.close_rounded, size: 14, color: Color(0xFFE8453C)),
+            child: const Icon(
+              Icons.close_rounded,
+              size: 14,
+              color: Color(0xFFE8453C),
+            ),
           ),
         ],
       ),
@@ -426,26 +467,26 @@ class _ExerciseCard extends StatelessWidget {
   });
 
   Color _diffColor() => switch (exercise.difficulty) {
-        ExDifficulty.beginner     => SemanticColors.difficultyBeginner,
-        ExDifficulty.intermediate => SemanticColors.difficultyIntermediate,
-        ExDifficulty.advanced     => SemanticColors.difficultyAdvanced,
-      };
+    ExDifficulty.beginner => SemanticColors.difficultyBeginner,
+    ExDifficulty.intermediate => SemanticColors.difficultyIntermediate,
+    ExDifficulty.advanced => SemanticColors.difficultyAdvanced,
+  };
 
   String _diffLabel() => switch (exercise.difficulty) {
-        ExDifficulty.beginner     => 'Начинающий',
-        ExDifficulty.intermediate => 'Средний',
-        ExDifficulty.advanced     => 'Продвинутый',
-      };
+    ExDifficulty.beginner => 'Начинающий',
+    ExDifficulty.intermediate => 'Средний',
+    ExDifficulty.advanced => 'Продвинутый',
+  };
 
   String _equipLabel(ExEquipment e) => switch (e) {
-        ExEquipment.barbell    => 'Штанга',
-        ExEquipment.dumbbell   => 'Гантели',
-        ExEquipment.machine    => 'Тренажёр',
-        ExEquipment.bodyweight => 'Без веса',
-        ExEquipment.cables     => 'Блок',
-        ExEquipment.kettlebell => 'Гиря',
-        ExEquipment.none       => '',
-      };
+    ExEquipment.barbell => 'Штанга',
+    ExEquipment.dumbbell => 'Гантели',
+    ExEquipment.machine => 'Тренажёр',
+    ExEquipment.bodyweight => 'Без веса',
+    ExEquipment.cables => 'Блок',
+    ExEquipment.kettlebell => 'Гиря',
+    ExEquipment.none => '',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -470,7 +511,9 @@ class _ExerciseCard extends StatelessWidget {
           color: isSelected ? c.primary.withValues(alpha: 0.1) : c.surfaceCard,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? c.primary.withValues(alpha: 0.6) : c.surfaceLight,
+            color: isSelected
+                ? c.primary.withValues(alpha: 0.6)
+                : c.surfaceLight,
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -489,21 +532,42 @@ class _ExerciseCard extends StatelessWidget {
                       memCacheWidth: 88,
                       memCacheHeight: 88,
                       placeholder: (_, _) => Container(
-                        width: 44, height: 44,
+                        width: 44,
+                        height: 44,
                         color: c.surfaceLight,
-                        child: Icon(Icons.fitness_center_rounded, color: c.textMuted, size: 20),
+                        child: Icon(
+                          Icons.fitness_center_rounded,
+                          color: c.textMuted,
+                          size: 20,
+                        ),
                       ),
                       errorWidget: (_, _, _) => Container(
-                        width: 44, height: 44,
-                        decoration: BoxDecoration(color: c.surfaceLight, borderRadius: BorderRadius.circular(10)),
-                        child: Icon(Icons.fitness_center_rounded, color: c.textMuted, size: 20),
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: c.surfaceLight,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.fitness_center_rounded,
+                          color: c.textMuted,
+                          size: 20,
+                        ),
                       ),
                     ),
                   )
                 : Container(
-                    width: 44, height: 44,
-                    decoration: BoxDecoration(color: c.surfaceLight, borderRadius: BorderRadius.circular(10)),
-                    child: Icon(Icons.fitness_center_rounded, color: c.textMuted, size: 20),
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: c.surfaceLight,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.fitness_center_rounded,
+                      color: c.textMuted,
+                      size: 20,
+                    ),
                   ),
             const SizedBox(width: 12),
             // Text content
@@ -527,14 +591,21 @@ class _ExerciseCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: diffColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           _diffLabel(),
-                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: diffColor),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: diffColor,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -542,7 +613,11 @@ class _ExerciseCard extends StatelessWidget {
                         onTap: onDetailTap,
                         child: Container(
                           padding: const EdgeInsets.all(4),
-                          child: Icon(Icons.info_outline_rounded, size: 16, color: c.textMuted),
+                          child: Icon(
+                            Icons.info_outline_rounded,
+                            size: 16,
+                            color: c.textMuted,
+                          ),
                         ),
                       ),
                     ],
@@ -559,14 +634,27 @@ class _ExerciseCard extends StatelessWidget {
                     Wrap(
                       spacing: 6,
                       runSpacing: 4,
-                      children: equipLabels.map((label) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: c.surfaceLight,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(label, style: TextStyle(fontSize: 10, color: c.textSecondary)),
-                      )).toList(),
+                      children: equipLabels
+                          .map(
+                            (label) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: c.surfaceLight,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                label,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: c.textSecondary,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ],
                 ],

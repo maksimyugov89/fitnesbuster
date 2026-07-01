@@ -35,7 +35,11 @@ void main() {
       },
       skip: 1,
       expect: () => [
-        isA<WorkoutStateInProgress>().having((s) => s.isPaused, 'isPaused', true),
+        isA<WorkoutStateInProgress>().having(
+          (s) => s.isPaused,
+          'isPaused',
+          true,
+        ),
       ],
     );
 
@@ -49,7 +53,11 @@ void main() {
       },
       skip: 2,
       expect: () => [
-        isA<WorkoutStateInProgress>().having((s) => s.isPaused, 'isPaused', false),
+        isA<WorkoutStateInProgress>().having(
+          (s) => s.isPaused,
+          'isPaused',
+          false,
+        ),
       ],
     );
 
@@ -84,8 +92,11 @@ void main() {
       },
       skip: 1,
       expect: () => [
-        isA<WorkoutStateInProgress>()
-            .having((s) => s.completedSets.length, 'sets count', 1),
+        isA<WorkoutStateInProgress>().having(
+          (s) => s.completedSets.length,
+          'sets count',
+          1,
+        ),
       ],
     );
 
@@ -98,8 +109,11 @@ void main() {
       },
       skip: 1,
       expect: () => [
-        isA<WorkoutStateInProgress>()
-            .having((s) => s.currentExerciseIndex, 'index', 3),
+        isA<WorkoutStateInProgress>().having(
+          (s) => s.currentExerciseIndex,
+          'index',
+          3,
+        ),
       ],
     );
   });

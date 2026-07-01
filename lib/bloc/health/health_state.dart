@@ -2,7 +2,8 @@ part of 'health_bloc.dart';
 
 sealed class HealthState extends Equatable {
   const HealthState();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
 
 class HealthStateInitial extends HealthState {
@@ -31,11 +32,21 @@ class HealthStateLoaded extends HealthState {
     this.waterIntakeMl,
     this.distanceKm,
   });
-  @override List<Object?> get props => [steps, caloriesBurned, heartRate, weight ?? 0, sleepMinutes ?? 0, waterIntakeMl ?? 0, distanceKm ?? 0];
+  @override
+  List<Object?> get props => [
+    steps,
+    caloriesBurned,
+    heartRate,
+    weight ?? 0,
+    sleepMinutes ?? 0,
+    waterIntakeMl ?? 0,
+    distanceKm ?? 0,
+  ];
 }
 
 class HealthStateError extends HealthState {
   final String message;
   const HealthStateError({required this.message});
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }

@@ -19,7 +19,8 @@ class HealthData with _$HealthData {
     double? distanceKm,
   }) = _HealthData;
 
-  factory HealthData.fromJson(Map<String, dynamic> json) => _$HealthDataFromJson(json);
+  factory HealthData.fromJson(Map<String, dynamic> json) =>
+      _$HealthDataFromJson(json);
 }
 
 @freezed
@@ -35,5 +36,6 @@ class ProgressEntry with _$ProgressEntry {
     String? notes,
   }) = _ProgressEntry;
 
-  factory ProgressEntry.fromJson(Map<String, dynamic> json) => _$ProgressEntryFromJson(json);
+  factory ProgressEntry.fromJson(Map<String, dynamic> json) =>
+      _$ProgressEntryFromJson(json);
 }

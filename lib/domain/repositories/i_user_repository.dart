@@ -26,8 +26,14 @@ abstract interface class IUserRepository {
   Future<void> saveTestWeekCompleted({required String userId});
   Future<bool> isTestWeekCompleted(String userId);
   Future<void> updateGoal({required String userId, required FitnessGoal goal});
-  Future<void> saveMeasurement({required String userId, required BodyMeasurement measurement});
+  Future<void> saveMeasurement({
+    required String userId,
+    required BodyMeasurement measurement,
+  });
   Future<List<BodyMeasurement>> getMeasurements(String userId);
-  Future<void> updateWorkoutPlan({required String userId, required String workoutPlanJson});
+  Future<void> updateWorkoutPlan({
+    required String userId,
+    required String workoutPlanJson,
+  });
   Future<Map<String, String?>> getAiPlans(String userId);
 }

@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 
 const mealIcons = {
-  'breakfast': '🌅', 'lunch': '☀️', 'dinner': '🌙', 'snack': '🍎',
-  'pre_workout': '🏋️', 'post_workout': '💪', 'evening_snack': '🌛',
+  'breakfast': '🌅',
+  'lunch': '☀️',
+  'dinner': '🌙',
+  'snack': '🍎',
+  'pre_workout': '🏋️',
+  'post_workout': '💪',
+  'evening_snack': '🌛',
   'morning_snack': '🌤️',
 };
 
 const mealLabels = {
-  'breakfast': 'Завтрак', 'lunch': 'Обед', 'dinner': 'Ужин', 'snack': 'Перекус',
-  'pre_workout': 'Предтрен', 'post_workout': 'Послетрен', 'evening_snack': 'Веч. перекус',
+  'breakfast': 'Завтрак',
+  'lunch': 'Обед',
+  'dinner': 'Ужин',
+  'snack': 'Перекус',
+  'pre_workout': 'Предтрен',
+  'post_workout': 'Послетрен',
+  'evening_snack': 'Веч. перекус',
   'morning_snack': 'Утр. перекус',
 };
 

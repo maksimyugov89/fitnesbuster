@@ -57,7 +57,9 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
           _scrollToBottom();
         } else if (state is AiStateError) {
           setState(() {
-            _messages.add(_ChatMessage(text: '❌ ${state.message}', isUser: false));
+            _messages.add(
+              _ChatMessage(text: '❌ ${state.message}', isUser: false),
+            );
           });
           _scrollToBottom();
         }
@@ -104,7 +106,8 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                         controller: _scrollController,
                         padding: const EdgeInsets.all(16),
                         itemCount: _messages.length,
-                        itemBuilder: (_, i) => _buildMessageBubble(_messages[i]),
+                        itemBuilder: (_, i) =>
+                            _buildMessageBubble(_messages[i]),
                       ),
               ),
 
@@ -113,7 +116,10 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                 builder: (context, state) {
                   if (state is AiStateLoading) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       child: Row(
                         children: [
                           Container(
@@ -134,7 +140,10 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                           const SizedBox(width: 10),
                           Text(
                             'Думаю...',
-                            style: TextStyle(color: colors.textMuted, fontSize: 13),
+                            style: TextStyle(
+                              color: colors.textMuted,
+                              fontSize: 13,
+                            ),
                           ),
                         ],
                       ),
@@ -157,7 +166,10 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                           _sendMessage(v);
                           _scrollToBottom();
                         },
-                        style: TextStyle(color: colors.textPrimary, fontSize: 14),
+                        style: TextStyle(
+                          color: colors.textPrimary,
+                          fontSize: 14,
+                        ),
                         decoration: InputDecoration(
                           hintText: 'Задай вопрос...',
                           hintStyle: TextStyle(color: colors.textMuted),
@@ -198,7 +210,9 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: Icon(
-                                isLoading ? Icons.hourglass_empty : Icons.send_rounded,
+                                isLoading
+                                    ? Icons.hourglass_empty
+                                    : Icons.send_rounded,
                                 color: isLoading
                                     ? colors.textMuted
                                     : colors.textOnPrimary,
@@ -241,49 +255,51 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
             ),
           ),
           const SizedBox(height: 12),
-          ...suggestions.map((s) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Semantics(
-                  label: s.$2,
-                  button: true,
-                  child: GestureDetector(
-                    onTap: () {
-                      _sendMessage(s.$2);
-                      _scrollToBottom();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceCard,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: colors.textPrimary.withValues(alpha: 0.06),
-                        ),
+          ...suggestions.map(
+            (s) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Semantics(
+                label: s.$2,
+                button: true,
+                child: GestureDetector(
+                  onTap: () {
+                    _sendMessage(s.$2);
+                    _scrollToBottom();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceCard,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: colors.textPrimary.withValues(alpha: 0.06),
                       ),
-                      child: Row(
-                        children: [
-                          Text(s.$1, style: const TextStyle(fontSize: 20)),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              s.$2,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: colors.textPrimary,
-                              ),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(s.$1, style: const TextStyle(fontSize: 20)),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            s.$2,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: colors.textPrimary,
                             ),
                           ),
-                          Icon(
-                            Icons.arrow_forward_rounded,
-                            color: colors.textMuted,
-                            size: 18,
-                          ),
-                        ],
-                      ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_rounded,
+                          color: colors.textMuted,
+                          size: 18,
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );

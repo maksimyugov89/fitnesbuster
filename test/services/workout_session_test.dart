@@ -49,9 +49,7 @@ void main() {
 
   group('startSession', () {
     test('sets active state and initial properties', () {
-      final workout = makeDay(
-        exercises: [makeEx()],
-      );
+      final workout = makeDay(exercises: [makeEx()]);
       session.startSession(workout, prepSeconds: 15);
 
       expect(session.isActive, true);
@@ -140,10 +138,7 @@ void main() {
     });
 
     test('estimatedCaloriesBurned is in valid range', () {
-      final workout = makeDay(
-        exercises: [makeEx()],
-        cardioMinutes: 10,
-      );
+      final workout = makeDay(exercises: [makeEx()], cardioMinutes: 10);
       session.startSession(workout, prepSeconds: 10);
 
       final kcal = session.estimatedCaloriesBurned;

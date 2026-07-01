@@ -13,13 +13,18 @@ class UserRepository implements IUserRepository {
   final fb.FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
 
-  UserRepository({required fb.FirebaseAuth auth, required FirebaseFirestore firestore})
-      : _auth = auth,
-        _firestore = firestore;
+  UserRepository({
+    required fb.FirebaseAuth auth,
+    required FirebaseFirestore firestore,
+  }) : _auth = auth,
+       _firestore = firestore;
 
   @override
   Future<UserEntity> getUser(String userId) async {
-    final doc = await _firestore.collection(FirestoreCollections.users).doc(userId).get();
+    final doc = await _firestore
+        .collection(FirestoreCollections.users)
+        .doc(userId)
+        .get();
     if (!doc.exists) {
       final fbUser = _auth.currentUser;
       return UserEntity(
@@ -43,7 +48,10 @@ class UserRepository implements IUserRepository {
     if (user.profile != null) {
       data['profile'] = _profileToMap(user.profile!);
     }
-    await _firestore.collection(FirestoreCollections.users).doc(user.id).set(data, SetOptions(merge: true));
+    await _firestore
+        .collection(FirestoreCollections.users)
+        .doc(user.id)
+        .set(data, SetOptions(merge: true));
     return user;
   }
 
@@ -70,7 +78,10 @@ class UserRepository implements IUserRepository {
     if (profile != null) {
       data['profile'] = _profileToMap(profile);
     }
-    await _firestore.collection(FirestoreCollections.users).doc(userId).set(data, SetOptions(merge: true));
+    await _firestore
+        .collection(FirestoreCollections.users)
+        .doc(userId)
+        .set(data, SetOptions(merge: true));
     return getUser(userId);
   }
 
@@ -87,7 +98,11 @@ class UserRepository implements IUserRepository {
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e, st) {
-      appLogger.w('UserRepository: Firestore unavailable for workout settings', error: e, stackTrace: st);
+      appLogger.w(
+        'UserRepository: Firestore unavailable for workout settings',
+        error: e,
+        stackTrace: st,
+      );
     }
     return getUser(userId);
   }
@@ -114,7 +129,11 @@ class UserRepository implements IUserRepository {
       }, SetOptions(merge: true));
       await HiveCache.clearSyncNeeded(userId);
     } catch (e, st) {
-      appLogger.w('UserRepository: saveAiPlans to Firestore failed', error: e, stackTrace: st);
+      appLogger.w(
+        'UserRepository: saveAiPlans to Firestore failed',
+        error: e,
+        stackTrace: st,
+      );
       await HiveCache.setNeedsSync(userId);
     }
   }
@@ -141,18 +160,28 @@ class UserRepository implements IUserRepository {
 
   Future<bool> _syncTestWeekFlag(String userId) async {
     try {
-      final doc = await _firestore.collection(FirestoreCollections.users).doc(userId).get();
+      final doc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
+          .get();
       final result = (doc.data()?['testWeekCompleted'] as bool?) ?? false;
       if (result) await HiveCache.setTestWeekCompleted(userId);
       return result;
     } catch (e, st) {
-      appLogger.w('UserRepository: _syncTestWeekFlag failed', error: e, stackTrace: st);
+      appLogger.w(
+        'UserRepository: _syncTestWeekFlag failed',
+        error: e,
+        stackTrace: st,
+      );
       return HiveCache.getTestWeekCompleted(userId) ?? false;
     }
   }
 
   @override
-  Future<void> updateGoal({required String userId, required FitnessGoal goal}) async {
+  Future<void> updateGoal({
+    required String userId,
+    required FitnessGoal goal,
+  }) async {
     await _firestore.collection(FirestoreCollections.users).doc(userId).update({
       'profile.goal': goal.name,
       'updatedAt': FieldValue.serverTimestamp(),
@@ -172,7 +201,10 @@ class UserRepository implements IUserRepository {
 
   @override
   Future<List<BodyMeasurement>> getMeasurements(String userId) async {
-    final doc = await _firestore.collection(FirestoreCollections.users).doc(userId).get();
+    final doc = await _firestore
+        .collection(FirestoreCollections.users)
+        .doc(userId)
+        .get();
     final list = doc.data()?['bodyMeasurements'] as List<dynamic>?;
     if (list == null) return [];
     return list
@@ -182,17 +214,27 @@ class UserRepository implements IUserRepository {
   }
 
   @override
-  Future<void> updateWorkoutPlan({required String userId, required String workoutPlanJson}) async {
+  Future<void> updateWorkoutPlan({
+    required String userId,
+    required String workoutPlanJson,
+  }) async {
     await HiveCache.updateWorkoutPlan(userId, workoutPlanJson);
     try {
-      await _firestore.collection(FirestoreCollections.users).doc(userId).update({
-        'aiPlans.workoutPlan': workoutPlanJson,
-        'aiPlans.generatedAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+      await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
+          .update({
+            'aiPlans.workoutPlan': workoutPlanJson,
+            'aiPlans.generatedAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
       await HiveCache.clearSyncNeeded(userId);
     } catch (e, st) {
-      appLogger.w('UserRepository: updateWorkoutPlan to Firestore failed', error: e, stackTrace: st);
+      appLogger.w(
+        'UserRepository: updateWorkoutPlan to Firestore failed',
+        error: e,
+        stackTrace: st,
+      );
       await HiveCache.setNeedsSync(userId);
     }
   }
@@ -212,17 +254,30 @@ class UserRepository implements IUserRepository {
 
   Future<Map<String, String?>> _fetchAndCacheAiPlans(String userId) async {
     try {
-      final doc = await _firestore.collection(FirestoreCollections.users).doc(userId).get();
+      final doc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
+          .get();
       final data = doc.data();
       final aiPlans = data?['aiPlans'] as Map<String, dynamic>?;
       final workoutPlan = _stripMarkdownFences(
-          (aiPlans?['workoutPlan'] ?? data?['workoutPlan']) as String?);
+        (aiPlans?['workoutPlan'] ?? data?['workoutPlan']) as String?,
+      );
       final mealPlan = _stripMarkdownFences(
-          (aiPlans?['mealPlan'] ?? data?['mealPlan']) as String?);
-      await HiveCache.saveAiPlans(userId, workoutPlan: workoutPlan, mealPlan: mealPlan);
+        (aiPlans?['mealPlan'] ?? data?['mealPlan']) as String?,
+      );
+      await HiveCache.saveAiPlans(
+        userId,
+        workoutPlan: workoutPlan,
+        mealPlan: mealPlan,
+      );
       return {'workoutPlan': workoutPlan, 'mealPlan': mealPlan};
     } catch (e, st) {
-      appLogger.w('UserRepository: _fetchAndCacheAiPlans failed', error: e, stackTrace: st);
+      appLogger.w(
+        'UserRepository: _fetchAndCacheAiPlans failed',
+        error: e,
+        stackTrace: st,
+      );
       if (HiveCache.hasAiPlans(userId)) return HiveCache.getAiPlans(userId);
       rethrow;
     }
@@ -240,14 +295,18 @@ class UserRepository implements IUserRepository {
           if (mealPlan != null) 'mealPlan': mealPlan,
           'generatedAt': FieldValue.serverTimestamp(),
         };
-        await _firestore.collection(FirestoreCollections.users).doc(userId).set({
-          'aiPlans': aiPlans,
-          'updatedAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
+        await _firestore.collection(FirestoreCollections.users).doc(userId).set(
+          {'aiPlans': aiPlans, 'updatedAt': FieldValue.serverTimestamp()},
+          SetOptions(merge: true),
+        );
       }
       await HiveCache.clearSyncNeeded(userId);
     } catch (e, st) {
-      appLogger.w('UserRepository: _pushCachedPlansToFirestore failed', error: e, stackTrace: st);
+      appLogger.w(
+        'UserRepository: _pushCachedPlansToFirestore failed',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -259,8 +318,10 @@ class UserRepository implements IUserRepository {
     'goal': p.goal.name,
     'intensity': p.intensity.name,
     'activityLevel': p.activityLevel.name,
-    if (p.medicalRestrictions.isNotEmpty) 'medicalRestrictions': p.medicalRestrictions,
-    if (p.exerciseRestrictions.isNotEmpty) 'exerciseRestrictions': p.exerciseRestrictions,
+    if (p.medicalRestrictions.isNotEmpty)
+      'medicalRestrictions': p.medicalRestrictions,
+    if (p.exerciseRestrictions.isNotEmpty)
+      'exerciseRestrictions': p.exerciseRestrictions,
     if (p.targetWeight != null) 'targetWeight': p.targetWeight,
   };
 
@@ -288,10 +349,16 @@ class UserRepository implements IUserRepository {
         goal: parseFitnessGoal(p['goal'] as String?),
         intensity: parseIntensityLevel(p['intensity'] as String?),
         activityLevel: parseActivityLevel(p['activityLevel'] as String?),
-        medicalRestrictions: (p['medicalRestrictions'] as List<dynamic>?)
-            ?.map((e) => e.toString()).toList() ?? const [],
-        exerciseRestrictions: (p['exerciseRestrictions'] as List<dynamic>?)
-            ?.map((e) => e.toString()).toList() ?? const [],
+        medicalRestrictions:
+            (p['medicalRestrictions'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            const [],
+        exerciseRestrictions:
+            (p['exerciseRestrictions'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            const [],
         workoutLocation: onboarding?['location'] as String?,
         runningPreference: onboarding?['running'] as String?,
         city: onboarding?['city'] as String?,

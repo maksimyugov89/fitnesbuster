@@ -54,20 +54,23 @@ void main() {
   group('UserProfile.tdee', () {
     test('moderately active multiplier is 1.55', () {
       expect(ActivityLevel.moderatelyActive.multiplier, 1.55);
-      expect(male80kg175cm30.tdee,
-          closeTo(male80kg175cm30.bmr * 1.55, 1.0));
+      expect(male80kg175cm30.tdee, closeTo(male80kg175cm30.bmr * 1.55, 1.0));
     });
   });
 
   group('UserProfile.dailyCalorieTarget', () {
     test('loseWeight = TDEE - 500', () {
-      expect(male80kg175cm30.dailyCalorieTarget,
-          closeTo(male80kg175cm30.tdee - 500, 1.0));
+      expect(
+        male80kg175cm30.dailyCalorieTarget,
+        closeTo(male80kg175cm30.tdee - 500, 1.0),
+      );
     });
 
     test('maintain = TDEE', () {
-      expect(female60kg160cm25.dailyCalorieTarget,
-          closeTo(female60kg160cm25.tdee, 1.0));
+      expect(
+        female60kg160cm25.dailyCalorieTarget,
+        closeTo(female60kg160cm25.tdee, 1.0),
+      );
     });
 
     test('gainWeight = TDEE + 500', () {

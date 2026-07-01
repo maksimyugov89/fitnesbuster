@@ -10,21 +10,41 @@ class PlanRefinementService {
 
   PlanRefinementService(this._client, this._workoutPlanService);
 
-  Future<String> refineWorkoutPlan(UserProfile profile, List<TestExerciseResult> exercises) async {
-    final exerciseLines = exercises.map((e) {
-      final w = e.comfortableWeightKg > 0 ? '${e.comfortableWeightKg} кг' : 'без веса';
-      return '- ${e.exerciseName}: $w, ${e.comfortableSets} подх. × ${e.comfortableReps} повт'
-          '${e.notes != null && e.notes!.isNotEmpty ? ' (заметка: ${e.notes})' : ''}';
-    }).join('\n');
+  Future<String> refineWorkoutPlan(
+    UserProfile profile,
+    List<TestExerciseResult> exercises,
+  ) async {
+    final exerciseLines = exercises
+        .map((e) {
+          final w = e.comfortableWeightKg > 0
+              ? '${e.comfortableWeightKg} кг'
+              : 'без веса';
+          return '- ${e.exerciseName}: $w, ${e.comfortableSets} подх. × ${e.comfortableReps} повт'
+              '${e.notes != null && e.notes!.isNotEmpty ? ' (заметка: ${e.notes})' : ''}';
+        })
+        .join('\n');
 
-    final volumeBlock = _workoutPlanService.weeklyVolumeBlock(profile.intensity, 1);
-    final progressionBlock = _workoutPlanService.progressionBlock(profile.intensity);
-    final locationBlock = _workoutPlanService.locationBlock(profile.workoutLocation);
-    final runningBlock = _workoutPlanService.runningBlock(profile.runningPreference);
-    final healthBlock = _workoutPlanService.healthBlock(profile.medicalRestrictions, profile.exerciseRestrictions);
+    final volumeBlock = _workoutPlanService.weeklyVolumeBlock(
+      profile.intensity,
+      1,
+    );
+    final progressionBlock = _workoutPlanService.progressionBlock(
+      profile.intensity,
+    );
+    final locationBlock = _workoutPlanService.locationBlock(
+      profile.workoutLocation,
+    );
+    final runningBlock = _workoutPlanService.runningBlock(
+      profile.runningPreference,
+    );
+    final healthBlock = _workoutPlanService.healthBlock(
+      profile.medicalRestrictions,
+      profile.exerciseRestrictions,
+    );
     final targetBlock = _workoutPlanService.targetBlock(profile);
 
-    final prompt = '''
+    final prompt =
+        '''
 Ты — сертифицированный персональный тренер (NSCA-CPT). Пользователь завершил тестовую неделю.
 Составь скорректированную программу тренировок на 7 дней на основе РЕАЛЬНЫХ показателей.
 
@@ -129,7 +149,8 @@ ${locationBlock.isNotEmpty ? '═══ МЕСТО ТРЕНИРОВКИ ══�
 5. Объясни каждое изменение в "changes".''',
     };
 
-    final prompt = '''
+    final prompt =
+        '''
 Ты — персональный AI-тренер FitnesBuster. Твоя задача — скорректировать тренировочный план пользователя.
 
 ═══ ТЕКУЩИЙ ПЛАН (структура) ═══
@@ -197,7 +218,8 @@ $taskBlock
     final messages = <Map<String, String>>[
       {
         'role': 'system',
-        'content': 'Ты — персональный AI-тренер FitnesBuster. '
+        'content':
+            'Ты — персональный AI-тренер FitnesBuster. '
             'Корректируй планы тренировок профессионально и с обоснованием. '
             '${_client.languageInstruction} Формат ответа — JSON.',
       },
@@ -221,7 +243,8 @@ $taskBlock
       for (int i = 0; i < plan.length; i++) {
         final day = plan[i] as Map<String, dynamic>;
         final label = i < dayLabels.length ? dayLabels[i] : 'День ${i + 1}';
-        final focus = day['focus'] as String? ?? day['name'] as String? ?? 'Отдых';
+        final focus =
+            day['focus'] as String? ?? day['name'] as String? ?? 'Отдых';
         final exercises = (day['exercises'] as List? ?? [])
             .cast<Map<String, dynamic>>();
         if (exercises.isEmpty) {

@@ -15,10 +15,15 @@ class LogoutButton extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: onTap,
         icon: Icon(Icons.logout_rounded, color: colors.textMuted, size: 18),
-        label: Text(AppLocalizations.tl('logoutBtn'), style: TextStyle(color: colors.textMuted)),
+        label: Text(
+          AppLocalizations.tl('logoutBtn'),
+          style: TextStyle(color: colors.textMuted),
+        ),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: colors.surfaceLight),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         ),
       ),
@@ -39,8 +44,13 @@ class DeleteAccountButton extends StatelessWidget {
       child: TextButton.icon(
         onPressed: onTap,
         icon: Icon(Icons.delete_forever_rounded, color: colors.error, size: 16),
-        label: Text(AppLocalizations.tl('deleteAccountBtn'), style: TextStyle(color: colors.error, fontSize: 13)),
-        style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 8)),
+        label: Text(
+          AppLocalizations.tl('deleteAccountBtn'),
+          style: TextStyle(color: colors.error, fontSize: 13),
+        ),
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+        ),
       ),
     );
   }
@@ -51,13 +61,24 @@ class ProfileMenuItem {
   final String label;
   final Color color;
   final VoidCallback? onTap;
-  const ProfileMenuItem({required this.icon, required this.label, required this.color, this.onTap});
+  const ProfileMenuItem({
+    required this.icon,
+    required this.label,
+    required this.color,
+    this.onTap,
+  });
 }
 
 class StatBox extends StatelessWidget {
   final String number, unit, label;
   final Color color;
-  const StatBox({super.key, required this.number, required this.unit, required this.label, required this.color});
+  const StatBox({
+    super.key,
+    required this.number,
+    required this.unit,
+    required this.label,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -82,13 +103,23 @@ class StatBox extends StatelessWidget {
               children: [
                 Text(
                   number,
-                  style: TextStyle(fontFamily: 'Syne', fontSize: 20, fontWeight: FontWeight.w800, color: color),
+                  style: TextStyle(
+                    fontFamily: 'Syne',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: color,
+                  ),
                 ),
                 if (unit.isNotEmpty) ...[
                   const SizedBox(width: 2),
                   Text(
                     unit,
-                    style: TextStyle(fontFamily: 'Syne', fontSize: 11, fontWeight: FontWeight.w600, color: color.withValues(alpha: 0.8)),
+                    style: TextStyle(
+                      fontFamily: 'Syne',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: color.withValues(alpha: 0.8),
+                    ),
                   ),
                 ],
               ],
@@ -120,13 +151,39 @@ class AiProgressDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 36),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          SizedBox(width: 56, height: 56, child: CircularProgressIndicator(strokeWidth: 3, valueColor: AlwaysStoppedAnimation<Color>(colors.primary))),
-          const SizedBox(height: 24),
-          Text(l10n.generatingPlan, style: TextStyle(fontFamily: 'Syne', fontSize: 17, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-          const SizedBox(height: 8),
-          Text(AppLocalizations.tl('deepSeekRecalculating'), style: TextStyle(fontSize: 13, color: colors.textMuted, height: 1.5), textAlign: TextAlign.center),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 56,
+              height: 56,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              l10n.generatingPlan,
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: colors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              AppLocalizations.tl('deepSeekRecalculating'),
+              style: TextStyle(
+                fontSize: 13,
+                color: colors.textMuted,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

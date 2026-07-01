@@ -17,15 +17,16 @@ class UserSearchResult {
     this.requestSent = false,
   });
 
-  factory UserSearchResult.fromJson(Map<String, dynamic> json) => UserSearchResult(
-    uid: json['uid'] as String,
-    name: json['name'] as String? ?? '',
-    username: json['username'] as String?,
-    avatarUrl: json['avatarUrl'] as String?,
-    email: json['email'] as String?,
-    isFriend: json['isFriend'] as bool? ?? false,
-    requestSent: json['requestSent'] as bool? ?? false,
-  );
+  factory UserSearchResult.fromJson(Map<String, dynamic> json) =>
+      UserSearchResult(
+        uid: json['uid'] as String,
+        name: json['name'] as String? ?? '',
+        username: json['username'] as String?,
+        avatarUrl: json['avatarUrl'] as String?,
+        email: json['email'] as String?,
+        isFriend: json['isFriend'] as bool? ?? false,
+        requestSent: json['requestSent'] as bool? ?? false,
+      );
 
   Map<String, dynamic> toJson() => {
     'uid': uid,
@@ -37,16 +38,14 @@ class UserSearchResult {
     'requestSent': requestSent,
   };
 
-  UserSearchResult copyWith({
-    bool? requestSent,
-    bool? isFriend,
-  }) => UserSearchResult(
-    uid: uid,
-    name: name,
-    username: username,
-    avatarUrl: avatarUrl,
-    email: email,
-    isFriend: isFriend ?? this.isFriend,
-    requestSent: requestSent ?? this.requestSent,
-  );
+  UserSearchResult copyWith({bool? requestSent, bool? isFriend}) =>
+      UserSearchResult(
+        uid: uid,
+        name: name,
+        username: username,
+        avatarUrl: avatarUrl,
+        email: email,
+        isFriend: isFriend ?? this.isFriend,
+        requestSent: requestSent ?? this.requestSent,
+      );
 }

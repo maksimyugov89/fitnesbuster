@@ -13,15 +13,20 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
   final IHealthService _healthService;
   final IHealthAnalyticsService _analytics;
 
-  HealthBloc({required IHealthService healthService, required IHealthAnalyticsService analytics})
-      : _healthService = healthService,
-        _analytics = analytics,
-        super(const HealthStateInitial()) {
+  HealthBloc({
+    required IHealthService healthService,
+    required IHealthAnalyticsService analytics,
+  }) : _healthService = healthService,
+       _analytics = analytics,
+       super(const HealthStateInitial()) {
     on<HealthFetchRequested>(_onFetchRequested);
     on<HealthWatchRequested>(_onWatchRequested);
   }
 
-  Future<void> _onFetchRequested(HealthFetchRequested event, Emitter<HealthState> emit) async {
+  Future<void> _onFetchRequested(
+    HealthFetchRequested event,
+    Emitter<HealthState> emit,
+  ) async {
     emit(const HealthStateLoading());
     try {
       final types = [
@@ -50,34 +55,52 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
       );
 
       final steps = _analytics.sumValue(data, HealthDataType.STEPS)?.toInt();
-      final calories = _analytics.sumValue(data, HealthDataType.ACTIVE_ENERGY_BURNED);
-      final heartRate = _analytics.avgValue(data, HealthDataType.HEART_RATE)?.toInt();
+      final calories = _analytics.sumValue(
+        data,
+        HealthDataType.ACTIVE_ENERGY_BURNED,
+      );
+      final heartRate = _analytics
+          .avgValue(data, HealthDataType.HEART_RATE)
+          ?.toInt();
       final weight = _analytics.lastValue(data, HealthDataType.WEIGHT);
       final sleepMinutes = _analytics.sumSleepMinutes(data);
       final water = _analytics.sumValue(data, HealthDataType.WATER);
       final distance = _analytics.sumValue(data, HealthDataType.DISTANCE_DELTA);
 
-      emit(HealthStateLoaded(
-        steps: steps ?? 0,
-        caloriesBurned: calories ?? 0,
-        heartRate: heartRate,
-        weight: weight,
-        sleepMinutes: sleepMinutes,
-        waterIntakeMl: (water ?? 0) * 1000,
-        distanceKm: distance ?? 0,
-      ));
+      emit(
+        HealthStateLoaded(
+          steps: steps ?? 0,
+          caloriesBurned: calories ?? 0,
+          heartRate: heartRate,
+          weight: weight,
+          sleepMinutes: sleepMinutes,
+          waterIntakeMl: (water ?? 0) * 1000,
+          distanceKm: distance ?? 0,
+        ),
+      );
     } catch (e, st) {
       appLogger.w('[HealthBloc] fetch failed', error: e, stackTrace: st);
       emit(HealthStateError(message: AppLocalizations.tl('healthLoadFailed')));
     }
   }
 
-  Future<void> _onWatchRequested(HealthWatchRequested event, Emitter<HealthState> emit) async {
+  Future<void> _onWatchRequested(
+    HealthWatchRequested event,
+    Emitter<HealthState> emit,
+  ) async {
     try {
-      final types = [HealthDataType.STEPS, HealthDataType.HEART_RATE, HealthDataType.DISTANCE_DELTA];
+      final types = [
+        HealthDataType.STEPS,
+        HealthDataType.HEART_RATE,
+        HealthDataType.DISTANCE_DELTA,
+      ];
       final granted = await _healthService.requestAuthorization(types);
       if (!granted) {
-        emit(HealthStateError(message: AppLocalizations.tl('healthPermissionsDenied')));
+        emit(
+          HealthStateError(
+            message: AppLocalizations.tl('healthPermissionsDenied'),
+          ),
+        );
         return;
       }
       final now = DateTime.now();

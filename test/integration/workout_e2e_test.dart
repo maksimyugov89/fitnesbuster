@@ -23,9 +23,7 @@ void main() {
         b.add(const WorkoutStopRequested());
       },
       skip: 5,
-      expect: () => [
-        isA<WorkoutStateCompleted>(),
-      ],
+      expect: () => [isA<WorkoutStateCompleted>()],
     );
 
     blocTest<WorkoutBloc, WorkoutState>(
@@ -40,9 +38,7 @@ void main() {
         b.add(const WorkoutStopRequested());
       },
       skip: 5,
-      expect: () => [
-        isA<WorkoutStateCompleted>(),
-      ],
+      expect: () => [isA<WorkoutStateCompleted>()],
     );
 
     blocTest<WorkoutBloc, WorkoutState>(
@@ -68,7 +64,11 @@ void main() {
       },
       skip: 2,
       expect: () => [
-        isA<WorkoutStateInProgress>().having((s) => s.isPaused, 'paused', false),
+        isA<WorkoutStateInProgress>().having(
+          (s) => s.isPaused,
+          'paused',
+          false,
+        ),
       ],
     );
 
@@ -100,8 +100,16 @@ void main() {
       },
       skip: 1,
       expect: () => [
-        isA<WorkoutStateInProgress>().having((s) => s.currentExerciseIndex, 'idx', 2),
-        isA<WorkoutStateInProgress>().having((s) => s.currentExerciseIndex, 'idx', 0),
+        isA<WorkoutStateInProgress>().having(
+          (s) => s.currentExerciseIndex,
+          'idx',
+          2,
+        ),
+        isA<WorkoutStateInProgress>().having(
+          (s) => s.currentExerciseIndex,
+          'idx',
+          0,
+        ),
       ],
     );
 
@@ -128,9 +136,5 @@ WorkoutSession _makeSession() => const WorkoutSession(
   difficulty: DifficultyLevel.intermediate,
 );
 
-SetLog _makeSetLog(int setNumber, int reps) => SetLog(
-  setNumber: setNumber,
-  reps: reps,
-  weightKg: 60,
-  completed: true,
-);
+SetLog _makeSetLog(int setNumber, int reps) =>
+    SetLog(setNumber: setNumber, reps: reps, weightKg: 60, completed: true);

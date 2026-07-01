@@ -26,16 +26,16 @@ class RecoveryScore {
 
   Color get color => switch (level) {
     RecoveryLevel.excellent => const Color(0xFF22D3A5),
-    RecoveryLevel.good      => const Color(0xFFC8FF00),
-    RecoveryLevel.fair      => const Color(0xFFF5A623),
-    RecoveryLevel.low       => const Color(0xFFFF4466),
+    RecoveryLevel.good => const Color(0xFFC8FF00),
+    RecoveryLevel.fair => const Color(0xFFF5A623),
+    RecoveryLevel.low => const Color(0xFFFF4466),
   };
 
   String get emoji => switch (level) {
     RecoveryLevel.excellent => '💚',
-    RecoveryLevel.good      => '💛',
-    RecoveryLevel.fair      => '🟠',
-    RecoveryLevel.low       => '❤️',
+    RecoveryLevel.good => '💛',
+    RecoveryLevel.fair => '🟠',
+    RecoveryLevel.low => '❤️',
   };
 }
 
@@ -44,9 +44,9 @@ class RecoveryScoreService {
   static int _sleepScore(int? minutes) {
     if (minutes == null) return 65; // neutral when no data
     if (minutes >= 480) return 100; // ≥ 8h
-    if (minutes >= 420) return 80;  // ≥ 7h
-    if (minutes >= 360) return 55;  // ≥ 6h
-    if (minutes >= 300) return 30;  // ≥ 5h
+    if (minutes >= 420) return 80; // ≥ 7h
+    if (minutes >= 360) return 55; // ≥ 6h
+    if (minutes >= 300) return 30; // ≥ 5h
     return 10;
   }
 
@@ -75,31 +75,32 @@ class RecoveryScoreService {
     double? hrv,
     int? restingHr,
   }) {
-    final score = (_sleepScore(sleepMinutes) * 0.40 +
-                   _hrvScore(hrv)            * 0.35 +
-                   _hrScore(restingHr)       * 0.25)
-        .round();
+    final score =
+        (_sleepScore(sleepMinutes) * 0.40 +
+                _hrvScore(hrv) * 0.35 +
+                _hrScore(restingHr) * 0.25)
+            .round();
 
     final level = score >= 80
         ? RecoveryLevel.excellent
         : score >= 65
-            ? RecoveryLevel.good
-            : score >= 45
-                ? RecoveryLevel.fair
-                : RecoveryLevel.low;
+        ? RecoveryLevel.good
+        : score >= 45
+        ? RecoveryLevel.fair
+        : RecoveryLevel.low;
 
     final label = switch (level) {
       RecoveryLevel.excellent => AppLocalizations.tl('recoveryExcellent'),
-      RecoveryLevel.good      => AppLocalizations.tl('recoveryGood'),
-      RecoveryLevel.fair      => AppLocalizations.tl('recoveryAverage'),
-      RecoveryLevel.low       => AppLocalizations.tl('recoveryLow2'),
+      RecoveryLevel.good => AppLocalizations.tl('recoveryGood'),
+      RecoveryLevel.fair => AppLocalizations.tl('recoveryAverage'),
+      RecoveryLevel.low => AppLocalizations.tl('recoveryLow2'),
     };
 
     final advice = switch (level) {
       RecoveryLevel.excellent => AppLocalizations.tl('recoveryReadyMax'),
-      RecoveryLevel.good      => AppLocalizations.tl('recoveryReadyNormal'),
-      RecoveryLevel.fair      => AppLocalizations.tl('recoveryReduce'),
-      RecoveryLevel.low       => AppLocalizations.tl('recoveryRestDay'),
+      RecoveryLevel.good => AppLocalizations.tl('recoveryReadyNormal'),
+      RecoveryLevel.fair => AppLocalizations.tl('recoveryReduce'),
+      RecoveryLevel.low => AppLocalizations.tl('recoveryRestDay'),
     };
 
     return RecoveryScore(
@@ -119,6 +120,11 @@ class RecoveryScoreService {
     if (minutes == null) return '—';
     final h = minutes ~/ 60;
     final m = minutes % 60;
-    return m > 0 ? AppLocalizations.tlp('recoveryTime', {'h': h.toString(), 'm': m.toString()}) : '$hч';
+    return m > 0
+        ? AppLocalizations.tlp('recoveryTime', {
+            'h': h.toString(),
+            'm': m.toString(),
+          })
+        : '$hч';
   }
 }

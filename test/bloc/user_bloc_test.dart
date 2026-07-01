@@ -39,10 +39,7 @@ void main() {
         when(repo.getUser('uid-1')).thenAnswer((_) async => tUser);
       },
       act: (b) => b.add(const UserLoadRequested(userId: 'uid-1')),
-      expect: () => [
-        const UserStateLoading(),
-        UserStateLoaded(user: tUser),
-      ],
+      expect: () => [const UserStateLoading(), UserStateLoaded(user: tUser)],
     );
 
     blocTest<UserBloc, UserState>(
@@ -74,17 +71,15 @@ void main() {
         const UserUpdateProfile(name: 'New Name', email: 'test@example.com'),
       ),
       expect: () => [
-        isA<UserStateLoaded>()
-            .having((s) => s.user.name, 'name', 'New Name'),
+        isA<UserStateLoaded>().having((s) => s.user.name, 'name', 'New Name'),
       ],
     );
 
     blocTest<UserBloc, UserState>(
       'does nothing when not in Loaded state',
       build: () => UserBloc(userRepository: repo),
-      act: (b) => b.add(
-        const UserUpdateProfile(name: 'Name', email: 'e@e.com'),
-      ),
+      act: (b) =>
+          b.add(const UserUpdateProfile(name: 'Name', email: 'e@e.com')),
       expect: () => [],
     );
 
@@ -95,9 +90,8 @@ void main() {
       setUp: () {
         when(repo.updateProfile(any)).thenThrow(Exception('fail'));
       },
-      act: (b) => b.add(
-        const UserUpdateProfile(name: 'Name', email: 'e@e.com'),
-      ),
+      act: (b) =>
+          b.add(const UserUpdateProfile(name: 'Name', email: 'e@e.com')),
       expect: () => [
         const UserStateError(
           message: 'Не удалось сохранить профиль. Попробуйте снова.',

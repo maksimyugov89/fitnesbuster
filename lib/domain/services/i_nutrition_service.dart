@@ -6,7 +6,12 @@ class Macros {
   final int fat;
   final int totalCalories;
 
-  const Macros({required this.protein, required this.carbs, required this.fat, required this.totalCalories});
+  const Macros({
+    required this.protein,
+    required this.carbs,
+    required this.fat,
+    required this.totalCalories,
+  });
 }
 
 abstract interface class INutritionService {

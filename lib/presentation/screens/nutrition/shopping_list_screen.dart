@@ -27,48 +27,140 @@ const _categoryOrder = [
 String _categorize(String ingredient) {
   final lc = ingredient.toLowerCase();
 
-  const proteins = ['курица', 'говяд', 'свинин', 'индейк', 'рыб', 'лосос', 'тунец', 'яйцо',
-    'яйца', 'яиц', 'протеин', 'морепродукт', 'криветк', 'кальмар', 'треск', 'мясо'];
+  const proteins = [
+    'курица',
+    'говяд',
+    'свинин',
+    'индейк',
+    'рыб',
+    'лосос',
+    'тунец',
+    'яйцо',
+    'яйца',
+    'яиц',
+    'протеин',
+    'морепродукт',
+    'криветк',
+    'кальмар',
+    'треск',
+    'мясо',
+  ];
   const dairy = ['молоко', 'кефир', 'йогурт', 'творог', 'сыр', 'сметан'];
-  const grains = ['рис', 'гречк', 'овсянк', 'овёс', 'паст', 'макарон', 'хлеб', 'батон',
-    'картофел', 'картошк', 'хлопья', 'крупа', 'крупы', 'киноа', 'булгур', 'перловк'];
-  const vegetables = ['огурец', 'огурц', 'помидор', 'томат', 'перец', 'капуст', 'брокколи',
-    'шпинат', 'морков', 'салат', 'зелень', 'лук', 'чеснок', 'кабачок', 'баклажан',
-    'свёкл', 'свекол', 'горошек', 'кукуруз', 'сельдер', 'петрушк', 'укроп', 'шампин'];
-  const fruits = ['яблоко', 'яблок', 'банан', 'апельсин', 'ягода', 'черника', 'клубник',
-    'виноград', 'груша', 'манго', 'киви', 'лимон', 'малина', 'смородин', 'арбуз'];
-  const fats = ['масло', 'авокадо', 'орех', 'семена', 'миндаль', 'кешью', 'арахис',
-    'грецк', 'фундук', 'оливк', 'льняно'];
+  const grains = [
+    'рис',
+    'гречк',
+    'овсянк',
+    'овёс',
+    'паст',
+    'макарон',
+    'хлеб',
+    'батон',
+    'картофел',
+    'картошк',
+    'хлопья',
+    'крупа',
+    'крупы',
+    'киноа',
+    'булгур',
+    'перловк',
+  ];
+  const vegetables = [
+    'огурец',
+    'огурц',
+    'помидор',
+    'томат',
+    'перец',
+    'капуст',
+    'брокколи',
+    'шпинат',
+    'морков',
+    'салат',
+    'зелень',
+    'лук',
+    'чеснок',
+    'кабачок',
+    'баклажан',
+    'свёкл',
+    'свекол',
+    'горошек',
+    'кукуруз',
+    'сельдер',
+    'петрушк',
+    'укроп',
+    'шампин',
+  ];
+  const fruits = [
+    'яблоко',
+    'яблок',
+    'банан',
+    'апельсин',
+    'ягода',
+    'черника',
+    'клубник',
+    'виноград',
+    'груша',
+    'манго',
+    'киви',
+    'лимон',
+    'малина',
+    'смородин',
+    'арбуз',
+  ];
+  const fats = [
+    'масло',
+    'авокадо',
+    'орех',
+    'семена',
+    'миндаль',
+    'кешью',
+    'арахис',
+    'грецк',
+    'фундук',
+    'оливк',
+    'льняно',
+  ];
 
-  for (final kw in proteins)   { if (lc.contains(kw)) return 'proteins'; }
-  for (final kw in dairy)      { if (lc.contains(kw)) return 'dairy'; }
-  for (final kw in grains)     { if (lc.contains(kw)) return 'grains'; }
-  for (final kw in vegetables) { if (lc.contains(kw)) return 'vegetables'; }
-  for (final kw in fruits)     { if (lc.contains(kw)) return 'fruits'; }
-  for (final kw in fats)       { if (lc.contains(kw)) return 'fats'; }
+  for (final kw in proteins) {
+    if (lc.contains(kw)) return 'proteins';
+  }
+  for (final kw in dairy) {
+    if (lc.contains(kw)) return 'dairy';
+  }
+  for (final kw in grains) {
+    if (lc.contains(kw)) return 'grains';
+  }
+  for (final kw in vegetables) {
+    if (lc.contains(kw)) return 'vegetables';
+  }
+  for (final kw in fruits) {
+    if (lc.contains(kw)) return 'fruits';
+  }
+  for (final kw in fats) {
+    if (lc.contains(kw)) return 'fats';
+  }
   return 'other';
 }
 
 const _categoryEmoji = {
-  'proteins':   '🥩',
-  'dairy':      '🥛',
-  'grains':     '🌾',
+  'proteins': '🥩',
+  'dairy': '🥛',
+  'grains': '🌾',
   'vegetables': '🥦',
-  'fruits':     '🍎',
-  'fats':       '🥑',
-  'other':      '🧂',
+  'fruits': '🍎',
+  'fats': '🥑',
+  'other': '🧂',
 };
 
 String _categoryLabel(BuildContext context, String key) {
   final l = context.l10n;
   return switch (key) {
-    'proteins'   => l.catProteins,
-    'dairy'      => l.catDairy,
-    'grains'     => l.catGrains,
+    'proteins' => l.catProteins,
+    'dairy' => l.catDairy,
+    'grains' => l.catGrains,
     'vegetables' => l.catVegetables,
-    'fruits'     => l.catFruits,
-    'fats'       => l.catFatsNuts,
-    _            => l.catOther,
+    'fruits' => l.catFruits,
+    'fats' => l.catFatsNuts,
+    _ => l.catOther,
   };
 }
 
@@ -134,20 +226,27 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         final note = basketEstimate['note'];
         if (mounted) {
           setState(() {
-            _costMin = minRub is int ? minRub : (minRub is double ? minRub.toInt() : null);
-            _costMax = maxRub is int ? maxRub : (maxRub is double ? maxRub.toInt() : null);
+            _costMin = minRub is int
+                ? minRub
+                : (minRub is double ? minRub.toInt() : null);
+            _costMax = maxRub is int
+                ? maxRub
+                : (maxRub is double ? maxRub.toInt() : null);
             _costNote = note as String?;
           });
         }
       }
 
       // Parse alternatives from each meal
-      final altRegex = RegExp(r'[Вв]место\s+([а-яА-ЯёЁ ]+?)\s*(?:→|->|:)\s*(.+)');
+      final altRegex = RegExp(
+        r'[Вв]место\s+([а-яА-ЯёЁ ]+?)\s*(?:→|->|:)\s*(.+)',
+      );
 
       // Build a map: stem → list of swap options
       final stemToSwaps = <String, List<String>>{};
       for (final meal in meals) {
-        final alternatives = (meal['alternatives'] as List? ?? []).cast<String>();
+        final alternatives = (meal['alternatives'] as List? ?? [])
+            .cast<String>();
         for (final altStr in alternatives) {
           final match = altRegex.firstMatch(altStr);
           if (match != null) {
@@ -194,9 +293,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             break;
           }
         }
-        grouped.putIfAbsent(cat, () => []).add(
-          _PurchaseGroup(mainItem: item, swapOptions: matchedSwaps),
-        );
+        grouped
+            .putIfAbsent(cat, () => [])
+            .add(_PurchaseGroup(mainItem: item, swapOptions: matchedSwaps));
       }
 
       // Sort within category alphabetically by mainItem
@@ -225,7 +324,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   void _toggleMain(_PurchaseGroup g) {
     setState(() {
       final wasChecked = _checked.contains(g.mainItem);
-      for (final alt in g.swapOptions) { _checked.remove(alt); }
+      for (final alt in g.swapOptions) {
+        _checked.remove(alt);
+      }
       if (wasChecked) {
         _checked.remove(g.mainItem);
       } else {
@@ -239,7 +340,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     setState(() {
       final wasChecked = _checked.contains(alt);
       _checked.remove(g.mainItem);
-      for (final a in g.swapOptions) { _checked.remove(a); }
+      for (final a in g.swapOptions) {
+        _checked.remove(a);
+      }
       if (!wasChecked) {
         _checked.add(alt);
       }
@@ -270,7 +373,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     for (final cat in _categoryOrder) {
       final groups = _grouped[cat];
       if (groups == null || groups.isEmpty) continue;
-      lines.add('${_categoryEmoji[cat] ?? ''} ${_categoryLabel(context, cat)}:');
+      lines.add(
+        '${_categoryEmoji[cat] ?? ''} ${_categoryLabel(context, cat)}:',
+      );
       for (final group in groups) {
         final bought = _isGroupBought(group);
         lines.add('  ${bought ? '✓' : '○'} ${group.mainItem}');
@@ -302,15 +407,28 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           onTap: () => Navigator.pop(context),
           child: Container(
             margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: BorderRadius.circular(10)),
-            child: Icon(Icons.arrow_back_rounded, color: colors.textPrimary, size: 20),
+            decoration: BoxDecoration(
+              color: colors.surfaceCard,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.arrow_back_rounded,
+              color: colors.textPrimary,
+              size: 20,
+            ),
           ),
         ),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(context.l10n.shoppingListTitle, style: AppTextStyles.titleL),
-          if (!_loading && _totalItems > 0)
-            Text('$_checkedCount / $_totalItems куплено', style: TextStyle(fontSize: 11, color: colors.textMuted)),
-        ]),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(context.l10n.shoppingListTitle, style: AppTextStyles.titleL),
+            if (!_loading && _totalItems > 0)
+              Text(
+                '$_checkedCount / $_totalItems куплено',
+                style: TextStyle(fontSize: 11, color: colors.textMuted),
+              ),
+          ],
+        ),
         actions: [
           if (!_loading && _checkedCount > 0)
             IconButton(
@@ -328,8 +446,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _grouped.isEmpty
-              ? _buildEmpty(colors)
-              : _buildList(colors),
+          ? _buildEmpty(colors)
+          : _buildList(colors),
     );
   }
 
@@ -337,20 +455,28 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('🛒', style: TextStyle(fontSize: 56)),
-          const SizedBox(height: 16),
-          Text(
-            'Список пуст',
-            style: TextStyle(fontFamily: 'Syne', fontSize: 18, fontWeight: FontWeight.w800, color: colors.textPrimary),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Сгенерируй AI-план питания,\nи ингредиенты появятся здесь',
-            style: TextStyle(fontSize: 13, color: colors.textMuted),
-            textAlign: TextAlign.center,
-          ),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🛒', style: TextStyle(fontSize: 56)),
+            const SizedBox(height: 16),
+            Text(
+              'Список пуст',
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: colors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Сгенерируй AI-план питания,\nи ингредиенты появятся здесь',
+              style: TextStyle(fontSize: 13, color: colors.textMuted),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -363,34 +489,42 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
       ),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Icon(Icons.shopping_basket_rounded, color: colors.primary, size: 22),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(
-              context.l10n.costEstimateLabel(_costMin!, _costMax!),
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: colors.primary,
-              ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.shopping_basket_rounded, color: colors.primary, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.costEstimateLabel(_costMin!, _costMax!),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: colors.primary,
+                  ),
+                ),
+                if (_costNote != null && _costNote!.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    _costNote!,
+                    style: TextStyle(fontSize: 11, color: colors.textMuted),
+                  ),
+                ],
+              ],
             ),
-            if (_costNote != null && _costNote!.isNotEmpty) ...[
-              const SizedBox(height: 2),
-              Text(
-                _costNote!,
-                style: TextStyle(fontSize: 11, color: colors.textMuted),
-              ),
-            ],
-          ]),
-        ),
-      ]),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildList(ThemePalette colors) {
-    final orderedCats = _categoryOrder.where((c) => _grouped.containsKey(c)).toList();
+    final orderedCats = _categoryOrder
+        .where((c) => _grouped.containsKey(c))
+        .toList();
 
     // Progress bar at top
     final progress = _totalItems > 0 ? _checkedCount / _totalItems : 0.0;
@@ -404,28 +538,41 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           decoration: BoxDecoration(
             color: colors.surfaceCard,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
-          ),
-          child: Column(children: [
-            Row(children: [
-              Text('Куплено', style: TextStyle(fontSize: 12, color: colors.textMuted)),
-              const Spacer(),
-              Text(
-                '$_checkedCount / $_totalItems',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.primary),
-              ),
-            ]),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: progress,
-                minHeight: 6,
-                backgroundColor: colors.primary.withValues(alpha: 0.1),
-                valueColor: AlwaysStoppedAnimation(colors.primary),
-              ),
+            border: Border.all(
+              color: colors.textPrimary.withValues(alpha: 0.06),
             ),
-          ]),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Куплено',
+                    style: TextStyle(fontSize: 12, color: colors.textMuted),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '$_checkedCount / $_totalItems',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: colors.primary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 6,
+                  backgroundColor: colors.primary.withValues(alpha: 0.1),
+                  valueColor: AlwaysStoppedAnimation(colors.primary),
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
 
@@ -449,7 +596,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             decoration: BoxDecoration(
               color: colors.surfaceCard,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
+              border: Border.all(
+                color: colors.textPrimary.withValues(alpha: 0.06),
+              ),
             ),
             child: Column(
               children: () {
@@ -470,7 +619,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                       isExpanded: isExpanded,
                       onToggle: () => _toggleMain(group),
                       onLongPress: () => _showSubstitution(group.mainItem),
-                      onExpandTap: group.hasSwaps ? () => _toggleExpand(group.mainItem) : null,
+                      onExpandTap: group.hasSwaps
+                          ? () => _toggleExpand(group.mainItem)
+                          : null,
                     ),
                   );
 
@@ -493,7 +644,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                   }
                   if (!isLast) {
                     widgets.add(
-                      Divider(height: 1, color: Colors.white.withValues(alpha: 0.05), indent: 56),
+                      Divider(
+                        height: 1,
+                        color: Colors.white.withValues(alpha: 0.05),
+                        indent: 56,
+                      ),
                     );
                   }
                 }
@@ -546,28 +701,30 @@ class _CategoryHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final allDone = checkedCount == count && count > 0;
-    return Row(children: [
-      Text(emoji, style: const TextStyle(fontSize: 16)),
-      const SizedBox(width: 8),
-      Text(
-        label,
-        style: TextStyle(
-          fontFamily: 'Syne',
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-          color: allDone ? colors.textMuted : colors.textPrimary,
+    return Row(
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 16)),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontFamily: 'Syne',
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: allDone ? colors.textMuted : colors.textPrimary,
+          ),
         ),
-      ),
-      const SizedBox(width: 6),
-      Text(
-        '$checkedCount/$count',
-        style: TextStyle(fontSize: 11, color: colors.textMuted),
-      ),
-      if (allDone) ...[
         const SizedBox(width: 6),
-        Icon(Icons.check_circle_rounded, size: 14, color: colors.success),
+        Text(
+          '$checkedCount/$count',
+          style: TextStyle(fontSize: 11, color: colors.textMuted),
+        ),
+        if (allDone) ...[
+          const SizedBox(width: 6),
+          Icon(Icons.check_circle_rounded, size: 14, color: colors.success),
+        ],
       ],
-    ]);
+    );
   }
 }
 
@@ -602,55 +759,67 @@ class _ShoppingItem extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            width: 22,
-            height: 22,
-            decoration: BoxDecoration(
-              color: checked ? colors.primary : Colors.transparent,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: checked ? colors.primary : colors.textMuted.withValues(alpha: 0.4),
-                width: 1.5,
-              ),
-            ),
-            child: checked
-                ? Icon(Icons.check_rounded, size: 14, color: colors.textOnPrimary)
-                : null,
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 14,
-                color: checked ? colors.textMuted : colors.textPrimary,
-                decoration: checked ? TextDecoration.lineThrough : null,
-                decorationColor: colors.textMuted,
-              ),
-            ),
-          ),
-          if (hasSwaps)
-            GestureDetector(
-              onTap: onExpandTap,
-              behavior: HitTestBehavior.opaque,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: AnimatedRotation(
-                  turns: isExpanded ? 0.5 : 0.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: Icon(
-                    Icons.expand_more_rounded,
-                    size: 18,
-                    color: colors.primary.withValues(alpha: 0.7),
-                  ),
+        child: Row(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                color: checked ? colors.primary : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: checked
+                      ? colors.primary
+                      : colors.textMuted.withValues(alpha: 0.4),
+                  width: 1.5,
                 ),
               ),
-            )
-          else
-            Icon(Icons.more_horiz_rounded, size: 16, color: colors.textMuted.withValues(alpha: 0.4)),
-        ]),
+              child: checked
+                  ? Icon(
+                      Icons.check_rounded,
+                      size: 14,
+                      color: colors.textOnPrimary,
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: checked ? colors.textMuted : colors.textPrimary,
+                  decoration: checked ? TextDecoration.lineThrough : null,
+                  decorationColor: colors.textMuted,
+                ),
+              ),
+            ),
+            if (hasSwaps)
+              GestureDetector(
+                onTap: onExpandTap,
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: AnimatedRotation(
+                    turns: isExpanded ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      Icons.expand_more_rounded,
+                      size: 18,
+                      color: colors.primary.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ),
+              )
+            else
+              Icon(
+                Icons.more_horiz_rounded,
+                size: 16,
+                color: colors.textMuted.withValues(alpha: 0.4),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -679,47 +848,62 @@ class _SwapOptionItem extends StatelessWidget {
       child: Container(
         color: colors.primary.withValues(alpha: 0.04),
         child: Padding(
-          padding: const EdgeInsets.only(left: 52, right: 16, top: 9, bottom: 9),
-          child: Row(children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              width: 18,
-              height: 18,
-              decoration: BoxDecoration(
-                color: checked ? colors.primary.withValues(alpha: 0.8) : Colors.transparent,
-                shape: BoxShape.circle,
-                border: Border.all(
+          padding: const EdgeInsets.only(
+            left: 52,
+            right: 16,
+            top: 9,
+            bottom: 9,
+          ),
+          child: Row(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 18,
+                height: 18,
+                decoration: BoxDecoration(
                   color: checked
                       ? colors.primary.withValues(alpha: 0.8)
-                      : colors.textMuted.withValues(alpha: 0.35),
-                  width: 1.5,
+                      : Colors.transparent,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: checked
+                        ? colors.primary.withValues(alpha: 0.8)
+                        : colors.textMuted.withValues(alpha: 0.35),
+                    width: 1.5,
+                  ),
                 ),
+                child: checked
+                    ? Icon(
+                        Icons.check_rounded,
+                        size: 11,
+                        color: colors.textOnPrimary,
+                      )
+                    : null,
               ),
-              child: checked
-                  ? Icon(Icons.check_rounded, size: 11, color: colors.textOnPrimary)
-                  : null,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              'или: ',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: colors.primary.withValues(alpha: 0.7),
-              ),
-            ),
-            Expanded(
-              child: Text(
-                text,
+              const SizedBox(width: 10),
+              Text(
+                'или: ',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: checked ? colors.textMuted : colors.textPrimary.withValues(alpha: 0.75),
-                  decoration: checked ? TextDecoration.lineThrough : null,
-                  decorationColor: colors.textMuted,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: colors.primary.withValues(alpha: 0.7),
                 ),
               ),
-            ),
-          ]),
+              Expanded(
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: checked
+                        ? colors.textMuted
+                        : colors.textPrimary.withValues(alpha: 0.75),
+                    decoration: checked ? TextDecoration.lineThrough : null,
+                    decorationColor: colors.textMuted,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -761,9 +945,19 @@ class _SubstitutionSheetState extends State<_SubstitutionSheet> {
         'Для каждой замены укажи: название, примерный эквивалент по граммам и краткое пояснение (1 фраза). '
         'Ответ давай кратко, по одной замене на строку, без лишних слов.',
       );
-      if (mounted) setState(() { _loading = false; _result = answer.trim(); });
+      if (mounted)
+        setState(() {
+          _loading = false;
+          _result = answer.trim();
+        });
     } catch (e) {
-      if (mounted) setState(() { _loading = false; _error = AppLocalizations.tl('aiErrorMsg').replaceAll('{error}', e.toString()); });
+      if (mounted)
+        setState(() {
+          _loading = false;
+          _error = AppLocalizations.tl(
+            'aiErrorMsg',
+          ).replaceAll('{error}', e.toString());
+        });
     }
   }
 
@@ -771,51 +965,93 @@ class _SubstitutionSheetState extends State<_SubstitutionSheet> {
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
     return Container(
-      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7,
+      ),
       decoration: BoxDecoration(
         color: colors.surfaceCard,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const SizedBox(height: 12),
-        Container(width: 36, height: 4, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(2))),
-        const SizedBox(height: 16),
-
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(children: [
-            const Text('🔄', style: TextStyle(fontSize: 22)),
-            const SizedBox(width: 10),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Замена ингредиента', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-              const SizedBox(height: 2),
-              Text(widget.ingredient, style: TextStyle(fontSize: 12, color: colors.textMuted), maxLines: 2, overflow: TextOverflow.ellipsis),
-            ])),
-          ]),
-        ),
-
-        const SizedBox(height: 16),
-        Divider(height: 1, color: Colors.white.withValues(alpha: 0.06)),
-        const SizedBox(height: 16),
-
-        if (_loading)
-          const Padding(
-            padding: EdgeInsets.all(32),
-            child: CircularProgressIndicator(),
-          )
-        else if (_error != null)
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(_error!, style: TextStyle(color: colors.error, fontSize: 14)),
-          )
-        else
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-              child: Text(_result, style: TextStyle(fontSize: 14, color: colors.textPrimary, height: 1.6)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-      ]),
+          const SizedBox(height: 16),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                const Text('🔄', style: TextStyle(fontSize: 22)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Замена ингредиента',
+                        style: TextStyle(
+                          fontFamily: 'Syne',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.ingredient,
+                        style: TextStyle(fontSize: 12, color: colors.textMuted),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+          Divider(height: 1, color: Colors.white.withValues(alpha: 0.06)),
+          const SizedBox(height: 16),
+
+          if (_loading)
+            const Padding(
+              padding: EdgeInsets.all(32),
+              child: CircularProgressIndicator(),
+            )
+          else if (_error != null)
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                _error!,
+                style: TextStyle(color: colors.error, fontSize: 14),
+              ),
+            )
+          else
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                child: Text(
+                  _result,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: colors.textPrimary,
+                    height: 1.6,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

@@ -11,7 +11,8 @@ import 'package:fitnesbuster/core/localization/app_localizations.dart';
 class IntensitySelectionScreen extends StatefulWidget {
   const IntensitySelectionScreen({super.key});
   @override
-  State<IntensitySelectionScreen> createState() => _IntensitySelectionScreenState();
+  State<IntensitySelectionScreen> createState() =>
+      _IntensitySelectionScreenState();
 }
 
 class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
@@ -28,7 +29,11 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
       description: AppLocalizations.tl('intensityHardcoreDesc'),
       emoji: '💀',
       colorVariant: 0,
-      tags: [AppLocalizations.tl('intensityTagHeavy'), AppLocalizations.tl('intensityTagFullbody'), AppLocalizations.tl('intensityTagHIIT')],
+      tags: [
+        AppLocalizations.tl('intensityTagHeavy'),
+        AppLocalizations.tl('intensityTagFullbody'),
+        AppLocalizations.tl('intensityTagHIIT'),
+      ],
     ),
     _IntOption(
       level: IntensityLevel.intensive,
@@ -38,7 +43,11 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
       description: AppLocalizations.tl('intensityIntenseDesc'),
       emoji: '🚀',
       colorVariant: 1,
-      tags: [AppLocalizations.tl('intensityTagHeavy'), 'Круговая', 'Умеренное кардио'],
+      tags: [
+        AppLocalizations.tl('intensityTagHeavy'),
+        'Круговая',
+        'Умеренное кардио',
+      ],
     ),
     _IntOption(
       level: IntensityLevel.balanced,
@@ -75,23 +84,35 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
 
   Color _colorForVariant(int variant, dynamic colors) {
     switch (variant) {
-      case 0: return colors.error;
-      case 1: return colors.accentOrange;
-      case 2: return colors.primary;
-      case 3: return const Color(0xFF10B981);
-      case 4: return colors.info;
-      default: return colors.primary;
+      case 0:
+        return colors.error;
+      case 1:
+        return colors.accentOrange;
+      case 2:
+        return colors.primary;
+      case 3:
+        return const Color(0xFF10B981);
+      case 4:
+        return colors.info;
+      default:
+        return colors.primary;
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 700))..forward();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    )..forward();
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,14 +129,19 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Выберите режим\nинтенсивности', style: AppTextStyles.displayM),
+                    const Text(
+                      'Выберите режим\nинтенсивности',
+                      style: AppTextStyles.displayM,
+                    ),
                     const SizedBox(height: 8),
                     const Text(
                       'Насколько усердно\nвы готовы тренироваться',
                       style: AppTextStyles.bodyL,
                     ),
                     const SizedBox(height: 28),
-                    ..._options.asMap().entries.map((e) => _card(e.value, e.key, colors)),
+                    ..._options.asMap().entries.map(
+                      (e) => _card(e.value, e.key, colors),
+                    ),
                   ],
                 ),
               ),
@@ -135,21 +161,33 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
           GestureDetector(
             onTap: () => context.pop(),
             child: Container(
-              width: 44, height: 44,
-              decoration: BoxDecoration(color: colors.surfaceLight, borderRadius: BorderRadius.circular(12)),
-              child: Icon(Icons.arrow_back_rounded, color: colors.textPrimary, size: 20),
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: colors.surfaceLight,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.arrow_back_rounded,
+                color: colors.textPrimary,
+                size: 20,
+              ),
             ),
           ),
           const Spacer(),
           Row(
-            children: List.generate(4, (i) => Container(
-              width: i == 1 ? 20 : 8, height: 8,
-              margin: const EdgeInsets.only(left: 4),
-              decoration: BoxDecoration(
-                color: i <= 1 ? colors.primary : colors.surfaceLight,
-                borderRadius: BorderRadius.circular(4),
+            children: List.generate(
+              4,
+              (i) => Container(
+                width: i == 1 ? 20 : 8,
+                height: 8,
+                margin: const EdgeInsets.only(left: 4),
+                decoration: BoxDecoration(
+                  color: i <= 1 ? colors.primary : colors.surfaceLight,
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
-            )),
+            ),
           ),
         ],
       ),
@@ -167,20 +205,30 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
         final t = Curves.easeOut.transform(
           ((_ctrl.value - delay) / (1 - delay)).clamp(0.0, 1.0),
         );
-        return Transform.translate(offset: Offset(0, 30 * (1 - t)), child: Opacity(opacity: t, child: child));
+        return Transform.translate(
+          offset: Offset(0, 30 * (1 - t)),
+          child: Opacity(opacity: t, child: child),
+        );
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: GestureDetector(
-          onTap: () { HapticFeedback.lightImpact(); setState(() => _selected = opt.level); },
+          onTap: () {
+            HapticFeedback.lightImpact();
+            setState(() => _selected = opt.level);
+          },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: isSel ? optColor.withValues(alpha: 0.12) : colors.surfaceCard,
+              color: isSel
+                  ? optColor.withValues(alpha: 0.12)
+                  : colors.surfaceCard,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isSel ? optColor : colors.textPrimary.withValues(alpha: 0.06),
+                color: isSel
+                    ? optColor
+                    : colors.textPrimary.withValues(alpha: 0.06),
                 width: isSel ? 2 : 1,
               ),
             ),
@@ -201,8 +249,12 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
                                 child: Text(
                                   opt.label,
                                   style: TextStyle(
-                                    fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800,
-                                    color: isSel ? optColor : colors.textPrimary,
+                                    fontFamily: 'Syne',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                    color: isSel
+                                        ? optColor
+                                        : colors.textPrimary,
                                     letterSpacing: 1,
                                   ),
                                 ),
@@ -210,15 +262,22 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
                               if (opt.recommended) ...[
                                 const SizedBox(width: 8),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: colors.primary,
                                     borderRadius: BorderRadius.circular(6),
                                   ),
-                                  child: const Text('РЕКОМ.', style: TextStyle(
-                                    fontSize: 10, fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimary,
-                                  )),
+                                  child: const Text(
+                                    'РЕКОМ.',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ],
@@ -226,40 +285,71 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
                           const SizedBox(height: 2),
                           Text(
                             '${opt.weeks}  •  ${opt.daysPerWeek}',
-                            style: TextStyle(fontSize: 12, color: colors.textMuted),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colors.textMuted,
+                            ),
                           ),
                         ],
                       ),
                     ),
                     Container(
-                      width: 24, height: 24,
+                      width: 24,
+                      height: 24,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: isSel ? optColor : colors.surfaceLight,
-                        border: Border.all(color: isSel ? Colors.transparent : colors.textMuted, width: 2),
+                        border: Border.all(
+                          color: isSel ? Colors.transparent : colors.textMuted,
+                          width: 2,
+                        ),
                       ),
-                      child: isSel ? Icon(Icons.check_rounded, color: colors.textPrimary, size: 14) : null,
+                      child: isSel
+                          ? Icon(
+                              Icons.check_rounded,
+                              color: colors.textPrimary,
+                              size: 14,
+                            )
+                          : null,
                     ),
                   ],
                 ),
                 const SizedBox(height: 10),
-                Text(opt.description, style: TextStyle(
-                  fontSize: 13, color: colors.textSecondary, height: 1.4,
-                )),
+                Text(
+                  opt.description,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: colors.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 6,
-                  children: opt.tags.map((tag) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: isSel ? optColor.withValues(alpha: 0.15) : colors.surfaceLight,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(tag, style: TextStyle(
-                      fontSize: 11, fontWeight: FontWeight.w600,
-                      color: isSel ? optColor : colors.textMuted,
-                    )),
-                  )).toList(),
+                  children: opt.tags
+                      .map(
+                        (tag) => Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSel
+                                ? optColor.withValues(alpha: 0.15)
+                                : colors.surfaceLight,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            tag,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: isSel ? optColor : colors.textMuted,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
                 ),
               ],
             ),
@@ -274,21 +364,35 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
     return Padding(
       padding: const EdgeInsets.all(24),
       child: SizedBox(
-        width: double.infinity, height: 56,
+        width: double.infinity,
+        height: 56,
         child: ElevatedButton(
-          onPressed: ok ? () {
-            context.read<OnboardingBloc>().add(OnboardingSetIntensity(_selected!));
-            context.push('/onboarding/location');
-          } : null,
+          onPressed: ok
+              ? () {
+                  context.read<OnboardingBloc>().add(
+                    OnboardingSetIntensity(_selected!),
+                  );
+                  context.push('/onboarding/location');
+                }
+              : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: ok ? colors.primary : colors.surfaceLight,
             foregroundColor: ok ? colors.textPrimary : colors.textMuted,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Продолжить', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
+              Text(
+                'Продолжить',
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               SizedBox(width: 8),
               Icon(Icons.arrow_forward_rounded, size: 20),
             ],
@@ -306,8 +410,14 @@ class _IntOption {
   final List<String> tags;
   final bool recommended;
   const _IntOption({
-    required this.level, required this.label, required this.weeks,
-    required this.daysPerWeek, required this.description, required this.emoji,
-    required this.colorVariant, required this.tags, this.recommended = false,
+    required this.level,
+    required this.label,
+    required this.weeks,
+    required this.daysPerWeek,
+    required this.description,
+    required this.emoji,
+    required this.colorVariant,
+    required this.tags,
+    this.recommended = false,
   });
 }

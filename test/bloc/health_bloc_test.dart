@@ -17,7 +17,10 @@ void main() {
   setUp(() {
     mockHealthService = MockIHealthService();
     mockAnalytics = MockIHealthAnalyticsService();
-    bloc = HealthBloc(healthService: mockHealthService, analytics: mockAnalytics);
+    bloc = HealthBloc(
+      healthService: mockHealthService,
+      analytics: mockAnalytics,
+    );
   });
 
   tearDown(() => bloc.close());
@@ -29,10 +32,14 @@ void main() {
   group('HealthFetchRequested', () {
     blocTest<HealthBloc, HealthState>(
       'emits error when permissions denied',
-      build: () => HealthBloc(healthService: mockHealthService, analytics: mockAnalytics),
+      build: () => HealthBloc(
+        healthService: mockHealthService,
+        analytics: mockAnalytics,
+      ),
       act: (b) {
-        when(mockHealthService.requestAuthorization(any))
-            .thenAnswer((_) async => false);
+        when(
+          mockHealthService.requestAuthorization(any),
+        ).thenAnswer((_) async => false);
         b.add(const HealthFetchRequested());
       },
       expect: () => [const HealthStateLoading(), isA<HealthStateError>()],
@@ -40,15 +47,21 @@ void main() {
 
     blocTest<HealthBloc, HealthState>(
       'emits loaded when fetch succeeds',
-      build: () => HealthBloc(healthService: mockHealthService, analytics: mockAnalytics),
+      build: () => HealthBloc(
+        healthService: mockHealthService,
+        analytics: mockAnalytics,
+      ),
       act: (b) {
-        when(mockHealthService.requestAuthorization(any))
-            .thenAnswer((_) async => true);
-        when(mockHealthService.getHealthDataFromTypes(
-          startTime: anyNamed('startTime'),
-          endTime: anyNamed('endTime'),
-          types: anyNamed('types'),
-        )).thenAnswer((_) async => []);
+        when(
+          mockHealthService.requestAuthorization(any),
+        ).thenAnswer((_) async => true);
+        when(
+          mockHealthService.getHealthDataFromTypes(
+            startTime: anyNamed('startTime'),
+            endTime: anyNamed('endTime'),
+            types: anyNamed('types'),
+          ),
+        ).thenAnswer((_) async => []);
         when(mockAnalytics.sumValue(any, any)).thenReturn(1000);
         when(mockAnalytics.avgValue(any, any)).thenReturn(72);
         when(mockAnalytics.lastValue(any, any)).thenReturn(80.5);

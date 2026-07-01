@@ -87,10 +87,16 @@ void main() {
 
     GetIt.instance.registerLazySingleton<IAuthRepository>(() => mockAuthRepo);
     GetIt.instance.registerLazySingleton<IUserRepository>(() => mockUserRepo);
-    GetIt.instance.registerLazySingleton<ISettingsRepository>(() => mockSettingsRepo);
-    GetIt.instance.registerLazySingleton<IHealthConnectService>(() => mockHealthConnect);
+    GetIt.instance.registerLazySingleton<ISettingsRepository>(
+      () => mockSettingsRepo,
+    );
+    GetIt.instance.registerLazySingleton<IHealthConnectService>(
+      () => mockHealthConnect,
+    );
     GetIt.instance.registerLazySingleton<ISocialService>(() => mockSocial);
-    GetIt.instance.registerLazySingleton<IGamificationService>(() => mockGamification);
+    GetIt.instance.registerLazySingleton<IGamificationService>(
+      () => mockGamification,
+    );
     GetIt.instance.registerLazySingleton<IDeepSeekService>(() => mockDeepSeek);
 
     when(mockAuthRepo.currentUser).thenReturn(testUser);
@@ -108,11 +114,18 @@ void main() {
     when(mockSettingsRepo.getManualSteps(any)).thenAnswer((_) async => 0);
 
     when(mockHealthConnect.initialize()).thenAnswer((_) async => true);
-    when(mockHealthConnect.readAllToday()).thenAnswer((_) async => SyncedHealthData(
-      steps: 0, caloriesBurned: 0, weight: 75.0, waterIntakeMl: 0,
-    ));
+    when(mockHealthConnect.readAllToday()).thenAnswer(
+      (_) async => SyncedHealthData(
+        steps: 0,
+        caloriesBurned: 0,
+        weight: 75.0,
+        waterIntakeMl: 0,
+      ),
+    );
 
-    when(mockSocial.incomingRequestsStream()).thenAnswer((_) => const Stream.empty());
+    when(
+      mockSocial.incomingRequestsStream(),
+    ).thenAnswer((_) => const Stream.empty());
 
     when(mockGamification.getTotalXp()).thenAnswer((_) async => 0);
     when(mockDeepSeek.askQuestion(any)).thenAnswer((_) async => 'No response');
@@ -121,9 +134,15 @@ void main() {
     when(mockUserRepo.getAiPlans(any)).thenAnswer((_) async => {});
     when(mockSettingsRepo.getManualHeartRate(any)).thenAnswer((_) async => 0);
 
-    GetIt.instance.registerLazySingleton<AuthBloc>(() => AuthBloc(authRepository: mockAuthRepo));
-    GetIt.instance.registerLazySingleton<AiBloc>(() => AiBloc(aiService: mockDeepSeek));
-    GetIt.instance.registerLazySingleton<UserBloc>(() => UserBloc(userRepository: mockUserRepo));
+    GetIt.instance.registerLazySingleton<AuthBloc>(
+      () => AuthBloc(authRepository: mockAuthRepo),
+    );
+    GetIt.instance.registerLazySingleton<AiBloc>(
+      () => AiBloc(aiService: mockDeepSeek),
+    );
+    GetIt.instance.registerLazySingleton<UserBloc>(
+      () => UserBloc(userRepository: mockUserRepo),
+    );
   });
 
   tearDownAll(() {
@@ -147,9 +166,7 @@ void main() {
             ],
             child: const MaterialApp(
               home: DashboardScreen(),
-              localizationsDelegates: [
-                AppLocalizations.delegate,
-              ],
+              localizationsDelegates: [AppLocalizations.delegate],
               supportedLocales: [Locale('en'), Locale('ru')],
             ),
           ),

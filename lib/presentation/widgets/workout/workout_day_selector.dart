@@ -40,27 +40,44 @@ class WorkoutDaySelector extends StatelessWidget {
               child: GestureDetector(
                 onTap: () => onDaySelected(i),
                 child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                decoration: BoxDecoration(
-                  color: isSelected ? colors.primary : isToday ? colors.primary.withValues(alpha: 0.1) : colors.surfaceCard,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: isSelected ? colors.primary : isToday ? colors.primary.withValues(alpha: 0.4) : colors.textPrimary.withValues(alpha: 0.06),
+                  duration: const Duration(milliseconds: 200),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? colors.primary
+                        : isToday
+                        ? colors.primary.withValues(alpha: 0.1)
+                        : colors.surfaceCard,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: isSelected
+                          ? colors.primary
+                          : isToday
+                          ? colors.primary.withValues(alpha: 0.4)
+                          : colors.textPrimary.withValues(alpha: 0.06),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        labels[i],
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isSelected
+                              ? colors.textOnPrimary
+                              : colors.textMuted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(dayIcon(day), style: const TextStyle(fontSize: 18)),
+                    ],
                   ),
                 ),
-                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Text(
-                    labels[i],
-                    style: TextStyle(fontSize: 10, color: isSelected ? colors.textOnPrimary : colors.textMuted, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(dayIcon(day), style: const TextStyle(fontSize: 18)),
-                ]),
               ),
             ),
-          ),
           );
         }),
       ),

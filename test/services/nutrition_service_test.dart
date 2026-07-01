@@ -56,18 +56,22 @@ void main() {
     );
 
     test('delegates to DeepSeekService.generateMealPlan', () async {
-      when(mockAi.generateMealPlan(any, stepsToday: anyNamed('stepsToday')))
-          .thenAnswer((_) async => '{"meals":[]}');
+      when(
+        mockAi.generateMealPlan(any, stepsToday: anyNamed('stepsToday')),
+      ).thenAnswer((_) async => '{"meals":[]}');
 
       final result = await service.generateMealPlan(tProfile);
 
       expect(result, '{"meals":[]}');
-      verify(mockAi.generateMealPlan(any, stepsToday: anyNamed('stepsToday'))).called(1);
+      verify(
+        mockAi.generateMealPlan(any, stepsToday: anyNamed('stepsToday')),
+      ).called(1);
     });
 
     test('passes stepsToday to DeepSeekService', () async {
-      when(mockAi.generateMealPlan(any, stepsToday: anyNamed('stepsToday')))
-          .thenAnswer((_) async => '{"meals":[]}');
+      when(
+        mockAi.generateMealPlan(any, stepsToday: anyNamed('stepsToday')),
+      ).thenAnswer((_) async => '{"meals":[]}');
 
       await service.generateMealPlan(tProfile, stepsToday: 5000);
 
@@ -75,8 +79,9 @@ void main() {
     });
 
     test('propagates AiException from DeepSeekService', () async {
-      when(mockAi.generateMealPlan(any, stepsToday: anyNamed('stepsToday')))
-          .thenThrow(const AiException('API key not set'));
+      when(
+        mockAi.generateMealPlan(any, stepsToday: anyNamed('stepsToday')),
+      ).thenThrow(const AiException('API key not set'));
 
       expect(
         () => service.generateMealPlan(tProfile),

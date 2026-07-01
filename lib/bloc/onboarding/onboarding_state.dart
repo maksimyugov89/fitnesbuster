@@ -2,7 +2,8 @@ part of 'onboarding_bloc.dart';
 
 sealed class OnboardingState extends Equatable {
   const OnboardingState();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
 
 class OnboardingCollecting extends OnboardingState {
@@ -47,8 +48,15 @@ class OnboardingCollecting extends OnboardingState {
   );
 
   bool get isComplete =>
-      goal != null && intensity != null && location != null && running != null &&
-      name != null && age != null && weight != null && height != null && gender != null;
+      goal != null &&
+      intensity != null &&
+      location != null &&
+      running != null &&
+      name != null &&
+      age != null &&
+      weight != null &&
+      height != null &&
+      gender != null;
 
   OnboardingCollecting copyWith({
     FitnessGoal? goal,
@@ -78,7 +86,21 @@ class OnboardingCollecting extends OnboardingState {
     city: city ?? this.city,
   );
 
-  @override List<Object?> get props => [goal, intensity, location, running, name, age, weight, height, gender, activity, restrictions, city];
+  @override
+  List<Object?> get props => [
+    goal,
+    intensity,
+    location,
+    running,
+    name,
+    age,
+    weight,
+    height,
+    gender,
+    activity,
+    restrictions,
+    city,
+  ];
 }
 
 class OnboardingSaving extends OnboardingState {
@@ -92,12 +114,17 @@ class OnboardingGeneratingPlan extends OnboardingState {
 class OnboardingComplete extends OnboardingState {
   final String workoutPlanJson;
   final String mealPlanJson;
-  const OnboardingComplete({required this.workoutPlanJson, required this.mealPlanJson});
-  @override List<Object?> get props => [workoutPlanJson, mealPlanJson];
+  const OnboardingComplete({
+    required this.workoutPlanJson,
+    required this.mealPlanJson,
+  });
+  @override
+  List<Object?> get props => [workoutPlanJson, mealPlanJson];
 }
 
 class OnboardingError extends OnboardingState {
   final String message;
   const OnboardingError(this.message);
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }

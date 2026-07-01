@@ -18,8 +18,8 @@ class AuthRepository implements IAuthRepository {
   AuthRepository({
     required fb.FirebaseAuth auth,
     required FirebaseFirestore firestore,
-  })  : _auth = auth,
-        _firestore = firestore;
+  }) : _auth = auth,
+       _firestore = firestore;
 
   @override
   UserEntity? get currentUser {
@@ -29,17 +29,21 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Stream<UserEntity?> get userChanges =>
-      _auth.authStateChanges().asyncMap((fbUser) async {
-        if (fbUser == null) return null;
-        try {
-          final doc = await _firestore.collection(FirestoreCollections.users).doc(fbUser.uid).get();
-          if (doc.exists) return _docToEntity(fbUser, doc);
-        } catch (e, st) {
-          appLogger.w('AuthRepository: load user doc', error: e, stackTrace: st);
-        }
-        return _fbUserToEntity(fbUser);
-      });
+  Stream<UserEntity?> get userChanges => _auth.authStateChanges().asyncMap((
+    fbUser,
+  ) async {
+    if (fbUser == null) return null;
+    try {
+      final doc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(fbUser.uid)
+          .get();
+      if (doc.exists) return _docToEntity(fbUser, doc);
+    } catch (e, st) {
+      appLogger.w('AuthRepository: load user doc', error: e, stackTrace: st);
+    }
+    return _fbUserToEntity(fbUser);
+  });
 
   @override
   Future<UserEntity> login({
@@ -61,22 +65,33 @@ class AuthRepository implements IAuthRepository {
 
   Future<void> _ensureFirestoreDoc(fb.User fbUser) async {
     try {
-      final doc = await _firestore.collection(FirestoreCollections.users).doc(fbUser.uid).get();
+      final doc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(fbUser.uid)
+          .get();
       final data = doc.data();
       if (!doc.exists || data == null || data['nameLower'] == null) {
-        final name = (fbUser.displayName?.isNotEmpty == true
-                ? fbUser.displayName!
-                : (fbUser.email ?? '').split('@').first)
-            .trim();
-        await _firestore.collection(FirestoreCollections.users).doc(fbUser.uid).set({
-          'name': name,
-          'nameLower': name.toLowerCase(),
-          'email': fbUser.email ?? '',
-          'createdAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
+        final name =
+            (fbUser.displayName?.isNotEmpty == true
+                    ? fbUser.displayName!
+                    : (fbUser.email ?? '').split('@').first)
+                .trim();
+        await _firestore
+            .collection(FirestoreCollections.users)
+            .doc(fbUser.uid)
+            .set({
+              'name': name,
+              'nameLower': name.toLowerCase(),
+              'email': fbUser.email ?? '',
+              'createdAt': FieldValue.serverTimestamp(),
+            }, SetOptions(merge: true));
       }
     } catch (e, st) {
-      appLogger.w('AuthRepository: ensureFirestoreDoc failed', error: e, stackTrace: st);
+      appLogger.w(
+        'AuthRepository: ensureFirestoreDoc failed',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -93,12 +108,15 @@ class AuthRepository implements IAuthRepository {
       );
       final fbUser = result.user!;
       await fbUser.updateDisplayName(name.trim());
-      await _firestore.collection(FirestoreCollections.users).doc(fbUser.uid).set({
-        'name': name.trim(),
-        'nameLower': name.trim().toLowerCase(),
-        'email': email.trim(),
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(fbUser.uid)
+          .set({
+            'name': name.trim(),
+            'nameLower': name.trim().toLowerCase(),
+            'email': email.trim(),
+            'createdAt': FieldValue.serverTimestamp(),
+          });
       return _fbUserToEntity(fbUser);
     } on fb.FirebaseAuthException catch (e) {
       throw _mapFirebaseException(e);
@@ -108,7 +126,8 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<UserEntity> signInWithGoogle() async {
     final googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) throw Exception(AppLocalizations.tl('googleLoginCancelled'));
+    if (googleUser == null)
+      throw Exception(AppLocalizations.tl('googleLoginCancelled'));
     final googleAuth = await googleUser.authentication;
     final credential = fb.GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
@@ -116,15 +135,24 @@ class AuthRepository implements IAuthRepository {
     );
     final result = await _auth.signInWithCredential(credential);
     final fbUser = result.user!;
-    final doc = await _firestore.collection(FirestoreCollections.users).doc(fbUser.uid).get();
+    final doc = await _firestore
+        .collection(FirestoreCollections.users)
+        .doc(fbUser.uid)
+        .get();
     if (!doc.exists) {
-      final gName = fbUser.displayName ?? googleUser.displayName ?? AppLocalizations.tl('socialDefaultUser');
-      await _firestore.collection(FirestoreCollections.users).doc(fbUser.uid).set({
-        'name': gName,
-        'nameLower': gName.toLowerCase(),
-        'email': fbUser.email ?? '',
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      final gName =
+          fbUser.displayName ??
+          googleUser.displayName ??
+          AppLocalizations.tl('socialDefaultUser');
+      await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(fbUser.uid)
+          .set({
+            'name': gName,
+            'nameLower': gName.toLowerCase(),
+            'email': fbUser.email ?? '',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
     }
     return _fbUserToEntity(fbUser);
   }
@@ -140,10 +168,16 @@ class AuthRepository implements IAuthRepository {
       final uid = _auth.currentUser?.uid;
       if (uid != null) {
         await FirebaseMessaging.instance.deleteToken();
-        await _firestore.collection(FirestoreCollections.users).doc(uid).update({'fcmToken': FieldValue.delete()});
+        await _firestore.collection(FirestoreCollections.users).doc(uid).update(
+          {'fcmToken': FieldValue.delete()},
+        );
       }
     } catch (e, st) {
-      appLogger.w('AuthRepository: delete FCM token on logout', error: e, stackTrace: st);
+      appLogger.w(
+        'AuthRepository: delete FCM token on logout',
+        error: e,
+        stackTrace: st,
+      );
     }
     await _auth.signOut();
   }
@@ -154,11 +188,14 @@ class AuthRepository implements IAuthRepository {
     if (fbUser == null) return;
     if (name != null) await fbUser.updateDisplayName(name);
     if (photoUrl != null) await fbUser.updatePhotoURL(photoUrl);
-    await _firestore.collection(FirestoreCollections.users).doc(fbUser.uid).update({
-      if (name != null) 'name': name,
-      if (name != null) 'nameLower': name.toLowerCase(),
-      if (photoUrl != null) 'photoUrl': photoUrl,
-    });
+    await _firestore
+        .collection(FirestoreCollections.users)
+        .doc(fbUser.uid)
+        .update({
+          if (name != null) 'name': name,
+          if (name != null) 'nameLower': name.toLowerCase(),
+          if (photoUrl != null) 'photoUrl': photoUrl,
+        });
   }
 
   UserEntity _fbUserToEntity(fb.User fbUser) {
@@ -188,12 +225,17 @@ class AuthRepository implements IAuthRepository {
     }
     return UserEntity(
       id: fbUser.uid,
-      name: (data?['name'] as String?) ?? fbUser.displayName ?? AppLocalizations.tl('socialDefaultUser'),
+      name:
+          (data?['name'] as String?) ??
+          fbUser.displayName ??
+          AppLocalizations.tl('socialDefaultUser'),
       email: (data?['email'] as String?) ?? fbUser.email ?? '',
       avatarUrl: data?['photoUrl'] as String? ?? fbUser.photoURL,
       profile: profile,
-      createdAt: (data?['createdAt'] as Timestamp?)?.toDate() ??
-          fbUser.metadata.creationTime ?? DateTime.now(),
+      createdAt:
+          (data?['createdAt'] as Timestamp?)?.toDate() ??
+          fbUser.metadata.creationTime ??
+          DateTime.now(),
     );
   }
 

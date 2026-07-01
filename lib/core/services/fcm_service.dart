@@ -27,9 +27,12 @@ class FcmService implements IFcmService {
   String? _resolveRoute(Map<String, dynamic> data) {
     final type = data['type'] as String?;
     switch (type) {
-      case 'workout':     return AppRouter.workoutPlan;
-      case 'achievement': return AppRouter.progress;
-      default:            return AppRouter.dashboard;
+      case 'workout':
+        return AppRouter.workoutPlan;
+      case 'achievement':
+        return AppRouter.progress;
+      default:
+        return AppRouter.dashboard;
     }
   }
 }

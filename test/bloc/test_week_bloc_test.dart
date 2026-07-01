@@ -72,33 +72,37 @@ void main() {
     blocTest<TestWeekBloc, TestWeekState>(
       'emits Completed after calculating results',
       build: () {
-        when(mockWorkflow.calculateResults(
-          exercises: anyNamed('exercises'),
-          profile: anyNamed('profile'),
-        )).thenAnswer((_) async => (
-          adjustment: const TrainingAdjustment(
-            weightMultiplier: 0.8,
-            weeklyIncreasePercent: 5,
-            suggestedSetsPerExercise: 3,
-            suggestedRepsPerSet: 10,
-            userLevel: UserLevel.beginner,
-            maxHeartRate: 180,
-            adaptedIntensityLabel: 'Beginner',
+        when(
+          mockWorkflow.calculateResults(
+            exercises: anyNamed('exercises'),
+            profile: anyNamed('profile'),
           ),
-          feasibility: const FeasibilityResult(
-            isFeasible: true,
-            reason: 'Goal is feasible',
-            suggestedActions: [],
+        ).thenAnswer(
+          (_) async => (
+            adjustment: const TrainingAdjustment(
+              weightMultiplier: 0.8,
+              weeklyIncreasePercent: 5,
+              suggestedSetsPerExercise: 3,
+              suggestedRepsPerSet: 10,
+              userLevel: UserLevel.beginner,
+              maxHeartRate: 180,
+              adaptedIntensityLabel: 'Beginner',
+            ),
+            feasibility: const FeasibilityResult(
+              isFeasible: true,
+              reason: 'Goal is feasible',
+              suggestedActions: [],
+            ),
+            adaptedPlan: <AdaptiveWeek>[],
+            testResult: TestWeekResult(
+              completedAt: DateTime(2024),
+              exercises: [],
+              averageHeartRate: 0,
+              averageSessionDuration: 0,
+              perceivedDifficulty: 5,
+            ),
           ),
-          adaptedPlan: <AdaptiveWeek>[],
-          testResult: TestWeekResult(
-            completedAt: DateTime(2024),
-            exercises: [],
-            averageHeartRate: 0,
-            averageSessionDuration: 0,
-            perceivedDifficulty: 5,
-          ),
-        ));
+        );
         return bloc;
       },
       act: (b) => b.add(const TestWeekComplete(results: [])),
@@ -127,10 +131,7 @@ void main() {
         return bloc;
       },
       seed: () => TestWeekStateCompleted(
-        testResult: TestWeekResult(
-          completedAt: DateTime(2024),
-          exercises: [],
-        ),
+        testResult: TestWeekResult(completedAt: DateTime(2024), exercises: []),
         adjustment: const TrainingAdjustment(
           weightMultiplier: 0.8,
           weeklyIncreasePercent: 5,
@@ -162,10 +163,12 @@ void main() {
     blocTest<TestWeekBloc, TestWeekState>(
       'emits NeedsAdjustment with reason',
       build: () => bloc,
-      act: (b) => b.add(const TestWeekAdjustGoal(
-        reason: 'Goal too aggressive',
-        suggestions: ['Reduce target', 'Extend timeline'],
-      )),
+      act: (b) => b.add(
+        const TestWeekAdjustGoal(
+          reason: 'Goal too aggressive',
+          suggestions: ['Reduce target', 'Extend timeline'],
+        ),
+      ),
       expect: () => [
         isA<TestWeekStateNeedsAdjustment>()
             .having((s) => s.reason, 'reason', 'Goal too aggressive')

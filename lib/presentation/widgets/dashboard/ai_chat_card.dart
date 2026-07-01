@@ -16,46 +16,71 @@ class AiChatCard extends StatelessWidget {
       child: GestureDetector(
         onTap: () => context.push('/chat'),
         child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              p.primary.withValues(alpha: 0.12),
-              p.accent.withValues(alpha: 0.06),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                p.primary.withValues(alpha: 0.12),
+                p.accent.withValues(alpha: 0.06),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: p.primary.withValues(alpha: 0.25)),
           ),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: p.primary.withValues(alpha: 0.25)),
-        ),
-        child: Row(children: [
-          Container(
-            width: 48, height: 48,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [p.primary, p.accent],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [p.primary, p.accent],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Center(
+                  child: Text(
+                    'AI',
+                    style: TextStyle(
+                      fontFamily: 'Syne',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Center(
-              child: Text('AI', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-            ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.askAiLabel,
+                      style: TextStyle(
+                        fontFamily: 'Syne',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: p.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.askAiSubtitle,
+                      style: TextStyle(fontSize: 12, color: p.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios_rounded, color: p.primary, size: 16),
+            ],
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(l10n.askAiLabel, style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w800, color: p.textPrimary)),
-              const SizedBox(height: 4),
-              Text(l10n.askAiSubtitle, style: TextStyle(fontSize: 12, color: p.textSecondary)),
-            ]),
-          ),
-          Icon(Icons.arrow_forward_ios_rounded, color: p.primary, size: 16),
-        ]),
+        ),
       ),
-    ),
-  );
+    );
   }
 }

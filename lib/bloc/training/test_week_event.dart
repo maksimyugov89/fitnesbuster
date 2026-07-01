@@ -2,14 +2,16 @@ part of 'test_week_bloc.dart';
 
 sealed class TestWeekEvent extends Equatable {
   const TestWeekEvent();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
 
 class TestWeekStartDay extends TestWeekEvent {
   final int dayIndex;
   final UserProfile? profile;
   const TestWeekStartDay({required this.dayIndex, this.profile});
-  @override List<Object?> get props => [dayIndex, profile ?? ''];
+  @override
+  List<Object?> get props => [dayIndex, profile ?? ''];
 }
 
 class TestWeekRecordExercise extends TestWeekEvent {
@@ -28,18 +30,28 @@ class TestWeekRecordExercise extends TestWeekEvent {
     required this.comfortableReps,
     this.notes,
   });
-  @override List<Object?> get props => [exerciseName, muscle, comfortableWeightKg, comfortableSets, comfortableReps, notes ?? ''];
+  @override
+  List<Object?> get props => [
+    exerciseName,
+    muscle,
+    comfortableWeightKg,
+    comfortableSets,
+    comfortableReps,
+    notes ?? '',
+  ];
 }
 
 class TestWeekFinishDay extends TestWeekEvent {
   const TestWeekFinishDay();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
 
 class TestWeekComplete extends TestWeekEvent {
   final List<TestExerciseResult> results;
   const TestWeekComplete({required this.results});
-  @override List<Object?> get props => [results];
+  @override
+  List<Object?> get props => [results];
 }
 
 class TestWeekAcceptPlan extends TestWeekEvent {
@@ -50,5 +62,6 @@ class TestWeekAdjustGoal extends TestWeekEvent {
   final String reason;
   final List<String> suggestions;
   const TestWeekAdjustGoal({required this.reason, required this.suggestions});
-  @override List<Object?> get props => [reason, suggestions];
+  @override
+  List<Object?> get props => [reason, suggestions];
 }

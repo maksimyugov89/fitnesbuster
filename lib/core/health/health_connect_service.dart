@@ -37,7 +37,11 @@ class HealthConnectService implements IHealthConnectService {
     try {
       return await _health.isHealthConnectAvailable();
     } catch (e, st) {
-      appLogger.w('HealthConnect: isAvailable check failed', error: e, stackTrace: st);
+      appLogger.w(
+        'HealthConnect: isAvailable check failed',
+        error: e,
+        stackTrace: st,
+      );
       return false;
     }
   }
@@ -84,7 +88,10 @@ class HealthConnectService implements IHealthConnectService {
     // Сон читаем с вечера предыдущего дня (18 ч назад), чтобы захватить ночной сеанс
     if (activity.sleepMinutes == null) {
       final sleepStart = todayStart.subtract(const Duration(hours: 18));
-      final sleepMins = await _readSleepMinutes(start: sleepStart, end: todayEnd);
+      final sleepMins = await _readSleepMinutes(
+        start: sleepStart,
+        end: todayEnd,
+      );
       if (sleepMins > 0) {
         return SyncedHealthData(
           steps: activity.steps,
@@ -106,7 +113,10 @@ class HealthConnectService implements IHealthConnectService {
     return activity;
   }
 
-  Future<int> _readSleepMinutes({required DateTime start, required DateTime end}) async {
+  Future<int> _readSleepMinutes({
+    required DateTime start,
+    required DateTime end,
+  }) async {
     try {
       final data = await _health.getHealthDataFromTypes(
         startTime: start,
@@ -121,7 +131,11 @@ class HealthConnectService implements IHealthConnectService {
       }
       return minutes;
     } catch (e, st) {
-      appLogger.w('HealthConnect: read metric failed', error: e, stackTrace: st);
+      appLogger.w(
+        'HealthConnect: read metric failed',
+        error: e,
+        stackTrace: st,
+      );
       return 0;
     }
   }
@@ -150,7 +164,11 @@ class HealthConnectService implements IHealthConnectService {
         final totalSteps = await _health.getTotalStepsInInterval(start, end);
         if (totalSteps != null) steps = totalSteps;
       } catch (e, st) {
-        appLogger.w('HealthConnect: read steps failed', error: e, stackTrace: st);
+        appLogger.w(
+          'HealthConnect: read steps failed',
+          error: e,
+          stackTrace: st,
+        );
       }
 
       final data = await _health.getHealthDataFromTypes(
@@ -202,7 +220,10 @@ class HealthConnectService implements IHealthConnectService {
             // Возвращается в литрах — конвертируем в мл ниже
             water += v;
           case hc.HealthDataType.SLEEP_SESSION:
-            sleepMinutes += point.dateTo.difference(point.dateFrom).inMinutes.toInt();
+            sleepMinutes += point.dateTo
+                .difference(point.dateFrom)
+                .inMinutes
+                .toInt();
           case hc.HealthDataType.WORKOUT:
             workoutCount++;
           default:
@@ -238,7 +259,11 @@ class HealthConnectService implements IHealthConnectService {
         workoutCount: workoutCount,
       );
     } catch (e, st) {
-      appLogger.w('HealthConnect: read health data failed', error: e, stackTrace: st);
+      appLogger.w(
+        'HealthConnect: read health data failed',
+        error: e,
+        stackTrace: st,
+      );
       return SyncedHealthData();
     }
   }

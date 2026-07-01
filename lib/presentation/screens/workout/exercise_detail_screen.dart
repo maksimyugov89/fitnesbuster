@@ -87,7 +87,11 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           .where((l) => l.isNotEmpty)
           .toList();
       await prefs.setString(cacheKey, jsonEncode(lines));
-      if (mounted) setState(() { _instructionsRu = lines; _instructionsLoading = false; });
+      if (mounted)
+        setState(() {
+          _instructionsRu = lines;
+          _instructionsLoading = false;
+        });
     } catch (_) {
       if (mounted) setState(() => _instructionsLoading = false);
     }
@@ -101,7 +105,11 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       if (mounted) setState(() => _aiTips = cached);
       return;
     }
-    if (mounted) setState(() { _tipsLoading = true; _tipsError = false; });
+    if (mounted)
+      setState(() {
+        _tipsLoading = true;
+        _tipsError = false;
+      });
     try {
       final ai = sl<IDeepSeekService>();
       final muscles = ex.primaryMuscles.map((m) => m.displayNameRu).join(', ');
@@ -111,12 +119,19 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         'Ответ — короткими пунктами, без вступлений, только суть.',
       );
       await prefs.setString(cacheKey, tips.trim());
-      if (mounted) setState(() { _aiTips = tips.trim(); _tipsLoading = false; });
+      if (mounted)
+        setState(() {
+          _aiTips = tips.trim();
+          _tipsLoading = false;
+        });
     } catch (_) {
-      if (mounted) setState(() { _tipsLoading = false; _tipsError = true; });
+      if (mounted)
+        setState(() {
+          _tipsLoading = false;
+          _tipsError = true;
+        });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -141,13 +156,14 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       body: CustomScrollView(
         slivers: [
           _buildAppBar(c, ex),
-          SliverToBoxAdapter(child: _buildMuscleSection(c, ex, primaryZones, secondaryZones)),
+          SliverToBoxAdapter(
+            child: _buildMuscleSection(c, ex, primaryZones, secondaryZones),
+          ),
           SliverToBoxAdapter(child: _buildInfoChips(c, ex)),
           SliverToBoxAdapter(child: _buildGifDemo(c, ex)),
           SliverToBoxAdapter(child: _buildInstructions(c, ex)),
           SliverToBoxAdapter(child: _buildAiTips(c)),
-          if (ex.tags.isNotEmpty)
-            SliverToBoxAdapter(child: _buildTags(c, ex)),
+          if (ex.tags.isNotEmpty) SliverToBoxAdapter(child: _buildTags(c, ex)),
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),
@@ -168,7 +184,11 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             color: c.surfaceCard,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(Icons.arrow_back_ios_new_rounded, color: c.textPrimary, size: 18),
+          child: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: c.textPrimary,
+            size: 18,
+          ),
         ),
       ),
       title: Column(
@@ -226,9 +246,15 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _LegendDot(color: SemanticColors.primaryMuscle, label: 'Основные'),
+              _LegendDot(
+                color: SemanticColors.primaryMuscle,
+                label: 'Основные',
+              ),
               SizedBox(width: 16),
-              _LegendDot(color: SemanticColors.secondaryMuscle, label: 'Вторичные'),
+              _LegendDot(
+                color: SemanticColors.secondaryMuscle,
+                label: 'Вторичные',
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -255,32 +281,32 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
 
   Widget _buildInfoChips(ThemePalette c, ExerciseDbModel ex) {
     final diffColor = switch (ex.difficulty) {
-      ExDifficulty.beginner     => SemanticColors.difficultyBeginner,
+      ExDifficulty.beginner => SemanticColors.difficultyBeginner,
       ExDifficulty.intermediate => SemanticColors.difficultyIntermediate,
-      ExDifficulty.advanced     => SemanticColors.difficultyAdvanced,
+      ExDifficulty.advanced => SemanticColors.difficultyAdvanced,
     };
     final diffLabel = switch (ex.difficulty) {
-      ExDifficulty.beginner     => 'Начинающий',
+      ExDifficulty.beginner => 'Начинающий',
       ExDifficulty.intermediate => 'Средний',
-      ExDifficulty.advanced     => 'Продвинутый',
+      ExDifficulty.advanced => 'Продвинутый',
     };
     final movLabel = switch (ex.movementType) {
-      ExMovementType.push      => 'Толчок',
-      ExMovementType.pull      => 'Тяга',
-      ExMovementType.hinge     => 'Шарнир',
-      ExMovementType.squat     => 'Присед',
-      ExMovementType.lunge     => 'Выпад',
-      ExMovementType.rotation  => 'Вращение',
+      ExMovementType.push => 'Толчок',
+      ExMovementType.pull => 'Тяга',
+      ExMovementType.hinge => 'Шарнир',
+      ExMovementType.squat => 'Присед',
+      ExMovementType.lunge => 'Выпад',
+      ExMovementType.rotation => 'Вращение',
       ExMovementType.isolation => 'Изоляция',
     };
     String equipLabel(ExEquipment e) => switch (e) {
-      ExEquipment.barbell    => 'Штанга',
-      ExEquipment.dumbbell   => 'Гантели',
-      ExEquipment.machine    => 'Тренажёр',
+      ExEquipment.barbell => 'Штанга',
+      ExEquipment.dumbbell => 'Гантели',
+      ExEquipment.machine => 'Тренажёр',
       ExEquipment.bodyweight => 'Без веса',
-      ExEquipment.cables     => 'Блок',
+      ExEquipment.cables => 'Блок',
       ExEquipment.kettlebell => 'Гиря',
-      ExEquipment.none       => '',
+      ExEquipment.none => '',
     };
 
     return Padding(
@@ -288,9 +314,15 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppLocalizations.tl('characteristics'), style: TextStyle(
-            fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary,
-          )),
+          Text(
+            AppLocalizations.tl('characteristics'),
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: c.textPrimary,
+            ),
+          ),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8,
@@ -300,7 +332,10 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               _InfoChip(label: movLabel, color: c.primary),
               ...ex.equipment
                   .where((e) => e != ExEquipment.none)
-                  .map((e) => _InfoChip(label: equipLabel(e), color: c.accentPurple)),
+                  .map(
+                    (e) =>
+                        _InfoChip(label: equipLabel(e), color: c.accentPurple),
+                  ),
             ],
           ),
         ],
@@ -311,29 +346,47 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   Widget _buildInstructions(ThemePalette c, ExerciseDbModel ex) {
     if (ex.instructions.isEmpty) return const SizedBox.shrink();
     // Only show when Russian translation is ready or loading
-    if (_instructionsRu == null && !_instructionsLoading) return const SizedBox.shrink();
+    if (_instructionsRu == null && !_instructionsLoading)
+      return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Text(AppLocalizations.tl('technique'), style: TextStyle(
-              fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary,
-            )),
-            if (_instructionsLoading) ...[
-              const SizedBox(width: 8),
-              SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 1.5, color: c.primary)),
+          Row(
+            children: [
+              Text(
+                AppLocalizations.tl('technique'),
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: c.textPrimary,
+                ),
+              ),
+              if (_instructionsLoading) ...[
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1.5,
+                    color: c.primary,
+                  ),
+                ),
+              ],
             ],
-          ]),
+          ),
           if (_instructionsRu != null) ...[
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
                 color: c.surfaceCard,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: c.textPrimary.withValues(alpha: 0.06)),
+                border: Border.all(
+                  color: c.textPrimary.withValues(alpha: 0.06),
+                ),
               ),
               child: Column(
                 children: _instructionsRu!.asMap().entries.map((entry) {
@@ -341,7 +394,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                   final step = entry.value;
                   final isLast = i == _instructionsRu!.length - 1;
                   return Padding(
-                    padding: EdgeInsets.fromLTRB(16, i == 0 ? 16 : 12, 16, isLast ? 16 : 0),
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      i == 0 ? 16 : 12,
+                      16,
+                      isLast ? 16 : 0,
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -384,8 +442,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               ),
             ),
           ],
-        ]),
-      );
+        ],
+      ),
+    );
   }
 
   Widget _buildGifDemo(ThemePalette c, ExerciseDbModel ex) {
@@ -396,9 +455,15 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Как выполнять', style: TextStyle(
-            fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary,
-          )),
+          Text(
+            'Как выполнять',
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: c.textPrimary,
+            ),
+          ),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
@@ -413,7 +478,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               width: double.infinity,
               placeholder: (_, _) => SizedBox(
                 height: 260,
-                child: Center(child: CircularProgressIndicator(color: c.primary, strokeWidth: 2)),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: c.primary,
+                    strokeWidth: 2,
+                  ),
+                ),
               ),
               errorWidget: (_, _, _) => const SizedBox.shrink(),
             ),
@@ -433,35 +503,83 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: c.textPrimary.withValues(alpha: 0.06)),
         ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            const Text('🤖', style: TextStyle(fontSize: 14)),
-            const SizedBox(width: 6),
-            Text('AI-советы по технике', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: c.textPrimary)),
-          ]),
-          const SizedBox(height: 10),
-          if (_tipsLoading)
-            Row(children: [
-              SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: c.primary)),
-              const SizedBox(width: 10),
-              Text('Анализирую технику...', style: TextStyle(fontSize: 12, color: c.textMuted)),
-            ])
-          else if (_aiTips != null)
-            Text(_aiTips!, style: TextStyle(fontSize: 13, color: c.textSecondary, height: 1.55))
-          else if (_tipsError)
-            Row(children: [
-              Icon(Icons.wifi_off_rounded, size: 14, color: c.textMuted),
-              const SizedBox(width: 6),
-              Text('Нет соединения', style: TextStyle(fontSize: 12, color: c.textMuted)),
-              const Spacer(),
-              GestureDetector(
-                onTap: () { if (_exercise != null) _loadAiTips(_exercise!); },
-                child: Text('Повторить', style: TextStyle(fontSize: 12, color: c.primary, fontWeight: FontWeight.w600)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text('🤖', style: TextStyle(fontSize: 14)),
+                const SizedBox(width: 6),
+                Text(
+                  'AI-советы по технике',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: c.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            if (_tipsLoading)
+              Row(
+                children: [
+                  SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: c.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Анализирую технику...',
+                    style: TextStyle(fontSize: 12, color: c.textMuted),
+                  ),
+                ],
+              )
+            else if (_aiTips != null)
+              Text(
+                _aiTips!,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: c.textSecondary,
+                  height: 1.55,
+                ),
+              )
+            else if (_tipsError)
+              Row(
+                children: [
+                  Icon(Icons.wifi_off_rounded, size: 14, color: c.textMuted),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Нет соединения',
+                    style: TextStyle(fontSize: 12, color: c.textMuted),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      if (_exercise != null) _loadAiTips(_exercise!);
+                    },
+                    child: Text(
+                      'Повторить',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: c.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            else
+              Text(
+                'Советы загружаются...',
+                style: TextStyle(fontSize: 12, color: c.textMuted),
               ),
-            ])
-          else
-            Text('Советы загружаются...', style: TextStyle(fontSize: 12, color: c.textMuted)),
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -472,21 +590,30 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       child: Wrap(
         spacing: 6,
         runSpacing: 6,
-        children: ex.tags.map((tag) => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: c.elevated,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(tag, style: TextStyle(fontSize: 11, color: c.textMuted)),
-        )).toList(),
+        children: ex.tags
+            .map(
+              (tag) => Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: c.elevated,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  tag,
+                  style: TextStyle(fontSize: 11, color: c.textMuted),
+                ),
+              ),
+            )
+            .toList(),
       ),
     );
   }
 }
 
 // ─── Sub-widgets ───────────────────────────────────────────────────────────────
-
 
 class _LegendDot extends StatelessWidget {
   final Color color;
@@ -498,9 +625,16 @@ class _LegendDot extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
         const SizedBox(width: 6),
-        Text(label, style: TextStyle(fontSize: 11, color: AppTheme.of(context).textMuted)),
+        Text(
+          label,
+          style: TextStyle(fontSize: 11, color: AppTheme.of(context).textMuted),
+        ),
       ],
     );
   }
@@ -511,7 +645,12 @@ class _MuscleRow extends StatelessWidget {
   final List<String> muscles;
   final Color color;
   final ThemePalette c;
-  const _MuscleRow({required this.label, required this.muscles, required this.color, required this.c});
+  const _MuscleRow({
+    required this.label,
+    required this.muscles,
+    required this.color,
+    required this.c,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -520,21 +659,38 @@ class _MuscleRow extends StatelessWidget {
       children: [
         SizedBox(
           width: 72,
-          child: Text(label, style: TextStyle(fontSize: 11, color: c.textMuted)),
+          child: Text(
+            label,
+            style: TextStyle(fontSize: 11, color: c.textMuted),
+          ),
         ),
         Expanded(
           child: Wrap(
             spacing: 6,
             runSpacing: 4,
-            children: muscles.map((m) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: color.withValues(alpha: 0.3)),
-              ),
-              child: Text(m, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
-            )).toList(),
+            children: muscles
+                .map(
+                  (m) => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: color.withValues(alpha: 0.3)),
+                    ),
+                    child: Text(
+                      m,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: color,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ),
       ],
@@ -558,7 +714,11 @@ class _InfoChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: color),
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
       ),
     );
   }

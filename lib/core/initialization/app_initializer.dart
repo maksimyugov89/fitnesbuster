@@ -25,9 +25,7 @@ class AppInitException implements Exception {
 class AppInitializer {
   AppInitializer();
 
-  Future<void> initialize({
-    ProgressCallback? onProgress,
-  }) async {
+  Future<void> initialize({ProgressCallback? onProgress}) async {
     try {
       onProgress?.call('Firebase');
       await Firebase.initializeApp(

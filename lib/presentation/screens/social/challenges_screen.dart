@@ -45,29 +45,42 @@ class _ChallengesScreenState extends State<ChallengesScreen>
           onTap: () => Navigator.pop(context),
           child: Container(
             margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: BorderRadius.circular(10)),
-            child: Icon(Icons.arrow_back_rounded, color: colors.textPrimary, size: 20),
+            decoration: BoxDecoration(
+              color: colors.surfaceCard,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.arrow_back_rounded,
+              color: colors.textPrimary,
+              size: 20,
+            ),
           ),
         ),
         title: const Text('Челленджи', style: AppTextStyles.titleL),
         actions: const [],
         bottom: TabBar(
           controller: _tabs,
-          indicator: BoxDecoration(color: colors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+          indicator: BoxDecoration(
+            color: colors.primary.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(10),
+          ),
           indicatorPadding: const EdgeInsets.all(4),
           labelColor: colors.primary,
           unselectedLabelColor: colors.textMuted,
-          labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
-          tabs: const [Tab(text: 'Мои'), Tab(text: 'Публичные')],
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 12,
+          ),
+          tabs: const [
+            Tab(text: 'Мои'),
+            Tab(text: 'Публичные'),
+          ],
           padding: const EdgeInsets.symmetric(horizontal: 12),
         ),
       ),
       body: TabBarView(
         controller: _tabs,
-        children: [
-          _buildMyChallenges(colors),
-          _buildPublicChallenges(colors),
-        ],
+        children: [_buildMyChallenges(colors), _buildPublicChallenges(colors)],
       ),
     );
   }
@@ -81,7 +94,11 @@ class _ChallengesScreenState extends State<ChallengesScreen>
         }
         final challenges = snap.data ?? [];
         if (challenges.isEmpty) {
-          return _buildEmpty(colors, 'Нет активных челленджей', 'Создай свой или присоединись к публичному');
+          return _buildEmpty(
+            colors,
+            'Нет активных челленджей',
+            'Создай свой или присоединись к публичному',
+          );
         }
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 80),
@@ -132,13 +149,28 @@ class _ChallengesScreenState extends State<ChallengesScreen>
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('⚡', style: TextStyle(fontSize: 56)),
-          const SizedBox(height: 16),
-          Text(title, style: TextStyle(fontFamily: 'Syne', fontSize: 18, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-          const SizedBox(height: 8),
-          Text(subtitle, style: TextStyle(fontSize: 13, color: colors.textMuted), textAlign: TextAlign.center),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('⚡', style: TextStyle(fontSize: 56)),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: colors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: TextStyle(fontSize: 13, color: colors.textMuted),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -147,22 +179,51 @@ class _ChallengesScreenState extends State<ChallengesScreen>
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('🏆', style: TextStyle(fontSize: 56)),
-          const SizedBox(height: 16),
-          Text('Нет публичных челленджей', style: TextStyle(fontFamily: 'Syne', fontSize: 18, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-          const SizedBox(height: 8),
-          Text('Нажмите кнопку ниже чтобы загрузить стандартные челленджи', style: TextStyle(fontSize: 13, color: colors.textMuted), textAlign: TextAlign.center),
-          const SizedBox(height: 20),
-          GestureDetector(
-            onTap: () => _seedChallenges(colors),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              decoration: BoxDecoration(color: colors.primary, borderRadius: BorderRadius.circular(12)),
-              child: Text('Загрузить челленджи', style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w700, color: colors.textOnPrimary)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🏆', style: TextStyle(fontSize: 56)),
+            const SizedBox(height: 16),
+            Text(
+              'Нет публичных челленджей',
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: colors.textPrimary,
+              ),
             ),
-          ),
-        ]),
+            const SizedBox(height: 8),
+            Text(
+              'Нажмите кнопку ниже чтобы загрузить стандартные челленджи',
+              style: TextStyle(fontSize: 13, color: colors.textMuted),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            GestureDetector(
+              onTap: () => _seedChallenges(colors),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'Загрузить челленджи',
+                  style: TextStyle(
+                    fontFamily: 'Syne',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textOnPrimary,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -171,14 +232,20 @@ class _ChallengesScreenState extends State<ChallengesScreen>
     try {
       await sl<ISocialService>().seedChallenges();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Челленджи добавлены!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Челленджи добавлены!')));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.tl('genericErrorMsg').replaceAll('{error}', e.toString()))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.tl(
+                'genericErrorMsg',
+              ).replaceAll('{error}', e.toString()),
+            ),
+          ),
         );
       }
     }
@@ -229,65 +296,165 @@ class _ChallengeCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
         ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Text(_goalEmoji, style: const TextStyle(fontSize: 22)),
-            const SizedBox(width: 10),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(challenge.title, style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
-              Text('от ${challenge.creatorName}', style: TextStyle(fontSize: 11, color: colors.textMuted)),
-            ])),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(color: _statusColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
-              child: Text(_daysLabel, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: _statusColor)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(_goalEmoji, style: const TextStyle(fontSize: 22)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        challenge.title,
+                        style: TextStyle(
+                          fontFamily: 'Syne',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: colors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        'от ${challenge.creatorName}',
+                        style: TextStyle(fontSize: 11, color: colors.textMuted),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _statusColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    _daysLabel,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: _statusColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ]),
-          const SizedBox(height: 10),
-          Row(children: [
-            Expanded(child: _Stat(label: 'Цель', value: '${challenge.targetValue} ${challenge.goalLabel}', colors: colors)),
-            Expanded(child: _Stat(label: 'Участники', value: '${challenge.participants.length}', colors: colors)),
-            Expanded(child: _Stat(label: 'Длительность', value: '${challenge.durationDays} дн.', colors: colors)),
-          ]),
-          if (challenge.description.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(challenge.description, style: TextStyle(fontSize: 12, color: colors.textMuted), maxLines: 2, overflow: TextOverflow.ellipsis),
-          ],
-          if (isParticipant) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(color: colors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-              child: Center(child: Text('✓ Вы участвуете', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.success))),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: _Stat(
+                    label: 'Цель',
+                    value: '${challenge.targetValue} ${challenge.goalLabel}',
+                    colors: colors,
+                  ),
+                ),
+                Expanded(
+                  child: _Stat(
+                    label: 'Участники',
+                    value: '${challenge.participants.length}',
+                    colors: colors,
+                  ),
+                ),
+                Expanded(
+                  child: _Stat(
+                    label: 'Длительность',
+                    value: '${challenge.durationDays} дн.',
+                    colors: colors,
+                  ),
+                ),
+              ],
             ),
-          ] else if (!challenge.isActive) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: colors.textMuted.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: colors.textMuted.withValues(alpha: 0.15)),
+            if (challenge.description.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                challenge.description,
+                style: TextStyle(fontSize: 12, color: colors.textMuted),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              child: Center(child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Icon(Icons.lock_clock_rounded, size: 14, color: colors.textMuted),
-                const SizedBox(width: 6),
-                Text('Челлендж завершён', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textMuted)),
-              ])),
-            ),
-          ] else if (showJoinButton) ...[
-            const SizedBox(height: 12),
-            _JoinButton(challengeId: challenge.id, colors: colors),
+            ],
+            if (isParticipant) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: colors.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    '✓ Вы участвуете',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: colors.success,
+                    ),
+                  ),
+                ),
+              ),
+            ] else if (!challenge.isActive) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: colors.textMuted.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: colors.textMuted.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.lock_clock_rounded,
+                        size: 14,
+                        color: colors.textMuted,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Челлендж завершён',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ] else if (showJoinButton) ...[
+              const SizedBox(height: 12),
+              _JoinButton(challengeId: challenge.id, colors: colors),
+            ],
+            if (showLeaderboard) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    Icons.leaderboard_rounded,
+                    size: 12,
+                    color: colors.textMuted,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Таблица лидеров →',
+                    style: TextStyle(fontSize: 11, color: colors.textMuted),
+                  ),
+                ],
+              ),
+            ],
           ],
-          if (showLeaderboard) ...[
-            const SizedBox(height: 8),
-            Row(children: [
-              Icon(Icons.leaderboard_rounded, size: 12, color: colors.textMuted),
-              const SizedBox(width: 4),
-              Text('Таблица лидеров →', style: TextStyle(fontSize: 11, color: colors.textMuted)),
-            ]),
-          ],
-        ]),
+        ),
       ),
     );
   }
@@ -310,10 +477,20 @@ class _Stat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: TextStyle(fontSize: 10, color: colors.textMuted)),
-      Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-    ]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 10, color: colors.textMuted)),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: colors.textPrimary,
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -336,8 +513,20 @@ class _JoinButtonState extends State<_JoinButton> {
     if (_joined) {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(color: widget.colors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-        child: Center(child: Text('✓ Вы участвуете!', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: widget.colors.success))),
+        decoration: BoxDecoration(
+          color: widget.colors.success.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            '✓ Вы участвуете!',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: widget.colors.success,
+            ),
+          ),
+        ),
       );
     }
     if (_ended) {
@@ -346,24 +535,59 @@ class _JoinButtonState extends State<_JoinButton> {
         decoration: BoxDecoration(
           color: widget.colors.textMuted.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: widget.colors.textMuted.withValues(alpha: 0.15)),
+          border: Border.all(
+            color: widget.colors.textMuted.withValues(alpha: 0.15),
+          ),
         ),
-        child: Center(child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.lock_clock_rounded, size: 14, color: widget.colors.textMuted),
-          const SizedBox(width: 6),
-          Text('Челлендж завершён', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: widget.colors.textMuted)),
-        ])),
+        child: Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.lock_clock_rounded,
+                size: 14,
+                color: widget.colors.textMuted,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Челлендж завершён',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: widget.colors.textMuted,
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
     return GestureDetector(
       onTap: _loading ? null : _join,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(color: widget.colors.primary, borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(
+          color: widget.colors.primary,
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Center(
           child: _loading
-              ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: widget.colors.textOnPrimary))
-              : Text('Присоединиться', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: widget.colors.textOnPrimary)),
+              ? SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: widget.colors.textOnPrimary,
+                  ),
+                )
+              : Text(
+                  'Присоединиться',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: widget.colors.textOnPrimary,
+                  ),
+                ),
         ),
       ),
     );
@@ -373,27 +597,51 @@ class _JoinButtonState extends State<_JoinButton> {
     setState(() => _loading = true);
     try {
       await sl<ISocialService>().joinChallenge(widget.challengeId);
-      if (mounted) setState(() { _loading = false; _joined = true; });
+      if (mounted)
+        setState(() {
+          _loading = false;
+          _joined = true;
+        });
     } catch (e) {
       if (mounted) {
         setState(() => _loading = false);
         final errStr = e.toString().toLowerCase();
-        if (errStr.contains('challenge already ended') || errStr.contains('failed-precondition')) {
+        if (errStr.contains('challenge already ended') ||
+            errStr.contains('failed-precondition')) {
           setState(() => _ended = true);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Row(children: [
-              Icon(Icons.info_outline_rounded, color: Colors.white, size: 16),
-              SizedBox(width: 8),
-              Text('Этот челлендж уже завершён', style: TextStyle(fontWeight: FontWeight.w600)),
-            ]),
-            backgroundColor: widget.colors.textMuted,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Row(
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Этот челлендж уже завершён',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              backgroundColor: widget.colors.textMuted,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Ошибка: ${e.toString()}', maxLines: 2, overflow: TextOverflow.ellipsis),
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Ошибка: ${e.toString()}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          );
         }
       }
     }
@@ -412,74 +660,151 @@ class _LeaderboardSheet extends StatelessWidget {
     final authState = context.read<AuthBloc>().state;
     final myUid = authState is AuthStateAuthenticated ? authState.userId : null;
     return Container(
-      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
-      decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
-      child: Column(children: [
-        const SizedBox(height: 12),
-        Container(width: 36, height: 4, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(2))),
-        const SizedBox(height: 14),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(children: [
-            const Text('🏆', style: TextStyle(fontSize: 20)),
-            const SizedBox(width: 8),
-            Expanded(child: Text(challenge.title, style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w800, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis)),
-          ]),
-        ),
-        const SizedBox(height: 4),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text('Цель: ${challenge.targetValue} ${challenge.goalLabel}', style: TextStyle(fontSize: 12, color: colors.textMuted)),
-        ),
-        const SizedBox(height: 12),
-        Expanded(
-          child: StreamBuilder<List<ChallengeParticipant>>(
-            stream: sl<ISocialService>().challengeLeaderboardStream(challenge.id),
-            builder: (context, snap) {
-              if (snap.connectionState == ConnectionState.waiting) {
-                return Center(child: LoadingShimmer.listView(4));
-              }
-              final participants = snap.data ?? [];
-              return ListView.separated(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-                itemCount: participants.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 8),
-                itemBuilder: (_, i) {
-                  final p = participants[i];
-                  final isMe = p.uid == myUid;
-                  final progress = (p.currentValue / challenge.targetValue).clamp(0.0, 1.0);
-                  final medal = i == 0 ? '🥇' : i == 1 ? '🥈' : i == 2 ? '🥉' : '${i + 1}.';
-                  return Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isMe ? colors.primary.withValues(alpha: 0.08) : colors.elevated,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: isMe ? colors.primary.withValues(alpha: 0.3) : Colors.transparent),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7,
+      ),
+      decoration: BoxDecoration(
+        color: colors.surfaceCard,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                const Text('🏆', style: TextStyle(fontSize: 20)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    challenge.title,
+                    style: TextStyle(
+                      fontFamily: 'Syne',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: colors.textPrimary,
                     ),
-                    child: Column(children: [
-                      Row(children: [
-                        SizedBox(width: 28, child: Text(medal, style: const TextStyle(fontSize: 14))),
-                        Expanded(child: Text(p.name + (isMe ? ' (Вы)' : ''), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary))),
-                        Text('${p.currentValue} / ${challenge.targetValue}', style: TextStyle(fontSize: 12, color: colors.textMuted)),
-                      ]),
-                      const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 4,
-                          backgroundColor: colors.primary.withValues(alpha: 0.1),
-                          valueColor: AlwaysStoppedAnimation(progress >= 1.0 ? colors.success : colors.primary),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'Цель: ${challenge.targetValue} ${challenge.goalLabel}',
+              style: TextStyle(fontSize: 12, color: colors.textMuted),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: StreamBuilder<List<ChallengeParticipant>>(
+              stream: sl<ISocialService>().challengeLeaderboardStream(
+                challenge.id,
+              ),
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return Center(child: LoadingShimmer.listView(4));
+                }
+                final participants = snap.data ?? [];
+                return ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                  itemCount: participants.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
+                  itemBuilder: (_, i) {
+                    final p = participants[i];
+                    final isMe = p.uid == myUid;
+                    final progress = (p.currentValue / challenge.targetValue)
+                        .clamp(0.0, 1.0);
+                    final medal = i == 0
+                        ? '🥇'
+                        : i == 1
+                        ? '🥈'
+                        : i == 2
+                        ? '🥉'
+                        : '${i + 1}.';
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isMe
+                            ? colors.primary.withValues(alpha: 0.08)
+                            : colors.elevated,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isMe
+                              ? colors.primary.withValues(alpha: 0.3)
+                              : Colors.transparent,
                         ),
                       ),
-                    ]),
-                  );
-                },
-              );
-            },
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 28,
+                                child: Text(
+                                  medal,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  p.name + (isMe ? ' (Вы)' : ''),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: colors.textPrimary,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                '${p.currentValue} / ${challenge.targetValue}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: colors.textMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              minHeight: 4,
+                              backgroundColor: colors.primary.withValues(
+                                alpha: 0.1,
+                              ),
+                              valueColor: AlwaysStoppedAnimation(
+                                progress >= 1.0
+                                    ? colors.success
+                                    : colors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }

@@ -21,8 +21,7 @@ class MuscleMap3DWidget extends StatelessWidget {
   });
 
   String _buildRelatedJs() {
-    final primaryJson =
-        '[${primaryMuscles.map((id) => '"$id"').join(',')}]';
+    final primaryJson = '[${primaryMuscles.map((id) => '"$id"').join(',')}]';
     final secondaryJson =
         '[${secondaryMuscles.map((id) => '"$id"').join(',')}]';
 
@@ -193,8 +192,7 @@ class MuscleMap3DWidget extends StatelessWidget {
         // ── Auto-rotate ──────────────────────────────────────────────────────
         autoRotate: true,
         autoRotateDelay: 3000,
-        rotationPerSecond: '15deg',   // slower = less GPU per frame
-
+        rotationPerSecond: '15deg', // slower = less GPU per frame
         // ── Interaction ──────────────────────────────────────────────────────
         cameraControls: true,
         disableZoom: false,

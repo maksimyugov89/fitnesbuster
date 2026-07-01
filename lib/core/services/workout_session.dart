@@ -63,8 +63,7 @@ class WorkoutSession extends ChangeNotifier {
     return '$_completedSets / ${w.totalSets} ${AppLocalizations.tl('socialSetsOf')}';
   }
 
-  int get elapsedMinutes =>
-      DateTime.now().difference(_sessionStart).inMinutes;
+  int get elapsedMinutes => DateTime.now().difference(_sessionStart).inMinutes;
 
   /// ~5 kcal/min for strength; +2 extra if the plan has cardio minutes.
   int get estimatedCaloriesBurned {
@@ -174,7 +173,11 @@ class WorkoutSession extends ChangeNotifier {
             streak: streak,
           );
         } catch (e, st) {
-          appLogger.w('WorkoutSession: challenge update failed', error: e, stackTrace: st);
+          appLogger.w(
+            'WorkoutSession: challenge update failed',
+            error: e,
+            stackTrace: st,
+          );
         }
       }
     } catch (e, st) {

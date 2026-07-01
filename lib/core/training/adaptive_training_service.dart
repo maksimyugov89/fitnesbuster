@@ -36,13 +36,25 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
     // Calculate the user's actual capacity vs expected beginner capacity
     final count = testResult.exercises.length;
     final avgWeight = count > 0
-        ? testResult.exercises.fold<double>(0.0, (sum, e) => sum + e.comfortableWeightKg) / count
+        ? testResult.exercises.fold<double>(
+                0.0,
+                (sum, e) => sum + e.comfortableWeightKg,
+              ) /
+              count
         : 0.0;
     final avgReps = count > 0
-        ? testResult.exercises.fold<double>(0.0, (sum, e) => sum + e.comfortableReps) / count
+        ? testResult.exercises.fold<double>(
+                0.0,
+                (sum, e) => sum + e.comfortableReps,
+              ) /
+              count
         : 0.0;
     final avgSets = count > 0
-        ? testResult.exercises.fold<double>(0.0, (sum, e) => sum + e.comfortableSets) / count
+        ? testResult.exercises.fold<double>(
+                0.0,
+                (sum, e) => sum + e.comfortableSets,
+              ) /
+              count
         : 0.0;
 
     // Determine user level
@@ -58,7 +70,9 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
     return TrainingAdjustment(
       weightMultiplier: progressionSpeed.weightMultiplier,
       weeklyIncreasePercent: progressionSpeed.weeklyIncreasePercent,
-      suggestedSetsPerExercise: avgSets.isFinite ? avgSets.round().clamp(3, 5) : 4,
+      suggestedSetsPerExercise: avgSets.isFinite
+          ? avgSets.round().clamp(3, 5)
+          : 4,
       suggestedRepsPerSet: avgReps.isFinite ? avgReps.round().clamp(8, 15) : 10,
       userLevel: userLevel,
       maxHeartRate: 220 - profile.age,
@@ -82,7 +96,8 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
       final aiAdvice = await _getAiFeasibilityAdvice(profile, adjustment);
       return FeasibilityResult(
         isFeasible: false,
-        reason: '''
+        reason:
+            '''
 Выбрана цель: $goalLabel (уровень: $intensityLabel)
 Текущий вес: ${profile.weight} кг
 Целевой вес: ${profile.targetWeight ?? 'не указан'} кг
@@ -98,7 +113,9 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
       );
     }
 
-    final totalCalorieNeeded = (profile.weight - (profile.targetWeight ?? profile.weight)).abs() * 7700; // 7700 kcal per kg
+    final totalCalorieNeeded =
+        (profile.weight - (profile.targetWeight ?? profile.weight)).abs() *
+        7700; // 7700 kcal per kg
     final dailyDeficit = profile.dailyCalorieTarget < profile.tdee
         ? profile.tdee - profile.dailyCalorieTarget
         : 0;
@@ -110,7 +127,8 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
       final aiAdvice = await _getAiFeasibilityAdvice(profile, adjustment);
       return FeasibilityResult(
         isFeasible: false,
-        reason: '''
+        reason:
+            '''
 Цель $goalLabel требует ~$estimatedWeeks недель при текущем дефиците ${dailyDeficit.toInt()} ккал/день.
 
 Выбрано: $weeksNeeded недель — маловато.
@@ -154,10 +172,10 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
       final phase = weekNum <= 4
           ? 'Адаптация'
           : weekNum <= 8
-              ? 'Прогресс'
-              : weekNum <= 12
-                  ? 'Интенсификация'
-                  : 'Пик';
+          ? 'Прогресс'
+          : weekNum <= 12
+          ? 'Интенсификация'
+          : 'Пик';
 
       // Each week focuses on a muscle group, rotating
       final focusIdx = weekNum % focusRotation.length;
@@ -182,15 +200,24 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
 
   double _getIntensityMultiplier(IntensityLevel level) {
     switch (level) {
-      case IntensityLevel.hardcore: return 1.2;
-      case IntensityLevel.intensive: return 1.1;
-      case IntensityLevel.balanced: return 1.0;
-      case IntensityLevel.gradual: return 0.9;
-      case IntensityLevel.relaxed: return 0.8;
+      case IntensityLevel.hardcore:
+        return 1.2;
+      case IntensityLevel.intensive:
+        return 1.1;
+      case IntensityLevel.balanced:
+        return 1.0;
+      case IntensityLevel.gradual:
+        return 0.9;
+      case IntensityLevel.relaxed:
+        return 0.8;
     }
   }
 
-  UserLevel _determineLevel(double avgWeight, double avgReps, UserProfile profile) {
+  UserLevel _determineLevel(
+    double avgWeight,
+    double avgReps,
+    UserProfile profile,
+  ) {
     // Simple heuristic: compare weight to body weight
     final weightRatio = avgWeight / profile.weight;
     if (weightRatio > 0.5 && avgReps >= 10) return UserLevel.intermediate;
@@ -236,9 +263,12 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
       return _fallbackExercises(focus, adjustment);
     }
 
-    return available.map((e) =>
-      '${e.exerciseName} — ${adjustment.suggestedSetsPerExercise}×${adjustment.suggestedRepsPerSet} @ ${(e.comfortableWeightKg * (1 + (weekNum - 1) * adjustment.weeklyIncreasePercent)).toStringAsFixed(1)} кг'
-    ).toList();
+    return available
+        .map(
+          (e) =>
+              '${e.exerciseName} — ${adjustment.suggestedSetsPerExercise}×${adjustment.suggestedRepsPerSet} @ ${(e.comfortableWeightKg * (1 + (weekNum - 1) * adjustment.weeklyIncreasePercent)).toStringAsFixed(1)} кг',
+        )
+        .toList();
   }
 
   List<String> _fallbackExercises(String focus, TrainingAdjustment adj) {
@@ -257,22 +287,30 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
 
   String _muscleGroupToFocus(MuscleGroup mg) {
     switch (mg) {
-      case MuscleGroup.chest: return 'Грудь + Трицепс';
-      case MuscleGroup.back: return 'Спина + Бицепс';
-      case MuscleGroup.shoulders: return 'Плечи + Пресс';
+      case MuscleGroup.chest:
+        return 'Грудь + Трицепс';
+      case MuscleGroup.back:
+        return 'Спина + Бицепс';
+      case MuscleGroup.shoulders:
+        return 'Плечи + Пресс';
       case MuscleGroup.quads:
       case MuscleGroup.hamstrings:
       case MuscleGroup.glutes:
-      case MuscleGroup.calves: return 'Ноги';
-      default: return 'Грудь + Трицепс';
+      case MuscleGroup.calves:
+        return 'Ноги';
+      default:
+        return 'Грудь + Трицепс';
     }
   }
 
   int _getSessionsPerWeek(UserLevel level) {
     switch (level) {
-      case UserLevel.beginner: return 3;
-      case UserLevel.intermediate: return 4;
-      case UserLevel.advanced: return 5;
+      case UserLevel.beginner:
+        return 3;
+      case UserLevel.intermediate:
+        return 4;
+      case UserLevel.advanced:
+        return 5;
     }
   }
 
@@ -295,21 +333,31 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
 
   String _fitnessGoalLabel(FitnessGoal g) {
     switch (g) {
-      case FitnessGoal.loseWeight: return AppLocalizations.tl('trainingWeightLoss');
-      case FitnessGoal.gainWeight: return AppLocalizations.tl('trainingMuscleGain');
-      case FitnessGoal.maintain: return AppLocalizations.tl('trainingMaintenance');
-      case FitnessGoal.beachBody: return AppLocalizations.tl('trainingBeachSeason');
-      case FitnessGoal.sportPerformance: return AppLocalizations.tl('trainingSport');
+      case FitnessGoal.loseWeight:
+        return AppLocalizations.tl('trainingWeightLoss');
+      case FitnessGoal.gainWeight:
+        return AppLocalizations.tl('trainingMuscleGain');
+      case FitnessGoal.maintain:
+        return AppLocalizations.tl('trainingMaintenance');
+      case FitnessGoal.beachBody:
+        return AppLocalizations.tl('trainingBeachSeason');
+      case FitnessGoal.sportPerformance:
+        return AppLocalizations.tl('trainingSport');
     }
   }
 
   String _intensityLabel(IntensityLevel i) {
     switch (i) {
-      case IntensityLevel.hardcore: return AppLocalizations.tl('trainingHardcore');
-      case IntensityLevel.intensive: return AppLocalizations.tl('trainingIntense');
-      case IntensityLevel.balanced: return AppLocalizations.tl('trainingBalanced');
-      case IntensityLevel.gradual: return AppLocalizations.tl('trainingGradual');
-      case IntensityLevel.relaxed: return AppLocalizations.tl('trainingLight');
+      case IntensityLevel.hardcore:
+        return AppLocalizations.tl('trainingHardcore');
+      case IntensityLevel.intensive:
+        return AppLocalizations.tl('trainingIntense');
+      case IntensityLevel.balanced:
+        return AppLocalizations.tl('trainingBalanced');
+      case IntensityLevel.gradual:
+        return AppLocalizations.tl('trainingGradual');
+      case IntensityLevel.relaxed:
+        return AppLocalizations.tl('trainingLight');
     }
   }
 }

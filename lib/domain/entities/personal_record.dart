@@ -19,7 +19,8 @@ class PersonalRecord with _$PersonalRecord {
     @Default('') String notes,
   }) = _PersonalRecord;
 
-  factory PersonalRecord.fromJson(Map<String, dynamic> json) => _$PersonalRecordFromJson(json);
+  factory PersonalRecord.fromJson(Map<String, dynamic> json) =>
+      _$PersonalRecordFromJson(json);
 
   bool get isBodyweight => weightKg == null || weightKg == 0;
 

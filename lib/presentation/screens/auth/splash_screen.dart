@@ -39,14 +39,14 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    _textSlide = Tween<Offset>(
-      begin: const Offset(0, 0.35),
-      end: Offset.zero,
-    ).animate(
-        CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic));
-    _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeOut),
-    );
+    _textSlide = Tween<Offset>(begin: const Offset(0, 0.35), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic),
+        );
+    _textOpacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _textController, curve: Curves.easeOut));
     _progressAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
     );
@@ -209,11 +209,7 @@ class _SplashScreenState extends State<SplashScreen>
           height: 2,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Colors.transparent,
-                colors.primary,
-                Colors.transparent,
-              ],
+              colors: [Colors.transparent, colors.primary, Colors.transparent],
             ),
             borderRadius: BorderRadius.circular(1),
           ),
@@ -303,8 +299,7 @@ class _SplashScreenState extends State<SplashScreen>
                                     spreadRadius: 1,
                                   ),
                                   BoxShadow(
-                                    color:
-                                        Colors.white.withValues(alpha: 0.55),
+                                    color: Colors.white.withValues(alpha: 0.55),
                                     blurRadius: 4,
                                   ),
                                 ],
@@ -325,10 +320,10 @@ class _SplashScreenState extends State<SplashScreen>
 }
 
 String _splashBgFor(AppThemeMode mode) => switch (mode) {
-      AppThemeMode.neonDark => 'assets/images/splash_bg_neon.png',
-      AppThemeMode.cyberPunk => 'assets/images/splash_bg_cyberpunk.png',
-      AppThemeMode.oceanBlue => 'assets/images/splash_bg_ocean.png',
-      AppThemeMode.sunsetWarm => 'assets/images/splash_bg_sunset.png',
-      AppThemeMode.forestGreen => 'assets/images/splash_bg_forest.png',
-      AppThemeMode.midnightPurple => 'assets/images/splash_bg_violet.png',
-    };
+  AppThemeMode.neonDark => 'assets/images/splash_bg_neon.png',
+  AppThemeMode.cyberPunk => 'assets/images/splash_bg_cyberpunk.png',
+  AppThemeMode.oceanBlue => 'assets/images/splash_bg_ocean.png',
+  AppThemeMode.sunsetWarm => 'assets/images/splash_bg_sunset.png',
+  AppThemeMode.forestGreen => 'assets/images/splash_bg_forest.png',
+  AppThemeMode.midnightPurple => 'assets/images/splash_bg_violet.png',
+};

@@ -1,10 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 
 import 'auth_bloc_test.mocks.dart';
@@ -63,8 +63,9 @@ void main() {
       'emits Loading then Authenticated on success',
       build: () => AuthBloc(authRepository: repo),
       setUp: () {
-        when(repo.login(email: 'test@example.com', password: '123456'))
-            .thenAnswer((_) async => tUser);
+        when(
+          repo.login(email: 'test@example.com', password: '123456'),
+        ).thenAnswer((_) async => tUser);
       },
       act: (b) => b.add(
         const AuthLoginRequested(email: 'test@example.com', password: '123456'),
@@ -79,12 +80,12 @@ void main() {
       'emits Loading then Error on wrong-password',
       build: () => AuthBloc(authRepository: repo),
       setUp: () {
-        when(repo.login(email: anyNamed('email'), password: anyNamed('password')))
-            .thenThrow(FirebaseAuthException(code: 'wrong-password'));
+        when(
+          repo.login(email: anyNamed('email'), password: anyNamed('password')),
+        ).thenThrow(const WrongPasswordException());
       },
-      act: (b) => b.add(
-        const AuthLoginRequested(email: 'a@b.com', password: 'wrong'),
-      ),
+      act: (b) =>
+          b.add(const AuthLoginRequested(email: 'a@b.com', password: 'wrong')),
       expect: () => [
         const AuthStateLoading(),
         const AuthStateError(message: 'Неверный пароль'),
@@ -95,12 +96,12 @@ void main() {
       'emits Loading then Error on generic exception',
       build: () => AuthBloc(authRepository: repo),
       setUp: () {
-        when(repo.login(email: anyNamed('email'), password: anyNamed('password')))
-            .thenThrow(Exception('network'));
+        when(
+          repo.login(email: anyNamed('email'), password: anyNamed('password')),
+        ).thenThrow(Exception('network'));
       },
-      act: (b) => b.add(
-        const AuthLoginRequested(email: 'a@b.com', password: 'pass'),
-      ),
+      act: (b) =>
+          b.add(const AuthLoginRequested(email: 'a@b.com', password: 'pass')),
       expect: () => [
         const AuthStateLoading(),
         const AuthStateError(message: 'Произошла ошибка. Попробуйте снова.'),
@@ -113,11 +114,13 @@ void main() {
       'emits Loading then Authenticated on success',
       build: () => AuthBloc(authRepository: repo),
       setUp: () {
-        when(repo.register(
-          name: anyNamed('name'),
-          email: anyNamed('email'),
-          password: anyNamed('password'),
-        )).thenAnswer((_) async => tUser);
+        when(
+          repo.register(
+            name: anyNamed('name'),
+            email: anyNamed('email'),
+            password: anyNamed('password'),
+          ),
+        ).thenAnswer((_) async => tUser);
       },
       act: (b) => b.add(
         const AuthRegisterRequested(

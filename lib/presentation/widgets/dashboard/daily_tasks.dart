@@ -21,28 +21,97 @@ class DashboardDailyTasks extends StatelessWidget {
     final done = tasks.where((t) => t.done).length;
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: p.surfaceCard, borderRadius: BorderRadius.circular(22), border: Border.all(color: Colors.white.withValues(alpha: 0.06))),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Text(l10n.dailyGoals, style: AppTextStyles.titleM),
-          const Spacer(),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-            decoration: BoxDecoration(color: done == tasks.length ? p.primary.withValues(alpha: 0.15) : p.surfaceLight, borderRadius: BorderRadius.circular(8)),
-            child: Text('$done/${tasks.length}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: done == tasks.length ? p.primary : p.textMuted))),
-        ]),
-        const SizedBox(height: 12),
-        ...tasks.map((t) => Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Row(children: [
-            Container(width: 22, height: 22, decoration: BoxDecoration(color: t.done ? p.primary.withValues(alpha: 0.15) : p.surfaceLight, shape: BoxShape.circle,
-              border: Border.all(color: t.done ? p.primary : p.textMuted.withValues(alpha: 0.3), width: 1.5)),
-              child: t.done ? Icon(Icons.check_rounded, size: 13, color: p.primary) : null),
-            const SizedBox(width: 10),
-            Expanded(child: Text(t.text, style: TextStyle(fontSize: 13, color: t.done ? p.textMuted : p.textPrimary, decoration: t.done ? TextDecoration.lineThrough : null))),
-            Container(padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-              decoration: BoxDecoration(color: p.accentOrange.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
-              child: Text('+${t.xp} XP', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: p.accentOrange))),
-          ]))),
-      ]));
+      decoration: BoxDecoration(
+        color: p.surfaceCard,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(l10n.dailyGoals, style: AppTextStyles.titleM),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                decoration: BoxDecoration(
+                  color: done == tasks.length
+                      ? p.primary.withValues(alpha: 0.15)
+                      : p.surfaceLight,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '$done/${tasks.length}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: done == tasks.length ? p.primary : p.textMuted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...tasks.map(
+            (t) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Container(
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      color: t.done
+                          ? p.primary.withValues(alpha: 0.15)
+                          : p.surfaceLight,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: t.done
+                            ? p.primary
+                            : p.textMuted.withValues(alpha: 0.3),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: t.done
+                        ? Icon(Icons.check_rounded, size: 13, color: p.primary)
+                        : null,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      t.text,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: t.done ? p.textMuted : p.textPrimary,
+                        decoration: t.done ? TextDecoration.lineThrough : null,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: p.accentOrange.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '+${t.xp} XP',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: p.accentOrange,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

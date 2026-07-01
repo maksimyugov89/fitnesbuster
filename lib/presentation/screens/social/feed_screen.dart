@@ -22,8 +22,15 @@ class FeedScreen extends StatelessWidget {
           onTap: () => Navigator.pop(context),
           child: Container(
             margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: colors.surfaceCard, borderRadius: BorderRadius.circular(10)),
-            child: Icon(Icons.arrow_back_rounded, color: colors.textPrimary, size: 20),
+            decoration: BoxDecoration(
+              color: colors.surfaceCard,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.arrow_back_rounded,
+              color: colors.textPrimary,
+              size: 20,
+            ),
           ),
         ),
         title: const Text('Лента друзей', style: AppTextStyles.titleL),
@@ -53,13 +60,28 @@ class FeedScreen extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('👥', style: TextStyle(fontSize: 56)),
-          const SizedBox(height: 16),
-          Text('Лента пуста', style: TextStyle(fontFamily: 'Syne', fontSize: 18, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-          const SizedBox(height: 8),
-          Text('Добавь друзей, чтобы видеть\nих тренировки и достижения', style: TextStyle(fontSize: 13, color: colors.textMuted), textAlign: TextAlign.center),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('👥', style: TextStyle(fontSize: 56)),
+            const SizedBox(height: 16),
+            Text(
+              'Лента пуста',
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: colors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Добавь друзей, чтобы видеть\nих тренировки и достижения',
+              style: TextStyle(fontSize: 13, color: colors.textMuted),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -72,10 +94,10 @@ class _FeedCard extends StatelessWidget {
 
   String _timeAgo(DateTime dt) {
     final diff = DateTime.now().difference(dt);
-    if (diff.inMinutes < 1)  return 'только что';
+    if (diff.inMinutes < 1) return 'только что';
     if (diff.inMinutes < 60) return '${diff.inMinutes} мин. назад';
-    if (diff.inHours < 24)   return '${diff.inHours} ч. назад';
-    if (diff.inDays < 7)     return '${diff.inDays} дн. назад';
+    if (diff.inHours < 24) return '${diff.inHours} ч. назад';
+    if (diff.inDays < 7) return '${diff.inDays} дн. назад';
     return DateFormat('d MMM', 'ru').format(dt);
   }
 
@@ -88,35 +110,59 @@ class _FeedCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(
-          width: 44, height: 44,
-          decoration: BoxDecoration(
-            color: colors.primary.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              event.fromName.isNotEmpty ? event.fromName[0].toUpperCase() : '?',
-              style: TextStyle(fontFamily: 'Syne', fontSize: 18, fontWeight: FontWeight.w800, color: colors.primary),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: colors.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                event.fromName.isNotEmpty
+                    ? event.fromName[0].toUpperCase()
+                    : '?',
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: colors.primary,
+                ),
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          RichText(text: TextSpan(
-            style: TextStyle(fontSize: 14, color: colors.textPrimary),
-            children: [
-              TextSpan(text: event.fromName, style: const TextStyle(fontWeight: FontWeight.w700)),
-              TextSpan(text: ' ${event.description}'),
-            ],
-          )),
-          const SizedBox(height: 4),
-          Text(_timeAgo(event.timestamp), style: TextStyle(fontSize: 11, color: colors.textMuted)),
-        ])),
-        const SizedBox(width: 8),
-        Text(event.emoji, style: const TextStyle(fontSize: 24)),
-      ]),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RichText(
+                  text: TextSpan(
+                    style: TextStyle(fontSize: 14, color: colors.textPrimary),
+                    children: [
+                      TextSpan(
+                        text: event.fromName,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      TextSpan(text: ' ${event.description}'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _timeAgo(event.timestamp),
+                  style: TextStyle(fontSize: 11, color: colors.textMuted),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(event.emoji, style: const TextStyle(fontSize: 24)),
+        ],
+      ),
     );
   }
 }

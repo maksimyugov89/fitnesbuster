@@ -21,7 +21,8 @@ final class UserDisabledException extends AuthException {
 }
 
 final class EmailAlreadyInUseException extends AuthException {
-  const EmailAlreadyInUseException() : super('email-already-in-use', 'Email already in use');
+  const EmailAlreadyInUseException()
+    : super('email-already-in-use', 'Email already in use');
 }
 
 final class WeakPasswordException extends AuthException {
@@ -29,11 +30,13 @@ final class WeakPasswordException extends AuthException {
 }
 
 final class OperationNotAllowedException extends AuthException {
-  const OperationNotAllowedException() : super('operation-not-allowed', 'Operation not allowed');
+  const OperationNotAllowedException()
+    : super('operation-not-allowed', 'Operation not allowed');
 }
 
 final class TooManyRequestsException extends AuthException {
-  const TooManyRequestsException() : super('too-many-requests', 'Too many requests');
+  const TooManyRequestsException()
+    : super('too-many-requests', 'Too many requests');
 }
 
 final class UnknownAuthException extends AuthException {

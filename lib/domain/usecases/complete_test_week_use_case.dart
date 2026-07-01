@@ -13,9 +13,9 @@ class CompleteTestWeekUseCase {
     required IAuthRepository authRepo,
     required IUserRepository userRepo,
     required IDeepSeekService aiService,
-  })  : _authRepo = authRepo,
-        _userRepo = userRepo,
-        _aiService = aiService;
+  }) : _authRepo = authRepo,
+       _userRepo = userRepo,
+       _aiService = aiService;
 
   Future<void> execute(TestWeekResult testResult) async {
     final uid = _authRepo.currentUser?.id;
@@ -26,15 +26,29 @@ class CompleteTestWeekUseCase {
       final user = await _userRepo.getUser(uid);
       profile = user.profile;
     } catch (e, st) {
-      appLogger.w('[CompleteTestWeekUseCase] getUser failed', error: e, stackTrace: st);
+      appLogger.w(
+        '[CompleteTestWeekUseCase] getUser failed',
+        error: e,
+        stackTrace: st,
+      );
     }
 
     if (profile != null) {
       try {
-        final refined = await _aiService.refineWorkoutPlan(profile, testResult.exercises);
-        await _userRepo.updateWorkoutPlan(userId: uid, workoutPlanJson: refined);
+        final refined = await _aiService.refineWorkoutPlan(
+          profile,
+          testResult.exercises,
+        );
+        await _userRepo.updateWorkoutPlan(
+          userId: uid,
+          workoutPlanJson: refined,
+        );
       } catch (e, st) {
-        appLogger.w('[CompleteTestWeekUseCase] AI refinement failed', error: e, stackTrace: st);
+        appLogger.w(
+          '[CompleteTestWeekUseCase] AI refinement failed',
+          error: e,
+          stackTrace: st,
+        );
       }
     }
 

@@ -23,7 +23,8 @@ class FriendRequest {
     return FriendRequest(
       id: doc.id,
       fromUid: d['fromUid'] as String? ?? '',
-      fromName: d['fromName'] as String? ?? AppLocalizations.tl('socialDefaultUser'),
+      fromName:
+          d['fromName'] as String? ?? AppLocalizations.tl('socialDefaultUser'),
       toUid: d['toUid'] as String? ?? '',
       status: d['status'] as String? ?? 'pending',
       createdAt: (d['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -36,7 +37,11 @@ class FriendUser {
   final String name;
   final DateTime addedAt;
 
-  const FriendUser({required this.uid, required this.name, required this.addedAt});
+  const FriendUser({
+    required this.uid,
+    required this.name,
+    required this.addedAt,
+  });
 
   factory FriendUser.fromDoc(DocumentSnapshot doc) {
     final d = doc.data() as Map<String, dynamic>;
@@ -71,7 +76,8 @@ class FeedEvent {
       id: doc.id,
       type: d['type'] as String? ?? '',
       fromUid: d['fromUid'] as String? ?? '',
-      fromName: d['fromName'] as String? ?? AppLocalizations.tl('socialDefaultUser'),
+      fromName:
+          d['fromName'] as String? ?? AppLocalizations.tl('socialDefaultUser'),
       data: (d['data'] as Map<String, dynamic>?) ?? {},
       timestamp: (d['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
@@ -79,27 +85,40 @@ class FeedEvent {
 
   String get emoji {
     switch (type) {
-      case 'workout_done': return '🏋️';
-      case 'pr_set':       return '🏅';
-      case 'achievement':  return '🏆';
-      case 'challenge_won': return '⚡';
-      default:             return '📌';
+      case 'workout_done':
+        return '🏋️';
+      case 'pr_set':
+        return '🏅';
+      case 'achievement':
+        return '🏆';
+      case 'challenge_won':
+        return '⚡';
+      default:
+        return '📌';
     }
   }
 
   String get description {
     switch (type) {
-      case 'workout_done': return AppLocalizations.tl('socialDidWorkout');
+      case 'workout_done':
+        return AppLocalizations.tl('socialDidWorkout');
       case 'pr_set':
         final ex = data['exerciseName'] as String? ?? '';
-        return ex.isNotEmpty ? AppLocalizations.tlp('socialDidPr', {'ex': ex}) : AppLocalizations.tl('socialDidPrShort');
+        return ex.isNotEmpty
+            ? AppLocalizations.tlp('socialDidPr', {'ex': ex})
+            : AppLocalizations.tl('socialDidPrShort');
       case 'achievement':
         final name = data['achievementName'] as String? ?? '';
-        return name.isNotEmpty ? AppLocalizations.tlp('socialGotBadge', {'name': name}) : AppLocalizations.tl('socialGotBadgeShort');
+        return name.isNotEmpty
+            ? AppLocalizations.tlp('socialGotBadge', {'name': name})
+            : AppLocalizations.tl('socialGotBadgeShort');
       case 'challenge_won':
         final title = data['challengeTitle'] as String? ?? '';
-        return title.isNotEmpty ? AppLocalizations.tlp('socialDidChallenge', {'title': title}) : AppLocalizations.tl('socialDidChallengeShort');
-      default: return AppLocalizations.tl('socialDidSomething');
+        return title.isNotEmpty
+            ? AppLocalizations.tlp('socialDidChallenge', {'title': title})
+            : AppLocalizations.tl('socialDidChallengeShort');
+      default:
+        return AppLocalizations.tl('socialDidSomething');
     }
   }
 }
@@ -161,11 +180,16 @@ class Challenge {
 
   String get goalLabel {
     switch (goalType) {
-      case 'workout_count':   return AppLocalizations.tl('socialWorkouts');
-      case 'calories_burned': return AppLocalizations.tl('socialKcal');
-      case 'cardio_minutes':  return AppLocalizations.tl('socialCardioMin');
-      case 'workout_streak':  return AppLocalizations.tl('socialDayStreak');
-      default:                return '';
+      case 'workout_count':
+        return AppLocalizations.tl('socialWorkouts');
+      case 'calories_burned':
+        return AppLocalizations.tl('socialKcal');
+      case 'cardio_minutes':
+        return AppLocalizations.tl('socialCardioMin');
+      case 'workout_streak':
+        return AppLocalizations.tl('socialDayStreak');
+      default:
+        return '';
     }
   }
 }

@@ -9,8 +9,8 @@ import 'settings_repository_test.mocks.dart';
 void main() {
   late MockISettingsRepository repo;
 
-  const tKey   = '2024-06-20';
-  const tDate  = '2024-06-20';
+  const tKey = '2024-06-20';
+  const tDate = '2024-06-20';
 
   setUp(() => repo = MockISettingsRepository());
 

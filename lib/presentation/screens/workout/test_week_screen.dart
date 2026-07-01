@@ -20,9 +20,7 @@ class _TestWeekScreenState extends State<TestWeekScreen> {
   void initState() {
     super.initState();
     // Start with day 0
-    context.read<TestWeekBloc>().add(const TestWeekStartDay(
-      dayIndex: 0,
-    ));
+    context.read<TestWeekBloc>().add(const TestWeekStartDay(dayIndex: 0));
   }
 
   @override
@@ -46,14 +44,22 @@ class _TestWeekScreenState extends State<TestWeekScreen> {
                 children: [
                   CircularProgressIndicator(color: colors.primary),
                   const SizedBox(height: 20),
-                  Text('Анализируем твои показатели...', style: TextStyle(color: colors.textMuted)),
+                  Text(
+                    'Анализируем твои показатели...',
+                    style: TextStyle(color: colors.textMuted),
+                  ),
                 ],
               ),
             ),
             TestWeekStateCompleted s => _PlanResultsView(state: s),
             TestWeekStatePlanAccepted _ => _PlanAcceptedView(),
             TestWeekStateNeedsAdjustment s => _AdjustmentNeededView(state: s),
-            _ => Center(child: Text('Готовим тестовую неделю...', style: TextStyle(color: colors.textMuted))),
+            _ => Center(
+              child: Text(
+                'Готовим тестовую неделю...',
+                style: TextStyle(color: colors.textMuted),
+              ),
+            ),
           };
         },
       ),
@@ -95,7 +101,9 @@ class _TestDayViewState extends State<_TestDayView> {
 
   @override
   void dispose() {
-    for (final c in _notesCtrls.values) { c.dispose(); }
+    for (final c in _notesCtrls.values) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -104,7 +112,12 @@ class _TestDayViewState extends State<_TestDayView> {
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
-    final dayLabels = ['День 1: Грудь + Трицепс', 'День 2: Спина + Бицепс', 'День 3: Плечи + Ноги', 'День 4: Пресс + Кардио'];
+    final dayLabels = [
+      'День 1: Грудь + Трицепс',
+      'День 2: Спина + Бицепс',
+      'День 3: Плечи + Ноги',
+      'День 4: Пресс + Кардио',
+    ];
     final dayLabel = widget.dayState.dayIndex < dayLabels.length
         ? dayLabels[widget.dayState.dayIndex]
         : 'День ${widget.dayState.dayIndex + 1}';
@@ -116,23 +129,54 @@ class _TestDayViewState extends State<_TestDayView> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [colors.surfaceLight, colors.surface]),
+            gradient: LinearGradient(
+              colors: [colors.surfaceLight, colors.surface],
+            ),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(color: colors.primary.withValues(alpha: 0.3)),
           ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: colors.primary.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8)),
-                child: Text('ДЕНЬ ${widget.dayState.dayIndex + 1}/4', style: TextStyle(fontSize: 11, color: colors.primary, fontWeight: FontWeight.w800)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colors.primary.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'ДЕНЬ ${widget.dayState.dayIndex + 1}/4',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colors.primary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ]),
-            const SizedBox(height: 10),
-            Text(dayLabel, style: TextStyle(fontFamily: 'Syne', fontSize: 24, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-            const SizedBox(height: 4),
-            Text('Выполни упражнения и запиши комфортный вес, с которым сделаешь минимум 4 подхода', style: TextStyle(fontSize: 13, color: colors.textMuted)),
-          ]),
+              const SizedBox(height: 10),
+              Text(
+                dayLabel,
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Выполни упражнения и запиши комфортный вес, с которым сделаешь минимум 4 подхода',
+                style: TextStyle(fontSize: 13, color: colors.textMuted),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 20),
 
@@ -151,21 +195,30 @@ class _TestDayViewState extends State<_TestDayView> {
               onSetsChanged: (v) => setState(() => _sets[i] = v),
               onRepsChanged: (v) => setState(() => _reps[i] = v),
               onRecord: () {
-                context.read<TestWeekBloc>().add(TestWeekRecordExercise(
-                  exerciseName: ex.name,
-                  muscle: ex.muscle,
-                  comfortableWeightKg: _weights[i] ?? ex.baseWeight,
-                  comfortableSets: _sets[i] ?? 4,
-                  comfortableReps: _reps[i] ?? 10,
-                  notes: _notesCtrls[i]?.text,
-                ));
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('${ex.name} — записано!', style: const TextStyle(fontWeight: FontWeight.w600)),
-                  backgroundColor: colors.success,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  duration: const Duration(seconds: 1),
-                ));
+                context.read<TestWeekBloc>().add(
+                  TestWeekRecordExercise(
+                    exerciseName: ex.name,
+                    muscle: ex.muscle,
+                    comfortableWeightKg: _weights[i] ?? ex.baseWeight,
+                    comfortableSets: _sets[i] ?? 4,
+                    comfortableReps: _reps[i] ?? 10,
+                    notes: _notesCtrls[i]?.text,
+                  ),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${ex.name} — записано!',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    backgroundColor: colors.success,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
               },
             ),
           );
@@ -178,29 +231,51 @@ class _TestDayViewState extends State<_TestDayView> {
           decoration: BoxDecoration(
             color: colors.surfaceCard,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
+            border: Border.all(
+              color: colors.textPrimary.withValues(alpha: 0.06),
+            ),
           ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Общая сложность тренировки (RPE 1-10)', style: TextStyle(fontSize: 14, color: colors.textPrimary)),
-            const SizedBox(height: 8),
-            Row(children: List.generate(10, (i) {
-              final val = i + 1;
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => setState(() => _rpe = val),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 1),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      color: val <= _rpe ? colors.primary.withValues(alpha: 0.3) : colors.surfaceLight,
-                      borderRadius: BorderRadius.circular(6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Общая сложность тренировки (RPE 1-10)',
+                style: TextStyle(fontSize: 14, color: colors.textPrimary),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: List.generate(10, (i) {
+                  final val = i + 1;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _rpe = val),
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 1),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: val <= _rpe
+                              ? colors.primary.withValues(alpha: 0.3)
+                              : colors.surfaceLight,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '$val',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: val <= _rpe
+                                ? colors.primary
+                                : colors.textMuted,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
                     ),
-                    child: Text('$val', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: val <= _rpe ? colors.primary : colors.textMuted, fontWeight: FontWeight.w700)),
-                  ),
-                ),
-              );
-            })),
-          ]),
+                  );
+                }),
+              ),
+            ],
+          ),
         ),
 
         const SizedBox(height: 24),
@@ -209,16 +284,30 @@ class _TestDayViewState extends State<_TestDayView> {
           height: 56,
           child: ElevatedButton(
             onPressed: _allRecorded
-                ? () => context.read<TestWeekBloc>().add(const TestWeekFinishDay())
+                ? () => context.read<TestWeekBloc>().add(
+                    const TestWeekFinishDay(),
+                  )
                 : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: _allRecorded ? colors.primary : colors.surfaceLight,
-              foregroundColor: _allRecorded ? colors.textOnPrimary : colors.textMuted,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              backgroundColor: _allRecorded
+                  ? colors.primary
+                  : colors.surfaceLight,
+              foregroundColor: _allRecorded
+                  ? colors.textOnPrimary
+                  : colors.textMuted,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             child: Text(
-              _allRecorded ? 'Завершить день тренировки' : 'Запиши все упражнения',
-              style: const TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700),
+              _allRecorded
+                  ? 'Завершить день тренировки'
+                  : 'Запиши все упражнения',
+              style: const TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ),
@@ -262,65 +351,135 @@ class _ExerciseCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(name, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-        const SizedBox(height: 12),
-        Row(children: [
-          Flexible(child: _Counter(label: 'Подходы', value: sets, min: 3, max: 8, onChanged: onSetsChanged)),
-          const SizedBox(width: 12),
-          Flexible(child: _Counter(label: 'Повторения', value: reps, min: 6, max: 20, onChanged: onRepsChanged)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Вес (кг)', style: TextStyle(fontSize: 11, color: colors.textMuted)),
-              const SizedBox(height: 4),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text('${weight.toInt()} кг', style: TextStyle(fontFamily: 'Syne', fontSize: 22, fontWeight: FontWeight.w800, color: colors.primary)),
-              ),
-              const SizedBox(height: 2),
-              Row(children: [
-                GestureDetector(
-                  onTap: () => onWeightChanged((weight - 2.5).clamp(0, 200)),
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(color: colors.surfaceLight, borderRadius: BorderRadius.circular(4)),
-                    child: Icon(Icons.remove_rounded, size: 12, color: colors.textPrimary),
-                  ),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () => onWeightChanged((weight + 2.5).clamp(0, 200)),
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(color: colors.surfaceLight, borderRadius: BorderRadius.circular(4)),
-                    child: Icon(Icons.add_rounded, size: 12, color: colors.textPrimary),
-                  ),
-                ),
-              ]),
-            ]),
-          ),
-        ]),
-        const SizedBox(height: 8),
-        SizedBox(
-          width: double.infinity,
-          child: GestureDetector(
-            onTap: onRecord,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Icon(Icons.check_rounded, size: 16, color: colors.primary),
-                const SizedBox(width: 6),
-                Text('Записать показатель', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.primary)),
-              ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            name,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: colors.textPrimary,
             ),
           ),
-        ),
-      ]),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Flexible(
+                child: _Counter(
+                  label: 'Подходы',
+                  value: sets,
+                  min: 3,
+                  max: 8,
+                  onChanged: onSetsChanged,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Flexible(
+                child: _Counter(
+                  label: 'Повторения',
+                  value: reps,
+                  min: 6,
+                  max: 20,
+                  onChanged: onRepsChanged,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Вес (кг)',
+                      style: TextStyle(fontSize: 11, color: colors.textMuted),
+                    ),
+                    const SizedBox(height: 4),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        '${weight.toInt()} кг',
+                        style: TextStyle(
+                          fontFamily: 'Syne',
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: colors.primary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () =>
+                              onWeightChanged((weight - 2.5).clamp(0, 200)),
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: colors.surfaceLight,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Icon(
+                              Icons.remove_rounded,
+                              size: 12,
+                              color: colors.textPrimary,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () =>
+                              onWeightChanged((weight + 2.5).clamp(0, 200)),
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: colors.surfaceLight,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Icon(
+                              Icons.add_rounded,
+                              size: 12,
+                              color: colors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: GestureDetector(
+              onTap: onRecord,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: colors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.check_rounded, size: 16, color: colors.primary),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Записать показатель',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: colors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -332,33 +491,76 @@ class _Counter extends StatelessWidget {
   final int max;
   final ValueChanged<int> onChanged;
 
-  const _Counter({required this.label, required this.value, required this.min, required this.max, required this.onChanged});
+  const _Counter({
+    required this.label,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      Text(label, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: colors.textMuted)),
-      const SizedBox(height: 4),
-      Row(children: [
-        GestureDetector(onTap: () => onChanged((value - 1).clamp(min, max)), child: Container(
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(color: colors.surfaceLight, borderRadius: BorderRadius.circular(4)),
-          child: Icon(Icons.remove_rounded, size: 12, color: colors.textPrimary),
-        )),
-        const SizedBox(width: 4),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text('$value', style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w800, color: colors.primary)),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 11, color: colors.textMuted),
         ),
-        const SizedBox(width: 4),
-        GestureDetector(onTap: () => onChanged((value + 1).clamp(min, max)), child: Container(
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(color: colors.surfaceLight, borderRadius: BorderRadius.circular(4)),
-          child: Icon(Icons.add_rounded, size: 12, color: colors.textPrimary),
-        )),
-      ]),
-    ]);
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            GestureDetector(
+              onTap: () => onChanged((value - 1).clamp(min, max)),
+              child: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: colors.surfaceLight,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Icon(
+                  Icons.remove_rounded,
+                  size: 12,
+                  color: colors.textPrimary,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                '$value',
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: colors.primary,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            GestureDetector(
+              onTap: () => onChanged((value + 1).clamp(min, max)),
+              child: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: colors.surfaceLight,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Icon(
+                  Icons.add_rounded,
+                  size: 12,
+                  color: colors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 
@@ -376,41 +578,67 @@ class _DayCompletedView extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(Icons.check_circle_rounded, color: colors.success, size: 64),
-          const SizedBox(height: 20),
-          Text('День $done/$total завершён!', style: TextStyle(fontFamily: 'Syne', fontSize: 28, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-          const SizedBox(height: 8),
-          Text('Записано ${state.exercisesCompleted.length} упражнений', style: TextStyle(fontSize: 16, color: colors.textSecondary)),
-          const SizedBox(height: 32),
-          // Progress indicator
-          SizedBox(
-            width: double.infinity,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: done / total,
-                backgroundColor: colors.surfaceLight,
-                valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                minHeight: 10,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.check_circle_rounded, color: colors.success, size: 64),
+            const SizedBox(height: 20),
+            Text(
+              'День $done/$total завершён!',
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: colors.textPrimary,
               ),
             ),
-          ),
-          const SizedBox(height: 40),
-          if (state.nextDayIndex < total)
+            const SizedBox(height: 8),
+            Text(
+              'Записано ${state.exercisesCompleted.length} упражнений',
+              style: TextStyle(fontSize: 16, color: colors.textSecondary),
+            ),
+            const SizedBox(height: 32),
+            // Progress indicator
             SizedBox(
-              width: double.infinity, height: 56,
-              child: ElevatedButton(
-                onPressed: () => context.read<TestWeekBloc>().add(TestWeekStartDay(dayIndex: state.nextDayIndex)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.textOnPrimary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              width: double.infinity,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: LinearProgressIndicator(
+                  value: done / total,
+                  backgroundColor: colors.surfaceLight,
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                  minHeight: 10,
                 ),
-                child: Text('Начать день ${state.nextDayIndex + 1}', style: const TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700)),
               ),
             ),
-        ]),
+            const SizedBox(height: 40),
+            if (state.nextDayIndex < total)
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () => context.read<TestWeekBloc>().add(
+                    TestWeekStartDay(dayIndex: state.nextDayIndex),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.textOnPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Text(
+                    'Начать день ${state.nextDayIndex + 1}',
+                    style: const TextStyle(
+                      fontFamily: 'Syne',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -443,38 +671,75 @@ class _PlanResultsView extends StatelessWidget {
                   : colors.warning.withValues(alpha: 0.3),
             ),
           ),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Icon(
-              f.isFeasible ? Icons.check_circle_rounded : Icons.warning_amber_rounded,
-              color: f.isFeasible ? colors.success : colors.warning,
-              size: 28,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(
-                  f.isFeasible ? 'Цель достижима ✅' : 'Требуется корректировка ⚠️',
-                  style: TextStyle(
-                    fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700,
-                    color: f.isFeasible ? colors.success : colors.warning,
-                  ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                f.isFeasible
+                    ? Icons.check_circle_rounded
+                    : Icons.warning_amber_rounded,
+                color: f.isFeasible ? colors.success : colors.warning,
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      f.isFeasible
+                          ? 'Цель достижима ✅'
+                          : 'Требуется корректировка ⚠️',
+                      style: TextStyle(
+                        fontFamily: 'Syne',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: f.isFeasible ? colors.success : colors.warning,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      f.reason,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: f.isFeasible
+                            ? colors.textSecondary
+                            : colors.textPrimary,
+                        height: 1.5,
+                      ),
+                    ),
+                    if (!f.isFeasible && f.suggestedActions.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      ...f.suggestedActions.map(
+                        (a) => Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 14,
+                                color: colors.primary,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  a,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: colors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                const SizedBox(height: 6),
-                Text(f.reason, style: TextStyle(fontSize: 13, color: f.isFeasible ? colors.textSecondary : colors.textPrimary, height: 1.5)),
-                if (!f.isFeasible && f.suggestedActions.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  ...f.suggestedActions.map((a) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Row(children: [
-                      Icon(Icons.arrow_forward_rounded, size: 14, color: colors.primary),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(a, style: TextStyle(fontSize: 13, color: colors.textSecondary))),
-                    ]),
-                  )),
-                ],
-              ]),
-            ),
-          ]),
+              ),
+            ],
+          ),
         ),
 
         const SizedBox(height: 20),
@@ -482,58 +747,117 @@ class _PlanResultsView extends StatelessWidget {
         // Adapted plan preview
         const Text('Твоя программа', style: AppTextStyles.titleL),
         const SizedBox(height: 4),
-        Text('Уровень: ${state.adjustment.adaptedIntensityLabel} · ${state.adjustment.userLevel == UserLevel.beginner ? 'Начинающий' : 'Средний'}', style: TextStyle(fontSize: 13, color: colors.textMuted)),
+        Text(
+          'Уровень: ${state.adjustment.adaptedIntensityLabel} · ${state.adjustment.userLevel == UserLevel.beginner ? 'Начинающий' : 'Средний'}',
+          style: TextStyle(fontSize: 13, color: colors.textMuted),
+        ),
         const SizedBox(height: 12),
-        ...state.adaptedPlan.take(4).map((week) => Container(
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: week.weekNumber == 1 ? colors.primary.withValues(alpha: 0.06) : colors.surfaceCard,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: week.weekNumber == 1 ? colors.primary.withValues(alpha: 0.2) : colors.textPrimary.withValues(alpha: 0.06)),
-          ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(week.focus, style: TextStyle(fontFamily: 'Syne', fontSize: 14, fontWeight: FontWeight.w700, color: week.weekNumber == 1 ? colors.primary : colors.textPrimary)),
-            const SizedBox(height: 6),
-            Text('${week.plannedSessions} тренировок · ~${week.estimatedCalorieBurn.toInt()} ккал', style: TextStyle(fontSize: 12, color: colors.textMuted)),
-          ]),
-        )),
+        ...state.adaptedPlan
+            .take(4)
+            .map(
+              (week) => Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: week.weekNumber == 1
+                      ? colors.primary.withValues(alpha: 0.06)
+                      : colors.surfaceCard,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: week.weekNumber == 1
+                        ? colors.primary.withValues(alpha: 0.2)
+                        : colors.textPrimary.withValues(alpha: 0.06),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      week.focus,
+                      style: TextStyle(
+                        fontFamily: 'Syne',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: week.weekNumber == 1
+                            ? colors.primary
+                            : colors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${week.plannedSessions} тренировок · ~${week.estimatedCalorieBurn.toInt()} ккал',
+                      style: TextStyle(fontSize: 12, color: colors.textMuted),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         if (state.adaptedPlan.length > 4)
-          Text('...и ещё ${state.adaptedPlan.length - 4} недель', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: colors.textMuted)),
+          Text(
+            '...и ещё ${state.adaptedPlan.length - 4} недель',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13, color: colors.textMuted),
+          ),
 
         const SizedBox(height: 24),
 
         if (f.isFeasible)
           SizedBox(
-            width: double.infinity, height: 56,
+            width: double.infinity,
+            height: 56,
             child: ElevatedButton(
-              onPressed: () => context.read<TestWeekBloc>().add(const TestWeekAcceptPlan()),
+              onPressed: () =>
+                  context.read<TestWeekBloc>().add(const TestWeekAcceptPlan()),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
-              child: Text('Начать программу!', style: TextStyle(fontFamily: 'Syne', fontSize: 18, fontWeight: FontWeight.w800, color: colors.textOnPrimary)),
-            ),
-          )
-        else
-          Row(children: [
-            Expanded(
-              child: SizedBox(
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () => context.read<TestWeekBloc>().add(TestWeekAdjustGoal(
-                    reason: f.reason,
-                    suggestions: f.suggestedActions,
-                  )),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.warning,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: Text('Скорректировать', style: TextStyle(fontFamily: 'Syne', fontSize: 15, fontWeight: FontWeight.w700, color: colors.textOnPrimary)),
+              child: Text(
+                'Начать программу!',
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: colors.textOnPrimary,
                 ),
               ),
             ),
-          ]),
+          )
+        else
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () => context.read<TestWeekBloc>().add(
+                      TestWeekAdjustGoal(
+                        reason: f.reason,
+                        suggestions: f.suggestedActions,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colors.warning,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      'Скорректировать',
+                      style: TextStyle(
+                        fontFamily: 'Syne',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: colors.textOnPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
 
         const SizedBox(height: 60),
       ],
@@ -549,25 +873,55 @@ class _PlanAcceptedView extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(Icons.celebration_rounded, color: colors.primary, size: 80),
-          const SizedBox(height: 20),
-          Text('Программа запущена!', style: TextStyle(fontFamily: 'Syne', fontSize: 28, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-          const SizedBox(height: 12),
-          Text('Твой персональный план адаптирован под твои показатели. Первая неделя — адаптация. Следи за прогрессом!', textAlign: TextAlign.center, style: TextStyle(fontSize: 15, color: colors.textSecondary, height: 1.5)),
-          const SizedBox(height: 40),
-          SizedBox(
-            width: double.infinity, height: 56,
-            child: ElevatedButton(
-              onPressed: () => context.go('/dashboard'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.primary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.celebration_rounded, color: colors.primary, size: 80),
+            const SizedBox(height: 20),
+            Text(
+              'Программа запущена!',
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: colors.textPrimary,
               ),
-              child: Text('На главную', style: TextStyle(fontFamily: 'Syne', fontSize: 16, fontWeight: FontWeight.w700, color: colors.textOnPrimary)),
             ),
-          ),
-        ]),
+            const SizedBox(height: 12),
+            Text(
+              'Твой персональный план адаптирован под твои показатели. Первая неделя — адаптация. Следи за прогрессом!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: colors.textSecondary,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 40),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () => context.go('/dashboard'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: Text(
+                  'На главную',
+                  style: TextStyle(
+                    fontFamily: 'Syne',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textOnPrimary,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -584,38 +938,82 @@ class _AdjustmentNeededView extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(Icons.tune_rounded, color: colors.warning, size: 64),
-          const SizedBox(height: 20),
-          Text('Скорректируем цель', style: TextStyle(fontFamily: 'Syne', fontSize: 24, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-          const SizedBox(height: 12),
-          Text(state.reason, textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: colors.textSecondary, height: 1.5)),
-          const SizedBox(height: 24),
-          ...state.suggestions.map((s) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: GestureDetector(
-              onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Выбрано: $s', style: const TextStyle(fontWeight: FontWeight.w600)),
-                backgroundColor: colors.primary,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              )),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colors.surfaceCard,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
-                ),
-                child: Row(children: [
-                  Icon(Icons.arrow_forward_rounded, size: 18, color: colors.primary),
-                  const SizedBox(width: 12),
-                  Expanded(child: Text(s, style: TextStyle(fontSize: 14, color: colors.textPrimary))),
-                ]),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.tune_rounded, color: colors.warning, size: 64),
+            const SizedBox(height: 20),
+            Text(
+              'Скорректируем цель',
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: colors.textPrimary,
               ),
             ),
-          )),
-        ]),
+            const SizedBox(height: 12),
+            Text(
+              state.reason,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: colors.textSecondary,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            ...state.suggestions.map(
+              (s) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: GestureDetector(
+                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Выбрано: $s',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      backgroundColor: colors.primary,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceCard,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: colors.textPrimary.withValues(alpha: 0.06),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 18,
+                          color: colors.primary,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            s,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: colors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

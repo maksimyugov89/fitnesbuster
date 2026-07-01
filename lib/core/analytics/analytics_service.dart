@@ -5,7 +5,7 @@ class AnalyticsService implements IAnalyticsService {
   final FirebaseAnalytics _analytics;
 
   AnalyticsService({FirebaseAnalytics? analytics})
-      : _analytics = analytics ?? FirebaseAnalytics.instance;
+    : _analytics = analytics ?? FirebaseAnalytics.instance;
 
   FirebaseAnalytics get analytics => _analytics;
 

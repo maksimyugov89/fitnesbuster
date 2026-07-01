@@ -10,8 +10,8 @@ class OnboardingWorkflowService {
   OnboardingWorkflowService({
     required IDeepSeekService aiService,
     required IUserRepository userRepo,
-  })  : _aiService = aiService,
-        _userRepo = userRepo;
+  }) : _aiService = aiService,
+       _userRepo = userRepo;
 
   Future<({String workoutPlanJson, String mealPlanJson})> generatePlans({
     required String userId,
@@ -19,10 +19,7 @@ class OnboardingWorkflowService {
     String? city,
   }) async {
     final workoutPlan = await _aiService.generateWorkoutPlan(profile);
-    final mealPlan = await _aiService.generateMealPlan(
-      profile,
-      city: city,
-    );
+    final mealPlan = await _aiService.generateMealPlan(profile, city: city);
 
     try {
       await _userRepo.saveAiPlans(
@@ -31,7 +28,11 @@ class OnboardingWorkflowService {
         mealPlanJson: mealPlan,
       );
     } catch (e, st) {
-      appLogger.w('[OnboardingWorkflowService] AI plans save failed', error: e, stackTrace: st);
+      appLogger.w(
+        '[OnboardingWorkflowService] AI plans save failed',
+        error: e,
+        stackTrace: st,
+      );
     }
 
     return (workoutPlanJson: workoutPlan, mealPlanJson: mealPlan);

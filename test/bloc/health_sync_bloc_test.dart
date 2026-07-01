@@ -28,9 +28,7 @@ void main() {
       'emits Loading then Loaded when initialized successfully',
       build: () {
         when(mockHc.initialize()).thenAnswer((_) async => true);
-        when(mockHc.readAllToday()).thenAnswer(
-          (_) async => SyncedHealthData(),
-        );
+        when(mockHc.readAllToday()).thenAnswer((_) async => SyncedHealthData());
         return HealthSyncBloc(hcService: mockHc);
       },
       act: (b) => b.add(const HealthSyncInitializeRequested()),
@@ -124,36 +122,41 @@ void main() {
     blocTest<HealthSyncBloc, HealthSyncState>(
       'emits Loading then Loaded for date range',
       build: () {
-        when(mockHc.readDateRange(
-          start: anyNamed('start'),
-          end: anyNamed('end'),
-        )).thenAnswer((_) async => SyncedHealthData(steps: 10000));
+        when(
+          mockHc.readDateRange(start: anyNamed('start'), end: anyNamed('end')),
+        ).thenAnswer((_) async => SyncedHealthData(steps: 10000));
         return HealthSyncBloc(hcService: mockHc);
       },
-      act: (b) => b.add(HealthSyncReadDateRange(
-        start: DateTime(2026, 6, 1),
-        end: DateTime(2026, 6, 7),
-      )),
+      act: (b) => b.add(
+        HealthSyncReadDateRange(
+          start: DateTime(2026, 6, 1),
+          end: DateTime(2026, 6, 7),
+        ),
+      ),
       expect: () => [
         const HealthSyncStateLoading(),
-        isA<HealthSyncStateLoaded>()
-            .having((s) => s.data.steps, 'steps', 10000),
+        isA<HealthSyncStateLoaded>().having(
+          (s) => s.data.steps,
+          'steps',
+          10000,
+        ),
       ],
     );
 
     blocTest<HealthSyncBloc, HealthSyncState>(
       'emits error when date range read throws',
       build: () {
-        when(mockHc.readDateRange(
-          start: anyNamed('start'),
-          end: anyNamed('end'),
-        )).thenThrow(Exception('Range error'));
+        when(
+          mockHc.readDateRange(start: anyNamed('start'), end: anyNamed('end')),
+        ).thenThrow(Exception('Range error'));
         return HealthSyncBloc(hcService: mockHc);
       },
-      act: (b) => b.add(HealthSyncReadDateRange(
-        start: DateTime(2026, 6, 1),
-        end: DateTime(2026, 6, 7),
-      )),
+      act: (b) => b.add(
+        HealthSyncReadDateRange(
+          start: DateTime(2026, 6, 1),
+          end: DateTime(2026, 6, 7),
+        ),
+      ),
       expect: () => [
         const HealthSyncStateLoading(),
         isA<HealthSyncStateError>(),

@@ -17,8 +17,7 @@ enum AppLanguage {
   korean('한국어', 'Korean', '🇰🇷', 'ko'),
   hindi('हिन्दी', 'Hindi', '🇮🇳', 'hi'),
   ukrainian('Українська', 'Ukrainian', '🇺🇦', 'uk'),
-  belarusian('Беларуская', 'Belarusian', '🇧🇾', 'be'),
-  ;
+  belarusian('Беларуская', 'Belarusian', '🇧🇾', 'be');
 
   final String nativeName;
   final String englishName;
@@ -32,9 +31,9 @@ enum AppLanguage {
   bool get isRtl => code == 'ar';
 
   static AppLanguage fromCode(String code) => AppLanguage.values.firstWhere(
-        (l) => l.code == code,
-        orElse: () => AppLanguage.russian,
-      );
+    (l) => l.code == code,
+    orElse: () => AppLanguage.russian,
+  );
 }
 
 /// Manages app language preference. Exposes [localeNotifier] for reactive
@@ -46,7 +45,9 @@ class LanguageService {
   static AppLanguage get current => _current;
 
   /// Reactive locale — bind to MaterialApp.locale.
-  static final localeNotifier = ValueNotifier<Locale>(AppLanguage.russian.locale);
+  static final localeNotifier = ValueNotifier<Locale>(
+    AppLanguage.russian.locale,
+  );
 
   /// Load saved language from SharedPreferences.
   static Future<void> load() async {

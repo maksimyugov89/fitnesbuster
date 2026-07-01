@@ -11,15 +11,15 @@ class AiConfig {
   factory AiConfig() => _instance;
 
   AiConfig._internal()
-      : apiKey = '',
-        model = const String.fromEnvironment(
-          'DEEPSEEK_MODEL',
-          defaultValue: 'deepseek-chat',
-        ),
-        baseUrl = const String.fromEnvironment(
-          'DEEPSEEK_BASE_URL',
-          defaultValue: 'https://api.deepseek.com',
-        );
+    : apiKey = '',
+      model = const String.fromEnvironment(
+        'DEEPSEEK_MODEL',
+        defaultValue: 'deepseek-chat',
+      ),
+      baseUrl = const String.fromEnvironment(
+        'DEEPSEEK_BASE_URL',
+        defaultValue: 'https://api.deepseek.com',
+      );
 
   /// For use in tests only — creates a config with an explicit key.
   AiConfig.forTesting({

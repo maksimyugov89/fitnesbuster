@@ -63,7 +63,8 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
           }
         },
         builder: (context, state) {
-          if (state is HealthSyncStateError && state.message.contains('не установлен')) {
+          if (state is HealthSyncStateError &&
+              state.message.contains('не установлен')) {
             return _buildNotInstalled(colors);
           }
 
@@ -97,14 +98,26 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                       decoration: BoxDecoration(
                         color: colors.surfaceCard,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
+                        border: Border.all(
+                          color: colors.textPrimary.withValues(alpha: 0.06),
+                        ),
                       ),
                       child: Column(
                         children: [
-                          Icon(Icons.sync_rounded, size: 48, color: colors.textMuted.withValues(alpha: 0.5)),
+                          Icon(
+                            Icons.sync_rounded,
+                            size: 48,
+                            color: colors.textMuted.withValues(alpha: 0.5),
+                          ),
                           const SizedBox(height: 12),
-                          Text('Нажмите «Синхронизировать» для загрузки данных',
-                            style: TextStyle(fontSize: 13, color: colors.textMuted), textAlign: TextAlign.center),
+                          Text(
+                            'Нажмите «Синхронизировать» для загрузки данных',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: colors.textMuted,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ],
                       ),
                     ),
@@ -113,26 +126,47 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                   const SizedBox(height: 40),
 
                   SizedBox(
-                    width: double.infinity, height: 52,
+                    width: double.infinity,
+                    height: 52,
                     child: ElevatedButton.icon(
                       onPressed: state is HealthSyncStateLoading ? null : _sync,
                       icon: state is HealthSyncStateLoading
-                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
                           : const Icon(Icons.sync_rounded, size: 20),
-                      label: Text(state is HealthSyncStateLoading ? 'Синхронизация...' : 'Синхронизировать с Health Connect',
-                        style: const TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w700, fontSize: 15)),
+                      label: Text(
+                        state is HealthSyncStateLoading
+                            ? 'Синхронизация...'
+                            : 'Синхронизировать с Health Connect',
+                        style: const TextStyle(
+                          fontFamily: 'Syne',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colors.primary,
                         foregroundColor: colors.textOnPrimary,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                     ),
                   ),
 
                   const SizedBox(height: 12),
                   Center(
-                    child: Text('Данные загружаются из Health Connect (Здоровье и спорт)',
-                      style: TextStyle(fontSize: 11, color: colors.textMuted), textAlign: TextAlign.center),
+                    child: Text(
+                      'Данные загружаются из Health Connect (Здоровье и спорт)',
+                      style: TextStyle(fontSize: 11, color: colors.textMuted),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ],
               ],
@@ -158,31 +192,54 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
         padding: const EdgeInsets.all(20),
         children: [
           const SizedBox(height: 40),
-          Icon(Icons.health_and_safety_rounded, size: 72, color: colors.textMuted.withValues(alpha: 0.4)),
+          Icon(
+            Icons.health_and_safety_rounded,
+            size: 72,
+            color: colors.textMuted.withValues(alpha: 0.4),
+          ),
           const SizedBox(height: 20),
-          const Text('Health Connect не установлен', style: AppTextStyles.titleL, textAlign: TextAlign.center),
+          const Text(
+            'Health Connect не установлен',
+            style: AppTextStyles.titleL,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 8),
           Text(
             'Для синхронизации данных о здоровье необходимо установить приложение «Health Connect (Здоровье и спорт)» из Google Play.',
-            style: TextStyle(fontSize: 13, color: colors.textMuted, height: 1.5),
+            style: TextStyle(
+              fontSize: 13,
+              color: colors.textMuted,
+              height: 1.5,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
           SizedBox(
-            width: double.infinity, height: 52,
+            width: double.infinity,
+            height: 52,
             child: ElevatedButton.icon(
               onPressed: () async {
-                await launchUrl(Uri.parse(
-                  'https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata',
-                ));
+                await launchUrl(
+                  Uri.parse(
+                    'https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata',
+                  ),
+                );
               },
               icon: const Icon(Icons.download_rounded, size: 20),
-              label: const Text('Установить Health Connect',
-                style: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.w700, fontSize: 15)),
+              label: const Text(
+                'Установить Health Connect',
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
                 foregroundColor: colors.textOnPrimary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
             ),
           ),
@@ -197,7 +254,8 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
-          begin: Alignment.topLeft, end: Alignment.bottomRight,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
       ),
@@ -205,21 +263,35 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 48, height: 48,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(Icons.sync_rounded, color: Colors.white, size: 28),
+            child: const Icon(
+              Icons.sync_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
           ),
           const SizedBox(height: 16),
-          const Text('Health Connect', style: TextStyle(
-            fontFamily: 'Syne', fontSize: 24, fontWeight: FontWeight.w800, color: Colors.white,
-          )),
+          const Text(
+            'Health Connect',
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             'Синхронизация с фитнес-приложениями через Google Health Connect',
-            style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.85)),
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.white.withValues(alpha: 0.85),
+            ),
           ),
           const SizedBox(height: 12),
           const Wrap(
@@ -240,35 +312,104 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
     );
   }
 
-  Widget _buildDataGrid(dynamic colors, SyncedHealthData data, DateTime lastSync) {
+  Widget _buildDataGrid(
+    dynamic colors,
+    SyncedHealthData data,
+    DateTime lastSync,
+  ) {
     return Column(
       children: [
-        Row(children: [
-          Expanded(child: _DataTile(icon: Icons.directions_walk_rounded, label: 'Шаги', value: '${data.steps}', color: colors.primary)),
-          const SizedBox(width: 12),
-          Expanded(child: _DataTile(icon: Icons.local_fire_department_rounded, label: 'Калории', value: '${data.caloriesBurned.toInt()}', unit: 'ккал', color: colors.accentOrange)),
-        ]),
+        Row(
+          children: [
+            Expanded(
+              child: _DataTile(
+                icon: Icons.directions_walk_rounded,
+                label: 'Шаги',
+                value: '${data.steps}',
+                color: colors.primary,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _DataTile(
+                icon: Icons.local_fire_department_rounded,
+                label: 'Калории',
+                value: '${data.caloriesBurned.toInt()}',
+                unit: 'ккал',
+                color: colors.accentOrange,
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 12),
-        Row(children: [
-          Expanded(child: _DataTile(icon: Icons.favorite_rounded, label: 'Пульс', value: data.heartRateAvg?.toString() ?? '—', unit: 'уд/мин', color: colors.error)),
-          const SizedBox(width: 12),
-          Expanded(child: _DataTile(icon: Icons.monitor_weight_rounded, label: 'Вес', value: data.weight?.toStringAsFixed(1) ?? '—', unit: 'кг', color: colors.accentPurple)),
-        ]),
+        Row(
+          children: [
+            Expanded(
+              child: _DataTile(
+                icon: Icons.favorite_rounded,
+                label: 'Пульс',
+                value: data.heartRateAvg?.toString() ?? '—',
+                unit: 'уд/мин',
+                color: colors.error,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _DataTile(
+                icon: Icons.monitor_weight_rounded,
+                label: 'Вес',
+                value: data.weight?.toStringAsFixed(1) ?? '—',
+                unit: 'кг',
+                color: colors.accentPurple,
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 12),
-        Row(children: [
-          Expanded(child: _DataTile(icon: Icons.bedtime_rounded, label: 'Сон', value: _sleepText(data.sleepMinutes), color: colors.info)),
-          const SizedBox(width: 12),
-          Expanded(child: _DataTile(icon: Icons.water_drop_rounded, label: 'Вода', value: data.waterIntakeMl?.toStringAsFixed(0) ?? '—', unit: 'мл', color: colors.primaryLight)),
-        ]),
+        Row(
+          children: [
+            Expanded(
+              child: _DataTile(
+                icon: Icons.bedtime_rounded,
+                label: 'Сон',
+                value: _sleepText(data.sleepMinutes),
+                color: colors.info,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _DataTile(
+                icon: Icons.water_drop_rounded,
+                label: 'Вода',
+                value: data.waterIntakeMl?.toStringAsFixed(0) ?? '—',
+                unit: 'мл',
+                color: colors.primaryLight,
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 12),
-        Row(children: [
-          Expanded(child: _DataTile(icon: Icons.map_rounded, label: 'Дистанция', value: (data.distanceKm ?? 0).toStringAsFixed(1), unit: 'км', color: colors.success)),
-          const SizedBox(width: 12),
-          const Expanded(child: SizedBox()),
-        ]),
+        Row(
+          children: [
+            Expanded(
+              child: _DataTile(
+                icon: Icons.map_rounded,
+                label: 'Дистанция',
+                value: (data.distanceKm ?? 0).toStringAsFixed(1),
+                unit: 'км',
+                color: colors.success,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(child: SizedBox()),
+          ],
+        ),
         const SizedBox(height: 16),
-        Text('Последняя синхронизация: ${_formatTime(lastSync)}',
-          style: TextStyle(fontSize: 11, color: colors.textMuted), textAlign: TextAlign.center),
+        Text(
+          'Последняя синхронизация: ${_formatTime(lastSync)}',
+          style: TextStyle(fontSize: 11, color: colors.textMuted),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
@@ -303,7 +444,14 @@ class _ProviderBadge extends StatelessWidget {
         color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(label, style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.w600)),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          color: Colors.white.withValues(alpha: 0.9),
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }
@@ -314,7 +462,13 @@ class _DataTile extends StatelessWidget {
   final String value;
   final String? unit;
   final Color color;
-  const _DataTile({required this.icon, required this.label, required this.value, this.unit, required this.color});
+  const _DataTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.unit,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -326,21 +480,42 @@ class _DataTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: colors.textPrimary.withValues(alpha: 0.06)),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Container(
-            width: 36, height: 36,
-            decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
-            child: Icon(icon, color: color, size: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              const Spacer(),
+              if (unit != null)
+                Text(
+                  unit!,
+                  style: TextStyle(fontSize: 10, color: colors.textMuted),
+                ),
+            ],
           ),
-          const Spacer(),
-          if (unit != null) Text(unit!, style: TextStyle(fontSize: 10, color: colors.textMuted)),
-        ]),
-        const SizedBox(height: 12),
-        Text(value, style: TextStyle(fontFamily: 'Syne', fontSize: 22, fontWeight: FontWeight.w800, color: colors.textPrimary)),
-        const SizedBox(height: 2),
-        Text(label, style: TextStyle(fontSize: 11, color: colors.textMuted)),
-      ]),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: colors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(label, style: TextStyle(fontSize: 11, color: colors.textMuted)),
+        ],
+      ),
     );
   }
 }

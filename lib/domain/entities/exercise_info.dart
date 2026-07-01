@@ -12,5 +12,6 @@ class ExerciseInfo with _$ExerciseInfo {
     String? gifUrl,
   }) = _ExerciseInfo;
 
-  factory ExerciseInfo.fromJson(Map<String, dynamic> json) => _$ExerciseInfoFromJson(json);
+  factory ExerciseInfo.fromJson(Map<String, dynamic> json) =>
+      _$ExerciseInfoFromJson(json);
 }

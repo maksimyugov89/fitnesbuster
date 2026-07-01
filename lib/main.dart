@@ -27,12 +27,18 @@ final _paletteNotifier = ValueNotifier<ThemePalette>(ThemePalette.neon);
 
 ThemePalette _paletteFor(AppThemeMode mode) {
   switch (mode) {
-    case AppThemeMode.neonDark: return ThemePalette.neon;
-    case AppThemeMode.oceanBlue: return ThemePalette.ocean;
-    case AppThemeMode.sunsetWarm: return ThemePalette.sunset;
-    case AppThemeMode.forestGreen: return ThemePalette.forest;
-    case AppThemeMode.midnightPurple: return ThemePalette.purple;
-    case AppThemeMode.cyberPunk: return ThemePalette.cyber;
+    case AppThemeMode.neonDark:
+      return ThemePalette.neon;
+    case AppThemeMode.oceanBlue:
+      return ThemePalette.ocean;
+    case AppThemeMode.sunsetWarm:
+      return ThemePalette.sunset;
+    case AppThemeMode.forestGreen:
+      return ThemePalette.forest;
+    case AppThemeMode.midnightPurple:
+      return ThemePalette.purple;
+    case AppThemeMode.cyberPunk:
+      return ThemePalette.cyber;
   }
 }
 
@@ -51,9 +57,7 @@ void main() async {
   String? initStage;
 
   try {
-    await AppInitializer().initialize(
-      onProgress: (stage) => initStage = stage,
-    );
+    await AppInitializer().initialize(onProgress: (stage) => initStage = stage);
   } on AppInitException catch (e) {
     initError = e.message;
     initStage = e.stage;
@@ -77,12 +81,14 @@ void main() async {
   });
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: Color(0xFF070809),
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Color(0xFF070809),
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
   runApp(const FitnesBusterApp());
 }
 
@@ -93,7 +99,9 @@ class FitnesBusterApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()..add(const AuthCheckRequested())),
+        BlocProvider<AuthBloc>(
+          create: (_) => sl<AuthBloc>()..add(const AuthCheckRequested()),
+        ),
         BlocProvider<UserBloc>(create: (_) => sl<UserBloc>()),
         BlocProvider<WorkoutBloc>(create: (_) => sl<WorkoutBloc>()),
         BlocProvider<NutritionBloc>(create: (_) => sl<NutritionBloc>()),
@@ -125,11 +133,15 @@ class FitnesBusterApp extends StatelessWidget {
                   routerConfig: AppRouter.router,
                   builder: (context, child) {
                     final isRtl = locale.languageCode == 'ar';
-                    final dir = isRtl ? ui.TextDirection.rtl : ui.TextDirection.ltr;
+                    final dir = isRtl
+                        ? ui.TextDirection.rtl
+                        : ui.TextDirection.ltr;
                     return Directionality(
                       textDirection: dir,
                       child: MediaQuery(
-                        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+                        data: MediaQuery.of(
+                          context,
+                        ).copyWith(textScaler: TextScaler.noScaling),
                         child: AnimatedThemeBackground(
                           palette: palette,
                           child: child!,
@@ -164,7 +176,13 @@ class FitnesBusterApp extends StatelessWidget {
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        titleTextStyle: const TextStyle(fontFamily: 'Syne', fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF), height: 1.25),
+        titleTextStyle: const TextStyle(
+          fontFamily: 'Syne',
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFFFFFFFF),
+          height: 1.25,
+        ),
         iconTheme: IconThemeData(color: p.textPrimary),
       ),
       cardTheme: CardThemeData(
@@ -197,11 +215,19 @@ class _InitErrorApp extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline_rounded, color: Colors.orangeAccent, size: 64),
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.orangeAccent,
+                  size: 64,
+                ),
                 const SizedBox(height: 24),
                 Text(
                   AppLocalizations.tl('appInitError'),
-                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 if (stage != null) ...[
@@ -247,11 +273,19 @@ class _FirebaseErrorApp extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.cloud_off_rounded, color: Colors.redAccent, size: 64),
+                const Icon(
+                  Icons.cloud_off_rounded,
+                  color: Colors.redAccent,
+                  size: 64,
+                ),
                 const SizedBox(height: 24),
                 Text(
                   AppLocalizations.tl('appFirebaseError'),
-                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),

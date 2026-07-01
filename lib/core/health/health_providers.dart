@@ -21,19 +21,29 @@ enum HealthProvider {
   final String displayName;
   final String id;
   final String emoji;
-  bool get isAvailable => true; // All providers are available via Health Connect
+  bool get isAvailable =>
+      true; // All providers are available via Health Connect
 
   const HealthProvider(this.displayName, this.id, this.emoji);
 
   /// Providers that natively write to Health Connect on Android.
   static List<HealthProvider> get androidHealthConnect => [
-    samsungHealth, googleFit, healthConnect,
+    samsungHealth,
+    googleFit,
+    healthConnect,
   ];
 
   /// Providers that require a bridge app (like Health Sync).
   static List<HealthProvider> get requiresBridge => [
-    garminConnect, fitbit, huaweiHealth, polarFlow,
-    suunto, coros, whoop, oura, withings,
+    garminConnect,
+    fitbit,
+    huaweiHealth,
+    polarFlow,
+    suunto,
+    coros,
+    whoop,
+    oura,
+    withings,
   ];
 }
 

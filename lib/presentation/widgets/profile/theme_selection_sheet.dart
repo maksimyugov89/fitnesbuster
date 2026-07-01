@@ -23,12 +23,18 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
 
   Color _previewColor(AppThemeMode mode) {
     switch (mode) {
-      case AppThemeMode.neonDark: return const Color(0xFFD4F53C);
-      case AppThemeMode.oceanBlue: return const Color(0xFF00B4D8);
-      case AppThemeMode.sunsetWarm: return const Color(0xFFFF6B35);
-      case AppThemeMode.forestGreen: return const Color(0xFF2ECC71);
-      case AppThemeMode.midnightPurple: return const Color(0xFF9B59B6);
-      case AppThemeMode.cyberPunk: return const Color(0xFF00F0FF);
+      case AppThemeMode.neonDark:
+        return const Color(0xFFD4F53C);
+      case AppThemeMode.oceanBlue:
+        return const Color(0xFF00B4D8);
+      case AppThemeMode.sunsetWarm:
+        return const Color(0xFFFF6B35);
+      case AppThemeMode.forestGreen:
+        return const Color(0xFF2ECC71);
+      case AppThemeMode.midnightPurple:
+        return const Color(0xFF9B59B6);
+      case AppThemeMode.cyberPunk:
+        return const Color(0xFF00F0FF);
     }
   }
 
@@ -58,14 +64,17 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: EdgeInsets.only(
-        top: 12, left: 20, right: 20,
+        top: 12,
+        left: 20,
+        right: 20,
         bottom: MediaQuery.of(context).viewInsets.bottom + 24,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 40, height: 4,
+            width: 40,
+            height: 4,
             decoration: BoxDecoration(
               color: colors.surfaceLight,
               borderRadius: BorderRadius.circular(2),
@@ -94,104 +103,122 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
                     label: '${mode.displayName} — ${mode.description}',
                     button: true,
                     child: GestureDetector(
-                    onTap: () async {
-                      HapticFeedback.mediumImpact();
-                      setState(() => _selected = mode);
-                      await ThemeService.setTheme(mode);
-                      if (context.mounted) {
-                        Navigator.of(context).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Тема "${mode.displayName}" применена',
-                              style: const TextStyle(fontWeight: FontWeight.w600)),
-                            backgroundColor: _previewColor(mode),
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: gradientColors,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected ? _previewColor(mode) : Colors.white.withValues(alpha: 0.1),
-                          width: isSelected ? 2 : 1,
-                        ),
-                        boxShadow: isSelected ? [
-                          BoxShadow(
-                            color: _previewColor(mode).withValues(alpha: 0.3),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
-                          ),
-                        ] : [],
-                      ),
-                      child: Row(
-                        children: [
-                          Text(mode.emoji, style: const TextStyle(fontSize: 28)),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  mode.displayName,
-                                  style: const TextStyle(
-                                    fontFamily: 'Syne',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                  ),
+                      onTap: () async {
+                        HapticFeedback.mediumImpact();
+                        setState(() => _selected = mode);
+                        await ThemeService.setTheme(mode);
+                        if (context.mounted) {
+                          Navigator.of(context).pop();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Тема "${mode.displayName}" применена',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  mode.description,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.white.withValues(alpha: 0.75),
-                                  ),
-                                ),
-                              ],
+                              ),
+                              backgroundColor: _previewColor(mode),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              duration: const Duration(seconds: 2),
                             ),
+                          );
+                        }
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: gradientColors,
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                          if (isSelected)
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.check_rounded,
-                                color: _previewColor(mode),
-                                size: 18,
-                              ),
-                            )
-                          else
-                            Container(
-                              width: 24, height: 24,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.4),
-                                  width: 2,
-                                ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: isSelected
+                                ? _previewColor(mode)
+                                : Colors.white.withValues(alpha: 0.1),
+                            width: isSelected ? 2 : 1,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: _previewColor(
+                                      mode,
+                                    ).withValues(alpha: 0.3),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ]
+                              : [],
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              mode.emoji,
+                              style: const TextStyle(fontSize: 28),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    mode.displayName,
+                                    style: const TextStyle(
+                                      fontFamily: 'Syne',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    mode.description,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.75,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                        ],
+                            if (isSelected)
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.check_rounded,
+                                  color: _previewColor(mode),
+                                  size: 18,
+                                ),
+                              )
+                            else
+                              Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.4),
+                                    width: 2,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
+                    ),
                   ),
-                ),
-              ),
-            );
+                );
               },
             ),
           ),
