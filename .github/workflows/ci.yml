@@ -2,21 +2,27 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
+
+env:
+  FLUTTER_VERSION: '3.38.5'
 
 jobs:
   flutter:
-    name: Flutter — analyze, format, test
+    name: Flutter — analyze, format, test, coverage
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.38.5'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
 
@@ -39,11 +45,43 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/ test/
 
-      - name: Test
-        run: flutter test --reporter=expanded
+      - name: Test (337 тестов, включая E2E из test/integration)
+        run: flutter test --coverage --reporter=expanded
 
-      - name: Build check (debug)
-        run: flutter build apk --debug --target-platform=android-arm64
+      - name: Strip generated code from coverage
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y lcov
+          lcov --remove coverage/lcov.info \
+            '**/*.g.dart' '**/*.freezed.dart' '**/*.mocks.dart' \
+            -o coverage/lcov.info --ignore-errors unused
+          echo '## Test coverage summary' >> "$GITHUB_STEP_SUMMARY"
+          lcov --summary coverage/lcov.info 2>&1 | tail -n +2 >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Report coverage in PR comment
+        if: github.event_name == 'pull_request'
+        uses: zgosalvez/github-actions-report-lcov@v4
+        with:
+          coverage-files: coverage/lcov.info
+          artifact-name: coverage-html-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-comment: true
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/lcov.info
+          retention-days: 14
+
+      - name: Notify Telegram on failure
+        if: failure() && github.event_name == 'push'
+        uses: ./.github/actions/telegram-notify
+        with:
+          bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          status: failure
+          title: 'CI упал на master'
+          message: 'Job: Flutter — analyze, format, test, coverage'
 
   functions:
     name: Cloud Functions — build
@@ -63,3 +101,13 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+
+      - name: Notify Telegram on failure
+        if: failure() && github.event_name == 'push'
+        uses: ./.github/actions/telegram-notify
+        with:
+          bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          status: failure
+          title: 'CI упал на master'
+          message: 'Job: Cloud Functions — build'

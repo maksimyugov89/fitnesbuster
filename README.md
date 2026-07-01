@@ -8,6 +8,9 @@
 
 # FitnesBuster
 
+[![CI](https://github.com/maksimyugov89/fitnesbuster/actions/workflows/ci.yml/badge.svg)](https://github.com/maksimyugov89/fitnesbuster/actions/workflows/ci.yml)
+[![Security](https://github.com/maksimyugov89/fitnesbuster/actions/workflows/security.yml/badge.svg)](https://github.com/maksimyugov89/fitnesbuster/actions/workflows/security.yml)
+
 **Персональный AI-фитнес-тренер в кармане.**
 
 FitnesBuster — Flutter-приложение (Android / iOS), которое генерирует персонализированные программы тренировок и питания на базе целей пользователя, уровня подготовки, доступного оборудования и медицинских ограничений. Используется **DeepSeek AI** для создания и корректировки планов, **Google Health Connect / Apple HealthKit** для синхронизации данных здоровья, **Firebase** (Firestore, Auth, Cloud Functions, FCM, Hosting) для бэкенда, **Hive** для офлайн-кэша, **OpenFoodFacts** для сканирования штрих-кодов. Интерактивная **3D анатомическая модель** на базе Z-Anatomy визуализирует задействованные мышцы с X-ray эффектом. База из **1 346 упражнений** с GIF-демонстрациями (100% покрытие) раздаётся через **Firebase Hosting CDN** с immutable-кэшированием.
@@ -711,6 +714,8 @@ flutter test test/integration/
 # Golden тесты (требуют display-сервер)
 flutter test test/golden/
 ```
+
+Все 337 тестов гоняются автоматически в CI на каждый push/PR, с отчётом о покрытии — см. [docs/CI_CD.md](docs/CI_CD.md).
 
 ---
 

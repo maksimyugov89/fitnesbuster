@@ -1,0 +1,71 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.38.5'
+
+jobs:
+  build-android:
+    name: Build APK & AAB (debug-signed)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+            **/.dart_tool
+            **/.packages
+            pubspec.lock
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - run: flutter pub get
+
+      # Секретов подписи здесь нет — android/app/build.gradle.kts откатывается
+      # на debug-подпись. Эти сборки предназначены только для внутреннего
+      # тестирования, НЕ для публикации в Google Play.
+      - name: Build APK (arm64)
+        run: flutter build apk --release --target-platform=android-arm64
+
+      - name: Build AAB
+        run: flutter build appbundle --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fitnesbuster-debug-signed-apk-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/*.apk
+          retention-days: 14
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fitnesbuster-debug-signed-aab-${{ github.sha }}
+          path: build/app/outputs/bundle/release/*.aab
+          retention-days: 14
+
+      - name: Notify Telegram on failure
+        if: failure() && github.event_name == 'push'
+        uses: ./.github/actions/telegram-notify
+        with:
+          bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          status: failure
+          title: 'Build упал на master'
+          message: 'Job: Build APK & AAB (debug-signed)'

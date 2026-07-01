@@ -1,0 +1,11 @@
+# Скопируйте этот файл в android/key.properties и заполните реальными значениями
+# для локальной сборки release APK/AAB с боевой подписью.
+#
+# android/key.properties НЕ коммитится (см. .gitignore) — секреты остаются
+# только на вашей машине и в GitHub Secrets (см. docs/CI_CD.md).
+#
+# storeFile — путь к .jks относительно android/app/
+storeFile=upload-keystore.jks
+storePassword=CHANGE_ME
+keyAlias=upload
+keyPassword=CHANGE_ME
