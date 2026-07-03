@@ -6,7 +6,6 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
-import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/bloc/user/user_bloc.dart';
 import 'package:fitnesbuster/bloc/ai/ai_bloc.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
@@ -23,7 +22,6 @@ import 'package:fitnesbuster/presentation/widgets/dashboard/activity_rings_card.
 import 'package:fitnesbuster/presentation/widgets/dashboard/quick_stats_card.dart';
 import 'package:fitnesbuster/presentation/widgets/dashboard/recovery_card.dart';
 import 'package:fitnesbuster/presentation/widgets/dashboard/todays_workout_card.dart';
-import 'package:fitnesbuster/presentation/widgets/dashboard/nutrition_summary_card.dart';
 import 'package:fitnesbuster/presentation/widgets/dashboard/ai_chat_card.dart';
 import 'package:fitnesbuster/presentation/widgets/dashboard/social_card.dart';
 import 'package:fitnesbuster/presentation/widgets/dashboard/daily_tasks_card.dart';
@@ -38,7 +36,6 @@ class _DashboardScreenState extends State<DashboardScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   late AnimationController _headerCtrl;
   late AnimationController _ringsCtrl;
-  late AnimationController _cardsCtrl;
   late Animation<double> _ringsAnim;
 
   int _steps = 0;
@@ -50,17 +47,6 @@ class _DashboardScreenState extends State<DashboardScreen>
   double _weight = 0;
   int _heartRate = 0;
   int _streak = 0;
-  String? _workoutPlanJson;
-  String? _mealPlanJson;
-  Timer? _plansTimer;
-  bool _testWeekCompleted = false;
-  bool _testWeekCheckDone = false;
-
-  int _eatenCal = 0;
-  int _targetNutCal = 0;
-
-  List<bool> _weekWorkouts = List.filled(7, false);
-  int _workoutKcalToday = 0;
 
   RecoveryScore? _recoveryScore;
   UserLevel? _userLevel;
@@ -76,7 +62,6 @@ class _DashboardScreenState extends State<DashboardScreen>
   bool get _hasSyncedData =>
       _steps > 0 ||
       _caloriesBurned > 0 ||
-      _workoutKcalToday > 0 ||
       _waterMl > 0;
 
   @override
@@ -91,10 +76,6 @@ class _DashboardScreenState extends State<DashboardScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1400),
     );
-    _cardsCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
     _ringsAnim = CurvedAnimation(
       parent: _ringsCtrl,
       curve: Curves.easeOutCubic,
@@ -102,13 +83,10 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     Future.delayed(const Duration(milliseconds: 300), () {
       _ringsCtrl.forward();
-      _cardsCtrl.forward();
     });
 
     _syncHealthData();
     _calculateStreak();
-    _loadPlansFromRepo();
-    _loadNutritionData();
     _loadWeeklyData();
     _loadAvatarAndName();
     _loadGamificationData();
@@ -121,7 +99,6 @@ class _DashboardScreenState extends State<DashboardScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _syncHealthData();
-      _loadNutritionData();
       _loadWeeklyData();
       _loadAvatarAndName();
       _loadGamificationData();
@@ -130,12 +107,10 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   @override
   void dispose() {
-    _plansTimer?.cancel();
     _requestsSub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _headerCtrl.dispose();
     _ringsCtrl.dispose();
-    _cardsCtrl.dispose();
     super.dispose();
   }
 
@@ -163,100 +138,27 @@ class _DashboardScreenState extends State<DashboardScreen>
     }
   }
 
-  Future<void> _loadNutritionData() async {
-    try {
-      final settings = sl<ISettingsRepository>();
-      final k = todayKey();
-      final eaten = await settings.getEatenCal(k);
-      final target = await settings.getTargetCal(k);
-      if (mounted) {
-        setState(() {
-          _eatenCal = eaten;
-          _targetNutCal = target;
-        });
-      }
-    } catch (e, st) {
-      appLogger.w('Dashboard: load nutrition prefs', error: e, stackTrace: st);
-    }
-  }
-
   Future<void> _loadWeeklyData() async {
     try {
       final settings = sl<ISettingsRepository>();
       final now = DateTime.now();
       final todayIndex = now.weekday - 1;
-      final week = List<bool>.filled(7, false);
-      int kcalToday = 0;
       int trackerWater = 0;
       for (int i = 0; i < 7; i++) {
         final day = now.subtract(Duration(days: todayIndex - i));
         final k = dateKey(day);
-        week[i] = await settings.getWorkoutDone(k);
         if (i == todayIndex) {
-          kcalToday = await settings.getWorkoutKcal(k);
           trackerWater = await settings.getWaterMl(k);
         }
       }
       if (mounted) {
         setState(() {
-          _weekWorkouts = week;
-          _workoutKcalToday = kcalToday;
           if (trackerWater > _waterMl) _waterMl = trackerWater.toDouble();
-          if (kcalToday > 0 && _caloriesBurned < kcalToday) {
-            _caloriesBurned = (_caloriesBurned + kcalToday).toDouble();
-          }
         });
       }
     } catch (e, st) {
       appLogger.w('Dashboard: load weekly data', error: e, stackTrace: st);
     }
-  }
-
-  void _loadPlansFromRepo() {
-    final authState = sl<AuthBloc>().state;
-    if (authState is! AuthStateAuthenticated) return;
-    final userId = authState.userId;
-    final repo = sl<IUserRepository>();
-    repo
-        .isTestWeekCompleted(userId)
-        .then((completed) {
-          if (mounted) {
-            setState(() {
-              _testWeekCompleted = completed;
-              _testWeekCheckDone = true;
-            });
-          }
-        })
-        .catchError((_) {
-          if (mounted) setState(() => _testWeekCheckDone = true);
-        });
-    int attempts = 0;
-    _plansTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
-      attempts++;
-      try {
-        final plans = await repo.getAiPlans(userId);
-        if (plans['workoutPlan'] != null || plans['mealPlan'] != null) {
-          if (mounted) {
-            setState(() {
-              _workoutPlanJson = plans['workoutPlan'];
-              _mealPlanJson = plans['mealPlan'];
-            });
-          }
-          timer.cancel();
-          _plansTimer = null;
-        }
-      } catch (e, st) {
-        appLogger.w(
-          'Dashboard: load AI plans (retry)',
-          error: e,
-          stackTrace: st,
-        );
-      }
-      if (attempts >= 5) {
-        timer.cancel();
-        _plansTimer = null;
-      }
-    });
   }
 
   Future<void> _syncHealthData() async {
@@ -285,7 +187,7 @@ class _DashboardScreenState extends State<DashboardScreen>
           _recoveryScore = RecoveryScoreService.calculate(
             sleepMinutes: data.sleepMinutes,
             hrv: data.heartRateVariability,
-            restingHr: data.restingHeartRate,
+            restingHr: data.restingHeartRate ?? data.heartRateAvg,
           );
         });
       }
@@ -395,7 +297,6 @@ class _DashboardScreenState extends State<DashboardScreen>
       final target = updated.dailyCalorieTarget.round();
       await sl<ISettingsRepository>().setTargetCal(todayKey(), target);
       if (mounted) {
-        setState(() => _targetNutCal = target);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -519,22 +420,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                     AdaptationBanner(recoveryScore: _recoveryScore!),
                   ],
                 ],
-                const SizedBox(height: 24),
-                NutritionSummaryCard(
-                  eatenCal: _eatenCal,
-                  targetNutCal: _targetNutCal,
-                  caloriesBurned: _caloriesBurned,
-                ),
-                const SizedBox(height: 24),
-                TodaysWorkoutCard(
-                  weekWorkouts: _weekWorkouts,
-                  workoutKcalToday: _workoutKcalToday,
-                  animation: _cardsCtrl,
-                  testWeekCheckDone: _testWeekCheckDone,
-                  testWeekCompleted: _testWeekCompleted,
-                  workoutPlanJson: _workoutPlanJson,
-                  mealPlanJson: _mealPlanJson,
-                ),
                 if (_dailyTasks.isNotEmpty) ...[
                   const SizedBox(height: 24),
                   DailyTasksCard(tasks: _dailyTasks),

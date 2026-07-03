@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:health/health.dart' as hc;
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
@@ -16,13 +18,20 @@ class HealthConnectService implements IHealthConnectService {
   @override
   bool get isAvailable => _available;
 
-  static const _types = [
+  // Health Connect (Android) only exposes RMSSD; HealthKit (iOS) only exposes
+  // SDNN. Requesting both unconditionally makes getHealthDataFromTypes throw
+  // on whichever platform doesn't support one of them, wiping out the whole
+  // sync (including steps/calories) — so pick the one the platform supports.
+  static final _types = [
     hc.HealthDataType.STEPS,
     hc.HealthDataType.ACTIVE_ENERGY_BURNED,
     hc.HealthDataType.TOTAL_CALORIES_BURNED,
     hc.HealthDataType.HEART_RATE,
     hc.HealthDataType.RESTING_HEART_RATE,
-    hc.HealthDataType.HEART_RATE_VARIABILITY_RMSSD,
+    if (Platform.isIOS)
+      hc.HealthDataType.HEART_RATE_VARIABILITY_SDNN
+    else
+      hc.HealthDataType.HEART_RATE_VARIABILITY_RMSSD,
     hc.HealthDataType.RESPIRATORY_RATE,
     hc.HealthDataType.WEIGHT,
     hc.HealthDataType.HEIGHT,
@@ -204,6 +213,7 @@ class HealthConnectService implements IHealthConnectService {
             if (hr > 0 && hr < 250) heartRates.add(hr);
           case hc.HealthDataType.RESTING_HEART_RATE:
             if (v > 0) restingHR = v;
+          case hc.HealthDataType.HEART_RATE_VARIABILITY_SDNN:
           case hc.HealthDataType.HEART_RATE_VARIABILITY_RMSSD:
             if (v > 0) hrv = v;
           case hc.HealthDataType.RESPIRATORY_RATE:

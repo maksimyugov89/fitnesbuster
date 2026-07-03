@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
@@ -98,8 +100,8 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
           border: Border.all(color: p.primary.withValues(alpha: 0.5), width: 2),
         ),
         child: ClipOval(
-          child: Image.asset(
-            avatarCustomPath,
+          child: Image.file(
+            File(avatarCustomPath),
             fit: BoxFit.cover,
             errorBuilder: (_, _, _) => _buildInitialsAvatar(context, size),
           ),

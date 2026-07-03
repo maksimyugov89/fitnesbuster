@@ -61,8 +61,8 @@ class QuickStatsCard extends StatelessWidget {
             icon: Icons.local_fire_department_rounded,
             iconColor: p.accentOrange,
             label: l10n.dashboardStreak,
-            value: streak > 0 ? '$streak' : '—',
-            unit: streak > 0 ? l10n.dashboardDays : '',
+            value: '$streak',
+            unit: l10n.dashboardDays,
             subtitle: streak > 0
                 ? l10n.dashboardKeepGoing
                 : l10n.dashboardNoData,
