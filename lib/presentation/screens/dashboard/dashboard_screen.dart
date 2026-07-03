@@ -59,10 +59,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   int _avatarPresetIndex = -1;
   String _avatarCustomPath = '';
 
-  bool get _hasSyncedData =>
-      _steps > 0 ||
-      _caloriesBurned > 0 ||
-      _waterMl > 0;
+  bool get _hasSyncedData => _steps > 0 || _caloriesBurned > 0 || _waterMl > 0;
 
   @override
   void initState() {
