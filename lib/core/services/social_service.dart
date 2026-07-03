@@ -221,6 +221,34 @@ class SocialService implements ISocialService {
   }
 
   @override
+  Future<void> leaveChallenge(String challengeId) async {
+    try {
+      await _call('leaveChallenge', {'challengeId': challengeId});
+    } catch (e, st) {
+      appLogger.w(
+        'SocialService: leaveChallenge failed',
+        error: e,
+        stackTrace: st,
+      );
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteChallenge(String challengeId) async {
+    try {
+      await _call('deleteChallenge', {'challengeId': challengeId});
+    } catch (e, st) {
+      appLogger.w(
+        'SocialService: deleteChallenge failed',
+        error: e,
+        stackTrace: st,
+      );
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> seedChallenges() async {
     try {
       await _call('seedChallenges', {});

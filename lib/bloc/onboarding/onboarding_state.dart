@@ -12,7 +12,7 @@ class OnboardingCollecting extends OnboardingState {
   final String? location;
   final String? running;
   final String? name;
-  final int? age;
+  final DateTime? dateOfBirth;
   final double? weight;
   final double? height;
   final Gender? gender;
@@ -26,7 +26,7 @@ class OnboardingCollecting extends OnboardingState {
     this.location,
     this.running,
     this.name,
-    this.age,
+    this.dateOfBirth,
     this.weight,
     this.height,
     this.gender,
@@ -38,7 +38,8 @@ class OnboardingCollecting extends OnboardingState {
   UserProfile toUserProfile() => UserProfile(
     weight: weight ?? 75,
     height: height ?? 175,
-    age: age ?? 25,
+    age: dateOfBirth != null ? calculateAge(dateOfBirth!) : 25,
+    dateOfBirth: dateOfBirth,
     gender: gender ?? Gender.male,
     goal: goal ?? FitnessGoal.loseWeight,
     intensity: intensity ?? IntensityLevel.balanced,
@@ -53,7 +54,7 @@ class OnboardingCollecting extends OnboardingState {
       location != null &&
       running != null &&
       name != null &&
-      age != null &&
+      dateOfBirth != null &&
       weight != null &&
       height != null &&
       gender != null;
@@ -64,7 +65,7 @@ class OnboardingCollecting extends OnboardingState {
     String? location,
     String? running,
     String? name,
-    int? age,
+    DateTime? dateOfBirth,
     double? weight,
     double? height,
     Gender? gender,
@@ -77,7 +78,7 @@ class OnboardingCollecting extends OnboardingState {
     location: location ?? this.location,
     running: running ?? this.running,
     name: name ?? this.name,
-    age: age ?? this.age,
+    dateOfBirth: dateOfBirth ?? this.dateOfBirth,
     weight: weight ?? this.weight,
     height: height ?? this.height,
     gender: gender ?? this.gender,
@@ -93,7 +94,7 @@ class OnboardingCollecting extends OnboardingState {
     location,
     running,
     name,
-    age,
+    dateOfBirth,
     weight,
     height,
     gender,

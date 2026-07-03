@@ -4,6 +4,13 @@ abstract interface class IAuthRepository {
   UserEntity? get currentUser;
   Stream<UserEntity?> get userChanges;
 
+  /// Fetches the current user with their full Firestore profile (weight,
+  /// height, etc). Unlike [currentUser] — which returns instantly from the
+  /// cached Firebase Auth user without a profile — this awaits the Firestore
+  /// doc, so callers who need profile data at launch don't have to wait for
+  /// a subsequent [userChanges] emission to correct it.
+  Future<UserEntity?> getCurrentUserWithProfile();
+
   /// Whether the currently signed-in Firebase user has a verified email,
   /// based on the locally cached user (no network call). Google-linked
   /// accounts are verified automatically by Firebase.

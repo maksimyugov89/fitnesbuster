@@ -18,10 +18,10 @@ export {sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFrie
 export {fanoutActivityEvent} from "./feed";
 
 // Challenges — creation, participation, progress tracking, seeding
-export {createChallenge, joinChallenge, updateChallengeProgress, recordWorkout, seedChallenges} from "./challenges";
+export {createChallenge, joinChallenge, leaveChallenge, deleteChallenge, updateChallengeProgress, recordWorkout, seedChallenges} from "./challenges";
 
 // Maintenance — scheduled cleanup jobs
-export {cleanOldFeedEvents} from "./maintenance";
+export {cleanOldFeedEvents, cleanExpiredChallenges} from "./maintenance";
 
 // Proxies — third-party API proxying (DeepSeek AI)
 export {deepseekProxy} from "./proxies";

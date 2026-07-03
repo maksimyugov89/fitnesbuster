@@ -26,6 +26,7 @@ void main() {
     when(repo.userChanges).thenAnswer((_) => const Stream.empty());
     when(repo.currentUser).thenReturn(null);
     when(repo.isEmailVerified).thenReturn(true);
+    when(repo.getCurrentUserWithProfile()).thenAnswer((_) async => null);
     bloc = AuthBloc(authRepository: repo);
   });
 
@@ -41,6 +42,7 @@ void main() {
       build: () {
         when(repo.currentUser).thenReturn(tUser);
         when(repo.userChanges).thenAnswer((_) => const Stream.empty());
+        when(repo.getCurrentUserWithProfile()).thenAnswer((_) async => tUser);
         return AuthBloc(authRepository: repo);
       },
       act: (b) => b.add(const AuthCheckRequested()),

@@ -630,21 +630,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _openBodyParams(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    final uid = authState is AuthStateAuthenticated ? authState.user.id : null;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => BodyParamsSheet(
         weight: _weight,
-        height: _height,
-        age: _age,
-        onSave: (w, h, a) {
-          setState(() {
-            _weight = w;
-            _height = h;
-            _age = a;
-          });
+        fetchLatestMeasurement: () async {
+          if (uid == null) return null;
+          final list = await sl<IUserRepository>().getMeasurements(uid);
+          return list.isNotEmpty ? list.first : null;
+        },
+        onSave: (w, measurement) {
+          setState(() => _weight = w);
           _saveProfileToFirestore();
+          if (uid != null && measurement.hasData) {
+            sl<IUserRepository>().saveMeasurement(
+              userId: uid,
+              measurement: measurement,
+            );
+          }
         },
       ),
     );

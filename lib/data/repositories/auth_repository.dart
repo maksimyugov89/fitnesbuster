@@ -9,6 +9,7 @@ import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
 import 'package:fitnesbuster/core/utils/enum_parser.dart';
+import 'package:fitnesbuster/core/utils/age_calculator.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/localization/language_service.dart';
@@ -42,10 +43,13 @@ class AuthRepository implements IAuthRepository {
   bool get isEmailVerified => _auth.currentUser?.emailVerified ?? false;
 
   @override
-  Stream<UserEntity?> get userChanges => _auth.authStateChanges().asyncMap((
-    fbUser,
-  ) async {
+  Future<UserEntity?> getCurrentUserWithProfile() async {
+    final fbUser = _auth.currentUser;
     if (fbUser == null) return null;
+    return _fetchFullEntity(fbUser);
+  }
+
+  Future<UserEntity> _fetchFullEntity(fb.User fbUser) async {
     try {
       final doc = await _firestore
           .collection(FirestoreCollections.users)
@@ -56,7 +60,14 @@ class AuthRepository implements IAuthRepository {
       appLogger.w('AuthRepository: load user doc', error: e, stackTrace: st);
     }
     return _fbUserToEntity(fbUser);
-  });
+  }
+
+  @override
+  Stream<UserEntity?> get userChanges =>
+      _auth.authStateChanges().asyncMap((fbUser) async {
+        if (fbUser == null) return null;
+        return _fetchFullEntity(fbUser);
+      });
 
   @override
   Future<UserEntity> login({
@@ -285,10 +296,15 @@ class AuthRepository implements IAuthRepository {
     UserProfile? profile;
     if (data != null && data['profile'] != null) {
       final p = data['profile'] as Map<String, dynamic>;
+      final dobMillis = p['dateOfBirth'] as int?;
+      final dateOfBirth = dobMillis != null
+          ? DateTime.fromMillisecondsSinceEpoch(dobMillis)
+          : null;
       profile = UserProfile(
         weight: (p['weight'] as num).toDouble(),
         height: (p['height'] as num).toDouble(),
-        age: p['age'] as int,
+        age: dateOfBirth != null ? calculateAge(dateOfBirth) : p['age'] as int,
+        dateOfBirth: dateOfBirth,
         gender: parseGender(p['gender'] as String?),
         goal: parseFitnessGoal(p['goal'] as String?),
         intensity: parseIntensityLevel(p['intensity'] as String?),

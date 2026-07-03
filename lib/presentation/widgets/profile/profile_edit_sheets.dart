@@ -5,6 +5,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/constants/avatar_presets.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/profile/profile_sheet_widgets.dart';
+import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 
 void showProfileSuccess(BuildContext context, String msg) {
   final colors = AppTheme.of(context);
@@ -243,15 +244,14 @@ class _ProfileEditSheetState extends State<ProfileEditSheet> {
 // ── Body Params Sheet ─────────────────────────────────────────────────────
 
 class BodyParamsSheet extends StatefulWidget {
-  final double weight, height;
-  final int age;
-  final void Function(double, double, int) onSave;
+  final double weight;
+  final Future<BodyMeasurement?> Function() fetchLatestMeasurement;
+  final void Function(double weight, BodyMeasurement measurement) onSave;
 
   const BodyParamsSheet({
     super.key,
     required this.weight,
-    required this.height,
-    required this.age,
+    required this.fetchLatestMeasurement,
     required this.onSave,
   });
 
@@ -260,21 +260,33 @@ class BodyParamsSheet extends StatefulWidget {
 }
 
 class _BodyParamsSheetState extends State<BodyParamsSheet> {
-  late TextEditingController _weightCtrl, _heightCtrl, _ageCtrl;
+  late double _weight;
+  late final TextEditingController _weightCtrl;
+  final _chestCtrl = TextEditingController();
+  final _waistCtrl = TextEditingController();
+  final _hipsCtrl = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _weight = widget.weight;
     _weightCtrl = TextEditingController(text: widget.weight.toStringAsFixed(1));
-    _heightCtrl = TextEditingController(text: widget.height.toStringAsFixed(1));
-    _ageCtrl = TextEditingController(text: widget.age.toString());
+    widget.fetchLatestMeasurement().then((m) {
+      if (!mounted || m == null) return;
+      setState(() {
+        if (m.chestCm != null) _chestCtrl.text = m.chestCm!.toStringAsFixed(1);
+        if (m.waistCm != null) _waistCtrl.text = m.waistCm!.toStringAsFixed(1);
+        if (m.hipsCm != null) _hipsCtrl.text = m.hipsCm!.toStringAsFixed(1);
+      });
+    });
   }
 
   @override
   void dispose() {
     _weightCtrl.dispose();
-    _heightCtrl.dispose();
-    _ageCtrl.dispose();
+    _chestCtrl.dispose();
+    _waistCtrl.dispose();
+    _hipsCtrl.dispose();
     super.dispose();
   }
 
@@ -287,40 +299,57 @@ class _BodyParamsSheetState extends State<BodyParamsSheet> {
         children: [
           NumSlider(
             label: l10n.weightLabel,
-            value: widget.weight,
+            value: _weight,
             min: 30,
             max: 250,
             unit: l10n.kgUnit,
             decimals: 1,
-            onChanged: (v) => _weightCtrl.text = v.toStringAsFixed(1),
+            onChanged: (v) => setState(() {
+              _weight = v;
+              _weightCtrl.text = v.toStringAsFixed(1);
+            }),
+          ),
+          const SizedBox(height: 12),
+          MeasurementField(
+            label: l10n.weightLabel,
+            unit: l10n.kgUnit,
+            controller: _weightCtrl,
+            icon: Icons.monitor_weight_outlined,
+            onChanged: (v) {
+              if (v != null) setState(() => _weight = v.clamp(30, 250));
+            },
           ),
           const SizedBox(height: 20),
-          NumSlider(
-            label: AppLocalizations.tl('heightLabel'),
-            value: widget.height,
-            min: 100,
-            max: 250,
-            unit: AppLocalizations.tl('cmUnit'),
-            decimals: 0,
-            onChanged: (v) => _heightCtrl.text = v.round().toString(),
+          MeasurementField(
+            label: AppLocalizations.tl('chest'),
+            unit: 'см',
+            controller: _chestCtrl,
+            icon: Icons.circle_outlined,
           ),
-          const SizedBox(height: 20),
-          NumSlider(
-            label: AppLocalizations.tl('ageLabel'),
-            value: widget.age.toDouble(),
-            min: 12,
-            max: 120,
-            unit: AppLocalizations.tl('yearsLabel'),
-            decimals: 0,
-            onChanged: (v) => _ageCtrl.text = v.round().toString(),
+          const SizedBox(height: 12),
+          MeasurementField(
+            label: AppLocalizations.tl('waist'),
+            unit: 'см',
+            controller: _waistCtrl,
+            icon: Icons.circle_outlined,
+          ),
+          const SizedBox(height: 12),
+          MeasurementField(
+            label: AppLocalizations.tl('hips'),
+            unit: 'см',
+            controller: _hipsCtrl,
+            icon: Icons.circle_outlined,
           ),
           const SizedBox(height: 24),
           SaveButton(
             onTap: () {
-              final w = double.tryParse(_weightCtrl.text) ?? widget.weight;
-              final h = double.tryParse(_heightCtrl.text) ?? widget.height;
-              final a = int.tryParse(_ageCtrl.text) ?? widget.age;
-              widget.onSave(w, h, a);
+              final measurement = BodyMeasurement(
+                date: DateTime.now(),
+                chestCm: MeasurementField.parse(_chestCtrl.text),
+                waistCm: MeasurementField.parse(_waistCtrl.text),
+                hipsCm: MeasurementField.parse(_hipsCtrl.text),
+              );
+              widget.onSave(_weight, measurement);
               Navigator.of(context).pop();
               showProfileSuccess(context, AppLocalizations.tl('paramsSaved'));
             },

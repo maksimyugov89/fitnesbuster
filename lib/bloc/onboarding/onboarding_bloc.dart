@@ -9,6 +9,7 @@ import 'package:fitnesbuster/core/services/onboarding_workflow_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/core/utils/age_calculator.dart';
 
 part 'onboarding_event.dart';
 part 'onboarding_state.dart';
@@ -58,7 +59,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     emit(
       s.copyWith(
         name: e.name,
-        age: e.age,
+        dateOfBirth: e.dateOfBirth,
         weight: e.weight,
         height: e.height,
         gender: e.gender,

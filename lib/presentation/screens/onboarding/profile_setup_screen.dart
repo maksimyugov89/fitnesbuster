@@ -11,6 +11,7 @@ import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/utils/age_calculator.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -25,7 +26,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   late AnimationController _fadeCtrl;
 
   String _name = '';
-  int _age = 25;
+  DateTime _dateOfBirth = DateTime.now().subtract(
+    const Duration(days: 365 * 25),
+  );
   double _weight = 75.0;
   double _height = 175.0;
   Gender _gender = Gender.male;
@@ -76,7 +79,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
       context.read<OnboardingBloc>().add(
         OnboardingSetProfile(
           name: _name,
-          age: _age,
+          dateOfBirth: _dateOfBirth,
           weight: _weight,
           height: _height,
           gender: _gender,
@@ -136,10 +139,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                           children: [
                             _PageBasicInfo(
                               name: _name,
-                              age: _age,
+                              dateOfBirth: _dateOfBirth,
                               gender: _gender,
                               onNameChanged: (v) => setState(() => _name = v),
-                              onAgeChanged: (v) => setState(() => _age = v),
+                              onDateOfBirthChanged: (v) =>
+                                  setState(() => _dateOfBirth = v),
                               onGenderChanged: (v) =>
                                   setState(() => _gender = v),
                             ),
@@ -285,18 +289,18 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
 // Page 1: Basic Info
 class _PageBasicInfo extends StatelessWidget {
   final String name;
-  final int age;
+  final DateTime dateOfBirth;
   final Gender gender;
   final ValueChanged<String> onNameChanged;
-  final ValueChanged<int> onAgeChanged;
+  final ValueChanged<DateTime> onDateOfBirthChanged;
   final ValueChanged<Gender> onGenderChanged;
 
   const _PageBasicInfo({
     required this.name,
-    required this.age,
+    required this.dateOfBirth,
     required this.gender,
     required this.onNameChanged,
-    required this.onAgeChanged,
+    required this.onDateOfBirthChanged,
     required this.onGenderChanged,
   });
 
@@ -316,7 +320,10 @@ class _PageBasicInfo extends StatelessWidget {
           const SizedBox(height: 20),
           _GenderSelector(selected: gender, onChanged: onGenderChanged),
           const SizedBox(height: 20),
-          _AgeSlider(age: age, onChanged: onAgeChanged),
+          _DateOfBirthField(
+            dateOfBirth: dateOfBirth,
+            onChanged: onDateOfBirthChanged,
+          ),
         ],
       ),
     );
@@ -465,53 +472,84 @@ class _GenderCard extends StatelessWidget {
   }
 }
 
-class _AgeSlider extends StatelessWidget {
-  final int age;
-  final ValueChanged<int> onChanged;
-  const _AgeSlider({required this.age, required this.onChanged});
+class _DateOfBirthField extends StatelessWidget {
+  final DateTime dateOfBirth;
+  final ValueChanged<DateTime> onChanged;
+  const _DateOfBirthField({required this.dateOfBirth, required this.onChanged});
+
+  Future<void> _pick(BuildContext context, ThemePalette colors) async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: dateOfBirth,
+      firstDate: now.subtract(const Duration(days: 365 * 80)),
+      lastDate: now.subtract(const Duration(days: 365 * 14)),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: ColorScheme.dark(
+            primary: colors.primary,
+            surface: colors.surfaceCard,
+            onSurface: colors.textPrimary,
+          ),
+          dialogTheme: DialogThemeData(backgroundColor: colors.surfaceCard),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) onChanged(picked);
+  }
+
+  String _format(DateTime d) =>
+      '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
 
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
+    final age = calculateAge(dateOfBirth);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(context.l10n.onbAgeTitle, style: AppTextStyles.labelL),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                '$age yrs',
-                style: TextStyle(
-                  color: colors.primary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                ),
+        Text(context.l10n.onbAgeTitle, style: AppTextStyles.labelL),
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: () => _pick(context, colors),
+          child: Container(
+            decoration: BoxDecoration(
+              color: colors.surfaceLight,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: colors.textPrimary.withValues(alpha: 0.06),
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: colors.primary,
-            inactiveTrackColor: colors.surfaceLight,
-            thumbColor: colors.primary,
-            overlayColor: colors.primary.withValues(alpha: 0.2),
-            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
-            trackHeight: 6,
-          ),
-          child: Slider(
-            value: age.toDouble(),
-            min: 14,
-            max: 80,
-            onChanged: (v) => onChanged(v.round()),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Row(
+              children: [
+                Icon(Icons.cake_outlined, color: colors.textMuted, size: 20),
+                const SizedBox(width: 14),
+                Text(
+                  _format(dateOfBirth),
+                  style: TextStyle(color: colors.textPrimary, fontSize: 16),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '$age',
+                    style: TextStyle(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],

@@ -57,6 +57,14 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
           as bool);
 
   @override
+  _i4.Future<_i2.UserEntity?> getCurrentUserWithProfile() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentUserWithProfile, []),
+            returnValue: _i4.Future<_i2.UserEntity?>.value(),
+          )
+          as _i4.Future<_i2.UserEntity?>);
+
+  @override
   _i4.Future<_i2.UserEntity> login({
     required String? email,
     required String? password,

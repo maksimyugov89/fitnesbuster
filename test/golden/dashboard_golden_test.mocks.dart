@@ -72,6 +72,14 @@ class MockIAuthRepository extends _i1.Mock implements _i4.IAuthRepository {
           as bool);
 
   @override
+  _i5.Future<_i2.UserEntity?> getCurrentUserWithProfile() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentUserWithProfile, []),
+            returnValue: _i5.Future<_i2.UserEntity?>.value(),
+          )
+          as _i5.Future<_i2.UserEntity?>);
+
+  @override
   _i5.Future<_i2.UserEntity> login({
     required String? email,
     required String? password,
@@ -994,6 +1002,24 @@ class MockISocialService extends _i1.Mock implements _i10.ISocialService {
   _i5.Future<void> joinChallenge(String? challengeId) =>
       (super.noSuchMethod(
             Invocation.method(#joinChallenge, [challengeId]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> leaveChallenge(String? challengeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#leaveChallenge, [challengeId]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> deleteChallenge(String? challengeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteChallenge, [challengeId]),
             returnValue: _i5.Future<void>.value(),
             returnValueForMissingStub: _i5.Future<void>.value(),
           )

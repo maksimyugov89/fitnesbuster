@@ -30,7 +30,7 @@ class OnboardingSetLocation extends OnboardingEvent {
 
 class OnboardingSetProfile extends OnboardingEvent {
   final String name;
-  final int age;
+  final DateTime dateOfBirth;
   final double weight;
   final double height;
   final Gender gender;
@@ -39,7 +39,7 @@ class OnboardingSetProfile extends OnboardingEvent {
   final String city;
   const OnboardingSetProfile({
     required this.name,
-    required this.age,
+    required this.dateOfBirth,
     required this.weight,
     required this.height,
     required this.gender,
@@ -50,7 +50,7 @@ class OnboardingSetProfile extends OnboardingEvent {
   @override
   List<Object?> get props => [
     name,
-    age,
+    dateOfBirth,
     weight,
     height,
     gender,

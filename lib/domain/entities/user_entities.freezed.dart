@@ -294,6 +294,7 @@ mixin _$UserProfile {
   double get weight => throw _privateConstructorUsedError;
   double get height => throw _privateConstructorUsedError;
   int get age => throw _privateConstructorUsedError;
+  DateTime? get dateOfBirth => throw _privateConstructorUsedError;
   Gender get gender => throw _privateConstructorUsedError;
   FitnessGoal get goal => throw _privateConstructorUsedError;
   IntensityLevel get intensity => throw _privateConstructorUsedError;
@@ -326,6 +327,7 @@ abstract class $UserProfileCopyWith<$Res> {
     double weight,
     double height,
     int age,
+    DateTime? dateOfBirth,
     Gender gender,
     FitnessGoal goal,
     IntensityLevel intensity,
@@ -358,6 +360,7 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
     Object? weight = null,
     Object? height = null,
     Object? age = null,
+    Object? dateOfBirth = freezed,
     Object? gender = null,
     Object? goal = null,
     Object? intensity = null,
@@ -386,6 +389,10 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
                 ? _value.age
                 : age // ignore: cast_nullable_to_non_nullable
                       as int,
+            dateOfBirth: freezed == dateOfBirth
+                ? _value.dateOfBirth
+                : dateOfBirth // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
             gender: null == gender
                 ? _value.gender
                 : gender // ignore: cast_nullable_to_non_nullable
@@ -457,6 +464,7 @@ abstract class _$$UserProfileImplCopyWith<$Res>
     double weight,
     double height,
     int age,
+    DateTime? dateOfBirth,
     Gender gender,
     FitnessGoal goal,
     IntensityLevel intensity,
@@ -488,6 +496,7 @@ class __$$UserProfileImplCopyWithImpl<$Res>
     Object? weight = null,
     Object? height = null,
     Object? age = null,
+    Object? dateOfBirth = freezed,
     Object? gender = null,
     Object? goal = null,
     Object? intensity = null,
@@ -516,6 +525,10 @@ class __$$UserProfileImplCopyWithImpl<$Res>
             ? _value.age
             : age // ignore: cast_nullable_to_non_nullable
                   as int,
+        dateOfBirth: freezed == dateOfBirth
+            ? _value.dateOfBirth
+            : dateOfBirth // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
         gender: null == gender
             ? _value.gender
             : gender // ignore: cast_nullable_to_non_nullable
@@ -580,6 +593,7 @@ class _$UserProfileImpl extends _UserProfile {
     required this.weight,
     required this.height,
     required this.age,
+    this.dateOfBirth,
     required this.gender,
     required this.goal,
     required this.intensity,
@@ -607,6 +621,8 @@ class _$UserProfileImpl extends _UserProfile {
   final double height;
   @override
   final int age;
+  @override
+  final DateTime? dateOfBirth;
   @override
   final Gender gender;
   @override
@@ -660,7 +676,7 @@ class _$UserProfileImpl extends _UserProfile {
 
   @override
   String toString() {
-    return 'UserProfile(weight: $weight, height: $height, age: $age, gender: $gender, goal: $goal, intensity: $intensity, medicalRestrictions: $medicalRestrictions, exerciseRestrictions: $exerciseRestrictions, activityLevel: $activityLevel, targetWeight: $targetWeight, targetDate: $targetDate, testWeekCompleted: $testWeekCompleted, testResults: $testResults, workoutLocation: $workoutLocation, runningPreference: $runningPreference, city: $city)';
+    return 'UserProfile(weight: $weight, height: $height, age: $age, dateOfBirth: $dateOfBirth, gender: $gender, goal: $goal, intensity: $intensity, medicalRestrictions: $medicalRestrictions, exerciseRestrictions: $exerciseRestrictions, activityLevel: $activityLevel, targetWeight: $targetWeight, targetDate: $targetDate, testWeekCompleted: $testWeekCompleted, testResults: $testResults, workoutLocation: $workoutLocation, runningPreference: $runningPreference, city: $city)';
   }
 
   @override
@@ -671,6 +687,8 @@ class _$UserProfileImpl extends _UserProfile {
             (identical(other.weight, weight) || other.weight == weight) &&
             (identical(other.height, height) || other.height == height) &&
             (identical(other.age, age) || other.age == age) &&
+            (identical(other.dateOfBirth, dateOfBirth) ||
+                other.dateOfBirth == dateOfBirth) &&
             (identical(other.gender, gender) || other.gender == gender) &&
             (identical(other.goal, goal) || other.goal == goal) &&
             (identical(other.intensity, intensity) ||
@@ -709,6 +727,7 @@ class _$UserProfileImpl extends _UserProfile {
     weight,
     height,
     age,
+    dateOfBirth,
     gender,
     goal,
     intensity,
@@ -741,6 +760,7 @@ abstract class _UserProfile extends UserProfile {
     required final double weight,
     required final double height,
     required final int age,
+    final DateTime? dateOfBirth,
     required final Gender gender,
     required final FitnessGoal goal,
     required final IntensityLevel intensity,
@@ -766,6 +786,8 @@ abstract class _UserProfile extends UserProfile {
   double get height;
   @override
   int get age;
+  @override
+  DateTime? get dateOfBirth;
   @override
   Gender get gender;
   @override

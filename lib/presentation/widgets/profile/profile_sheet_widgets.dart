@@ -149,6 +149,66 @@ class SaveButton extends StatelessWidget {
   }
 }
 
+/// Decimal-keyboard numeric field for body measurements (weight, chest,
+/// waist, hips, ...). Comma-tolerant parsing, optional [onChanged] for
+/// callers that need to react to a live-typed value (e.g. keeping a slider
+/// in sync).
+class MeasurementField extends StatelessWidget {
+  final String label;
+  final String unit;
+  final TextEditingController controller;
+  final IconData icon;
+  final ValueChanged<double?>? onChanged;
+  const MeasurementField({
+    super.key,
+    required this.label,
+    required this.unit,
+    required this.controller,
+    required this.icon,
+    this.onChanged,
+  });
+
+  static double? parse(String s) =>
+      s.trim().isEmpty ? null : double.tryParse(s.trim().replaceAll(',', '.'));
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppTheme.of(context);
+    return TextFormField(
+      controller: controller,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      style: TextStyle(color: colors.textPrimary),
+      onChanged: onChanged == null ? null : (v) => onChanged!(parse(v)),
+      decoration: InputDecoration(
+        labelText: '$label ($unit)',
+        labelStyle: TextStyle(color: colors.textMuted, fontSize: 13),
+        prefixIcon: Icon(icon, color: colors.textMuted, size: 20),
+        suffixText: unit,
+        suffixStyle: TextStyle(color: colors.textMuted),
+        filled: true,
+        fillColor: colors.elevated,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+      ),
+      validator: (v) {
+        if (v != null && v.trim().isNotEmpty) {
+          final d = parse(v);
+          if (d == null || d <= 0) {
+            return AppLocalizations.tl('enterValidValue');
+          }
+        }
+        return null;
+      },
+    );
+  }
+}
+
 class NotifToggle extends StatelessWidget {
   final String label;
   final String subtitle;

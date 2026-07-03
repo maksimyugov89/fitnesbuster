@@ -4,6 +4,7 @@ import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/utils/enum_parser.dart';
+import 'package:fitnesbuster/core/utils/age_calculator.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
@@ -314,6 +315,8 @@ class UserRepository implements IUserRepository {
     'weight': p.weight,
     'height': p.height,
     'age': p.age,
+    if (p.dateOfBirth != null)
+      'dateOfBirth': p.dateOfBirth!.millisecondsSinceEpoch,
     'gender': p.gender == Gender.male ? 'male' : 'female',
     'goal': p.goal.name,
     'intensity': p.intensity.name,
@@ -341,10 +344,15 @@ class UserRepository implements IUserRepository {
     if (data?['profile'] != null) {
       final p = data!['profile'] as Map<String, dynamic>;
       final onboarding = data['onboarding'] as Map<String, dynamic>?;
+      final dobMillis = p['dateOfBirth'] as int?;
+      final dateOfBirth = dobMillis != null
+          ? DateTime.fromMillisecondsSinceEpoch(dobMillis)
+          : null;
       profile = UserProfile(
         weight: (p['weight'] as num).toDouble(),
         height: (p['height'] as num).toDouble(),
-        age: p['age'] as int,
+        age: dateOfBirth != null ? calculateAge(dateOfBirth) : p['age'] as int,
+        dateOfBirth: dateOfBirth,
         gender: parseGender(p['gender'] as String?),
         goal: parseFitnessGoal(p['goal'] as String?),
         intensity: parseIntensityLevel(p['intensity'] as String?),

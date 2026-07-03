@@ -135,9 +135,9 @@ void main() {
           const OnboardingSetLocation(location: 'gym', running: 'treadmill'),
         );
         bloc.add(
-          const OnboardingSetProfile(
+          OnboardingSetProfile(
             name: 'Test',
-            age: 30,
+            dateOfBirth: DateTime(1994, 1, 1),
             weight: 80,
             height: 180,
             gender: Gender.male,
@@ -182,9 +182,9 @@ void main() {
           const OnboardingSetLocation(location: 'gym', running: 'treadmill'),
         );
         bloc.add(
-          const OnboardingSetProfile(
+          OnboardingSetProfile(
             name: 'Test',
-            age: 30,
+            dateOfBirth: DateTime(1994, 1, 1),
             weight: 80,
             height: 180,
             gender: Gender.male,
@@ -234,9 +234,9 @@ void main() {
           const OnboardingSetLocation(location: 'gym', running: 'treadmill'),
         );
         bloc.add(
-          const OnboardingSetProfile(
+          OnboardingSetProfile(
             name: 'Test',
-            age: 30,
+            dateOfBirth: DateTime(1994, 1, 1),
             weight: 80,
             height: 180,
             gender: Gender.male,

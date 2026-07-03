@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,6 +24,7 @@ import 'package:fitnesbuster/presentation/widgets/progress/progress_cards.dart';
 import 'package:fitnesbuster/presentation/widgets/progress/progress_measurement_card.dart';
 import 'package:fitnesbuster/presentation/widgets/progress/progress_period_selector.dart';
 import 'package:fitnesbuster/presentation/widgets/progress/progress_stats_panel.dart';
+import 'package:fitnesbuster/presentation/widgets/segmented_tab_bar.dart';
 import 'package:fitnesbuster/presentation/widgets/progress/progress_workout_log.dart';
 import 'package:fitnesbuster/presentation/widgets/progress/progress_photo_section.dart';
 import 'package:fitnesbuster/presentation/widgets/progress/progress_ai_analysis_section.dart';
@@ -91,6 +93,8 @@ class _ProgressScreenState extends State<ProgressScreen>
   String? _aiAnalysis;
   bool _aiAnalyzing = false;
 
+  StreamSubscription<AuthState>? _authSub;
+
   String? get _userId =>
       context.read<AuthBloc>().state is AuthStateAuthenticated
       ? (context.read<AuthBloc>().state as AuthStateAuthenticated).userId
@@ -104,6 +108,23 @@ class _ProgressScreenState extends State<ProgressScreen>
     _syncHealthData();
     _loadMeasurements();
     _loadPhotos();
+    // AuthBloc emits an initial profile-less user optimistically at launch,
+    // then a corrected one once the Firestore doc fetch resolves — without
+    // this listener the weight card stayed blank until something else
+    // forced a re-read of AuthBloc's state.
+    _authSub = sl<AuthBloc>().stream.listen((state) {
+      if (state is AuthStateAuthenticated &&
+          (_weight == null || _weight == 0)) {
+        final w = state.user.profile?.weight ?? 0;
+        if (w > 0 && mounted) {
+          setState(() {
+            _weight = w;
+            _weightData = [w];
+            _weightLabels = [context.l10n.todayShort];
+          });
+        }
+      }
+    });
   }
 
   Future<void> _loadAllActivityData() async {
@@ -602,6 +623,7 @@ class _ProgressScreenState extends State<ProgressScreen>
       context: context,
       builder: (ctx) => BodyMeasurementsDialog(
         profile: profile,
+        latest: _measurements.isNotEmpty ? _measurements.first : null,
         onSave: (m) async {
           await sl<IUserRepository>().saveMeasurement(
             userId: uid,
@@ -615,13 +637,13 @@ class _ProgressScreenState extends State<ProgressScreen>
 
   @override
   void dispose() {
+    _authSub?.cancel();
     _tabCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppTheme.of(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -630,26 +652,13 @@ class _ProgressScreenState extends State<ProgressScreen>
             const ProgressHeader(),
             const DebriefCard(),
             const SizedBox(height: 12),
-            TabBar(
+            SegmentedTabBar(
               controller: _tabCtrl,
-              indicator: BoxDecoration(
-                color: colors.primary.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              indicatorPadding: const EdgeInsets.all(4),
-              labelColor: colors.primary,
-              unselectedLabelColor: colors.textMuted,
-              labelStyle: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
-                fontFamily: 'Inter',
-              ),
-              tabs: [
-                Tab(text: context.l10n.weightBodyTab),
-                Tab(text: context.l10n.workoutsStatTab),
-                Tab(text: context.l10n.healthTabLabel),
+              labels: [
+                context.l10n.weightBodyTab,
+                context.l10n.workoutsStatTab,
+                context.l10n.healthTabLabel,
               ],
-              padding: const EdgeInsets.symmetric(horizontal: 20),
             ),
             const SizedBox(height: 4),
             Expanded(

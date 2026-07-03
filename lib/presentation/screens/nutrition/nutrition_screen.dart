@@ -17,6 +17,7 @@ import 'package:fitnesbuster/presentation/widgets/nutrition/weekly_plan_view.dar
 import 'package:fitnesbuster/presentation/widgets/nutrition/barcode_scan_card.dart';
 import 'package:fitnesbuster/presentation/widgets/nutrition/meal_progress_bar.dart';
 import 'package:fitnesbuster/presentation/widgets/nutrition/added_food_tile.dart';
+import 'package:fitnesbuster/presentation/widgets/segmented_tab_bar.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
@@ -279,26 +280,9 @@ class _NutritionScreenState extends State<NutritionScreen>
               manualCalories: _manualCaloriesEaten,
               hasAddedFoods: _addedFoods.isNotEmpty,
             ),
-            TabBar(
+            SegmentedTabBar(
               controller: _tabCtrl,
-              indicator: BoxDecoration(
-                color: colors.primary.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              indicatorPadding: const EdgeInsets.all(4),
-              labelColor: colors.primary,
-              unselectedLabelColor: colors.textMuted,
-              labelStyle: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
-                fontFamily: 'Inter',
-              ),
-              tabs: const [
-                Tab(text: 'На сегодня'),
-                Tab(text: 'На неделю'),
-                Tab(text: 'Добавить еду'),
-              ],
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              labels: const ['На сегодня', 'На неделю', 'Добавить еду'],
             ),
             Expanded(
               child: TabBarView(

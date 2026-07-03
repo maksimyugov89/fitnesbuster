@@ -54,6 +54,7 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   int _pendingRequests = 0;
   StreamSubscription<List<FriendRequest>>? _requestsSub;
+  StreamSubscription<AuthState>? _authSub;
 
   String _userName = '';
   int _avatarPresetIndex = -1;
@@ -90,6 +91,16 @@ class _DashboardScreenState extends State<DashboardScreen>
     _requestsSub = sl<ISocialService>().incomingRequestsStream().listen((list) {
       if (mounted) setState(() => _pendingRequests = list.length);
     });
+    // AuthBloc emits an initial profile-less user optimistically at launch,
+    // then a corrected one once the Firestore doc fetch resolves — without
+    // this listener the weight card stayed blank until something else (e.g.
+    // opening Profile) forced a re-read of AuthBloc's state.
+    _authSub = sl<AuthBloc>().stream.listen((state) {
+      if (state is AuthStateAuthenticated && _weight == 0) {
+        final w = state.user.profile?.weight ?? 0;
+        if (w > 0 && mounted) setState(() => _weight = w);
+      }
+    });
   }
 
   @override
@@ -105,6 +116,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   void dispose() {
     _requestsSub?.cancel();
+    _authSub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _headerCtrl.dispose();
     _ringsCtrl.dispose();

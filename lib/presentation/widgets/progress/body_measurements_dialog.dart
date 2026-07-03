@@ -3,11 +3,18 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/presentation/widgets/profile/profile_sheet_widgets.dart';
 
 class BodyMeasurementsDialog extends StatefulWidget {
   final Future<void> Function(BodyMeasurement) onSave;
   final UserProfile? profile;
-  const BodyMeasurementsDialog({super.key, required this.onSave, this.profile});
+  final BodyMeasurement? latest;
+  const BodyMeasurementsDialog({
+    super.key,
+    required this.onSave,
+    this.profile,
+    this.latest,
+  });
 
   @override
   State<BodyMeasurementsDialog> createState() => _BodyMeasurementsDialogState();
@@ -20,6 +27,18 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
   final _hips = TextEditingController();
   final _fat = TextEditingController();
   bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final m = widget.latest;
+    if (m != null) {
+      _chest.text = m.chestCm?.toStringAsFixed(1) ?? '';
+      _waist.text = m.waistCm?.toStringAsFixed(1) ?? '';
+      _hips.text = m.hipsCm?.toStringAsFixed(1) ?? '';
+      _fat.text = m.bodyFatPercent?.toStringAsFixed(1) ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -91,40 +110,36 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              _buildField(
-                AppLocalizations.tl('chest'),
-                'см',
-                _chest,
-                colors,
-                Icons.circle_outlined,
+              MeasurementField(
+                label: AppLocalizations.tl('chest'),
+                unit: 'см',
+                controller: _chest,
+                icon: Icons.circle_outlined,
               ),
               const SizedBox(height: 12),
-              _buildField(
-                AppLocalizations.tl('waist'),
-                'см',
-                _waist,
-                colors,
-                Icons.circle_outlined,
+              MeasurementField(
+                label: AppLocalizations.tl('waist'),
+                unit: 'см',
+                controller: _waist,
+                icon: Icons.circle_outlined,
               ),
               const SizedBox(height: 12),
-              _buildField(
-                AppLocalizations.tl('hips'),
-                'см',
-                _hips,
-                colors,
-                Icons.circle_outlined,
+              MeasurementField(
+                label: AppLocalizations.tl('hips'),
+                unit: 'см',
+                controller: _hips,
+                icon: Icons.circle_outlined,
               ),
               const SizedBox(height: 12),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: _buildField(
-                      AppLocalizations.tl('bodyFat'),
-                      '%',
-                      _fat,
-                      colors,
-                      Icons.percent_rounded,
+                    child: MeasurementField(
+                      label: AppLocalizations.tl('bodyFat'),
+                      unit: '%',
+                      controller: _fat,
+                      icon: Icons.percent_rounded,
                     ),
                   ),
                   if (widget.profile != null) ...[
@@ -220,45 +235,6 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildField(
-    String label,
-    String unit,
-    TextEditingController ctrl,
-    ThemePalette colors,
-    IconData icon,
-  ) {
-    return TextFormField(
-      controller: ctrl,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      style: TextStyle(color: colors.textPrimary),
-      decoration: InputDecoration(
-        labelText: '$label ($unit)',
-        labelStyle: TextStyle(color: colors.textMuted, fontSize: 13),
-        suffixText: unit,
-        suffixStyle: TextStyle(color: colors.textMuted),
-        filled: true,
-        fillColor: colors.elevated,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
-      ),
-      validator: (v) {
-        if (v != null && v.trim().isNotEmpty) {
-          final d = double.tryParse(v.trim().replaceAll(',', '.'));
-          if (d == null || d <= 0) {
-            return AppLocalizations.tl('enterValidValue');
-          }
-        }
-        return null;
-      },
     );
   }
 }

@@ -8,6 +8,7 @@ import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
+import 'package:fitnesbuster/presentation/widgets/segmented_tab_bar.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
 
 class ChallengesScreen extends StatefulWidget {
@@ -58,24 +59,12 @@ class _ChallengesScreenState extends State<ChallengesScreen>
         ),
         title: const Text('Челленджи', style: AppTextStyles.titleL),
         actions: const [],
-        bottom: TabBar(
-          controller: _tabs,
-          indicator: BoxDecoration(
-            color: colors.primary.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(10),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(52),
+          child: SegmentedTabBar(
+            controller: _tabs,
+            labels: const ['Мои', 'Публичные'],
           ),
-          indicatorPadding: const EdgeInsets.all(4),
-          labelColor: colors.primary,
-          unselectedLabelColor: colors.textMuted,
-          labelStyle: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 12,
-          ),
-          tabs: const [
-            Tab(text: 'Мои'),
-            Tab(text: 'Публичные'),
-          ],
-          padding: const EdgeInsets.symmetric(horizontal: 12),
         ),
       ),
       body: TabBarView(
@@ -86,6 +75,8 @@ class _ChallengesScreenState extends State<ChallengesScreen>
   }
 
   Widget _buildMyChallenges(ThemePalette colors) {
+    final authState = context.read<AuthBloc>().state;
+    final myUid = authState is AuthStateAuthenticated ? authState.userId : null;
     return StreamBuilder<List<Challenge>>(
       stream: sl<ISocialService>().myChallengesStream(),
       builder: (context, snap) {
@@ -108,6 +99,8 @@ class _ChallengesScreenState extends State<ChallengesScreen>
             challenge: challenges[i],
             colors: colors,
             showLeaderboard: true,
+            currentUid: myUid,
+            showManageAction: true,
           ),
         );
       },
@@ -260,6 +253,8 @@ class _ChallengeCard extends StatelessWidget {
   final bool showJoinButton;
   final bool showLeaderboard;
   final bool isParticipant;
+  final String? currentUid;
+  final bool showManageAction;
 
   const _ChallengeCard({
     required this.challenge,
@@ -267,7 +262,12 @@ class _ChallengeCard extends StatelessWidget {
     this.showJoinButton = false,
     this.showLeaderboard = false,
     this.isParticipant = false,
+    this.currentUid,
+    this.showManageAction = false,
   });
+
+  bool get _isCreator =>
+      currentUid != null && currentUid == challenge.createdBy;
 
   String get _goalEmoji => challenge.emoji.isNotEmpty ? challenge.emoji : '🎯';
 
@@ -452,6 +452,18 @@ class _ChallengeCard extends StatelessWidget {
                   ),
                 ],
               ),
+            ],
+            if (showManageAction) ...[
+              const SizedBox(height: 10),
+              _isCreator
+                  ? _DeleteChallengeButton(
+                      challengeId: challenge.id,
+                      colors: colors,
+                    )
+                  : _LeaveChallengeButton(
+                      challengeId: challenge.id,
+                      colors: colors,
+                    ),
             ],
           ],
         ),
@@ -646,6 +658,217 @@ class _JoinButtonState extends State<_JoinButton> {
         }
       }
     }
+  }
+}
+
+// ── Delete / leave challenge ─────────────────────────────────────────────────────
+
+class _DeleteChallengeButton extends StatefulWidget {
+  final String challengeId;
+  final ThemePalette colors;
+  const _DeleteChallengeButton({
+    required this.challengeId,
+    required this.colors,
+  });
+
+  @override
+  State<_DeleteChallengeButton> createState() => _DeleteChallengeButtonState();
+}
+
+class _DeleteChallengeButtonState extends State<_DeleteChallengeButton> {
+  bool _loading = false;
+
+  Future<void> _confirmAndDelete() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Удалить челлендж?'),
+        content: const Text(
+          'Челлендж и прогресс всех участников будут удалены безвозвратно.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              'Удалить',
+              style: TextStyle(color: widget.colors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _loading = true);
+    try {
+      await sl<ISocialService>().deleteChallenge(widget.challengeId);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _loading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Ошибка: ${e.toString()}',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _loading ? null : _confirmAndDelete,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: widget.colors.error.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: _loading
+              ? SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: widget.colors.error,
+                  ),
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.delete_outline_rounded,
+                      size: 16,
+                      color: widget.colors.error,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Удалить челлендж',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: widget.colors.error,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LeaveChallengeButton extends StatefulWidget {
+  final String challengeId;
+  final ThemePalette colors;
+  const _LeaveChallengeButton({
+    required this.challengeId,
+    required this.colors,
+  });
+
+  @override
+  State<_LeaveChallengeButton> createState() => _LeaveChallengeButtonState();
+}
+
+class _LeaveChallengeButtonState extends State<_LeaveChallengeButton> {
+  bool _loading = false;
+
+  Future<void> _confirmAndLeave() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Покинуть челлендж?'),
+        content: const Text('Ваш прогресс в этом челлендже будет удалён.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              'Покинуть',
+              style: TextStyle(color: widget.colors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _loading = true);
+    try {
+      await sl<ISocialService>().leaveChallenge(widget.challengeId);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _loading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Ошибка: ${e.toString()}',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _loading ? null : _confirmAndLeave,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: widget.colors.textMuted.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: widget.colors.textMuted.withValues(alpha: 0.15),
+          ),
+        ),
+        child: Center(
+          child: _loading
+              ? SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: widget.colors.textMuted,
+                  ),
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.logout_rounded,
+                      size: 16,
+                      color: widget.colors.textMuted,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Покинуть челлендж',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: widget.colors.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
+    );
   }
 }
 

@@ -33,6 +33,9 @@ _$UserProfileImpl _$$UserProfileImplFromJson(Map<String, dynamic> json) =>
       weight: (json['weight'] as num).toDouble(),
       height: (json['height'] as num).toDouble(),
       age: (json['age'] as num).toInt(),
+      dateOfBirth: json['dateOfBirth'] == null
+          ? null
+          : DateTime.parse(json['dateOfBirth'] as String),
       gender: $enumDecode(_$GenderEnumMap, json['gender']),
       goal: $enumDecode(_$FitnessGoalEnumMap, json['goal']),
       intensity: $enumDecode(_$IntensityLevelEnumMap, json['intensity']),
@@ -69,6 +72,7 @@ Map<String, dynamic> _$$UserProfileImplToJson(_$UserProfileImpl instance) =>
       'weight': instance.weight,
       'height': instance.height,
       'age': instance.age,
+      'dateOfBirth': instance.dateOfBirth?.toIso8601String(),
       'gender': _$GenderEnumMap[instance.gender]!,
       'goal': _$FitnessGoalEnumMap[instance.goal]!,
       'intensity': _$IntensityLevelEnumMap[instance.intensity]!,

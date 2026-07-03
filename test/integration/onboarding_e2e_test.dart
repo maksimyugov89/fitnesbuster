@@ -97,14 +97,14 @@ void main() {
       return b;
     },
     act: (b) => b.add(
-      const OnboardingSetProfile(
+      OnboardingSetProfile(
         name: 'Athlete',
-        age: 28,
+        dateOfBirth: DateTime(1997, 1, 1),
         weight: 75,
         height: 178,
         gender: Gender.male,
         activity: ActivityLevel.moderatelyActive,
-        restrictions: ['lactose'],
+        restrictions: const ['lactose'],
         city: 'Moscow',
       ),
     ),
@@ -112,7 +112,7 @@ void main() {
     expect: () => [
       isA<OnboardingCollecting>()
           .having((s) => s.name, 'name', 'Athlete')
-          .having((s) => s.age, 'age', 28)
+          .having((s) => s.dateOfBirth, 'dateOfBirth', DateTime(1997, 1, 1))
           .having((s) => s.weight, 'weight', 75)
           .having((s) => s.height, 'height', 178),
     ],
@@ -153,9 +153,9 @@ void main() {
       b.add(const OnboardingSetIntensity(IntensityLevel.balanced));
       b.add(const OnboardingSetLocation(location: 'gym', running: 'treadmill'));
       b.add(
-        const OnboardingSetProfile(
+        OnboardingSetProfile(
           name: 'Athlete',
-          age: 28,
+          dateOfBirth: DateTime(1997, 1, 1),
           weight: 75,
           height: 178,
           gender: Gender.male,
@@ -194,9 +194,9 @@ void main() {
       b.add(const OnboardingSetIntensity(IntensityLevel.balanced));
       b.add(const OnboardingSetLocation(location: 'gym', running: 'treadmill'));
       b.add(
-        const OnboardingSetProfile(
+        OnboardingSetProfile(
           name: 'Athlete',
-          age: 28,
+          dateOfBirth: DateTime(1997, 1, 1),
           weight: 75,
           height: 178,
           gender: Gender.male,
@@ -240,9 +240,9 @@ void main() {
       b.add(const OnboardingSetIntensity(IntensityLevel.balanced));
       b.add(const OnboardingSetLocation(location: 'gym', running: 'treadmill'));
       b.add(
-        const OnboardingSetProfile(
+        OnboardingSetProfile(
           name: 'Athlete',
-          age: 28,
+          dateOfBirth: DateTime(1997, 1, 1),
           weight: 75,
           height: 178,
           gender: Gender.male,

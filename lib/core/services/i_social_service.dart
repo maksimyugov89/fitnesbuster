@@ -17,6 +17,8 @@ abstract interface class ISocialService {
   Stream<List<FeedEvent>> feedStream({int limit});
 
   Future<void> joinChallenge(String challengeId);
+  Future<void> leaveChallenge(String challengeId);
+  Future<void> deleteChallenge(String challengeId);
   Future<void> seedChallenges();
   Future<List<String>> recordWorkout({
     required int durationMinutes,

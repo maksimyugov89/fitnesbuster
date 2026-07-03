@@ -131,6 +131,89 @@ export const joinChallenge = onCall(
 );
 
 /**
+ * Removes the authenticated user as a participant from a challenge they've
+ * joined. The creator cannot leave their own challenge — they must use
+ * {@link deleteChallenge} instead, since the challenge has no owner otherwise.
+ */
+export const leaveChallenge = onCall(
+  {region: "europe-west1"},
+  async (request: {auth?: {uid: string}; data: JoinChallengeData}) => {
+    if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
+    const uid = request.auth.uid;
+    const {challengeId} = request.data;
+
+    const allowed = await checkRateLimit(uid, "leaveChallenge", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
+
+    if (typeof challengeId !== "string" || challengeId.trim().length === 0) {
+      throw new HttpsError("invalid-argument", "challengeId must be a non-empty string");
+    }
+
+    const chalRef = db.doc(`challenges/${challengeId}`);
+    const progressRef = db.doc(`challenge_progress/${challengeId}/participants/${uid}`);
+
+    await db.runTransaction(async (tx) => {
+      const chalSnap = await tx.get(chalRef);
+      if (!chalSnap.exists) throw new HttpsError("not-found", "Challenge not found");
+
+      const chal = chalSnap.data()!;
+      if ((chal.createdBy as string) === uid) {
+        throw new HttpsError("failed-precondition", "Creator cannot leave — delete the challenge instead");
+      }
+      if (!(chal.participants as string[]).includes(uid)) {
+        throw new HttpsError("failed-precondition", "Not a participant");
+      }
+
+      tx.update(chalRef, {
+        participants: admin.firestore.FieldValue.arrayRemove(uid),
+      });
+      tx.delete(progressRef);
+    }, {maxAttempts: 15});
+
+    logInfo("User left challenge", {uid, challengeId});
+    return {success: true};
+  }
+);
+
+/**
+ * Deletes a challenge and all of its participants' progress documents.
+ * Only the challenge's creator may delete it.
+ */
+export const deleteChallenge = onCall(
+  {region: "europe-west1"},
+  async (request: {auth?: {uid: string}; data: JoinChallengeData}) => {
+    if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
+    const uid = request.auth.uid;
+    const {challengeId} = request.data;
+
+    const allowed = await checkRateLimit(uid, "deleteChallenge", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
+
+    if (typeof challengeId !== "string" || challengeId.trim().length === 0) {
+      throw new HttpsError("invalid-argument", "challengeId must be a non-empty string");
+    }
+
+    const chalRef = db.doc(`challenges/${challengeId}`);
+    const chalSnap = await chalRef.get();
+    if (!chalSnap.exists) throw new HttpsError("not-found", "Challenge not found");
+
+    const chal = chalSnap.data()!;
+    if ((chal.createdBy as string) !== uid) {
+      throw new HttpsError("permission-denied", "Only the creator can delete this challenge");
+    }
+
+    const progressSnap = await db.collection(`challenge_progress/${challengeId}/participants`).get();
+    const batch = db.batch();
+    for (const doc of progressSnap.docs) batch.delete(doc.ref);
+    batch.delete(chalRef);
+    await batch.commit();
+
+    logInfo("Challenge deleted", {uid, challengeId, participantsRemoved: progressSnap.size});
+    return {success: true};
+  }
+);
+
+/**
  * Updates a participant's progress in a challenge. Progress is monotonic
  * (the higher of the previous or submitted value is stored).
  *

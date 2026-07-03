@@ -70,6 +70,12 @@ export const CREATE_CHALLENGE_RATE_LIMIT = 5;
 /** Rate limit: challenge join / progress / workout-record actions per user per minute */
 export const CHALLENGE_ACTION_RATE_LIMIT = 30;
 
+/** Days after a challenge ends before it's auto-deleted if the creator hasn't removed it */
+export const CHALLENGE_DELETE_GRACE_DAYS = 3;
+
+/** Maximum expired challenges swept per scheduled cleanup run */
+export const CHALLENGE_CLEANUP_LIMIT = 200;
+
 // ─── Feed ──────────────────────────────────────────────────────────────────────
 
 /** Maximum documents per Firestore batch write */

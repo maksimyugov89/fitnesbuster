@@ -81,6 +81,7 @@ class UserProfile with _$UserProfile {
     required double weight,
     required double height,
     required int age,
+    DateTime? dateOfBirth,
     required Gender gender,
     required FitnessGoal goal,
     required IntensityLevel intensity,

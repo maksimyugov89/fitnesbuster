@@ -38,17 +38,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return super.close();
   }
 
-  void _onCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) {
-    final user = _authRepository.currentUser;
-    if (user != null) {
+  Future<void> _onCheckRequested(
+    AuthCheckRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    final fastUser = _authRepository.currentUser;
+    if (fastUser == null) {
+      emit(const AuthStateUnauthenticated());
+      return;
+    }
+    // Emit the cached user immediately so the UI has something to show, then
+    // correct with the full Firestore profile (weight, height, ...) as soon
+    // as it resolves — awaited here rather than left to the separate
+    // userChanges stream, whose timing competes with unrelated startup work
+    // and previously left screens reading a profile-less state indefinitely.
+    emit(
+      AuthStateAuthenticated(
+        user: fastUser,
+        emailVerified: _authRepository.isEmailVerified,
+      ),
+    );
+    final fullUser = await _authRepository.getCurrentUserWithProfile();
+    if (fullUser != null) {
       emit(
         AuthStateAuthenticated(
-          user: user,
+          user: fullUser,
           emailVerified: _authRepository.isEmailVerified,
         ),
       );
-    } else {
-      emit(const AuthStateUnauthenticated());
     }
   }
 
