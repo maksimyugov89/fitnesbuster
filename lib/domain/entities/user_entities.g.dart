@@ -16,6 +16,8 @@ _$UserEntityImpl _$$UserEntityImplFromJson(Map<String, dynamic> json) =>
           ? null
           : UserProfile.fromJson(json['profile'] as Map<String, dynamic>),
       createdAt: DateTime.parse(json['createdAt'] as String),
+      currentStreak: (json['currentStreak'] as num?)?.toInt(),
+      lastWorkoutDate: json['lastWorkoutDate'] as String?,
     );
 
 Map<String, dynamic> _$$UserEntityImplToJson(_$UserEntityImpl instance) =>
@@ -26,6 +28,8 @@ Map<String, dynamic> _$$UserEntityImplToJson(_$UserEntityImpl instance) =>
       'avatarUrl': instance.avatarUrl,
       'profile': instance.profile,
       'createdAt': instance.createdAt.toIso8601String(),
+      'currentStreak': instance.currentStreak,
+      'lastWorkoutDate': instance.lastWorkoutDate,
     };
 
 _$UserProfileImpl _$$UserProfileImplFromJson(Map<String, dynamic> json) =>

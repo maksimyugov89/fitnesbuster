@@ -16,6 +16,8 @@ import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
+import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/presentation/widgets/dashboard/dashboard_app_bar.dart';
 import 'package:fitnesbuster/presentation/widgets/dashboard/activity_rings_card.dart';
@@ -96,9 +98,14 @@ class _DashboardScreenState extends State<DashboardScreen>
     // this listener the weight card stayed blank until something else (e.g.
     // opening Profile) forced a re-read of AuthBloc's state.
     _authSub = sl<AuthBloc>().stream.listen((state) {
-      if (state is AuthStateAuthenticated && _weight == 0) {
+      if (state is! AuthStateAuthenticated) return;
+      if (_weight == 0) {
         final w = state.user.profile?.weight ?? 0;
         if (w > 0 && mounted) setState(() => _weight = w);
+      }
+      final serverStreak = _effectiveServerStreak(state.user);
+      if (serverStreak != null && mounted) {
+        setState(() => _streak = serverStreak);
       }
     });
   }
@@ -229,20 +236,83 @@ class _DashboardScreenState extends State<DashboardScreen>
       final settings = sl<ISettingsRepository>();
       final now = DateTime.now();
       int streak = 0;
+      DateTime? lastWorkoutDay;
       for (int i = 0; i < 30; i++) {
         final d = now.subtract(Duration(days: i));
         final k = dateKey(d);
         final done = await settings.getWorkoutDone(k);
         if (done) {
           streak++;
+          lastWorkoutDay ??= d;
         } else if (i > 0) {
           break;
         }
       }
       if (mounted) setState(() => _streak = streak);
+      await _syncStreakWithServer(
+        localStreak: streak,
+        lastWorkoutDay: lastWorkoutDay,
+      );
     } catch (e, st) {
       appLogger.w('Dashboard: calculate streak', error: e, stackTrace: st);
     }
+  }
+
+  String _utcDateKey(DateTime d) {
+    final u = d.toUtc();
+    final mm = u.month.toString().padLeft(2, '0');
+    final dd = u.day.toString().padLeft(2, '0');
+    return '${u.year}-$mm-$dd';
+  }
+
+  /// The workout streak is server-authoritative (`recordWorkout` Cloud
+  /// Function updates `currentStreak`/`lastWorkoutDate` on `users/{uid}`)
+  /// once an account has been bootstrapped. Returns null if the account
+  /// hasn't been bootstrapped yet (caller should keep the locally-computed
+  /// value), or the effective streak otherwise — 0 if the last recorded
+  /// workout is older than yesterday, since that means the streak broke
+  /// without the user opening the app to record a new one.
+  int? _effectiveServerStreak(UserEntity user) {
+    final lastDate = user.lastWorkoutDate;
+    final streak = user.currentStreak;
+    if (lastDate == null || streak == null) return null;
+    final now = DateTime.now();
+    final today = _utcDateKey(now);
+    final yesterday = _utcDateKey(now.subtract(const Duration(days: 1)));
+    return (lastDate == today || lastDate == yesterday) ? streak : 0;
+  }
+
+  Future<void> _syncStreakWithServer({
+    required int localStreak,
+    DateTime? lastWorkoutDay,
+  }) async {
+    final authState = sl<AuthBloc>().state;
+    if (authState is! AuthStateAuthenticated) return;
+    final user = authState.user;
+
+    if (user.lastWorkoutDate == null) {
+      // Feature never bootstrapped for this account — seed it from the
+      // locally-tracked history once so an existing streak isn't lost.
+      if (localStreak > 0 && lastWorkoutDay != null) {
+        try {
+          await sl<IUserRepository>().bootstrapStreak(
+            userId: user.id,
+            streak: localStreak,
+            lastWorkoutDate: _utcDateKey(lastWorkoutDay),
+          );
+        } catch (e, st) {
+          appLogger.w(
+            'Dashboard: bootstrap streak failed',
+            error: e,
+            stackTrace: st,
+          );
+        }
+      }
+      return;
+    }
+
+    final serverStreak = _effectiveServerStreak(user);
+    if (serverStreak != null && mounted) setState(() => _streak = serverStreak);
   }
 
   Future<void> _loadGamificationData() async {

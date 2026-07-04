@@ -67,6 +67,12 @@ class UserEntity with _$UserEntity {
     String? avatarUrl,
     UserProfile? profile,
     required DateTime createdAt,
+    // Server-authoritative workout streak (Cloud Function `recordWorkout`
+    // increments/resets these on each completed workout) — kept at the
+    // top level, alongside name/email, since it's account-wide account
+    // state rather than a fitness-profile attribute.
+    int? currentStreak,
+    String? lastWorkoutDate,
   }) = _UserEntity;
 
   factory UserEntity.fromJson(Map<String, dynamic> json) =>

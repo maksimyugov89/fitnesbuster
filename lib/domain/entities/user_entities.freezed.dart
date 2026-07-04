@@ -26,7 +26,13 @@ mixin _$UserEntity {
   String get email => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
   UserProfile? get profile => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt =>
+      throw _privateConstructorUsedError; // Server-authoritative workout streak (Cloud Function `recordWorkout`
+  // increments/resets these on each completed workout) — kept at the
+  // top level, alongside name/email, since it's account-wide account
+  // state rather than a fitness-profile attribute.
+  int? get currentStreak => throw _privateConstructorUsedError;
+  String? get lastWorkoutDate => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -48,6 +54,8 @@ abstract class $UserEntityCopyWith<$Res> {
     String? avatarUrl,
     UserProfile? profile,
     DateTime createdAt,
+    int? currentStreak,
+    String? lastWorkoutDate,
   });
 
   $UserProfileCopyWith<$Res>? get profile;
@@ -72,6 +80,8 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
     Object? avatarUrl = freezed,
     Object? profile = freezed,
     Object? createdAt = null,
+    Object? currentStreak = freezed,
+    Object? lastWorkoutDate = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -99,6 +109,14 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            currentStreak: freezed == currentStreak
+                ? _value.currentStreak
+                : currentStreak // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            lastWorkoutDate: freezed == lastWorkoutDate
+                ? _value.lastWorkoutDate
+                : lastWorkoutDate // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -133,6 +151,8 @@ abstract class _$$UserEntityImplCopyWith<$Res>
     String? avatarUrl,
     UserProfile? profile,
     DateTime createdAt,
+    int? currentStreak,
+    String? lastWorkoutDate,
   });
 
   @override
@@ -157,6 +177,8 @@ class __$$UserEntityImplCopyWithImpl<$Res>
     Object? avatarUrl = freezed,
     Object? profile = freezed,
     Object? createdAt = null,
+    Object? currentStreak = freezed,
+    Object? lastWorkoutDate = freezed,
   }) {
     return _then(
       _$UserEntityImpl(
@@ -184,6 +206,14 @@ class __$$UserEntityImplCopyWithImpl<$Res>
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        currentStreak: freezed == currentStreak
+            ? _value.currentStreak
+            : currentStreak // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        lastWorkoutDate: freezed == lastWorkoutDate
+            ? _value.lastWorkoutDate
+            : lastWorkoutDate // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -199,6 +229,8 @@ class _$UserEntityImpl implements _UserEntity {
     this.avatarUrl,
     this.profile,
     required this.createdAt,
+    this.currentStreak,
+    this.lastWorkoutDate,
   });
 
   factory _$UserEntityImpl.fromJson(Map<String, dynamic> json) =>
@@ -216,10 +248,18 @@ class _$UserEntityImpl implements _UserEntity {
   final UserProfile? profile;
   @override
   final DateTime createdAt;
+  // Server-authoritative workout streak (Cloud Function `recordWorkout`
+  // increments/resets these on each completed workout) — kept at the
+  // top level, alongside name/email, since it's account-wide account
+  // state rather than a fitness-profile attribute.
+  @override
+  final int? currentStreak;
+  @override
+  final String? lastWorkoutDate;
 
   @override
   String toString() {
-    return 'UserEntity(id: $id, name: $name, email: $email, avatarUrl: $avatarUrl, profile: $profile, createdAt: $createdAt)';
+    return 'UserEntity(id: $id, name: $name, email: $email, avatarUrl: $avatarUrl, profile: $profile, createdAt: $createdAt, currentStreak: $currentStreak, lastWorkoutDate: $lastWorkoutDate)';
   }
 
   @override
@@ -234,13 +274,26 @@ class _$UserEntityImpl implements _UserEntity {
                 other.avatarUrl == avatarUrl) &&
             (identical(other.profile, profile) || other.profile == profile) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.currentStreak, currentStreak) ||
+                other.currentStreak == currentStreak) &&
+            (identical(other.lastWorkoutDate, lastWorkoutDate) ||
+                other.lastWorkoutDate == lastWorkoutDate));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, email, avatarUrl, profile, createdAt);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    name,
+    email,
+    avatarUrl,
+    profile,
+    createdAt,
+    currentStreak,
+    lastWorkoutDate,
+  );
 
   @JsonKey(ignore: true)
   @override
@@ -262,6 +315,8 @@ abstract class _UserEntity implements UserEntity {
     final String? avatarUrl,
     final UserProfile? profile,
     required final DateTime createdAt,
+    final int? currentStreak,
+    final String? lastWorkoutDate,
   }) = _$UserEntityImpl;
 
   factory _UserEntity.fromJson(Map<String, dynamic> json) =
@@ -279,6 +334,13 @@ abstract class _UserEntity implements UserEntity {
   UserProfile? get profile;
   @override
   DateTime get createdAt;
+  @override // Server-authoritative workout streak (Cloud Function `recordWorkout`
+  // increments/resets these on each completed workout) — kept at the
+  // top level, alongside name/email, since it's account-wide account
+  // state rather than a fitness-profile attribute.
+  int? get currentStreak;
+  @override
+  String? get lastWorkoutDate;
   @override
   @JsonKey(ignore: true)
   _$$UserEntityImplCopyWith<_$UserEntityImpl> get copyWith =>

@@ -324,6 +324,8 @@ class AuthRepository implements IAuthRepository {
           (data?['createdAt'] as Timestamp?)?.toDate() ??
           fbUser.metadata.creationTime ??
           DateTime.now(),
+      currentStreak: (data?['currentStreak'] as num?)?.toInt(),
+      lastWorkoutDate: data?['lastWorkoutDate'] as String?,
     );
   }
 

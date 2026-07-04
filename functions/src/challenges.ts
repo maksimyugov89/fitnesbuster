@@ -288,16 +288,29 @@ export const updateChallengeProgress = onCall(
   }
 );
 
+/** Formats a Date as a UTC calendar-day key ("YYYY-MM-DD") for streak tracking. */
+function utcDateKey(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
 /**
- * Records workout data against all active challenges the user participates in.
+ * Records workout data against all active challenges the user participates in,
+ * and updates the user's server-authoritative workout streak.
+ *
+ * Streak logic (`users/{uid}.currentStreak` / `lastWorkoutDate`, UTC calendar
+ * days): a workout on the same day as `lastWorkoutDate` doesn't change the
+ * streak (already counted today); the day right after extends it by one;
+ * any bigger gap (or no prior record) restarts it at 1. This runs even when
+ * the user has no active challenges, since the streak itself is what the
+ * dashboard displays.
  *
  * Iterates over each active challenge and updates progress according to the
  * challenge's `goalType`:
  * - `workout_count` — increments by 1
  * - `calories_burned` — accumulates calories (max {@link WORKOUT_MAX_CALORIES})
  * - `cardio_minutes` — accumulates minutes (max {@link WORKOUT_MAX_CARDIO_MINUTES})
- * - `workout_streak` — stores the higher of previous or current streak
- *   (max {@link WORKOUT_MAX_STREAK})
+ * - `workout_streak` — stores the higher of previous progress or the
+ *   server-computed streak (max {@link WORKOUT_MAX_STREAK})
  *
  * When a target is newly crossed, a challenge_won event is emitted and the
  * creator is notified via push (unless the creator is the participant).
@@ -307,7 +320,7 @@ export const recordWorkout = onCall(
   async (request: {auth?: {uid: string}; data: RecordWorkoutData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
-    const {caloriesBurned, cardioMinutes, streak} = request.data;
+    const {caloriesBurned, cardioMinutes} = request.data;
 
     const allowed = await checkRateLimit(uid, "recordWorkout", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
@@ -317,9 +330,6 @@ export const recordWorkout = onCall(
     }
     if (typeof cardioMinutes !== "number" || cardioMinutes < 0 || cardioMinutes > WORKOUT_MAX_CARDIO_MINUTES) {
       throw new HttpsError("invalid-argument", `cardioMinutes must be 0-${WORKOUT_MAX_CARDIO_MINUTES}`);
-    }
-    if (typeof streak !== "number" || streak < 0 || streak > WORKOUT_MAX_STREAK) {
-      throw new HttpsError("invalid-argument", `streak must be 0-${WORKOUT_MAX_STREAK}`);
     }
 
     const now = admin.firestore.Timestamp.now();
@@ -331,13 +341,35 @@ export const recordWorkout = onCall(
       db.doc(`users/${uid}`).get(),
     ]);
 
-    if (challengesSnap.empty) {
-      logInfo("recordWorkout: no active challenges", {uid});
-      return {updated: 0, completed: []};
+    const todayKey = utcDateKey(now.toDate());
+    const yesterdayKey = utcDateKey(new Date(now.toMillis() - ONE_DAY_MS));
+    const userData = userSnap.data() ?? {};
+    const lastWorkoutDate = userData.lastWorkoutDate as string | undefined;
+    const prevStreak = Math.min((userData.currentStreak as number | undefined) ?? 0, WORKOUT_MAX_STREAK);
+
+    let streak: number;
+    if (lastWorkoutDate === todayKey) {
+      streak = prevStreak; // already recorded today — don't double-count
+    } else if (lastWorkoutDate === yesterdayKey) {
+      streak = Math.min(prevStreak + 1, WORKOUT_MAX_STREAK);
+    } else {
+      streak = 1; // gap since last workout (or first ever) — restart
     }
 
-    const userName = (userSnap.data()?.name as string) ?? "Пользователь";
-    logInfo("recordWorkout", {uid, challengeCount: challengesSnap.size});
+    if (lastWorkoutDate !== todayKey) {
+      await db.doc(`users/${uid}`).set(
+        {currentStreak: streak, lastWorkoutDate: todayKey},
+        {merge: true}
+      );
+    }
+
+    if (challengesSnap.empty) {
+      logInfo("recordWorkout: no active challenges", {uid, streak});
+      return {updated: 0, completed: [], streak};
+    }
+
+    const userName = (userData.name as string) ?? "Пользователь";
+    logInfo("recordWorkout", {uid, challengeCount: challengesSnap.size, streak});
 
     const completedChallenges: string[] = [];
 
@@ -396,7 +428,7 @@ export const recordWorkout = onCall(
       }
     }
 
-    return {updated: challengesSnap.size, completed: completedChallenges};
+    return {updated: challengesSnap.size, completed: completedChallenges, streak};
   }
 );
 
