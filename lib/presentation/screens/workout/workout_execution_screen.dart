@@ -6,6 +6,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/services/workout_session.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
@@ -1285,15 +1286,22 @@ class _PhaseLabel extends StatelessWidget {
   const _PhaseLabel(this.text, this.color);
 
   @override
-  Widget build(BuildContext context) => Text(
-    text,
-    style: TextStyle(
-      fontFamily: 'Syne',
-      fontSize: 12,
-      fontWeight: FontWeight.w700,
-      color: color,
-      letterSpacing: 2.5,
-    ),
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Image.asset(AppImages.workoutTimer, width: 20, height: 20),
+      const SizedBox(width: 8),
+      Text(
+        text,
+        style: TextStyle(
+          fontFamily: 'Syne',
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: color,
+          letterSpacing: 2.5,
+        ),
+      ),
+    ],
   );
 }
 

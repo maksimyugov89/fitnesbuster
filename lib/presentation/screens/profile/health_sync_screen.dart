@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/health/health_connect_service.dart';
 import 'package:fitnesbuster/bloc/health/health_sync_bloc.dart';
 
@@ -262,19 +263,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(
-              Icons.sync_rounded,
-              color: Colors.white,
-              size: 28,
-            ),
-          ),
+          Image.asset(AppImages.bluetoothDevices, width: 56, height: 56),
           const SizedBox(height: 16),
           const Text(
             'Health Connect',

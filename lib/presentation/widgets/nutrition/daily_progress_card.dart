@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class DailyProgressCard extends StatelessWidget {
@@ -38,6 +39,8 @@ class DailyProgressCard extends StatelessWidget {
         children: [
           Row(
             children: [
+              Image.asset(AppImages.calorieCounter, width: 22, height: 22),
+              const SizedBox(width: 6),
               Text(
                 isOverLimit
                     ? context.l10n.mealExceeded(totalEaten)

@@ -6,7 +6,16 @@ import 'package:fitnesbuster/core/localization/app_localizations.dart';
 class SheetWrapper extends StatelessWidget {
   final String title;
   final Widget child;
-  const SheetWrapper({super.key, required this.title, required this.child});
+
+  /// Optional illustrated icon (e.g. an [AppImages] asset) shown beside the
+  /// title instead of the bare text header.
+  final String? iconAsset;
+  const SheetWrapper({
+    super.key,
+    required this.title,
+    required this.child,
+    this.iconAsset,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +44,16 @@ class SheetWrapper extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Text(title, style: AppTextStyles.titleL),
+            iconAsset == null
+                ? Text(title, style: AppTextStyles.titleL)
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(iconAsset!, width: 40, height: 40),
+                      const SizedBox(width: 12),
+                      Text(title, style: AppTextStyles.titleL),
+                    ],
+                  ),
             const SizedBox(height: 24),
             child,
           ],

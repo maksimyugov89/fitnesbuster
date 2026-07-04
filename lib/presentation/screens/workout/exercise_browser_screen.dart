@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/data/models/exercise_db_model.dart';
 import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
@@ -127,14 +128,21 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
         ),
         onPressed: () => Navigator.of(context).pop(),
       ),
-      title: Text(
-        'Упражнения',
-        style: TextStyle(
-          fontFamily: 'Syne',
-          fontSize: 20,
-          fontWeight: FontWeight.w800,
-          color: c.textPrimary,
-        ),
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(AppImages.exercises, width: 28, height: 28),
+          const SizedBox(width: 8),
+          Text(
+            'Упражнения',
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: c.textPrimary,
+            ),
+          ),
+        ],
       ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),

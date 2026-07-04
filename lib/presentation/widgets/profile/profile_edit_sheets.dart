@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/constants/avatar_presets.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/profile/profile_sheet_widgets.dart';
@@ -295,6 +296,7 @@ class _BodyParamsSheetState extends State<BodyParamsSheet> {
     final l10n = context.l10n;
     return SheetWrapper(
       title: l10n.bodyParamsLabel,
+      iconAsset: AppImages.weightTracker,
       child: Column(
         children: [
           NumSlider(
@@ -631,6 +633,7 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
     final colors = AppTheme.of(context);
     return SheetWrapper(
       title: context.l10n.notificationsLabel,
+      iconAsset: AppImages.notifications,
       child: Column(
         children: [
           NotifToggle(

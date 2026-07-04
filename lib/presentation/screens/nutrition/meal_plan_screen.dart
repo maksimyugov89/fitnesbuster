@@ -6,6 +6,7 @@ import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/data/models/ai_meal_plan.dart';
@@ -494,7 +495,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('💊', style: TextStyle(fontSize: 20)),
+          Image.asset(AppImages.supplements, width: 28, height: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

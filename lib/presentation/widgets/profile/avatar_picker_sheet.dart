@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/constants/avatar_presets.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
@@ -87,9 +88,16 @@ class _AvatarPickerSheetState extends State<AvatarPickerSheet> {
             ),
           ),
           const SizedBox(height: 20),
-          Text(
-            AppLocalizations.tl('chooseAvatar'),
-            style: AppTextStyles.titleL,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(AppImages.cameraAndAvatar, width: 40, height: 40),
+              const SizedBox(width: 12),
+              Text(
+                AppLocalizations.tl('chooseAvatar'),
+                style: AppTextStyles.titleL,
+              ),
+            ],
           ),
           const SizedBox(height: 20),
           Row(

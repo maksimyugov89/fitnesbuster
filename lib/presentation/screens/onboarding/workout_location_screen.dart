@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 enum WorkoutLocation { gym, outdoor, home }
 
@@ -384,7 +385,6 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
               child: _RunningCard(
                 value: RunningPreference.withRunning,
                 selected: _selectedRunning,
-                emoji: '🏃',
                 title: 'С бегом',
                 subtitle: 'Уличный + дорожка\nвключены',
                 onTap: () {
@@ -400,7 +400,6 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
               child: _RunningCard(
                 value: RunningPreference.noRunning,
                 selected: _selectedRunning,
-                emoji: '🏋',
                 title: 'Без бега',
                 subtitle: 'Только силовые\nбез бега',
                 onTap: () {
@@ -560,13 +559,12 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
 class _RunningCard extends StatelessWidget {
   final RunningPreference value;
   final RunningPreference? selected;
-  final String emoji, title, subtitle;
+  final String title, subtitle;
   final VoidCallback onTap;
 
   const _RunningCard({
     required this.value,
     required this.selected,
-    required this.emoji,
     required this.title,
     required this.subtitle,
     required this.onTap,
@@ -600,7 +598,13 @@ class _RunningCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(emoji, style: const TextStyle(fontSize: 28)),
+                Image.asset(
+                  value == RunningPreference.withRunning
+                      ? AppImages.running
+                      : AppImages.strengthTraining,
+                  width: 32,
+                  height: 32,
+                ),
                 const Spacer(),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
 
@@ -309,6 +310,8 @@ class ProgressHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
       child: Row(
         children: [
+          Image.asset(AppImages.progressAnalytics, width: 36, height: 36),
+          const SizedBox(width: 10),
           Text(context.l10n.navProgress, style: AppTextStyles.displayM),
           const Spacer(),
           Container(
