@@ -357,13 +357,20 @@ class _ScoreHeader extends StatelessWidget {
                   ),
                 ),
                 alignment: Alignment.center,
-                child: Text(
-                  '${debrief.overallScore}/10',
-                  style: TextStyle(
-                    fontFamily: 'Syne',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: _scoreColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      '${debrief.overallScore}/10',
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontFamily: 'Syne',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: _scoreColor,
+                      ),
+                    ),
                   ),
                 ),
               ),

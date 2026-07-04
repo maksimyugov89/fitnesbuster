@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/router/app_router.dart';
 
 class DebriefCard extends StatelessWidget {
   const DebriefCard({super.key});
@@ -14,7 +15,7 @@ class DebriefCard extends StatelessWidget {
       label: context.l10n.weeklyDebriefTitle,
       button: true,
       child: GestureDetector(
-        onTap: () => context.push('/debrief'),
+        onTap: () => context.push(AppRouter.weeklyDebrief),
         child: Container(
           margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
           padding: const EdgeInsets.all(18),
