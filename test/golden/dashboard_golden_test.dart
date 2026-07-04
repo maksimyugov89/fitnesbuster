@@ -182,9 +182,13 @@ void main() {
         matchesGoldenFile('goldens/dashboard.png'),
       );
 
-      await authBloc.close();
-      await userBloc.close();
-      await aiBloc.close();
+      // Do NOT call authBloc/userBloc/aiBloc.close() here: BlocProvider.value
+      // keeps an internal subscription on each bloc's state stream alive for
+      // as long as the widget tree above is mounted. Bloc.close() awaits that
+      // stream fully closing (which needs every listener cancelled first) —
+      // since the tree is never unmounted, close() never returns and the
+      // test hangs until the runner's timeout. GetIt.reset() in tearDownAll
+      // is enough cleanup for a single-test file; there's nothing to close.
     });
   });
 }
