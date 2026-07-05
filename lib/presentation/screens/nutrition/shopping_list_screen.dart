@@ -6,6 +6,7 @@ import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
@@ -492,7 +493,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.shopping_basket_rounded, color: colors.primary, size: 22),
+          AppIcon(
+            asset: AppImages.shoppingList,
+            glowColor: colors.primary,
+            size: 22,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

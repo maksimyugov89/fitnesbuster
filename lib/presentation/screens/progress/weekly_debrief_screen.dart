@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/core/ai/ai_exception.dart';
@@ -229,7 +230,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
         _ScoreHeader(debrief: _debrief!, colors: colors),
         const SizedBox(height: 16),
         _SummaryCard(
-          icon: Icons.fitness_center_rounded,
+          icon: AppImages.workoutsTab,
           title: 'Тренировки',
           text: _debrief!.workoutSummary,
           colors: colors,
@@ -237,7 +238,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
         ),
         const SizedBox(height: 10),
         _SummaryCard(
-          icon: Icons.restaurant_rounded,
+          icon: AppImages.nutritionTab,
           title: 'Питание',
           text: _debrief!.nutritionSummary,
           colors: colors,
@@ -246,7 +247,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
         const SizedBox(height: 16),
         _BulletSection(
           label: 'Достижения',
-          icon: Icons.emoji_events_rounded,
+          icon: AppImages.achievements,
           items: _debrief!.highlights,
           color: colors.success,
           colors: colors,
@@ -254,7 +255,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
         const SizedBox(height: 12),
         _BulletSection(
           label: 'Области роста',
-          icon: Icons.trending_up_rounded,
+          icon: AppImages.trend,
           items: _debrief!.improvements,
           color: colors.accentOrange,
           colors: colors,
@@ -264,7 +265,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
         const SizedBox(height: 12),
         _BulletSection(
           label: 'Восстановление',
-          icon: Icons.bedtime_rounded,
+          icon: AppImages.sleep,
           items: _debrief!.recoveryTips,
           color: colors.primary,
           colors: colors,
@@ -383,7 +384,7 @@ class _ScoreHeader extends StatelessWidget {
 }
 
 class _SummaryCard extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final String title;
   final String text;
   final ThemePalette colors;
@@ -416,7 +417,7 @@ class _SummaryCard extends StatelessWidget {
               color: accentColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: accentColor, size: 22),
+            child: AppIcon(asset: icon, glowColor: accentColor, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -452,7 +453,7 @@ class _SummaryCard extends StatelessWidget {
 
 class _BulletSection extends StatelessWidget {
   final String label;
-  final IconData icon;
+  final String icon;
   final List<String> items;
   final Color color;
   final ThemePalette colors;
@@ -479,7 +480,7 @@ class _BulletSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 20, color: color),
+              AppIcon(asset: icon, glowColor: color, size: 20),
               const SizedBox(width: 8),
               Text(
                 label,

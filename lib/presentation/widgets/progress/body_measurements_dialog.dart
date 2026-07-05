@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
@@ -85,7 +86,11 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       title: Row(
         children: [
-          Icon(Icons.straighten_rounded, color: colors.primary, size: 22),
+          AppIcon(
+            asset: AppImages.bodyMeasurements,
+            glowColor: colors.primary,
+            size: 22,
+          ),
           const SizedBox(width: 8),
           Text(
             AppLocalizations.tl('bodyMeasurements'),

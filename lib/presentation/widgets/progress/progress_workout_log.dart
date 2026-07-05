@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/progress/progress_cards.dart';
 
@@ -91,7 +92,7 @@ class ProgressWorkoutLog extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ActivityStat(
-                        icon: Icons.directions_walk_rounded,
+                        icon: AppImages.steps,
                         color: colors.accentOrange,
                         label: context.l10n.stepsLabel,
                         value: steps > 0 ? '$steps' : '\u2014',
@@ -99,7 +100,7 @@ class ProgressWorkoutLog extends StatelessWidget {
                     ),
                     Expanded(
                       child: ActivityStat(
-                        icon: Icons.local_fire_department_rounded,
+                        icon: AppImages.calorieCounter,
                         color: colors.error,
                         label: context.l10n.burnedLabel,
                         value: todayKcal > 0
@@ -109,7 +110,7 @@ class ProgressWorkoutLog extends StatelessWidget {
                     ),
                     Expanded(
                       child: ActivityStat(
-                        icon: Icons.water_drop_rounded,
+                        icon: AppImages.water,
                         color: colors.info,
                         label: context.l10n.waterLabel,
                         value: todayWater > 0

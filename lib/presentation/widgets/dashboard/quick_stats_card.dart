@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
@@ -31,7 +32,7 @@ class QuickStatsCard extends StatelessWidget {
             child: GestureDetector(
               onTap: onHeartRateTap,
               child: _StatCard(
-                icon: Icons.favorite_rounded,
+                icon: AppImages.heartRate,
                 iconColor: SemanticColors.cardioRed,
                 label: l10n.heartRateLabel,
                 value: heartRate > 0 ? '$heartRate' : '—',
@@ -46,7 +47,7 @@ class QuickStatsCard extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _StatCard(
-            icon: Icons.monitor_weight_outlined,
+            icon: AppImages.weightTracker,
             iconColor: p.accentPurple,
             label: l10n.weightLabel,
             value: weight > 0 ? '$weight' : '—',
@@ -58,7 +59,7 @@ class QuickStatsCard extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _StatCard(
-            icon: Icons.local_fire_department_rounded,
+            icon: AppImages.calorieCounter,
             iconColor: p.accentOrange,
             label: l10n.dashboardStreak,
             value: '$streak',
@@ -75,7 +76,7 @@ class QuickStatsCard extends StatelessWidget {
 }
 
 class _StatCard extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final Color iconColor;
   final String label, value, unit, subtitle;
   final Color? subtitleColor;
@@ -109,7 +110,7 @@ class _StatCard extends StatelessWidget {
               color: iconColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: iconColor, size: 18),
+            child: AppIcon(asset: icon, glowColor: iconColor, size: 18),
           ),
           const SizedBox(height: 10),
           Text(label, style: TextStyle(fontSize: 11, color: p.textMuted)),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/domain/entities/personal_record.dart';
 import 'package:fitnesbuster/data/repositories/pr_repository.dart';
 
@@ -116,9 +117,9 @@ class _PrScreenState extends State<PrScreen> {
               color: colors.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(
-              Icons.emoji_events_rounded,
-              color: colors.primary,
+            child: AppIcon(
+              asset: AppImages.achievements,
+              glowColor: colors.primary,
               size: 20,
             ),
           ),
@@ -140,10 +141,10 @@ class _PrScreenState extends State<PrScreen> {
                 color: colors.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.emoji_events_outlined,
+              child: AppIcon(
+                asset: AppImages.achievements,
+                glowColor: colors.primary.withValues(alpha: 0.5),
                 size: 56,
-                color: colors.primary.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: 24),
@@ -733,7 +734,7 @@ class _AddPrSheetState extends State<_AddPrSheet> {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: _submit,
-                icon: const Icon(Icons.emoji_events_rounded, size: 18),
+                icon: const AppIcon(asset: AppImages.achievements, size: 18),
                 label: const Text(
                   'Сохранить рекорд',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
@@ -894,7 +895,11 @@ class _PrLogCardState extends State<PrLogCard> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.emoji_events_rounded, color: c.success, size: 22),
+            AppIcon(
+              asset: AppImages.achievements,
+              glowColor: c.success,
+              size: 22,
+            ),
             const SizedBox(width: 10),
             Text(
               'Рекорд сохранён!',
@@ -922,7 +927,11 @@ class _PrLogCardState extends State<PrLogCard> {
         children: [
           Row(
             children: [
-              Icon(Icons.emoji_events_rounded, color: c.primary, size: 18),
+              AppIcon(
+                asset: AppImages.achievements,
+                glowColor: c.primary,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Записать личный рекорд',

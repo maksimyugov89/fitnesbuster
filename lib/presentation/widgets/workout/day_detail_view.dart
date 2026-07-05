@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/muscle_zone_matcher.dart';
@@ -394,9 +395,9 @@ class DayDetailView extends StatelessWidget {
               ],
             ),
           ),
-          Icon(
-            Icons.emoji_events_rounded,
-            color: colors.success.withValues(alpha: 0.7),
+          AppIcon(
+            asset: AppImages.achievements,
+            glowColor: colors.success.withValues(alpha: 0.7),
             size: 20,
           ),
         ],

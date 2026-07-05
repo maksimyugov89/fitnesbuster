@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
   const BarcodeScannerScreen({super.key});
@@ -242,10 +243,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                           decoration: InputDecoration(
                             hintText: 'Количество (г)',
                             hintStyle: TextStyle(color: c.textMuted),
-                            prefixIcon: Icon(
-                              Icons.scale_rounded,
+                            prefixIcon: const AppIcon(
+                              asset: AppImages.foodScale,
                               size: 18,
-                              color: c.textMuted,
                             ),
                             filled: true,
                             fillColor: c.elevated,

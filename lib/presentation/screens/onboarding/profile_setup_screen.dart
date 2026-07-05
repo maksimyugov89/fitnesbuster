@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
@@ -1513,10 +1514,10 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.psychology_rounded,
+                  child: const AppIcon(
+                    asset: AppImages.aiAssistant,
+                    glowColor: Colors.purpleAccent,
                     size: 80,
-                    color: Colors.purpleAccent,
                   ),
                 ),
               ),

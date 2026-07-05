@@ -157,7 +157,7 @@ class LineChartPainter extends CustomPainter {
 }
 
 class ActivityStat extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final Color color;
   final String label, value;
   const ActivityStat({
@@ -180,7 +180,7 @@ class ActivityStat extends StatelessWidget {
             color: color.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: color, size: 20),
+          child: AppIcon(asset: icon, glowColor: color, size: 20),
         ),
         const SizedBox(height: 6),
         Text(
@@ -200,7 +200,7 @@ class ActivityStat extends StatelessWidget {
 
 class HealthCard extends StatelessWidget {
   final String label, value, unit, trend;
-  final IconData icon;
+  final String icon;
   final Color color;
   final bool positive;
   const HealthCard({
@@ -233,7 +233,7 @@ class HealthCard extends StatelessWidget {
               color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: AppIcon(asset: icon, glowColor: color, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(

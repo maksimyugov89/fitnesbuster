@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 String localizedMealLabel(BuildContext context, String key) {
@@ -32,6 +33,7 @@ class NutritionFormField extends StatelessWidget {
   final TextEditingController ctrl;
   final String hint;
   final IconData icon;
+  final String? iconAsset;
   final ThemePalette colors;
   final TextInputType textInput;
   const NutritionFormField({
@@ -39,6 +41,7 @@ class NutritionFormField extends StatelessWidget {
     required this.ctrl,
     required this.hint,
     required this.icon,
+    this.iconAsset,
     required this.colors,
     required this.textInput,
   });
@@ -52,7 +55,9 @@ class NutritionFormField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: colors.textMuted, fontSize: 13),
-        prefixIcon: Icon(icon, size: 18, color: colors.textMuted),
+        prefixIcon: iconAsset != null
+            ? AppIcon(asset: iconAsset!, size: 18)
+            : Icon(icon, size: 18, color: colors.textMuted),
         filled: true,
         fillColor: colors.elevated,
         border: OutlineInputBorder(

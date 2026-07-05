@@ -4,6 +4,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/services/workout_session.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class MainShell extends StatelessWidget {
   final Widget child;
@@ -193,11 +194,11 @@ class RouterBottomNav extends StatelessWidget {
     final l10n = context.l10n;
     final p = AppTheme.of(context);
     final items = [
-      _NavItem(icon: Icons.home_rounded, label: l10n.navHome),
-      _NavItem(icon: Icons.fitness_center_rounded, label: l10n.navWorkout),
-      _NavItem(icon: Icons.restaurant_rounded, label: l10n.navNutrition),
-      _NavItem(icon: Icons.show_chart_rounded, label: l10n.navProgress),
-      _NavItem(icon: Icons.person_rounded, label: l10n.navProfile),
+      _NavItem(icon: AppImages.home, label: l10n.navHome),
+      _NavItem(icon: AppImages.workoutsTab, label: l10n.navWorkout),
+      _NavItem(icon: AppImages.nutritionTab, label: l10n.navNutrition),
+      _NavItem(icon: AppImages.progressTab, label: l10n.navProgress),
+      _NavItem(icon: AppImages.profileTab, label: l10n.navProfile),
     ];
     return Container(
       decoration: BoxDecoration(
@@ -241,10 +242,13 @@ class RouterBottomNav extends StatelessWidget {
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Icon(
-                          e.value.icon,
-                          color: isSel ? p.primary : p.textMuted,
-                          size: 22,
+                        child: Opacity(
+                          opacity: isSel ? 1 : 0.45,
+                          child: AppIcon(
+                            asset: e.value.icon,
+                            glowColor: isSel ? p.primary : null,
+                            size: 22,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -274,7 +278,7 @@ class RouterBottomNav extends StatelessWidget {
 }
 
 class _NavItem {
-  final IconData icon;
+  final String icon;
   final String label;
   const _NavItem({required this.icon, required this.label});
 }

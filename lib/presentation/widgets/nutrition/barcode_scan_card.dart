@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class BarcodeScanCard extends StatelessWidget {
   final VoidCallback onTap;
@@ -42,9 +43,9 @@ class BarcodeScanCard extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Icon(
-                  Icons.qr_code_scanner_rounded,
-                  color: Colors.white,
+                child: const AppIcon(
+                  asset: AppImages.barcodeScanner,
+                  glowColor: Colors.white,
                   size: 30,
                 ),
               ),

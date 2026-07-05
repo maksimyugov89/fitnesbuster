@@ -9,6 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/core/ai/ai_exception.dart';
@@ -475,9 +476,9 @@ class _SourceSelector extends StatelessWidget {
                 color: c.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(
-                Icons.auto_fix_high_rounded,
-                color: c.primary,
+              child: AppIcon(
+                asset: AppImages.aiAssistant,
+                glowColor: c.primary,
                 size: 20,
               ),
             ),
@@ -517,7 +518,11 @@ class _SourceSelector extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.psychology_rounded, color: c.primary, size: 18),
+              AppIcon(
+                asset: AppImages.aiAssistant,
+                glowColor: c.primary,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -573,6 +578,7 @@ class _SourceSelector extends StatelessWidget {
         _OptionCard(
           colors: c,
           icon: Icons.qr_code_scanner_rounded,
+          iconAsset: AppImages.barcodeScanner,
           iconColor: SemanticColors.importError,
           title: AppLocalizations.of(context).scanQr,
           subtitle: AppLocalizations.of(context).scanQrSubtitle,
@@ -610,6 +616,7 @@ class _SourceSelector extends StatelessWidget {
 class _OptionCard extends StatelessWidget {
   final dynamic colors;
   final IconData icon;
+  final String? iconAsset;
   final Color iconColor;
   final String title;
   final String subtitle;
@@ -619,6 +626,7 @@ class _OptionCard extends StatelessWidget {
   const _OptionCard({
     required this.colors,
     required this.icon,
+    this.iconAsset,
     required this.iconColor,
     required this.title,
     required this.subtitle,
@@ -646,7 +654,9 @@ class _OptionCard extends StatelessWidget {
                 color: iconColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, color: iconColor, size: 20),
+              child: iconAsset != null
+                  ? AppIcon(asset: iconAsset!, glowColor: iconColor, size: 20)
+                  : Icon(icon, color: iconColor, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -867,7 +877,7 @@ class _ContentInputState extends State<_ContentInput> {
       _ActionButton(
         colors: c,
         label: AppLocalizations.of(context).loadAndCorrectPlanBtn,
-        icon: Icons.auto_fix_high_rounded,
+        iconAsset: AppImages.aiAssistant,
         onTap: widget.onSubmitUrl,
       ),
     ],
@@ -934,7 +944,7 @@ class _ContentInputState extends State<_ContentInput> {
         builder: (_, _) => _ActionButton(
           colors: c,
           label: AppLocalizations.of(context).correctPlanWithAiBtn,
-          icon: Icons.auto_fix_high_rounded,
+          iconAsset: AppImages.aiAssistant,
           onTap: widget.textCtrl.text.trim().isEmpty
               ? null
               : () => widget.onSubmitText(widget.textCtrl.text),
@@ -1163,9 +1173,9 @@ class _PreviewView extends StatelessWidget {
                   color: c.primary.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.auto_fix_high_rounded,
-                  color: c.primary,
+                child: AppIcon(
+                  asset: AppImages.aiAssistant,
+                  glowColor: c.primary,
                   size: 22,
                 ),
               ),
@@ -1261,7 +1271,11 @@ class _PreviewView extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.psychology_rounded, color: c.accentPurple, size: 16),
+                AppIcon(
+                  asset: AppImages.aiAssistant,
+                  glowColor: c.accentPurple,
+                  size: 16,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -1538,6 +1552,7 @@ class _ActionButton extends StatelessWidget {
   final dynamic colors;
   final String label;
   final IconData? icon;
+  final String? iconAsset;
   final bool loading;
   final VoidCallback? onTap;
 
@@ -1545,6 +1560,7 @@ class _ActionButton extends StatelessWidget {
     required this.colors,
     required this.label,
     this.icon,
+    this.iconAsset,
     this.loading = false,
     this.onTap,
   });
@@ -1589,6 +1605,11 @@ class _ActionButton extends StatelessWidget {
                   strokeWidth: 2,
                   color: c.textOnPrimary,
                 ),
+              )
+            else if (iconAsset != null)
+              Opacity(
+                opacity: enabled ? 1 : 0.5,
+                child: AppIcon(asset: iconAsset!, size: 18),
               )
             else if (icon != null)
               Icon(

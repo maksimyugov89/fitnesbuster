@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/nutrition/nutrition_shared.dart';
 
@@ -127,6 +128,7 @@ class _NutritionManualFoodFormState extends State<NutritionManualFoodForm> {
                   ctrl: _gramsCtrl,
                   hint: context.l10n.gramsHint,
                   icon: Icons.scale_rounded,
+                  iconAsset: AppImages.foodScale,
                   colors: c,
                   textInput: TextInputType.number,
                 ),
@@ -137,6 +139,7 @@ class _NutritionManualFoodFormState extends State<NutritionManualFoodForm> {
                   ctrl: _kcalCtrl,
                   hint: context.l10n.caloriesHint,
                   icon: Icons.local_fire_department_rounded,
+                  iconAsset: AppImages.calorieCounter,
                   colors: c,
                   textInput: TextInputType.number,
                 ),

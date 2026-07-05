@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/progress/progress_cards.dart';
 
@@ -42,7 +43,7 @@ class ProgressHealthList extends StatelessWidget {
           label: context.l10n.avgHeartRateLabel,
           value: heartRateAvg != null ? '$heartRateAvg' : '\u2014',
           unit: context.l10n.bpmUnit,
-          icon: Icons.favorite_rounded,
+          icon: AppImages.heartRate,
           color: colors.error,
           trend: heartRateAvg != null ? context.l10n.normalBadge : '',
           positive: true,
@@ -52,7 +53,7 @@ class ProgressHealthList extends StatelessWidget {
           label: context.l10n.restingHrLabel,
           value: restingHeartRate != null ? '$restingHeartRate' : '\u2014',
           unit: context.l10n.bpmUnit,
-          icon: Icons.monitor_heart_outlined,
+          icon: AppImages.hrv,
           color: colors.accentPurple,
           trend: restingHeartRate != null
               ? (restingHeartRate! <= 60
@@ -70,7 +71,7 @@ class ProgressHealthList extends StatelessWidget {
               ? heartRateVariability!.toStringAsFixed(1)
               : '\u2014',
           unit: context.l10n.msUnit,
-          icon: Icons.show_chart_rounded,
+          icon: AppImages.trend,
           color: colors.accent,
           trend: heartRateVariability != null
               ? (heartRateVariability! >= 40
@@ -86,7 +87,7 @@ class ProgressHealthList extends StatelessWidget {
               ? respiratoryRate!.toStringAsFixed(1)
               : '\u2014',
           unit: context.l10n.bpmRespUnit,
-          icon: Icons.air_rounded,
+          icon: AppImages.respiratoryRate,
           color: colors.info,
           trend: respiratoryRate != null
               ? (respiratoryRate! <= 20
@@ -100,7 +101,7 @@ class ProgressHealthList extends StatelessWidget {
           label: context.l10n.stepsTodayLabel,
           value: steps > 0 ? '$steps' : '\u2014',
           unit: context.l10n.stepsUnit,
-          icon: Icons.directions_walk_rounded,
+          icon: AppImages.steps,
           color: colors.primary,
           trend: steps >= 10000
               ? AppLocalizations.tl('goalReached')
@@ -114,7 +115,7 @@ class ProgressHealthList extends StatelessWidget {
           label: context.l10n.sleepLabel2,
           value: sleepHours,
           unit: context.l10n.hoursNightUnit,
-          icon: Icons.bedtime_outlined,
+          icon: AppImages.sleep,
           color: colors.accentPurple,
           trend: (sleepMinutes ?? 0) >= 420 ? context.l10n.normalBadge : '',
           positive: (sleepMinutes ?? 0) >= 420,
@@ -126,7 +127,7 @@ class ProgressHealthList extends StatelessWidget {
               ? '${waterIntakeMl!.toInt()}'
               : '\u2014',
           unit: context.l10n.mlHealthUnit,
-          icon: Icons.water_drop_rounded,
+          icon: AppImages.water,
           color: colors.info,
           trend: (waterIntakeMl ?? 0) >= 2000 ? context.l10n.normalBadge : '',
           positive: (waterIntakeMl ?? 0) >= 2000,

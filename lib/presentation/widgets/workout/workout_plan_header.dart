@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class WorkoutPlanHeader extends StatelessWidget {
@@ -42,9 +43,9 @@ class WorkoutPlanHeader extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.emoji_events_rounded,
-                            color: colors.primary,
+                          AppIcon(
+                            asset: AppImages.achievements,
+                            glowColor: colors.primary,
                             size: 18,
                           ),
                           const SizedBox(width: 6),
@@ -181,9 +182,9 @@ class WorkoutPlanHeader extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.auto_fix_high_rounded,
-                          color: colors.primary,
+                        AppIcon(
+                          asset: AppImages.aiAssistant,
+                          glowColor: colors.primary,
                           size: 18,
                         ),
                         const SizedBox(width: 6),

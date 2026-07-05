@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/data/repositories/user_repository.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/models/ai_meal_plan.dart';
@@ -905,6 +906,7 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
                   ctrl: _gramsCtrl,
                   hint: 'Граммы (г)',
                   icon: Icons.scale_rounded,
+                  iconAsset: AppImages.foodScale,
                   colors: c,
                   textInput: TextInputType.number,
                 ),
@@ -915,6 +917,7 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
                   ctrl: _kcalCtrl,
                   hint: 'Калории (ккал)',
                   icon: Icons.local_fire_department_rounded,
+                  iconAsset: AppImages.calorieCounter,
                   colors: c,
                   textInput: TextInputType.number,
                 ),
@@ -957,12 +960,14 @@ class _FormField extends StatelessWidget {
   final TextEditingController ctrl;
   final String hint;
   final IconData icon;
+  final String? iconAsset;
   final ThemePalette colors;
   final TextInputType textInput;
   const _FormField({
     required this.ctrl,
     required this.hint,
     required this.icon,
+    this.iconAsset,
     required this.colors,
     required this.textInput,
   });
@@ -976,7 +981,9 @@ class _FormField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: colors.textMuted, fontSize: 13),
-        prefixIcon: Icon(icon, size: 18, color: colors.textMuted),
+        prefixIcon: iconAsset != null
+            ? AppIcon(asset: iconAsset!, size: 18)
+            : Icon(icon, size: 18, color: colors.textMuted),
         filled: true,
         fillColor: colors.elevated,
         border: OutlineInputBorder(

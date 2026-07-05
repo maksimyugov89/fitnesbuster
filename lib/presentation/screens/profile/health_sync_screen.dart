@@ -193,11 +193,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
         padding: const EdgeInsets.all(20),
         children: [
           const SizedBox(height: 40),
-          Icon(
-            Icons.health_and_safety_rounded,
-            size: 72,
-            color: colors.textMuted.withValues(alpha: 0.4),
-          ),
+          const AppIcon(asset: AppImages.healthIntegration, size: 72),
           const SizedBox(height: 20),
           const Text(
             'Health Connect не установлен',
@@ -312,7 +308,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
           children: [
             Expanded(
               child: _DataTile(
-                icon: Icons.directions_walk_rounded,
+                icon: AppImages.steps,
                 label: 'Шаги',
                 value: '${data.steps}',
                 color: colors.primary,
@@ -321,7 +317,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: _DataTile(
-                icon: Icons.local_fire_department_rounded,
+                icon: AppImages.calorieCounter,
                 label: 'Калории',
                 value: '${data.caloriesBurned.toInt()}',
                 unit: 'ккал',
@@ -335,7 +331,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
           children: [
             Expanded(
               child: _DataTile(
-                icon: Icons.favorite_rounded,
+                icon: AppImages.heartRate,
                 label: 'Пульс',
                 value: data.heartRateAvg?.toString() ?? '—',
                 unit: 'уд/мин',
@@ -345,7 +341,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: _DataTile(
-                icon: Icons.monitor_weight_rounded,
+                icon: AppImages.weightTracker,
                 label: 'Вес',
                 value: data.weight?.toStringAsFixed(1) ?? '—',
                 unit: 'кг',
@@ -359,7 +355,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
           children: [
             Expanded(
               child: _DataTile(
-                icon: Icons.bedtime_rounded,
+                icon: AppImages.sleep,
                 label: 'Сон',
                 value: _sleepText(data.sleepMinutes),
                 color: colors.info,
@@ -368,7 +364,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: _DataTile(
-                icon: Icons.water_drop_rounded,
+                icon: AppImages.water,
                 label: 'Вода',
                 value: data.waterIntakeMl?.toStringAsFixed(0) ?? '—',
                 unit: 'мл',
@@ -382,7 +378,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
           children: [
             Expanded(
               child: _DataTile(
-                icon: Icons.map_rounded,
+                icon: AppImages.route,
                 label: 'Дистанция',
                 value: (data.distanceKm ?? 0).toStringAsFixed(1),
                 unit: 'км',
@@ -446,7 +442,7 @@ class _ProviderBadge extends StatelessWidget {
 }
 
 class _DataTile extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final String label;
   final String value;
   final String? unit;
@@ -481,7 +477,7 @@ class _DataTile extends StatelessWidget {
                   color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: color, size: 20),
+                child: AppIcon(asset: icon, glowColor: color, size: 20),
               ),
               const Spacer(),
               if (unit != null)

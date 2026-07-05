@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class WorkoutTechniqueSheet extends StatefulWidget {
   final String title;
@@ -152,6 +153,7 @@ class _WorkoutTechniqueSheetState extends State<WorkoutTechniqueSheet> {
                   if (widget.weightGuideline.isNotEmpty) ...[
                     _TechniqueSection(
                       icon: Icons.monitor_weight_outlined,
+                      iconAsset: AppImages.weightTracker,
                       label: 'Нагрузка',
                       text: widget.weightGuideline,
                       color: SemanticColors.weightGuideline,
@@ -161,6 +163,7 @@ class _WorkoutTechniqueSheetState extends State<WorkoutTechniqueSheet> {
                   if (widget.progression.isNotEmpty)
                     _TechniqueSection(
                       icon: Icons.trending_up_rounded,
+                      iconAsset: AppImages.trend,
                       label: 'Прогрессия',
                       text: widget.progression,
                       color: SemanticColors.progression,
@@ -177,10 +180,12 @@ class _WorkoutTechniqueSheetState extends State<WorkoutTechniqueSheet> {
 
 class _TechniqueSection extends StatelessWidget {
   final IconData icon;
+  final String? iconAsset;
   final String label, text;
   final Color color;
   const _TechniqueSection({
     required this.icon,
+    this.iconAsset,
     required this.label,
     required this.text,
     required this.color,
@@ -205,7 +210,9 @@ class _TechniqueSection extends StatelessWidget {
               color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: color, size: 16),
+            child: iconAsset != null
+                ? AppIcon(asset: iconAsset!, glowColor: color, size: 16)
+                : Icon(icon, color: color, size: 16),
           ),
           const SizedBox(width: 12),
           Expanded(

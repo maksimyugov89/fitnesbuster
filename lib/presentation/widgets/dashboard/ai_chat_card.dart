@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class AiChatCard extends StatelessWidget {
@@ -43,15 +44,7 @@ class AiChatCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Center(
-                  child: Text(
-                    'AI',
-                    style: TextStyle(
-                      fontFamily: 'Syne',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: AppIcon(asset: AppImages.aiAssistant, size: 28),
                 ),
               ),
               const SizedBox(width: 14),

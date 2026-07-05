@@ -974,11 +974,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                       ),
                     ],
                   ),
-                  child: Icon(
-                    Icons.emoji_events_rounded,
-                    size: 70,
-                    color: colors.primary,
-                  ),
+                  child: const AppIcon(asset: AppImages.achievements, size: 70),
                 ),
                 const SizedBox(height: 32),
                 Text(
@@ -1114,9 +1110,9 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.auto_fix_high_rounded,
-                              color: colors.accentPurple,
+                            AppIcon(
+                              asset: AppImages.aiAssistant,
+                              glowColor: colors.accentPurple,
                               size: 18,
                             ),
                             const SizedBox(width: 8),

@@ -10,6 +10,7 @@ import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
@@ -323,24 +324,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               items: [
                 ProfileMenuItem(
                   icon: Icons.person_outline_rounded,
+                  iconAsset: AppImages.personalData,
                   label: l10n.editProfileLabel,
                   color: colors.primary,
                   onTap: () => _openEditProfile(context),
                 ),
                 ProfileMenuItem(
                   icon: Icons.monitor_weight_outlined,
+                  iconAsset: AppImages.weightTracker,
                   label: l10n.bodyParamsLabel,
                   color: colors.accentPurple,
                   onTap: () => _openBodyParams(context),
                 ),
                 ProfileMenuItem(
                   icon: Icons.flag_outlined,
+                  iconAsset: AppImages.goal,
                   label: l10n.fitnessGoalLabel,
                   color: colors.accentOrange,
                   onTap: () => _openGoalEdit(context),
                 ),
                 ProfileMenuItem(
                   icon: Icons.location_on_outlined,
+                  iconAsset: AppImages.location,
                   label: l10n.workoutLocationLabel,
                   color: colors.info,
                   onTap: () => _openWorkoutSettings(context),
@@ -353,18 +358,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               items: [
                 ProfileMenuItem(
                   icon: Icons.sync_rounded,
+                  iconAsset: AppImages.bluetoothDevices,
                   label: l10n.healthConnectLabel,
                   color: const Color(0xFF10B981),
                   onTap: () => context.push('/health-sync'),
                 ),
                 ProfileMenuItem(
                   icon: Icons.notifications_outlined,
+                  iconAsset: AppImages.notifications,
                   label: l10n.notificationsLabel,
                   color: colors.info,
                   onTap: () => _openNotifications(context),
                 ),
                 ProfileMenuItem(
                   icon: Icons.language_rounded,
+                  iconAsset: AppImages.language,
                   label:
                       '${l10n.languageLabel} - ${LanguageService.current.nativeName}',
                   color: colors.accentPurple,
@@ -372,6 +380,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 ProfileMenuItem(
                   icon: Icons.palette_outlined,
+                  iconAsset: AppImages.appTheme,
                   label:
                       '${l10n.themeLabel} - ${ThemeService.current.displayName}',
                   color: colors.textSecondary,
@@ -385,24 +394,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               items: [
                 ProfileMenuItem(
                   icon: Icons.security_rounded,
+                  iconAsset: AppImages.security,
                   label: l10n.securityLabel,
                   color: colors.warning,
                   onTap: () => _openSecurity(context),
                 ),
                 ProfileMenuItem(
                   icon: Icons.help_outline_rounded,
+                  iconAsset: AppImages.help,
                   label: l10n.helpSupportLabel,
                   color: colors.textMuted,
                   onTap: () {},
                 ),
                 ProfileMenuItem(
                   icon: Icons.article_outlined,
+                  iconAsset: AppImages.terms,
                   label: l10n.licensesLabel,
                   color: colors.textMuted,
                   onTap: () => _showLicenses(context),
                 ),
                 ProfileMenuItem(
                   icon: Icons.info_outline_rounded,
+                  iconAsset: AppImages.about,
                   label: l10n.aboutAppLabel,
                   color: colors.textMuted,
                   onTap: () => _showAbout(context),
@@ -1519,11 +1532,17 @@ class _ProfileSection extends StatelessWidget {
                                   color: e.value.color.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: Icon(
-                                  e.value.icon,
-                                  color: e.value.color,
-                                  size: 18,
-                                ),
+                                child: e.value.iconAsset != null
+                                    ? AppIcon(
+                                        asset: e.value.iconAsset!,
+                                        glowColor: e.value.color,
+                                        size: 18,
+                                      )
+                                    : Icon(
+                                        e.value.icon,
+                                        color: e.value.color,
+                                        size: 18,
+                                      ),
                               ),
                               const SizedBox(width: 14),
                               Expanded(
@@ -1564,11 +1583,13 @@ class _ProfileSection extends StatelessWidget {
 
 class ProfileMenuItem {
   final IconData icon;
+  final String? iconAsset;
   final String label;
   final Color color;
   final VoidCallback? onTap;
   const ProfileMenuItem({
     required this.icon,
+    this.iconAsset,
     required this.label,
     required this.color,
     this.onTap,
