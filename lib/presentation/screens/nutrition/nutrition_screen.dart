@@ -982,7 +982,7 @@ class _FormField extends StatelessWidget {
         hintText: hint,
         hintStyle: TextStyle(color: colors.textMuted, fontSize: 13),
         prefixIcon: iconAsset != null
-            ? AppIcon(asset: iconAsset!, size: 18)
+            ? AppIcon(asset: iconAsset!, glowColor: colors.primary, size: 20)
             : Icon(icon, size: 18, color: colors.textMuted),
         filled: true,
         fillColor: colors.elevated,

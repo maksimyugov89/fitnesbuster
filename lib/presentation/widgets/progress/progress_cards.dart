@@ -174,13 +174,13 @@ class ActivityStat extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 40,
-          height: 40,
+          width: 42,
+          height: 42,
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: AppIcon(asset: icon, glowColor: color, size: 20),
+          child: AppIcon(asset: icon, glowColor: color, size: 40),
         ),
         const SizedBox(height: 6),
         Text(
@@ -227,13 +227,13 @@ class HealthCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(13),
             ),
-            child: AppIcon(asset: icon, glowColor: color, size: 22),
+            child: AppIcon(asset: icon, glowColor: color, size: 44),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -310,7 +310,11 @@ class ProgressHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
       child: Row(
         children: [
-          Image.asset(AppImages.progressAnalytics, width: 36, height: 36),
+          AppIcon(
+            asset: AppImages.progressAnalytics,
+            glowColor: colors.primary,
+            size: 36,
+          ),
           const SizedBox(width: 10),
           Text(context.l10n.navProgress, style: AppTextStyles.displayM),
           const Spacer(),

@@ -104,13 +104,13 @@ class _StatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 34,
-            height: 34,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
               color: iconColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(11),
             ),
-            child: AppIcon(asset: icon, glowColor: iconColor, size: 18),
+            child: AppIcon(asset: icon, glowColor: iconColor, size: 36),
           ),
           const SizedBox(height: 10),
           Text(label, style: TextStyle(fontSize: 11, color: p.textMuted)),

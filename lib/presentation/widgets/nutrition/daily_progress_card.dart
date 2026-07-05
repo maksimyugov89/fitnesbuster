@@ -39,7 +39,11 @@ class DailyProgressCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Image.asset(AppImages.calorieCounter, width: 22, height: 22),
+              AppIcon(
+                asset: AppImages.calorieCounter,
+                glowColor: colors.accentOrange,
+                size: 22,
+              ),
               const SizedBox(width: 6),
               Text(
                 isOverLimit

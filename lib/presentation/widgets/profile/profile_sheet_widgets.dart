@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class SheetWrapper extends StatelessWidget {
@@ -49,7 +50,11 @@ class SheetWrapper extends StatelessWidget {
                 : Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(iconAsset!, width: 40, height: 40),
+                      AppIcon(
+                        asset: iconAsset!,
+                        glowColor: colors.primary,
+                        size: 40,
+                      ),
                       const SizedBox(width: 12),
                       Text(title, style: AppTextStyles.titleL),
                     ],

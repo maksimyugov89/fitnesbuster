@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
@@ -30,7 +31,8 @@ class SocialCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _SocialBtn(
-                  emoji: '👥',
+                  asset: AppImages.activityFeed,
+                  glowColor: p.primary,
                   label: l10n.feedTitle,
                   onTap: () => context.push(AppRouter.feed),
                 ),
@@ -38,7 +40,8 @@ class SocialCard extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: _SocialBtn(
-                  emoji: '🤝',
+                  asset: AppImages.friends,
+                  glowColor: p.accentOrange,
                   label: l10n.friendsTitle,
                   badge: pendingRequests,
                   onTap: () => context.push(AppRouter.friends),
@@ -47,7 +50,8 @@ class SocialCard extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: _SocialBtn(
-                  emoji: '⚡',
+                  asset: AppImages.challenges,
+                  glowColor: p.warning,
                   label: l10n.challengesTitle,
                   onTap: () => context.push(AppRouter.challenges),
                 ),
@@ -61,11 +65,13 @@ class SocialCard extends StatelessWidget {
 }
 
 class _SocialBtn extends StatelessWidget {
-  final String emoji, label;
+  final String asset, label;
+  final Color glowColor;
   final int? badge;
   final VoidCallback onTap;
   const _SocialBtn({
-    required this.emoji,
+    required this.asset,
+    required this.glowColor,
     required this.label,
     this.badge,
     required this.onTap,
@@ -80,7 +86,7 @@ class _SocialBtn extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
           decoration: BoxDecoration(
             color: p.surfaceLight,
             borderRadius: BorderRadius.circular(16),
@@ -90,7 +96,7 @@ class _SocialBtn extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Text(emoji, style: const TextStyle(fontSize: 24)),
+                  AppIcon(asset: asset, glowColor: glowColor, size: 52),
                   if (badge != null && badge! > 0)
                     Positioned(
                       right: -12,

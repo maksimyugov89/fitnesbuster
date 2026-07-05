@@ -193,7 +193,11 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
         padding: const EdgeInsets.all(20),
         children: [
           const SizedBox(height: 40),
-          const AppIcon(asset: AppImages.healthIntegration, size: 72),
+          AppIcon(
+            asset: AppImages.healthIntegration,
+            glowColor: colors.primary,
+            size: 72,
+          ),
           const SizedBox(height: 20),
           const Text(
             'Health Connect не установлен',
@@ -259,7 +263,11 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(AppImages.bluetoothDevices, width: 56, height: 56),
+          const AppIcon(
+            asset: AppImages.bluetoothDevices,
+            glowColor: Colors.white,
+            size: 56,
+          ),
           const SizedBox(height: 16),
           const Text(
             'Health Connect',
@@ -471,13 +479,13 @@ class _DataTile extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: AppIcon(asset: icon, glowColor: color, size: 20),
+                child: AppIcon(asset: icon, glowColor: color, size: 53),
               ),
               const Spacer(),
               if (unit != null)

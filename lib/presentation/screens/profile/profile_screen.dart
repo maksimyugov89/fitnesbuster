@@ -1526,22 +1526,22 @@ class _ProfileSection extends StatelessWidget {
                           child: Row(
                             children: [
                               Container(
-                                width: 36,
-                                height: 36,
+                                width: 44,
+                                height: 44,
                                 decoration: BoxDecoration(
                                   color: e.value.color.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: e.value.iconAsset != null
                                     ? AppIcon(
                                         asset: e.value.iconAsset!,
                                         glowColor: e.value.color,
-                                        size: 18,
+                                        size: 42,
                                       )
                                     : Icon(
                                         e.value.icon,
                                         color: e.value.color,
-                                        size: 18,
+                                        size: 26,
                                       ),
                               ),
                               const SizedBox(width: 14),

@@ -233,8 +233,8 @@ class RouterBottomNav extends StatelessWidget {
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 5,
+                          horizontal: 12,
+                          vertical: 1,
                         ),
                         decoration: BoxDecoration(
                           color: isSel
@@ -247,7 +247,7 @@ class RouterBottomNav extends StatelessWidget {
                           child: AppIcon(
                             asset: e.value.icon,
                             glowColor: isSel ? p.primary : null,
-                            size: 22,
+                            size: 28,
                           ),
                         ),
                       ),

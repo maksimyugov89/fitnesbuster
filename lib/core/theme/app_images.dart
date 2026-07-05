@@ -44,6 +44,9 @@ class AppImages {
       'assets/icons/qr_code_scanner_rounded.png';
   static const String foodScale = 'assets/icons/scale_rounded.png';
   static const String healthIntegration = 'assets/icons/Health_Integration.png';
+  static const String activityFeed = 'assets/icons/Activity_Feed.png';
+  static const String friends = 'assets/icons/Friends.png';
+  static const String challenges = 'assets/icons/Challenges.png';
 
   // ─── Profile menu ───────────────────────────────────────────────
   static const String personalData = 'assets/icons/person_outline_rounded.png';
@@ -59,15 +62,27 @@ class AppImages {
 
 /// Helper widget to display app icons with consistent sizing.
 ///
-/// These are silver/chrome illustrated assets shared across every theme —
-/// never recolor the artwork itself with a [ColorFilter] (it flattens into a
-/// solid blob). Theming is expressed only via an optional soft [glowColor]
-/// halo rendered behind the icon, matching the current theme's accent.
+/// These are silver/chrome illustrated assets shared across every theme.
+/// Each source icon has a companion `<name>_glow.png` — a precomputed mask
+/// built from a padded canvas (see scratchpad glow-extraction scripts):
+/// a tight highlight/sparkle layer clipped to the icon's own silhouette, plus
+/// a soft outer halo blurred from that silhouette into the surrounding
+/// padding. When [glowColor] is set, that mask is drawn oversized (by
+/// [glowOverscan]) and tinted via [BlendMode.srcIn], centered on top of the
+/// untouched base icon. [OverflowBox] + `Stack(clipBehavior: Clip.none)` let
+/// the halo visually spill past the icon's own bounding box (e.g. past a
+/// tightly-fit colored frame) instead of being clamped back down to it.
 class AppIcon extends StatelessWidget {
   final String asset;
   final double size;
   final BoxFit fit;
   final Color? glowColor;
+
+  /// How much larger than [size] the glow layer renders, matching the
+  /// padding ratio baked into the `_glow.png` masks (see PAD_RATIO in the
+  /// generation script). Must stay in sync with that script to keep the
+  /// halo's silhouette aligned with the base icon.
+  static const double glowOverscan = 1.30;
 
   const AppIcon({
     super.key,
@@ -79,21 +94,33 @@ class AppIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final image = Image.asset(asset, width: size, height: size, fit: fit);
+    final base = Image.asset(asset, width: size, height: size, fit: fit);
     final glow = glowColor;
-    if (glow == null) return image;
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size * 0.28),
-        boxShadow: [
-          BoxShadow(
-            color: glow.withValues(alpha: 0.55),
-            blurRadius: size * 0.35,
-            spreadRadius: size * 0.02,
+    if (glow == null) return base;
+    final glowAsset = asset.replaceFirst(RegExp(r'\.png$'), '_glow.png');
+    final glowSize = size * glowOverscan;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          base,
+          OverflowBox(
+            maxWidth: glowSize,
+            maxHeight: glowSize,
+            child: Image.asset(
+              glowAsset,
+              width: glowSize,
+              height: glowSize,
+              fit: fit,
+              color: glow,
+              colorBlendMode: BlendMode.srcIn,
+            ),
           ),
         ],
       ),
-      child: image,
     );
   }
 }
