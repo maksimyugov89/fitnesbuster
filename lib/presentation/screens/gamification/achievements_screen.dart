@@ -4,6 +4,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
+import 'package:fitnesbuster/presentation/widgets/segmented_tab_bar.dart';
 
 class AchievementsScreen extends StatefulWidget {
   const AchievementsScreen({super.key});
@@ -12,7 +13,9 @@ class AchievementsScreen extends StatefulWidget {
   State<AchievementsScreen> createState() => _AchievementsScreenState();
 }
 
-class _AchievementsScreenState extends State<AchievementsScreen> {
+class _AchievementsScreenState extends State<AchievementsScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabs = TabController(length: 2, vsync: this);
   Set<String> _unlocked = {};
   int _totalXp = 0;
   String _selectedCategory = 'all';
@@ -34,6 +37,12 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _tabs.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -81,8 +90,31 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             ),
           ),
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(52),
+          child: SegmentedTabBar(
+            controller: _tabs,
+            labels: const ['Достижения', 'Уровни'],
+          ),
+        ),
       ),
-      body: Column(
+      body: TabBarView(
+        controller: _tabs,
+        children: [
+          _buildAchievementsTab(colors, lvl, unlockedCount, totalCount),
+          _LevelsTab(colors: colors, totalXp: _totalXp),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAchievementsTab(
+    ThemePalette colors,
+    UserLevel lvl,
+    int unlockedCount,
+    int totalCount,
+  ) {
+    return Column(
         children: [
           // ── Header stats ──────────────────────────────────────────────────────
           Padding(
@@ -105,7 +137,12 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
               ),
               child: Row(
                 children: [
-                  Text(lvl.emoji, style: const TextStyle(fontSize: 36)),
+                  Image.asset(
+                    lvl.icon,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.contain,
+                  ),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
@@ -220,8 +257,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 
   void _showDetail(Achievement a, bool earned) {
@@ -238,7 +274,15 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(a.emoji, style: const TextStyle(fontSize: 48)),
+            Opacity(
+              opacity: earned ? 1.0 : 0.45,
+              child: Image.asset(
+                a.icon,
+                width: 72,
+                height: 72,
+                fit: BoxFit.contain,
+              ),
+            ),
             const SizedBox(height: 12),
             Text(
               a.name,
@@ -344,7 +388,12 @@ class _AchievementTile extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(achievement.emoji, style: const TextStyle(fontSize: 28)),
+              Image.asset(
+                achievement.icon,
+                width: 36,
+                height: 36,
+                fit: BoxFit.contain,
+              ),
               const SizedBox(height: 6),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -375,6 +424,192 @@ class _AchievementTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _LevelsTab extends StatelessWidget {
+  final ThemePalette colors;
+  final int totalXp;
+
+  const _LevelsTab({required this.colors, required this.totalXp});
+
+  @override
+  Widget build(BuildContext context) {
+    final lvl = GamificationService.computeLevel(totalXp);
+    final roadmap = GamificationService.levelRoadmap();
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 40),
+      children: [
+        // ── Current level card ────────────────────────────────────────────────
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [colors.primary.withValues(alpha: 0.18), colors.elevated],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: colors.primary.withValues(alpha: 0.25)),
+          ),
+          child: Column(
+            children: [
+              Image.asset(
+                lvl.icon,
+                width: 88,
+                height: 88,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Уровень ${lvl.level} · ${lvl.name}',
+                style: TextStyle(
+                  fontFamily: 'Syne',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '$totalXp XP всего',
+                style: TextStyle(fontSize: 12, color: colors.textMuted),
+              ),
+              const SizedBox(height: 14),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: LinearProgressIndicator(
+                  value: lvl.progress,
+                  backgroundColor: colors.primary.withValues(alpha: 0.12),
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                  minHeight: 8,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                lvl.isMaxLevel
+                    ? 'Достигнут максимальный уровень'
+                    : '${lvl.xpInCurrentLevel} / ${lvl.xpNeededForNext} XP · осталось ${lvl.xpForNext - totalXp} XP до след. уровня',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: colors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 20),
+        Text(
+          'Все уровни',
+          style: TextStyle(
+            fontFamily: 'Syne',
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            color: colors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 10),
+
+        // ── Roadmap ──────────────────────────────────────────────────────────
+        ...roadmap.map((entry) {
+          final isCurrent = entry.level == lvl.level;
+          final isUnlocked = entry.level <= lvl.level;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isCurrent
+                    ? colors.primary.withValues(alpha: 0.1)
+                    : colors.surfaceCard,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isCurrent
+                      ? colors.primary.withValues(alpha: 0.4)
+                      : colors.textPrimary.withValues(alpha: 0.06),
+                  width: isCurrent ? 1.5 : 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Opacity(
+                    opacity: isUnlocked ? 1.0 : 0.35,
+                    child: Image.asset(
+                      entry.icon,
+                      width: 44,
+                      height: 44,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Ур. ${entry.level} · ${entry.name}',
+                          style: TextStyle(
+                            fontFamily: 'Syne',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: isUnlocked
+                                ? colors.textPrimary
+                                : colors.textMuted,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'от ${entry.xpRequired} XP',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: colors.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isCurrent)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Сейчас',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: colors.textOnPrimary,
+                        ),
+                      ),
+                    )
+                  else if (isUnlocked)
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: colors.primary,
+                      size: 22,
+                    )
+                  else
+                    Icon(
+                      Icons.lock_rounded,
+                      color: colors.textMuted.withValues(alpha: 0.6),
+                      size: 20,
+                    ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ],
     );
   }
 }

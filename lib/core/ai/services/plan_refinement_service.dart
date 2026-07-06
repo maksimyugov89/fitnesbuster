@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:fitnesbuster/core/ai/base_client.dart';
 import 'package:fitnesbuster/core/ai/validators/json_validator.dart';
 import 'package:fitnesbuster/core/ai/services/workout_plan_service.dart';
+import 'package:fitnesbuster/core/ai/knowledge/training_knowledge.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 
 class PlanRefinementService {
@@ -43,10 +44,15 @@ class PlanRefinementService {
     );
     final targetBlock = _workoutPlanService.targetBlock(profile);
 
+    final emphasisBlock = methodologyEmphasisBlock(profile);
+
     final prompt =
         '''
 Ты — сертифицированный персональный тренер (NSCA-CPT). Пользователь завершил тестовую неделю.
 Составь скорректированную программу тренировок на 7 дней на основе РЕАЛЬНЫХ показателей.
+
+$trainingPrinciplesCore
+$emphasisBlock
 
 ═══ ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ═══
 Пол: ${profile.gender == Gender.male ? 'Мужской' : 'Женский'}
@@ -153,6 +159,7 @@ ${locationBlock.isNotEmpty ? '═══ МЕСТО ТРЕНИРОВКИ ══�
         '''
 Ты — персональный AI-тренер FitnesBuster. Твоя задача — скорректировать тренировочный план пользователя.
 
+$trainingPrinciplesCore
 ═══ ТЕКУЩИЙ ПЛАН (структура) ═══
 $planSummary
 

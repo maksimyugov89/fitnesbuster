@@ -2,7 +2,9 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:get_it/get_it.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
@@ -33,9 +35,23 @@ void main() {
       workflowService: mockWorkflowService,
       authRepo: mockAuthRepo,
     );
+    // OnboardingBloc syncs the freshly-saved user into AuthBloc via GetIt
+    // (`sl<AuthBloc>().add(AuthUserChanged(...))`) — register a real AuthBloc
+    // backed by the same mock repo so that call doesn't throw.
+    if (GetIt.instance.isRegistered<AuthBloc>()) {
+      GetIt.instance.unregister<AuthBloc>();
+    }
+    GetIt.instance.registerLazySingleton<AuthBloc>(
+      () => AuthBloc(authRepository: mockAuthRepo),
+    );
   });
 
-  tearDown(() => bloc.close());
+  tearDown(() {
+    bloc.close();
+    if (GetIt.instance.isRegistered<AuthBloc>()) {
+      GetIt.instance.unregister<AuthBloc>();
+    }
+  });
 
   test('initial state is OnboardingCollecting', () {
     expect(bloc.state, const OnboardingCollecting());
@@ -99,6 +115,10 @@ void main() {
       build: () {
         when(mockAuthRepo.currentUser).thenReturn(tUser);
         when(
+          mockAuthRepo.userChanges,
+        ).thenAnswer((_) => Stream.value(tUser));
+        when(mockAuthRepo.isEmailVerified).thenReturn(true);
+        when(
           mockUserRepo.saveOnboardingData(
             userId: anyNamed('userId'),
             goal: anyNamed('goal'),
@@ -160,6 +180,10 @@ void main() {
       build: () {
         when(mockAuthRepo.currentUser).thenReturn(tUser);
         when(
+          mockAuthRepo.userChanges,
+        ).thenAnswer((_) => Stream.value(tUser));
+        when(mockAuthRepo.isEmailVerified).thenReturn(true);
+        when(
           mockUserRepo.saveOnboardingData(
             userId: anyNamed('userId'),
             goal: anyNamed('goal'),
@@ -202,6 +226,10 @@ void main() {
       'emits error when plan generation fails',
       build: () {
         when(mockAuthRepo.currentUser).thenReturn(tUser);
+        when(
+          mockAuthRepo.userChanges,
+        ).thenAnswer((_) => Stream.value(tUser));
+        when(mockAuthRepo.isEmailVerified).thenReturn(true);
         when(
           mockUserRepo.saveOnboardingData(
             userId: anyNamed('userId'),

@@ -43,13 +43,14 @@ _$UserProfileImpl _$$UserProfileImplFromJson(Map<String, dynamic> json) =>
       gender: $enumDecode(_$GenderEnumMap, json['gender']),
       goal: $enumDecode(_$FitnessGoalEnumMap, json['goal']),
       intensity: $enumDecode(_$IntensityLevelEnumMap, json['intensity']),
-      medicalRestrictions:
-          (json['medicalRestrictions'] as List<dynamic>?)
+      trainingExperience: $enumDecodeNullable(
+              _$TrainingExperienceEnumMap, json['trainingExperience']) ??
+          TrainingExperience.novice,
+      medicalRestrictions: (json['medicalRestrictions'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
-      exerciseRestrictions:
-          (json['exerciseRestrictions'] as List<dynamic>?)
+      exerciseRestrictions: (json['exerciseRestrictions'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
@@ -59,11 +60,9 @@ _$UserProfileImpl _$$UserProfileImplFromJson(Map<String, dynamic> json) =>
           ? null
           : DateTime.parse(json['targetDate'] as String),
       testWeekCompleted: json['testWeekCompleted'] as bool? ?? false,
-      testResults:
-          (json['testResults'] as List<dynamic>?)
+      testResults: (json['testResults'] as List<dynamic>?)
               ?.map(
-                (e) => TestExerciseResult.fromJson(e as Map<String, dynamic>),
-              )
+                  (e) => TestExerciseResult.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       workoutLocation: json['workoutLocation'] as String?,
@@ -80,6 +79,8 @@ Map<String, dynamic> _$$UserProfileImplToJson(_$UserProfileImpl instance) =>
       'gender': _$GenderEnumMap[instance.gender]!,
       'goal': _$FitnessGoalEnumMap[instance.goal]!,
       'intensity': _$IntensityLevelEnumMap[instance.intensity]!,
+      'trainingExperience':
+          _$TrainingExperienceEnumMap[instance.trainingExperience]!,
       'medicalRestrictions': instance.medicalRestrictions,
       'exerciseRestrictions': instance.exerciseRestrictions,
       'activityLevel': _$ActivityLevelEnumMap[instance.activityLevel]!,
@@ -92,7 +93,10 @@ Map<String, dynamic> _$$UserProfileImplToJson(_$UserProfileImpl instance) =>
       'city': instance.city,
     };
 
-const _$GenderEnumMap = {Gender.male: 'male', Gender.female: 'female'};
+const _$GenderEnumMap = {
+  Gender.male: 'male',
+  Gender.female: 'female',
+};
 
 const _$FitnessGoalEnumMap = {
   FitnessGoal.loseWeight: 'loseWeight',
@@ -110,6 +114,12 @@ const _$IntensityLevelEnumMap = {
   IntensityLevel.relaxed: 'relaxed',
 };
 
+const _$TrainingExperienceEnumMap = {
+  TrainingExperience.novice: 'novice',
+  TrainingExperience.intermediate: 'intermediate',
+  TrainingExperience.experienced: 'experienced',
+};
+
 const _$ActivityLevelEnumMap = {
   ActivityLevel.sedentary: 'sedentary',
   ActivityLevel.lightlyActive: 'lightlyActive',
@@ -119,26 +129,26 @@ const _$ActivityLevelEnumMap = {
 };
 
 _$TestExerciseResultImpl _$$TestExerciseResultImplFromJson(
-  Map<String, dynamic> json,
-) => _$TestExerciseResultImpl(
-  exerciseName: json['exerciseName'] as String,
-  primaryMuscle: $enumDecode(_$MuscleGroupEnumMap, json['primaryMuscle']),
-  comfortableWeightKg: (json['comfortableWeightKg'] as num).toDouble(),
-  comfortableSets: (json['comfortableSets'] as num).toInt(),
-  comfortableReps: (json['comfortableReps'] as num).toInt(),
-  notes: json['notes'] as String?,
-);
+        Map<String, dynamic> json) =>
+    _$TestExerciseResultImpl(
+      exerciseName: json['exerciseName'] as String,
+      primaryMuscle: $enumDecode(_$MuscleGroupEnumMap, json['primaryMuscle']),
+      comfortableWeightKg: (json['comfortableWeightKg'] as num).toDouble(),
+      comfortableSets: (json['comfortableSets'] as num).toInt(),
+      comfortableReps: (json['comfortableReps'] as num).toInt(),
+      notes: json['notes'] as String?,
+    );
 
 Map<String, dynamic> _$$TestExerciseResultImplToJson(
-  _$TestExerciseResultImpl instance,
-) => <String, dynamic>{
-  'exerciseName': instance.exerciseName,
-  'primaryMuscle': _$MuscleGroupEnumMap[instance.primaryMuscle]!,
-  'comfortableWeightKg': instance.comfortableWeightKg,
-  'comfortableSets': instance.comfortableSets,
-  'comfortableReps': instance.comfortableReps,
-  'notes': instance.notes,
-};
+        _$TestExerciseResultImpl instance) =>
+    <String, dynamic>{
+      'exerciseName': instance.exerciseName,
+      'primaryMuscle': _$MuscleGroupEnumMap[instance.primaryMuscle]!,
+      'comfortableWeightKg': instance.comfortableWeightKg,
+      'comfortableSets': instance.comfortableSets,
+      'comfortableReps': instance.comfortableReps,
+      'notes': instance.notes,
+    };
 
 const _$MuscleGroupEnumMap = {
   MuscleGroup.chest: 'chest',

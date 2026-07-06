@@ -17,6 +17,7 @@ class AppImages {
   static const String supplements = 'assets/icons/Supplements.png';
   static const String weightTracker = 'assets/icons/Weight_Tracker.png';
   static const String workoutTimer = 'assets/icons/Workout_Timer.png';
+  static const String aiPlanLoading = 'assets/images/ai_plan_loading.png';
 
   // ─── Nav / feature icons ────────────────────────────────────────
   static const String home = 'assets/icons/home_rounded.png';
@@ -58,6 +59,24 @@ class AppImages {
   static const String help = 'assets/icons/help_outline_rounded.png';
   static const String terms = 'assets/icons/article_outlined.png';
   static const String about = 'assets/icons/info_outline_rounded.png';
+
+  // ─── Gamification levels (ordered lowest → highest) ─────────────
+  static const List<String> levelIcons = [
+    'assets/images/levels/level_novice.png',
+    'assets/images/levels/level_enthusiast.png',
+    'assets/images/levels/level_athlete.png',
+    'assets/images/levels/level_warrior.png',
+    'assets/images/levels/level_champion.png',
+    'assets/images/levels/level_legend.png',
+    'assets/images/levels/level_elite.png',
+    'assets/images/levels/level_master.png',
+    'assets/images/levels/level_titan.png',
+  ];
+
+  /// Icon path for an achievement, keyed by its [Achievement.id]
+  /// (e.g. `first_workout` → `assets/images/achievements/ach_first_workout.png`).
+  static String achievementIcon(String id) =>
+      'assets/images/achievements/ach_$id.png';
 }
 
 /// Helper widget to display app icons with consistent sizing.

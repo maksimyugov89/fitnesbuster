@@ -10,6 +10,10 @@ abstract interface class ISettingsRepository {
   Future<void> setWorkoutTime(String dayKey, int minuteOfDay);
   Future<int> getWorkoutRating(String dayKey);
   Future<void> setWorkoutRating(String dayKey, int rating);
+  Future<int?> getWorkoutRpe(String dayKey);
+  Future<void> setWorkoutRpe(String dayKey, int rpe);
+  Future<int?> getDomsLevel(String dayKey);
+  Future<void> setDomsLevel(String dayKey, int level);
   Future<String?> getWorkoutLogDetail(String dayKey);
   Future<void> setWorkoutLogDetail(String dayKey, String json);
   Future<int> getWorkoutStreak();

@@ -35,6 +35,7 @@ class OnboardingSetProfile extends OnboardingEvent {
   final double height;
   final Gender gender;
   final ActivityLevel activity;
+  final TrainingExperience trainingExperience;
   final List<String> restrictions;
   final String city;
   const OnboardingSetProfile({
@@ -44,6 +45,7 @@ class OnboardingSetProfile extends OnboardingEvent {
     required this.height,
     required this.gender,
     required this.activity,
+    this.trainingExperience = TrainingExperience.novice,
     this.restrictions = const [],
     this.city = '',
   });
@@ -55,6 +57,7 @@ class OnboardingSetProfile extends OnboardingEvent {
     height,
     gender,
     activity,
+    trainingExperience,
     restrictions,
     city,
   ];

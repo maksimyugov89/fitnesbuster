@@ -1,5 +1,6 @@
 import 'package:fitnesbuster/core/ai/base_client.dart';
 import 'package:fitnesbuster/core/ai/validators/json_validator.dart';
+import 'package:fitnesbuster/core/ai/knowledge/training_knowledge.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 
 class ChatService {
@@ -16,6 +17,8 @@ class ChatService {
         ? 'Ты — персональный фитнес-эксперт и нутрициолог FitnesBuster с 15-летним опытом.\n'
               'Ты сертифицирован NSCA, ISSN, обладаешь знаниями в спортивной физиологии и диетологии.\n'
               '${_client.languageInstruction} Будь конкретным, используй цифры и факты.\n\n'
+              '$trainingPrinciplesCore\n'
+              '${methodologyEmphasisBlock(profile)}\n'
               '━━━ ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ━━━\n'
               'Пол: ${profile.gender == Gender.male ? "Мужской" : "Женский"} | Возраст: ${profile.age} лет\n'
               'Вес: ${profile.weight} кг | Рост: ${profile.height} см | ИМТ: ${profile.bmi.toStringAsFixed(1)}\n'
@@ -66,6 +69,8 @@ ${profile.medicalRestrictions.isNotEmpty ? 'Ограничения: ${profile.me
 Ты — персональный фитнес-эксперт и нутрициолог FitnesBuster с 15-летним опытом.
 Ты сертифицирован NSCA, ISSN, обладаешь знаниями в спортивной физиологии и диетологии.
 
+$trainingPrinciplesCore
+${profile != null ? methodologyEmphasisBlock(profile) : ''}
 $context$topicsContext
 ━━━ ВОПРОС ПОЛЬЗОВАТЕЛЯ ━━━
 $question

@@ -34,11 +34,15 @@ class DeepSeekService implements IDeepSeekService {
     HealthData? recentHealth,
     int weekNumber = 1,
     String? previousPlanFeedback,
+    int? recentAvgRpe,
+    int? domsLevel,
   }) => _workoutPlan.generateWorkoutPlan(
     profile,
     recentHealth: recentHealth,
     weekNumber: weekNumber,
     previousPlanFeedback: previousPlanFeedback,
+    recentAvgRpe: recentAvgRpe,
+    domsLevel: domsLevel,
   );
 
   @override

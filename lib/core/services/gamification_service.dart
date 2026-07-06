@@ -1,6 +1,7 @@
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 // ── Achievement model ──────────────────────────────────────────────────────────
 
@@ -20,6 +21,8 @@ class Achievement {
     required this.xpReward,
     required this.category,
   });
+
+  String get icon => AppImages.achievementIcon(id);
 }
 
 // ── UserLevel model ───────────────────────────────────────────────────────────
@@ -29,6 +32,7 @@ class UserLevel {
   final int totalXp;
   final String name;
   final String emoji;
+  final String icon;
   final int xpForCurrent;
   final int xpForNext;
   final double progress;
@@ -38,6 +42,7 @@ class UserLevel {
     required this.totalXp,
     required this.name,
     required this.emoji,
+    required this.icon,
     required this.xpForCurrent,
     required this.xpForNext,
     required this.progress,
@@ -59,15 +64,60 @@ class GamificationService implements IGamificationService {
   // ── Level table ─────────────────────────────────────────────────────────────
 
   static final _levels = [
-    (xp: 0, name: AppLocalizations.tl('levelNewbie'), emoji: '🌱'),
-    (xp: 500, name: AppLocalizations.tl('levelEnthusiast'), emoji: '💪'),
-    (xp: 1500, name: AppLocalizations.tl('levelAthlete'), emoji: '🔥'),
-    (xp: 3000, name: AppLocalizations.tl('levelWarrior'), emoji: '🏋️'),
-    (xp: 5000, name: AppLocalizations.tl('levelChampion'), emoji: '⚡'),
-    (xp: 8000, name: AppLocalizations.tl('levelLegend'), emoji: '🚀'),
-    (xp: 12000, name: AppLocalizations.tl('levelElite'), emoji: '👑'),
-    (xp: 18000, name: AppLocalizations.tl('levelMaster'), emoji: '🧬'),
-    (xp: 25000, name: AppLocalizations.tl('levelTitan'), emoji: '🌟'),
+    (
+      xp: 0,
+      name: AppLocalizations.tl('levelNewbie'),
+      emoji: '🌱',
+      icon: AppImages.levelIcons[0],
+    ),
+    (
+      xp: 500,
+      name: AppLocalizations.tl('levelEnthusiast'),
+      emoji: '💪',
+      icon: AppImages.levelIcons[1],
+    ),
+    (
+      xp: 1500,
+      name: AppLocalizations.tl('levelAthlete'),
+      emoji: '🔥',
+      icon: AppImages.levelIcons[2],
+    ),
+    (
+      xp: 3000,
+      name: AppLocalizations.tl('levelWarrior'),
+      emoji: '🏋️',
+      icon: AppImages.levelIcons[3],
+    ),
+    (
+      xp: 5000,
+      name: AppLocalizations.tl('levelChampion'),
+      emoji: '⚡',
+      icon: AppImages.levelIcons[4],
+    ),
+    (
+      xp: 8000,
+      name: AppLocalizations.tl('levelLegend'),
+      emoji: '🚀',
+      icon: AppImages.levelIcons[5],
+    ),
+    (
+      xp: 12000,
+      name: AppLocalizations.tl('levelElite'),
+      emoji: '👑',
+      icon: AppImages.levelIcons[6],
+    ),
+    (
+      xp: 18000,
+      name: AppLocalizations.tl('levelMaster'),
+      emoji: '🧬',
+      icon: AppImages.levelIcons[7],
+    ),
+    (
+      xp: 25000,
+      name: AppLocalizations.tl('levelTitan'),
+      emoji: '🌟',
+      icon: AppImages.levelIcons[8],
+    ),
   ];
 
   // ── Achievement catalogue (static const — pure data) ────────────────────────
@@ -134,7 +184,7 @@ class GamificationService implements IGamificationService {
       name: AppLocalizations.tl('achStreak14'),
       desc: AppLocalizations.tl('achStreak14Desc'),
       emoji: '🚀',
-      xpReward: 300,
+      xpReward: 500,
       category: 'streak',
     ),
     Achievement(
@@ -355,11 +405,20 @@ class GamificationService implements IGamificationService {
       totalXp: totalXp,
       name: _levels[idx].name,
       emoji: _levels[idx].emoji,
+      icon: _levels[idx].icon,
       xpForCurrent: xpCurrent,
       xpForNext: xpNext,
       progress: progress,
     );
   }
+
+  /// Static roadmap of every level, for UI that needs to show the full
+  /// ladder (name, XP threshold, icon) rather than just the current one.
+  static List<({int level, String name, String icon, int xpRequired})>
+  levelRoadmap() => List.generate(_levels.length, (i) {
+    final l = _levels[i];
+    return (level: i + 1, name: l.name, icon: l.icon, xpRequired: l.xp);
+  });
 
   // ── Achievements ─────────────────────────────────────────────────────────────
 

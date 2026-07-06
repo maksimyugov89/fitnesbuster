@@ -54,6 +54,11 @@ class _DashboardScreenState extends State<DashboardScreen>
   UserLevel? _userLevel;
   List<DailyTaskItem> _dailyTasks = [];
 
+  // DOMS check-in: null = ещё не загружено с диска; после загрузки null
+  // означает "сегодня ещё не отвечал" — тогда показываем карточку.
+  int? _domsLevel;
+  bool _domsLoaded = false;
+
   int _pendingRequests = 0;
   StreamSubscription<List<FriendRequest>>? _requestsSub;
   StreamSubscription<AuthState>? _authSub;
@@ -411,9 +416,17 @@ class _DashboardScreenState extends State<DashboardScreen>
         final v = await settings.getManualHeartRate(k);
         if (v > 0 && mounted) setState(() => _heartRate = v);
       }
+      final doms = await settings.getDomsLevel(k);
+      if (mounted) setState(() => _domsLoaded = true);
+      if (doms != null && mounted) setState(() => _domsLevel = doms);
     } catch (e, st) {
       appLogger.w('Dashboard: load manual data', error: e, stackTrace: st);
     }
+  }
+
+  Future<void> _saveDoms(int level) async {
+    await sl<ISettingsRepository>().setDomsLevel(todayKey(), level);
+    if (mounted) setState(() => _domsLevel = level);
   }
 
   Future<void> _showManualInputSheet(String type) async {
@@ -498,6 +511,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                     const SizedBox(height: 10),
                     AdaptationBanner(recoveryScore: _recoveryScore!),
                   ],
+                ],
+                if (_domsLoaded && _domsLevel == null) ...[
+                  const SizedBox(height: 16),
+                  DomsCheckInCard(onSelected: _saveDoms),
                 ],
                 if (_dailyTasks.isNotEmpty) ...[
                   const SizedBox(height: 24),

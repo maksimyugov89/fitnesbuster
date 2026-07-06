@@ -8,6 +8,9 @@ import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
+import 'package:fitnesbuster/core/health/health_data_mapper.dart';
+import 'package:fitnesbuster/core/utils/recent_rpe.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
@@ -47,6 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _goal = '';
   WorkoutLocation _workoutLocation = WorkoutLocation.gym;
   RunningPreference _runningPreference = RunningPreference.withRunning;
+  TrainingExperience _trainingExperience = TrainingExperience.novice;
   bool _dataLoaded = false;
 
   // ── Gamification ────────────────────────────────────────────────────────────
@@ -195,6 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               user.profile!.runningPreference!,
             );
           }
+          _trainingExperience = user.profile!.trainingExperience;
         }
         _dataLoaded = true;
       });
@@ -349,6 +354,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label: l10n.workoutLocationLabel,
                   color: colors.info,
                   onTap: () => _openWorkoutSettings(context),
+                ),
+                ProfileMenuItem(
+                  icon: Icons.military_tech_outlined,
+                  iconAsset: AppImages.achievements,
+                  label: l10n.trainingExperienceLabel,
+                  color: colors.accentPurple,
+                  onTap: () => _openExperienceEdit(context),
                 ),
               ],
             ),
@@ -685,6 +697,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _openExperienceEdit(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => TrainingExperienceEditSheet(
+        experience: _trainingExperience,
+        onSave: (exp) {
+          setState(() => _trainingExperience = exp);
+          _saveExperienceAndRegenerate(exp);
+        },
+      ),
+    );
+  }
+
+  // Сохраняет стаж в Firestore и перегенерирует только тренировочный план
+  // (стаж влияет на выбор методологии/объёма, не на питание).
+  void _saveExperienceAndRegenerate(TrainingExperience exp) async {
+    final uid =
+        (context.read<AuthBloc>().state as AuthStateAuthenticated?)?.user.id;
+    if (uid == null) return;
+    try {
+      await sl<IUserRepository>().updateTrainingExperience(
+        userId: uid,
+        trainingExperience: exp,
+      );
+      final freshUser = await sl<IUserRepository>().getUser(uid);
+      if (!mounted) return;
+      final profile = freshUser.profile;
+      if (profile != null) {
+        await _regeneratePlans(profile, includeMeal: false);
+      }
+    } catch (e) {
+      appLogger.d('Training experience save error', error: e);
+    }
+  }
+
   void _openWorkoutSettings(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -758,6 +807,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  /// Best-effort чтение текущих показаний с устройства (сон/HRV/пульс) для
+  /// передачи в AI как `recentHealth`; при отсутствии данных возвращает null.
+  Future<HealthData?> _readRecentHealth() async {
+    try {
+      final hc = sl<IHealthConnectService>();
+      await hc.initialize();
+      final synced = await hc.readAllToday();
+      return healthDataFromSynced(synced);
+    } catch (e) {
+      appLogger.d('[ProfileScreen] readRecentHealth failed', error: e);
+      return null;
+    }
+  }
+
   // Показывает диалог прогресса, вызывает DeepSeek, сохраняет результат в Firestore.
   Future<void> _regeneratePlans(
     UserProfile profile, {
@@ -775,8 +838,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (uid == null) return;
       final aiService = sl<IDeepSeekService>();
       final repo = sl<IUserRepository>();
+      final recentHealth = await _readRecentHealth();
+      final avgRpe = await recentAverageRpe();
+      final doms = await todayDomsLevel();
       if (includeMeal) {
-        final workoutJson = await aiService.generateWorkoutPlan(profile);
+        final workoutJson = await aiService.generateWorkoutPlan(
+          profile,
+          recentHealth: recentHealth,
+          recentAvgRpe: avgRpe,
+          domsLevel: doms,
+        );
         final mealJson = await aiService.generateMealPlan(profile);
         await repo.saveAiPlans(
           userId: uid,
@@ -784,7 +855,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mealPlanJson: mealJson,
         );
       } else {
-        final workoutJson = await aiService.generateWorkoutPlan(profile);
+        final workoutJson = await aiService.generateWorkoutPlan(
+          profile,
+          recentHealth: recentHealth,
+          recentAvgRpe: avgRpe,
+          domsLevel: doms,
+        );
         appLogger.d(
           '[Regenerate] Workout plan generated, length=${workoutJson.length}',
         );
@@ -1402,7 +1478,12 @@ class _AchievementsSectionWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(lvl?.emoji ?? '🌱', style: const TextStyle(fontSize: 22)),
+                Image.asset(
+                  lvl?.icon ?? AppImages.levelIcons.first,
+                  width: 32,
+                  height: 32,
+                  fit: BoxFit.contain,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -1468,9 +1549,11 @@ class _AchievementsSectionWidget extends StatelessWidget {
                     .map(
                       (a) => Padding(
                         padding: const EdgeInsets.only(right: 8),
-                        child: Text(
-                          a.emoji,
-                          style: const TextStyle(fontSize: 22),
+                        child: Image.asset(
+                          a.icon,
+                          width: 26,
+                          height: 26,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     )

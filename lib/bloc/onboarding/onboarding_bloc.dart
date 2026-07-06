@@ -5,6 +5,7 @@ import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/services/onboarding_workflow_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
@@ -64,6 +65,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         height: e.height,
         gender: e.gender,
         activity: e.activity,
+        trainingExperience: e.trainingExperience,
         restrictions: e.restrictions,
         city: e.city,
       ),
@@ -96,9 +98,13 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         profile: profile,
       );
       // Also save the user name separately via updateProfile
-      await _userRepo.updateProfile(
-        (await _userRepo.getUser(userId)).copyWith(name: data.name!),
-      );
+      final updatedUser = (await _userRepo.getUser(
+        userId,
+      )).copyWith(name: data.name!);
+      await _userRepo.updateProfile(updatedUser);
+      // Sync into AuthBloc so the dashboard picks up the new name immediately,
+      // instead of waiting for the user to touch their profile again.
+      sl<AuthBloc>().add(AuthUserChanged(user: updatedUser));
     } catch (e, st) {
       appLogger.w('[OnboardingBloc] save failed', error: e, stackTrace: st);
       emit(OnboardingError(AppLocalizations.tl('onboardingSaveFailed')));

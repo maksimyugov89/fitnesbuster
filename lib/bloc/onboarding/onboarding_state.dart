@@ -17,6 +17,7 @@ class OnboardingCollecting extends OnboardingState {
   final double? height;
   final Gender? gender;
   final ActivityLevel? activity;
+  final TrainingExperience trainingExperience;
   final List<String> restrictions;
   final String city;
 
@@ -31,6 +32,7 @@ class OnboardingCollecting extends OnboardingState {
     this.height,
     this.gender,
     this.activity,
+    this.trainingExperience = TrainingExperience.novice,
     this.restrictions = const [],
     this.city = '',
   });
@@ -43,6 +45,7 @@ class OnboardingCollecting extends OnboardingState {
     gender: gender ?? Gender.male,
     goal: goal ?? FitnessGoal.loseWeight,
     intensity: intensity ?? IntensityLevel.balanced,
+    trainingExperience: trainingExperience,
     activityLevel: activity ?? ActivityLevel.moderatelyActive,
     medicalRestrictions: restrictions,
     city: city.isNotEmpty ? city : null,
@@ -70,6 +73,7 @@ class OnboardingCollecting extends OnboardingState {
     double? height,
     Gender? gender,
     ActivityLevel? activity,
+    TrainingExperience? trainingExperience,
     List<String>? restrictions,
     String? city,
   }) => OnboardingCollecting(
@@ -83,6 +87,7 @@ class OnboardingCollecting extends OnboardingState {
     height: height ?? this.height,
     gender: gender ?? this.gender,
     activity: activity ?? this.activity,
+    trainingExperience: trainingExperience ?? this.trainingExperience,
     restrictions: restrictions ?? this.restrictions,
     city: city ?? this.city,
   );
@@ -99,6 +104,7 @@ class OnboardingCollecting extends OnboardingState {
     height,
     gender,
     activity,
+    trainingExperience,
     restrictions,
     city,
   ];

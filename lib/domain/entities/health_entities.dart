@@ -12,6 +12,7 @@ class HealthData with _$HealthData {
     double? caloriesBurned,
     int? heartRateAvg,
     int? heartRateResting,
+    double? heartRateVariability,
     double? weight,
     double? bodyFatPercent,
     int? sleepMinutes,

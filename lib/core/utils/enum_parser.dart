@@ -52,3 +52,14 @@ ActivityLevel parseActivityLevel(String? a) {
 }
 
 Gender parseGender(String? g) => g == 'male' ? Gender.male : Gender.female;
+
+TrainingExperience parseTrainingExperience(String? e) {
+  switch (e) {
+    case 'intermediate':
+      return TrainingExperience.intermediate;
+    case 'experienced':
+      return TrainingExperience.experienced;
+    default:
+      return TrainingExperience.novice;
+  }
+}

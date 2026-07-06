@@ -15,6 +15,8 @@ import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/presentation/screens/workout/pr_screen.dart';
 import 'package:fitnesbuster/presentation/screens/workout/import_workout_sheet.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/core/utils/date_key.dart';
+import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 
 class WorkoutExecutionScreen extends StatefulWidget {
   final WorkoutDay workout;
@@ -48,6 +50,9 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
 
   // ── Challenge result ───────────────────────────────────────────────────────
   Future<List<String>>? _endSessionFuture;
+
+  // ── Post-workout RPE ───────────────────────────────────────────────────────
+  int? _selectedRpe;
 
   // ── TTS ────────────────────────────────────────────────────────────────────
   late final FlutterTts _tts;
@@ -908,6 +913,14 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
     );
   }
 
+  // ── Post-workout RPE ─────────────────────────────────────────────────────
+
+  void _selectRpe(int rpe) {
+    HapticFeedback.selectionClick();
+    setState(() => _selectedRpe = rpe);
+    sl<ISettingsRepository>().setWorkoutRpe(dateKey(DateTime.now()), rpe);
+  }
+
   // ── Post-workout summary for AI correction ─────────────────────────────────
 
   String _buildPostWorkoutSummary() {
@@ -937,6 +950,9 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
           'min': '${widget.workout.cardioMinutes}',
         }),
       );
+    }
+    if (_selectedRpe != null) {
+      buf.writeln('RPE: $_selectedRpe/10');
     }
     return buf.toString();
   }
@@ -1087,6 +1103,8 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
                       );
                     },
                   ),
+                const SizedBox(height: 16),
+                _RpeRatingRow(selected: _selectedRpe, onSelected: _selectRpe),
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -1272,6 +1290,79 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
     WorkoutPhase.rest => AppLocalizations.tl('phaseRest'),
     WorkoutPhase.done => AppLocalizations.tl('phaseDone'),
   };
+}
+
+// ─── Post-workout RPE rating ─────────────────────────────────────────────────
+
+class _RpeRatingRow extends StatelessWidget {
+  final int? selected;
+  final ValueChanged<int> onSelected;
+  const _RpeRatingRow({required this.selected, required this.onSelected});
+
+  static const _values = [4, 6, 8, 9, 10];
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppTheme.of(context);
+    final l10n = context.l10n;
+    final labels = [
+      l10n.rpeEasy,
+      l10n.rpeModerate,
+      l10n.rpeHard,
+      l10n.rpeVeryHard,
+      l10n.rpeMax,
+    ];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        children: [
+          Text(
+            l10n.rpeQuestionTitle,
+            style: TextStyle(fontSize: 13, color: colors.textMuted),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: List.generate(_values.length, (i) {
+              final isSel = selected == _values[i];
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => onSelected(_values[i]),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    height: 52,
+                    margin: EdgeInsets.only(right: i < _values.length - 1 ? 8 : 0),
+                    decoration: BoxDecoration(
+                      color: isSel
+                          ? colors.primary.withValues(alpha: 0.15)
+                          : colors.surfaceCard,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isSel
+                            ? colors.primary
+                            : colors.textPrimary.withValues(alpha: 0.06),
+                        width: isSel ? 2 : 1,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        labels[i],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: isSel ? colors.primary : colors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ─── Phase label ─────────────────────────────────────────────────────────────

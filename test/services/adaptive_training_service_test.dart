@@ -3,6 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:fitnesbuster/core/training/adaptive_training_service.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/domain/services/i_adaptive_training_service.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 
 import 'adaptive_training_service_test.mocks.dart';
@@ -56,6 +57,46 @@ void main() {
   setUp(() {
     mockAi = MockIDeepSeekService();
     service = AdaptiveTrainingService(ai: mockAi);
+  });
+
+  // ── userLevel from declared trainingExperience ───────────────────
+
+  group('calculateAdjustment userLevel', () {
+    final tLightTestResult = TestWeekResult(
+      completedAt: DateTime(2026, 1, 1),
+      exercises: const [
+        TestExerciseResult(
+          exerciseName: 'Жим лёжа',
+          primaryMuscle: MuscleGroup.chest,
+          comfortableWeightKg: 10,
+          comfortableSets: 3,
+          comfortableReps: 8,
+        ),
+      ],
+      averageHeartRate: 120,
+      averageSessionDuration: 30,
+      perceivedDifficulty: 5,
+    );
+
+    test('declared "experienced" yields advanced even with light test week', () {
+      final adj = service.calculateAdjustment(
+        testResult: tLightTestResult,
+        profile: tProfile.copyWith(
+          trainingExperience: TrainingExperience.experienced,
+        ),
+      );
+      expect(adj.userLevel, UserLevel.advanced);
+    });
+
+    test('heavy test week can raise level above a declared novice', () {
+      final adj = service.calculateAdjustment(
+        testResult: tTestResult,
+        profile: tProfile.copyWith(
+          trainingExperience: TrainingExperience.novice,
+        ),
+      );
+      expect(adj.userLevel, UserLevel.intermediate);
+    });
   });
 
   // ── calculateAdjustment ─────────────────────────────────────────
@@ -151,6 +192,7 @@ void main() {
         testResult: tTestResult,
         adjustment: adj,
         durationWeeks: 4,
+        profile: tProfile,
       );
 
       expect(plan.length, equals(4));
@@ -167,6 +209,7 @@ void main() {
         testResult: tTestResult,
         adjustment: adj,
         durationWeeks: 12,
+        profile: tProfile,
       );
 
       expect(plan.every((w) => w.exercises.isNotEmpty), isTrue);
@@ -183,6 +226,7 @@ void main() {
         testResult: tTestResult,
         adjustment: adj,
         durationWeeks: tProfile.estimatedWeeksNeeded,
+        profile: tProfile,
       );
 
       expect(plan.length, equals(tProfile.estimatedWeeksNeeded));
@@ -197,11 +241,58 @@ void main() {
         testResult: tTestResult,
         adjustment: adj,
         durationWeeks: 16,
+        profile: tProfile,
       );
 
       expect(plan[0].focus, contains('Адаптация'));
       expect(plan[5].focus, contains('Прогресс'));
       expect(plan[9].focus, anyOf(contains('Интенсификация'), contains('Пик')));
+    });
+  });
+
+  // ── buildAdaptedPlan location-aware fallback ─────────────────────
+
+  group('buildAdaptedPlan fallback exercises respect workoutLocation', () {
+    // Empty exercises forces the fallback path (no real test-week data to
+    // map onto the weekly focus) regardless of week number.
+    final emptyTestResult = TestWeekResult(
+      completedAt: DateTime(2026, 1, 1),
+      exercises: const [],
+      averageHeartRate: 0,
+      averageSessionDuration: 0,
+      perceivedDifficulty: 5,
+    );
+
+    List<String> planExercises(String location) {
+      final profile = tProfile.copyWith(workoutLocation: location);
+      final adj = service.calculateAdjustment(
+        testResult: emptyTestResult,
+        profile: profile,
+      );
+      final plan = service.buildAdaptedPlan(
+        testResult: emptyTestResult,
+        adjustment: adj,
+        durationWeeks: 1,
+        profile: profile,
+      );
+      return plan.expand((w) => w.exercises).toList();
+    }
+
+    test('gym fallback uses barbell/dumbbell exercises', () {
+      final all = planExercises('gym').join(' ');
+      expect(all, contains('гантел'));
+    });
+
+    test('home fallback has no gym equipment', () {
+      final all = planExercises('home').join(' ');
+      expect(all, isNot(contains('штанг')));
+      expect(all, contains('Отжимания'));
+    });
+
+    test('outdoor fallback uses bar/bodyweight exercises', () {
+      final all = planExercises('outdoor').join(' ');
+      expect(all, contains('брусьях'));
+      expect(all, isNot(contains('гантел')));
     });
   });
 

@@ -2,7 +2,9 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:get_it/get_it.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
+import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
@@ -31,6 +33,21 @@ void main() {
     mockUserRepo = MockIUserRepository();
     mockWorkflowService = MockOnboardingWorkflowService();
     mockAuthRepo = MockIAuthRepository();
+    // OnboardingBloc syncs the freshly-saved user into AuthBloc via GetIt
+    // (`sl<AuthBloc>().add(AuthUserChanged(...))`) — register a real AuthBloc
+    // backed by the same mock repo so that call doesn't throw.
+    if (GetIt.instance.isRegistered<AuthBloc>()) {
+      GetIt.instance.unregister<AuthBloc>();
+    }
+    GetIt.instance.registerLazySingleton<AuthBloc>(
+      () => AuthBloc(authRepository: mockAuthRepo),
+    );
+  });
+
+  tearDown(() {
+    if (GetIt.instance.isRegistered<AuthBloc>()) {
+      GetIt.instance.unregister<AuthBloc>();
+    }
   });
 
   OnboardingBloc buildBloc() => OnboardingBloc(

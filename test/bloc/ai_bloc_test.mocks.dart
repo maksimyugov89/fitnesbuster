@@ -37,33 +37,36 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
     _i4.HealthData? recentHealth,
     int? weekNumber,
     String? previousPlanFeedback,
+    int? recentAvgRpe,
+    int? domsLevel,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #generateWorkoutPlan,
-              [profile],
-              {
-                #recentHealth: recentHealth,
-                #weekNumber: weekNumber,
-                #previousPlanFeedback: previousPlanFeedback,
-              },
-            ),
-            returnValue: _i3.Future<String>.value(
-              _i5.dummyValue<String>(
-                this,
-                Invocation.method(
-                  #generateWorkoutPlan,
-                  [profile],
-                  {
-                    #recentHealth: recentHealth,
-                    #weekNumber: weekNumber,
-                    #previousPlanFeedback: previousPlanFeedback,
-                  },
-                ),
-              ),
-            ),
-          )
-          as _i3.Future<String>);
+        Invocation.method(
+          #generateWorkoutPlan,
+          [profile],
+          {
+            #recentHealth: recentHealth,
+            #weekNumber: weekNumber,
+            #previousPlanFeedback: previousPlanFeedback,
+            #recentAvgRpe: recentAvgRpe,
+            #domsLevel: domsLevel,
+          },
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #generateWorkoutPlan,
+            [profile],
+            {
+              #recentHealth: recentHealth,
+              #weekNumber: weekNumber,
+              #previousPlanFeedback: previousPlanFeedback,
+              #recentAvgRpe: recentAvgRpe,
+              #domsLevel: domsLevel,
+            },
+          ),
+        )),
+      ) as _i3.Future<String>);
 
   @override
   _i3.Future<String> generateMealPlan(
@@ -75,35 +78,32 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
     String? city,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #generateMealPlan,
-              [profile],
-              {
-                #stepsToday: stepsToday,
-                #recentHealth: recentHealth,
-                #dislikedFoods: dislikedFoods,
-                #cuisinePreference: cuisinePreference,
-                #city: city,
-              },
-            ),
-            returnValue: _i3.Future<String>.value(
-              _i5.dummyValue<String>(
-                this,
-                Invocation.method(
-                  #generateMealPlan,
-                  [profile],
-                  {
-                    #stepsToday: stepsToday,
-                    #recentHealth: recentHealth,
-                    #dislikedFoods: dislikedFoods,
-                    #cuisinePreference: cuisinePreference,
-                    #city: city,
-                  },
-                ),
-              ),
-            ),
-          )
-          as _i3.Future<String>);
+        Invocation.method(
+          #generateMealPlan,
+          [profile],
+          {
+            #stepsToday: stepsToday,
+            #recentHealth: recentHealth,
+            #dislikedFoods: dislikedFoods,
+            #cuisinePreference: cuisinePreference,
+            #city: city,
+          },
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #generateMealPlan,
+            [profile],
+            {
+              #stepsToday: stepsToday,
+              #recentHealth: recentHealth,
+              #dislikedFoods: dislikedFoods,
+              #cuisinePreference: cuisinePreference,
+              #city: city,
+            },
+          ),
+        )),
+      ) as _i3.Future<String>);
 
   @override
   _i3.Future<String> refineWorkoutPlan(
@@ -111,15 +111,24 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
     List<_i4.TestExerciseResult>? exercises,
   ) =>
       (super.noSuchMethod(
-            Invocation.method(#refineWorkoutPlan, [profile, exercises]),
-            returnValue: _i3.Future<String>.value(
-              _i5.dummyValue<String>(
-                this,
-                Invocation.method(#refineWorkoutPlan, [profile, exercises]),
-              ),
-            ),
-          )
-          as _i3.Future<String>);
+        Invocation.method(
+          #refineWorkoutPlan,
+          [
+            profile,
+            exercises,
+          ],
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #refineWorkoutPlan,
+            [
+              profile,
+              exercises,
+            ],
+          ),
+        )),
+      ) as _i3.Future<String>);
 
   @override
   _i3.Future<String> analyzeProgress({
@@ -129,25 +138,30 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
     bool? hasPhotos,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#analyzeProgress, [], {
+        Invocation.method(
+          #analyzeProgress,
+          [],
+          {
+            #profile: profile,
+            #latest: latest,
+            #previous: previous,
+            #hasPhotos: hasPhotos,
+          },
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #analyzeProgress,
+            [],
+            {
               #profile: profile,
               #latest: latest,
               #previous: previous,
               #hasPhotos: hasPhotos,
-            }),
-            returnValue: _i3.Future<String>.value(
-              _i5.dummyValue<String>(
-                this,
-                Invocation.method(#analyzeProgress, [], {
-                  #profile: profile,
-                  #latest: latest,
-                  #previous: previous,
-                  #hasPhotos: hasPhotos,
-                }),
-              ),
-            ),
-          )
-          as _i3.Future<String>);
+            },
+          ),
+        )),
+      ) as _i3.Future<String>);
 
   @override
   _i3.Future<String> generateWeeklyDebrief({
@@ -161,7 +175,26 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
     required List<String>? weekPrNames,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#generateWeeklyDebrief, [], {
+        Invocation.method(
+          #generateWeeklyDebrief,
+          [],
+          {
+            #profile: profile,
+            #workoutsDone: workoutsDone,
+            #dailyWorkoutKcal: dailyWorkoutKcal,
+            #dailyWaterMl: dailyWaterMl,
+            #dailyEatenCal: dailyEatenCal,
+            #dailyCalTarget: dailyCalTarget,
+            #dailyWaterTarget: dailyWaterTarget,
+            #weekPrNames: weekPrNames,
+          },
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #generateWeeklyDebrief,
+            [],
+            {
               #profile: profile,
               #workoutsDone: workoutsDone,
               #dailyWorkoutKcal: dailyWorkoutKcal,
@@ -170,24 +203,10 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
               #dailyCalTarget: dailyCalTarget,
               #dailyWaterTarget: dailyWaterTarget,
               #weekPrNames: weekPrNames,
-            }),
-            returnValue: _i3.Future<String>.value(
-              _i5.dummyValue<String>(
-                this,
-                Invocation.method(#generateWeeklyDebrief, [], {
-                  #profile: profile,
-                  #workoutsDone: workoutsDone,
-                  #dailyWorkoutKcal: dailyWorkoutKcal,
-                  #dailyWaterMl: dailyWaterMl,
-                  #dailyEatenCal: dailyEatenCal,
-                  #dailyCalTarget: dailyCalTarget,
-                  #dailyWaterTarget: dailyWaterTarget,
-                  #weekPrNames: weekPrNames,
-                }),
-              ),
-            ),
-          )
-          as _i3.Future<String>);
+            },
+          ),
+        )),
+      ) as _i3.Future<String>);
 
   @override
   _i3.Future<String> askWithHistory(
@@ -196,23 +215,26 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
     _i4.UserProfile? profile,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #askWithHistory,
-              [history, newQuestion],
-              {#profile: profile},
-            ),
-            returnValue: _i3.Future<String>.value(
-              _i5.dummyValue<String>(
-                this,
-                Invocation.method(
-                  #askWithHistory,
-                  [history, newQuestion],
-                  {#profile: profile},
-                ),
-              ),
-            ),
-          )
-          as _i3.Future<String>);
+        Invocation.method(
+          #askWithHistory,
+          [
+            history,
+            newQuestion,
+          ],
+          {#profile: profile},
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #askWithHistory,
+            [
+              history,
+              newQuestion,
+            ],
+            {#profile: profile},
+          ),
+        )),
+      ) as _i3.Future<String>);
 
   @override
   _i3.Future<String> askQuestion(
@@ -221,23 +243,26 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
     List<String>? recentTopics,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #askQuestion,
-              [question],
-              {#profile: profile, #recentTopics: recentTopics},
-            ),
-            returnValue: _i3.Future<String>.value(
-              _i5.dummyValue<String>(
-                this,
-                Invocation.method(
-                  #askQuestion,
-                  [question],
-                  {#profile: profile, #recentTopics: recentTopics},
-                ),
-              ),
-            ),
-          )
-          as _i3.Future<String>);
+        Invocation.method(
+          #askQuestion,
+          [question],
+          {
+            #profile: profile,
+            #recentTopics: recentTopics,
+          },
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #askQuestion,
+            [question],
+            {
+              #profile: profile,
+              #recentTopics: recentTopics,
+            },
+          ),
+        )),
+      ) as _i3.Future<String>);
 
   @override
   _i3.Future<String> parseWorkoutFromContent(
@@ -245,23 +270,20 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
     String? sourceHint,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #parseWorkoutFromContent,
-              [content],
-              {#sourceHint: sourceHint},
-            ),
-            returnValue: _i3.Future<String>.value(
-              _i5.dummyValue<String>(
-                this,
-                Invocation.method(
-                  #parseWorkoutFromContent,
-                  [content],
-                  {#sourceHint: sourceHint},
-                ),
-              ),
-            ),
-          )
-          as _i3.Future<String>);
+        Invocation.method(
+          #parseWorkoutFromContent,
+          [content],
+          {#sourceHint: sourceHint},
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #parseWorkoutFromContent,
+            [content],
+            {#sourceHint: sourceHint},
+          ),
+        )),
+      ) as _i3.Future<String>);
 
   @override
   _i3.Future<String> correctWorkoutPlan({
@@ -271,29 +293,37 @@ class MockIDeepSeekService extends _i1.Mock implements _i2.IDeepSeekService {
     String? sourceHint,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#correctWorkoutPlan, [], {
+        Invocation.method(
+          #correctWorkoutPlan,
+          [],
+          {
+            #currentPlanJson: currentPlanJson,
+            #userInput: userInput,
+            #correctionType: correctionType,
+            #sourceHint: sourceHint,
+          },
+        ),
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #correctWorkoutPlan,
+            [],
+            {
               #currentPlanJson: currentPlanJson,
               #userInput: userInput,
               #correctionType: correctionType,
               #sourceHint: sourceHint,
-            }),
-            returnValue: _i3.Future<String>.value(
-              _i5.dummyValue<String>(
-                this,
-                Invocation.method(#correctWorkoutPlan, [], {
-                  #currentPlanJson: currentPlanJson,
-                  #userInput: userInput,
-                  #correctionType: correctionType,
-                  #sourceHint: sourceHint,
-                }),
-              ),
-            ),
-          )
-          as _i3.Future<String>);
+            },
+          ),
+        )),
+      ) as _i3.Future<String>);
 
   @override
   void dispose() => super.noSuchMethod(
-    Invocation.method(#dispose, []),
-    returnValueForMissingStub: null,
-  );
+        Invocation.method(
+          #dispose,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
 }

@@ -23,8 +23,13 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: subtype_of_sealed_class
 
 class _FakeUserEntity_0 extends _i1.SmartFake implements _i2.UserEntity {
-  _FakeUserEntity_0(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
+  _FakeUserEntity_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
 }
 
 /// A class which mocks [IAuthRepository].
@@ -36,28 +41,26 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
   }
 
   @override
-  _i4.Stream<_i2.UserEntity?> get userChanges =>
-      (super.noSuchMethod(
-            Invocation.getter(#userChanges),
-            returnValue: _i4.Stream<_i2.UserEntity?>.empty(),
-          )
-          as _i4.Stream<_i2.UserEntity?>);
+  _i4.Stream<_i2.UserEntity?> get userChanges => (super.noSuchMethod(
+        Invocation.getter(#userChanges),
+        returnValue: _i4.Stream<_i2.UserEntity?>.empty(),
+      ) as _i4.Stream<_i2.UserEntity?>);
 
   @override
-  bool get isEmailVerified =>
-      (super.noSuchMethod(
-            Invocation.getter(#isEmailVerified),
-            returnValue: false,
-          )
-          as bool);
+  bool get isEmailVerified => (super.noSuchMethod(
+        Invocation.getter(#isEmailVerified),
+        returnValue: false,
+      ) as bool);
 
   @override
   _i4.Future<_i2.UserEntity?> getCurrentUserWithProfile() =>
       (super.noSuchMethod(
-            Invocation.method(#getCurrentUserWithProfile, []),
-            returnValue: _i4.Future<_i2.UserEntity?>.value(),
-          )
-          as _i4.Future<_i2.UserEntity?>);
+        Invocation.method(
+          #getCurrentUserWithProfile,
+          [],
+        ),
+        returnValue: _i4.Future<_i2.UserEntity?>.value(),
+      ) as _i4.Future<_i2.UserEntity?>);
 
   @override
   _i4.Future<_i2.UserEntity> login({
@@ -65,18 +68,26 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
     required String? password,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#login, [], {#email: email, #password: password}),
-            returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(
-                this,
-                Invocation.method(#login, [], {
-                  #email: email,
-                  #password: password,
-                }),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.UserEntity>);
+        Invocation.method(
+          #login,
+          [],
+          {
+            #email: email,
+            #password: password,
+          },
+        ),
+        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
+          this,
+          Invocation.method(
+            #login,
+            [],
+            {
+              #email: email,
+              #password: password,
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.UserEntity>);
 
   @override
   _i4.Future<_i2.UserEntity> register({
@@ -85,87 +96,108 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
     required String? password,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#register, [], {
+        Invocation.method(
+          #register,
+          [],
+          {
+            #name: name,
+            #email: email,
+            #password: password,
+          },
+        ),
+        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
+          this,
+          Invocation.method(
+            #register,
+            [],
+            {
               #name: name,
               #email: email,
               #password: password,
-            }),
-            returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(
-                this,
-                Invocation.method(#register, [], {
-                  #name: name,
-                  #email: email,
-                  #password: password,
-                }),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.UserEntity>);
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.UserEntity>);
 
   @override
-  _i4.Future<_i2.UserEntity> signInWithGoogle() =>
-      (super.noSuchMethod(
-            Invocation.method(#signInWithGoogle, []),
-            returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(this, Invocation.method(#signInWithGoogle, [])),
-            ),
-          )
-          as _i4.Future<_i2.UserEntity>);
+  _i4.Future<_i2.UserEntity> signInWithGoogle() => (super.noSuchMethod(
+        Invocation.method(
+          #signInWithGoogle,
+          [],
+        ),
+        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
+          this,
+          Invocation.method(
+            #signInWithGoogle,
+            [],
+          ),
+        )),
+      ) as _i4.Future<_i2.UserEntity>);
 
   @override
-  _i4.Future<void> resetPassword(String? email) =>
-      (super.noSuchMethod(
-            Invocation.method(#resetPassword, [email]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> resetPassword(String? email) => (super.noSuchMethod(
+        Invocation.method(
+          #resetPassword,
+          [email],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> logout() =>
-      (super.noSuchMethod(
-            Invocation.method(#logout, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> logout() => (super.noSuchMethod(
+        Invocation.method(
+          #logout,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> updateProfile({String? name, String? photoUrl}) =>
+  _i4.Future<void> updateProfile({
+    String? name,
+    String? photoUrl,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#updateProfile, [], {
-              #name: name,
-              #photoUrl: photoUrl,
-            }),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #updateProfile,
+          [],
+          {
+            #name: name,
+            #photoUrl: photoUrl,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> sendEmailVerification() =>
-      (super.noSuchMethod(
-            Invocation.method(#sendEmailVerification, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> sendEmailVerification() => (super.noSuchMethod(
+        Invocation.method(
+          #sendEmailVerification,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<bool> reloadAndCheckEmailVerified() =>
-      (super.noSuchMethod(
-            Invocation.method(#reloadAndCheckEmailVerified, []),
-            returnValue: _i4.Future<bool>.value(false),
-          )
-          as _i4.Future<bool>);
+  _i4.Future<bool> reloadAndCheckEmailVerified() => (super.noSuchMethod(
+        Invocation.method(
+          #reloadAndCheckEmailVerified,
+          [],
+        ),
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i4.Future<void> deleteAccount() =>
-      (super.noSuchMethod(
-            Invocation.method(#deleteAccount, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> deleteAccount() => (super.noSuchMethod(
+        Invocation.method(
+          #deleteAccount,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }

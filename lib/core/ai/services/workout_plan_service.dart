@@ -1,5 +1,7 @@
 import 'package:fitnesbuster/core/ai/base_client.dart';
 import 'package:fitnesbuster/core/ai/validators/json_validator.dart';
+import 'package:fitnesbuster/core/ai/knowledge/training_knowledge.dart';
+import 'package:fitnesbuster/core/services/recovery_score_service.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 
 class WorkoutPlanService {
@@ -12,10 +14,13 @@ class WorkoutPlanService {
     HealthData? recentHealth,
     int weekNumber = 1,
     String? previousPlanFeedback,
+    int? recentAvgRpe,
+    int? domsLevel,
   }) async {
     final volumeBlock = weeklyVolumeBlock(profile.intensity, weekNumber);
     final progressionBlock2 = progressionBlock(profile.intensity);
-    final recoveryBlock2 = recoveryBlock(recentHealth);
+    final recoveryScore = recoveryScoreFrom(recentHealth);
+    final recoveryBlock2 = recoveryBlock(recentHealth, recoveryScore);
     final targetBlock2 = targetBlock(profile);
     final locationBlock2 = locationBlock(profile.workoutLocation);
     final runningBlock2 = runningBlock(profile.runningPreference);
@@ -23,11 +28,20 @@ class WorkoutPlanService {
       profile.medicalRestrictions,
       profile.exerciseRestrictions,
     );
+    final emphasisBlock = methodologyEmphasisBlock(
+      profile,
+      recovery: recoveryScore,
+      recentAvgRpe: recentAvgRpe,
+      domsLevel: domsLevel,
+    );
 
     final prompt =
         '''
 Ты — сертифицированный персональный тренер (NSCA-CPT) и специалист по силовой подготовке.
 Составь тренировочную программу на неделю №$weekNumber.
+
+$trainingPrinciplesCore
+$emphasisBlock
 
 ═══ ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ═══
 Пол: ${profile.gender == Gender.male ? 'Мужской' : 'Женский'}
@@ -131,7 +145,24 @@ ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕ�
     };
   }
 
-  String recoveryBlock(HealthData? health) {
+  /// Считает recovery score (сон + HRV + пульс покоя) из синхронизированных
+  /// данных — переиспользует ту же логику, что дашборд уже показывает
+  /// пользователю (`RecoveryScoreService`), чтобы AI и UI не расходились.
+  RecoveryScore? recoveryScoreFrom(HealthData? health) {
+    if (health == null) return null;
+    if (health.sleepMinutes == null &&
+        health.heartRateVariability == null &&
+        health.heartRateResting == null) {
+      return null;
+    }
+    return RecoveryScoreService.calculate(
+      sleepMinutes: health.sleepMinutes,
+      hrv: health.heartRateVariability,
+      restingHr: health.heartRateResting,
+    );
+  }
+
+  String recoveryBlock(HealthData? health, [RecoveryScore? recovery]) {
     if (health == null) return '';
     final buf = StringBuffer();
     if (health.sleepMinutes != null) {
@@ -145,9 +176,18 @@ ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕ�
         'Пульс покоя: ${health.heartRateResting} уд/мин — ${health.heartRateResting! > 70 ? "повышен, возможно накопленная усталость — увеличь время разминки" : "в норме"}',
       );
     }
+    if (health.heartRateVariability != null) {
+      buf.writeln('HRV: ${health.heartRateVariability!.toStringAsFixed(0)} мс');
+    }
     if (health.steps != null) {
       buf.writeln(
         'Средняя активность: ${(health.steps! / 7).round()} шаг/день',
+      );
+    }
+    if (recovery != null) {
+      buf.writeln(
+        'Recovery score: ${recovery.score}/100 (${recovery.level.name})'
+        '${recovery.shouldReduceIntensity ? " — СНИЗЬ интенсивность/объём в этом плане" : " — можно работать по плану"}',
       );
     }
     return buf.toString();

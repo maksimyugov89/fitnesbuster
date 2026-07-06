@@ -27,13 +27,12 @@ class StreakCard extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
+            padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(11),
             ),
-            child: Center(
-              child: Text(lvl.emoji, style: const TextStyle(fontSize: 20)),
-            ),
+            child: Image.asset(lvl.icon, fit: BoxFit.contain),
           ),
           const SizedBox(width: 12),
           Expanded(

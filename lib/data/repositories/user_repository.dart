@@ -203,6 +203,17 @@ class UserRepository implements IUserRepository {
   }
 
   @override
+  Future<void> updateTrainingExperience({
+    required String userId,
+    required TrainingExperience trainingExperience,
+  }) async {
+    await _firestore.collection(FirestoreCollections.users).doc(userId).update({
+      'profile.trainingExperience': trainingExperience.name,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  @override
   Future<void> saveMeasurement({
     required String userId,
     required BodyMeasurement measurement,
@@ -333,6 +344,7 @@ class UserRepository implements IUserRepository {
     'gender': p.gender == Gender.male ? 'male' : 'female',
     'goal': p.goal.name,
     'intensity': p.intensity.name,
+    'trainingExperience': p.trainingExperience.name,
     'activityLevel': p.activityLevel.name,
     if (p.medicalRestrictions.isNotEmpty)
       'medicalRestrictions': p.medicalRestrictions,
@@ -369,6 +381,9 @@ class UserRepository implements IUserRepository {
         gender: parseGender(p['gender'] as String?),
         goal: parseFitnessGoal(p['goal'] as String?),
         intensity: parseIntensityLevel(p['intensity'] as String?),
+        trainingExperience: parseTrainingExperience(
+          p['trainingExperience'] as String?,
+        ),
         activityLevel: parseActivityLevel(p['activityLevel'] as String?),
         medicalRestrictions:
             (p['medicalRestrictions'] as List<dynamic>?)

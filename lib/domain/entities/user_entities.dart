@@ -16,6 +16,12 @@ enum FitnessGoal {
 
 enum IntensityLevel { hardcore, intensive, balanced, gradual, relaxed }
 
+/// Training age / experience, collected once during onboarding — used to
+/// seed methodology selection (e.g. ОФП baseline for novices vs
+/// Верхошанский/Бондарчук emphasis for experienced athletes) before any
+/// test-week data exists.
+enum TrainingExperience { novice, intermediate, experienced }
+
 enum ActivityLevel {
   sedentary(1.2),
   lightlyActive(1.375),
@@ -91,6 +97,7 @@ class UserProfile with _$UserProfile {
     required Gender gender,
     required FitnessGoal goal,
     required IntensityLevel intensity,
+    @Default(TrainingExperience.novice) TrainingExperience trainingExperience,
     @Default([]) List<String> medicalRestrictions,
     @Default([]) List<String> exerciseRestrictions,
     required ActivityLevel activityLevel,

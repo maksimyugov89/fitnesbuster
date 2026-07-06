@@ -12,8 +12,7 @@ part of 'body_measurement.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 BodyMeasurement _$BodyMeasurementFromJson(Map<String, dynamic> json) {
   return _BodyMeasurement.fromJson(json);
@@ -37,17 +36,15 @@ mixin _$BodyMeasurement {
 /// @nodoc
 abstract class $BodyMeasurementCopyWith<$Res> {
   factory $BodyMeasurementCopyWith(
-    BodyMeasurement value,
-    $Res Function(BodyMeasurement) then,
-  ) = _$BodyMeasurementCopyWithImpl<$Res, BodyMeasurement>;
+          BodyMeasurement value, $Res Function(BodyMeasurement) then) =
+      _$BodyMeasurementCopyWithImpl<$Res, BodyMeasurement>;
   @useResult
-  $Res call({
-    @JsonKey(fromJson: _dateFromMillis, toJson: _dateToMillis) DateTime date,
-    double? chestCm,
-    double? waistCm,
-    double? hipsCm,
-    double? bodyFatPercent,
-  });
+  $Res call(
+      {@JsonKey(fromJson: _dateFromMillis, toJson: _dateToMillis) DateTime date,
+      double? chestCm,
+      double? waistCm,
+      double? hipsCm,
+      double? bodyFatPercent});
 }
 
 /// @nodoc
@@ -69,50 +66,45 @@ class _$BodyMeasurementCopyWithImpl<$Res, $Val extends BodyMeasurement>
     Object? hipsCm = freezed,
     Object? bodyFatPercent = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            date: null == date
-                ? _value.date
-                : date // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            chestCm: freezed == chestCm
-                ? _value.chestCm
-                : chestCm // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            waistCm: freezed == waistCm
-                ? _value.waistCm
-                : waistCm // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            hipsCm: freezed == hipsCm
-                ? _value.hipsCm
-                : hipsCm // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            bodyFatPercent: freezed == bodyFatPercent
-                ? _value.bodyFatPercent
-                : bodyFatPercent // ignore: cast_nullable_to_non_nullable
-                      as double?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      chestCm: freezed == chestCm
+          ? _value.chestCm
+          : chestCm // ignore: cast_nullable_to_non_nullable
+              as double?,
+      waistCm: freezed == waistCm
+          ? _value.waistCm
+          : waistCm // ignore: cast_nullable_to_non_nullable
+              as double?,
+      hipsCm: freezed == hipsCm
+          ? _value.hipsCm
+          : hipsCm // ignore: cast_nullable_to_non_nullable
+              as double?,
+      bodyFatPercent: freezed == bodyFatPercent
+          ? _value.bodyFatPercent
+          : bodyFatPercent // ignore: cast_nullable_to_non_nullable
+              as double?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$BodyMeasurementImplCopyWith<$Res>
     implements $BodyMeasurementCopyWith<$Res> {
-  factory _$$BodyMeasurementImplCopyWith(
-    _$BodyMeasurementImpl value,
-    $Res Function(_$BodyMeasurementImpl) then,
-  ) = __$$BodyMeasurementImplCopyWithImpl<$Res>;
+  factory _$$BodyMeasurementImplCopyWith(_$BodyMeasurementImpl value,
+          $Res Function(_$BodyMeasurementImpl) then) =
+      __$$BodyMeasurementImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(fromJson: _dateFromMillis, toJson: _dateToMillis) DateTime date,
-    double? chestCm,
-    double? waistCm,
-    double? hipsCm,
-    double? bodyFatPercent,
-  });
+  $Res call(
+      {@JsonKey(fromJson: _dateFromMillis, toJson: _dateToMillis) DateTime date,
+      double? chestCm,
+      double? waistCm,
+      double? hipsCm,
+      double? bodyFatPercent});
 }
 
 /// @nodoc
@@ -120,9 +112,8 @@ class __$$BodyMeasurementImplCopyWithImpl<$Res>
     extends _$BodyMeasurementCopyWithImpl<$Res, _$BodyMeasurementImpl>
     implements _$$BodyMeasurementImplCopyWith<$Res> {
   __$$BodyMeasurementImplCopyWithImpl(
-    _$BodyMeasurementImpl _value,
-    $Res Function(_$BodyMeasurementImpl) _then,
-  ) : super(_value, _then);
+      _$BodyMeasurementImpl _value, $Res Function(_$BodyMeasurementImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -133,44 +124,42 @@ class __$$BodyMeasurementImplCopyWithImpl<$Res>
     Object? hipsCm = freezed,
     Object? bodyFatPercent = freezed,
   }) {
-    return _then(
-      _$BodyMeasurementImpl(
-        date: null == date
-            ? _value.date
-            : date // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        chestCm: freezed == chestCm
-            ? _value.chestCm
-            : chestCm // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        waistCm: freezed == waistCm
-            ? _value.waistCm
-            : waistCm // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        hipsCm: freezed == hipsCm
-            ? _value.hipsCm
-            : hipsCm // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        bodyFatPercent: freezed == bodyFatPercent
-            ? _value.bodyFatPercent
-            : bodyFatPercent // ignore: cast_nullable_to_non_nullable
-                  as double?,
-      ),
-    );
+    return _then(_$BodyMeasurementImpl(
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      chestCm: freezed == chestCm
+          ? _value.chestCm
+          : chestCm // ignore: cast_nullable_to_non_nullable
+              as double?,
+      waistCm: freezed == waistCm
+          ? _value.waistCm
+          : waistCm // ignore: cast_nullable_to_non_nullable
+              as double?,
+      hipsCm: freezed == hipsCm
+          ? _value.hipsCm
+          : hipsCm // ignore: cast_nullable_to_non_nullable
+              as double?,
+      bodyFatPercent: freezed == bodyFatPercent
+          ? _value.bodyFatPercent
+          : bodyFatPercent // ignore: cast_nullable_to_non_nullable
+              as double?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$BodyMeasurementImpl extends _BodyMeasurement {
-  const _$BodyMeasurementImpl({
-    @JsonKey(fromJson: _dateFromMillis, toJson: _dateToMillis)
-    required this.date,
-    this.chestCm,
-    this.waistCm,
-    this.hipsCm,
-    this.bodyFatPercent,
-  }) : super._();
+  const _$BodyMeasurementImpl(
+      {@JsonKey(fromJson: _dateFromMillis, toJson: _dateToMillis)
+      required this.date,
+      this.chestCm,
+      this.waistCm,
+      this.hipsCm,
+      this.bodyFatPercent})
+      : super._();
 
   factory _$BodyMeasurementImpl.fromJson(Map<String, dynamic> json) =>
       _$$BodyMeasurementImplFromJson(json);
@@ -215,25 +204,24 @@ class _$BodyMeasurementImpl extends _BodyMeasurement {
   @pragma('vm:prefer-inline')
   _$$BodyMeasurementImplCopyWith<_$BodyMeasurementImpl> get copyWith =>
       __$$BodyMeasurementImplCopyWithImpl<_$BodyMeasurementImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$BodyMeasurementImplToJson(this);
+    return _$$BodyMeasurementImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _BodyMeasurement extends BodyMeasurement {
-  const factory _BodyMeasurement({
-    @JsonKey(fromJson: _dateFromMillis, toJson: _dateToMillis)
-    required final DateTime date,
-    final double? chestCm,
-    final double? waistCm,
-    final double? hipsCm,
-    final double? bodyFatPercent,
-  }) = _$BodyMeasurementImpl;
+  const factory _BodyMeasurement(
+      {@JsonKey(fromJson: _dateFromMillis, toJson: _dateToMillis)
+      required final DateTime date,
+      final double? chestCm,
+      final double? waistCm,
+      final double? hipsCm,
+      final double? bodyFatPercent}) = _$BodyMeasurementImpl;
   const _BodyMeasurement._() : super._();
 
   factory _BodyMeasurement.fromJson(Map<String, dynamic> json) =

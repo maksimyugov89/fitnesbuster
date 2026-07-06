@@ -156,6 +156,7 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
     required TestWeekResult testResult,
     required TrainingAdjustment adjustment,
     required int durationWeeks,
+    required UserProfile profile,
   }) {
     final focusRotation = [
       'Грудь + Трицепс',
@@ -184,6 +185,7 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
         adjustment,
         focusRotation[focusIdx],
         weekNum,
+        profile.workoutLocation,
       );
 
       return AdaptiveWeek(
@@ -218,11 +220,24 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
     double avgReps,
     UserProfile profile,
   ) {
-    // Simple heuristic: compare weight to body weight
+    // Эвристика по тестовой неделе: сравнение рабочего веса с весом тела.
     final weightRatio = avgWeight / profile.weight;
-    if (weightRatio > 0.5 && avgReps >= 10) return UserLevel.intermediate;
-    if (weightRatio > 0.3) return UserLevel.beginner;
-    return UserLevel.beginner;
+    final heuristicLevel = weightRatio > 0.5 && avgReps >= 10
+        ? UserLevel.intermediate
+        : UserLevel.beginner;
+
+    // Стаж, заявленный на онбординге, — самооценка пользователя.
+    final declaredLevel = switch (profile.trainingExperience) {
+      TrainingExperience.novice => UserLevel.beginner,
+      TrainingExperience.intermediate => UserLevel.intermediate,
+      TrainingExperience.experienced => UserLevel.advanced,
+    };
+
+    // Тестовая неделя может повысить уровень (например, у "скрытого"
+    // продвинутого новичка), но не понижает то, что заявил пользователь.
+    return declaredLevel.index >= heuristicLevel.index
+        ? declaredLevel
+        : heuristicLevel;
   }
 
   _ProgressionSpeed _calculateProgressionSpeed(
@@ -252,6 +267,7 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
     TrainingAdjustment adjustment,
     String focus,
     int weekNum,
+    String? workoutLocation,
   ) {
     // Map test exercises to the focus area
     final available = testResult.exercises.where((e) {
@@ -259,8 +275,8 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
     }).toList();
 
     if (available.isEmpty) {
-      // Fallback exercises by focus
-      return _fallbackExercises(focus, adjustment);
+      // Fallback exercises by focus — must respect available equipment.
+      return _fallbackExercises(focus, adjustment, workoutLocation);
     }
 
     return available
@@ -271,17 +287,39 @@ class AdaptiveTrainingService implements IAdaptiveTrainingService {
         .toList();
   }
 
-  List<String> _fallbackExercises(String focus, TrainingAdjustment adj) {
+  List<String> _fallbackExercises(
+    String focus,
+    TrainingAdjustment adj,
+    String? workoutLocation,
+  ) {
     final sets = adj.suggestedSetsPerExercise;
     final reps = adj.suggestedRepsPerSet;
-    final all = [
-      'Жим лёжа — $sets×$reps',
-      'Тяга гантели — $sets×$reps',
-      'Жим гантелей сидя — $sets×$reps',
-      'Приседания — $sets×$reps',
-      'Тяга верхнего блока — $sets×$reps',
-      'Разгибание ног — $sets×$reps',
-    ];
+    final all = switch (workoutLocation) {
+      'outdoor' => [
+        'Отжимания от пола — $sets×$reps',
+        'Подтягивания широким хватом — $sets×$reps',
+        'Отжимания на брусьях — $sets×$reps',
+        'Приседания с прыжком — $sets×$reps',
+        'Подъём ног в висе на турнике — $sets×$reps',
+        'Выпады — $sets×$reps',
+      ],
+      'home' => [
+        'Отжимания от пола — $sets×$reps',
+        'Тяга эспандера к поясу — $sets×$reps',
+        'Пайк-отжимания (плечи) — $sets×$reps',
+        'Приседания — $sets×$reps',
+        'Планка — $sets×$reps',
+        'Выпады — $sets×$reps',
+      ],
+      _ => [
+        'Жим лёжа — $sets×$reps',
+        'Тяга гантели — $sets×$reps',
+        'Жим гантелей сидя — $sets×$reps',
+        'Приседания — $sets×$reps',
+        'Тяга верхнего блока — $sets×$reps',
+        'Разгибание ног — $sets×$reps',
+      ],
+    };
     return all.take(4).toList();
   }
 

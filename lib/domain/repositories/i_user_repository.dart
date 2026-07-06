@@ -38,6 +38,10 @@ abstract interface class IUserRepository {
     required String lastWorkoutDate,
   });
   Future<void> updateGoal({required String userId, required FitnessGoal goal});
+  Future<void> updateTrainingExperience({
+    required String userId,
+    required TrainingExperience trainingExperience,
+  });
   Future<void> saveMeasurement({
     required String userId,
     required BodyMeasurement measurement,

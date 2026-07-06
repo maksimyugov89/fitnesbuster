@@ -34,6 +34,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   double _height = 175.0;
   Gender _gender = Gender.male;
   ActivityLevel _activity = ActivityLevel.moderatelyActive;
+  TrainingExperience _trainingExperience = TrainingExperience.novice;
   final List<String> _restrictions = [];
   String _city = '';
 
@@ -66,7 +67,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   }
 
   void _next() {
-    if (_page < 4) {
+    if (_page < 5) {
       HapticFeedback.lightImpact();
       _fadeCtrl.reverse().then((_) {
         _pageCtrl.nextPage(
@@ -85,6 +86,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           height: _height,
           gender: _gender,
           activity: _activity,
+          trainingExperience: _trainingExperience,
           restrictions: _restrictions,
           city: _city,
         ),
@@ -160,6 +162,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                               activity: _activity,
                               onChanged: (v) => setState(() => _activity = v),
                             ),
+                            _PageExperience(
+                              experience: _trainingExperience,
+                              onChanged: (v) =>
+                                  setState(() => _trainingExperience = v),
+                            ),
                             _PageRestrictions(
                               restrictions: _restrictions,
                               commonRestrictions: _commonRestrictions,
@@ -198,6 +205,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
       l10n.step1About,
       l10n.step2Params,
       l10n.step3Activity,
+      l10n.stepExperience,
       l10n.step4Restrictions,
       l10n.step5Location,
     ];
@@ -225,7 +233,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
               ),
               const Spacer(),
               Text(
-                '${_page + 1} of 5',
+                '${_page + 1} of 6',
                 style: TextStyle(color: colors.textMuted, fontSize: 13),
               ),
             ],
@@ -234,7 +242,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
-              value: (_page + 1) / 5,
+              value: (_page + 1) / 6,
               backgroundColor: colors.surfaceLight,
               valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
               minHeight: 4,
@@ -253,6 +261,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   Widget _bottomArea(dynamic colors) {
     final l10n = context.l10n;
     final labels = [
+      l10n.continueLabel,
       l10n.continueLabel,
       l10n.continueLabel,
       l10n.continueLabel,
@@ -837,6 +846,120 @@ class _PageActivity extends StatelessWidget {
       case ActivityLevel.extraActive:
         return '⚡';
     }
+  }
+}
+
+// Page 4: Training experience
+class _PageExperience extends StatelessWidget {
+  final TrainingExperience experience;
+  final ValueChanged<TrainingExperience> onChanged;
+  const _PageExperience({required this.experience, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppTheme.of(context);
+    final l10n = context.l10n;
+    final options = [
+      (
+        TrainingExperience.novice,
+        '🌱',
+        l10n.experienceNovice,
+        l10n.experienceNoviceDesc,
+      ),
+      (
+        TrainingExperience.intermediate,
+        '💪',
+        l10n.experienceIntermediate,
+        l10n.experienceIntermediateDesc,
+      ),
+      (
+        TrainingExperience.experienced,
+        '🏆',
+        l10n.experienceExperienced,
+        l10n.experienceExperiencedDesc,
+      ),
+    ];
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        children: options.map((o) {
+          final (value, emoji, label, desc) = o;
+          final isSel = experience == value;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                onChanged(value);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: isSel
+                      ? colors.primary.withValues(alpha: 0.1)
+                      : colors.surfaceCard,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isSel
+                        ? colors.primary
+                        : colors.textPrimary.withValues(alpha: 0.06),
+                    width: isSel ? 2 : 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: isSel ? colors.primary : colors.surfaceLight,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(emoji, style: const TextStyle(fontSize: 20)),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            label,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: isSel
+                                  ? colors.primary
+                                  : colors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            desc,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colors.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isSel)
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: colors.primary,
+                        size: 22,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
   }
 }
 
@@ -1497,28 +1620,13 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
             children: [
               const Spacer(flex: 2),
 
-              // ── Pulsing brain icon ──
+              // ── Pulsing AI plan illustration ──
               ScaleTransition(
                 scale: _iconScale,
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.purple.withValues(alpha: 0.12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.purpleAccent.withValues(alpha: 0.4),
-                        blurRadius: 40,
-                        spreadRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: const AppIcon(
-                    asset: AppImages.aiAssistant,
-                    glowColor: Colors.purpleAccent,
-                    size: 80,
-                  ),
+                child: Image.asset(
+                  AppImages.aiPlanLoading,
+                  width: 180,
+                  fit: BoxFit.contain,
                 ),
               ),
 

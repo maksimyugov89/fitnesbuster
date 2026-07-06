@@ -7,6 +7,7 @@ import 'package:fitnesbuster/core/constants/avatar_presets.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/profile/profile_sheet_widgets.dart';
 import 'package:fitnesbuster/domain/entities/body_measurement.dart';
+import 'package:fitnesbuster/domain/entities/user_entities.dart';
 
 void showProfileSuccess(BuildContext context, String msg) {
   final colors = AppTheme.of(context);
@@ -550,6 +551,138 @@ class _GoalEditSheetState extends State<GoalEditSheet> {
       'desc': 'Максимальная производительность',
     },
   ];
+}
+
+// ── Training Experience Edit Sheet ───────────────────────────────────────────
+
+class TrainingExperienceEditSheet extends StatefulWidget {
+  final TrainingExperience experience;
+  final ValueChanged<TrainingExperience> onSave;
+
+  const TrainingExperienceEditSheet({
+    super.key,
+    required this.experience,
+    required this.onSave,
+  });
+
+  @override
+  State<TrainingExperienceEditSheet> createState() =>
+      _TrainingExperienceEditSheetState();
+}
+
+class _TrainingExperienceEditSheetState
+    extends State<TrainingExperienceEditSheet> {
+  late TrainingExperience _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.experience;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = AppTheme.of(context);
+    final options = [
+      (
+        TrainingExperience.novice,
+        '🌱',
+        l10n.experienceNovice,
+        l10n.experienceNoviceDesc,
+      ),
+      (
+        TrainingExperience.intermediate,
+        '💪',
+        l10n.experienceIntermediate,
+        l10n.experienceIntermediateDesc,
+      ),
+      (
+        TrainingExperience.experienced,
+        '🏆',
+        l10n.experienceExperienced,
+        l10n.experienceExperiencedDesc,
+      ),
+    ];
+    return SheetWrapper(
+      title: l10n.trainingExperienceLabel,
+      child: Column(
+        children: [
+          ...options.map((o) {
+            final (value, emoji, label, desc) = o;
+            final isSelected = _selected == value;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: GestureDetector(
+                onTap: () => setState(() => _selected = value),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? colors.primary.withValues(alpha: 0.1)
+                        : colors.surfaceCard,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isSelected
+                          ? colors.primary
+                          : colors.textPrimary.withValues(alpha: 0.06),
+                      width: isSelected ? 2 : 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(emoji, style: const TextStyle(fontSize: 28)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              label,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: isSelected
+                                    ? colors.primary
+                                    : colors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              desc,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: colors.textMuted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (isSelected)
+                        Icon(
+                          Icons.check_circle_rounded,
+                          color: colors.primary,
+                          size: 22,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: 14),
+          SaveButton(
+            onTap: () {
+              widget.onSave(_selected);
+              Navigator.of(context).pop();
+              showProfileSuccess(context, l10n.save);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ── NumSlider (shared form widget) ─────────────────────────────────────────

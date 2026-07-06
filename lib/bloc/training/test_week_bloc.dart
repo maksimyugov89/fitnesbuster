@@ -10,6 +10,7 @@ import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/test_week_exercises.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/core/utils/recent_rpe.dart';
 
 part 'test_week_event.dart';
 part 'test_week_state.dart';
@@ -38,7 +39,10 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
     on<TestWeekAdjustGoal>(_onAdjustGoal);
   }
 
-  List<List<TestDayExercise>> get _testDays => kTestWeekDays;
+  // Тестовая неделя должна предлагать только то оборудование, которое
+  // реально доступно пользователю (зал/стадион/дом) — иначе тест нечестный.
+  List<List<TestDayExercise>> get _testDays =>
+      testWeekDaysForLocation(_profile?.workoutLocation);
 
   void _onStartDay(TestWeekStartDay event, Emitter<TestWeekState> emit) {
     final dayIdx = event.dayIndex;
@@ -125,6 +129,7 @@ class TestWeekBloc extends Bloc<TestWeekEvent, TestWeekState> {
     final result = await _workflowService.calculateResults(
       exercises: exercises,
       profile: effectiveProfile,
+      perceivedDifficulty: await recentAverageRpe() ?? 5,
     );
 
     emit(

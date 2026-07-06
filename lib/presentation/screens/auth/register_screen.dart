@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
+import 'package:fitnesbuster/core/legal/legal_documents.dart';
+import 'package:fitnesbuster/presentation/screens/legal/legal_document_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -28,6 +31,9 @@ class _RegisterScreenState extends State<RegisterScreen>
   late Animation<Offset> _slideAnim;
   late Animation<double> _fadeAnim;
 
+  final _termsTap = TapGestureRecognizer();
+  final _privacyTap = TapGestureRecognizer();
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +47,16 @@ class _RegisterScreenState extends State<RegisterScreen>
     ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut));
     _fadeAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
     _animCtrl.forward();
+    _termsTap.onTap = () => _openLegalDocument(termsOfUse);
+    _privacyTap.onTap = () => _openLegalDocument(privacyPolicy);
+  }
+
+  void _openLegalDocument(LegalDocument document) {
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (_) => LegalDocumentScreen(document: document),
+      ),
+    );
   }
 
   @override
@@ -49,6 +65,8 @@ class _RegisterScreenState extends State<RegisterScreen>
     _emailCtrl.dispose();
     _passCtrl.dispose();
     _confirmCtrl.dispose();
+    _termsTap.dispose();
+    _privacyTap.dispose();
     super.dispose();
   }
 
@@ -382,10 +400,13 @@ class _RegisterScreenState extends State<RegisterScreen>
                                         ),
                                         TextSpan(
                                           text: 'условия использования',
+                                          recognizer: _termsTap,
                                           style: TextStyle(
                                             color: colors.primary,
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
+                                            decoration:
+                                                TextDecoration.underline,
                                           ),
                                         ),
                                         TextSpan(
@@ -397,10 +418,13 @@ class _RegisterScreenState extends State<RegisterScreen>
                                         ),
                                         TextSpan(
                                           text: 'политику конфиденциальности',
+                                          recognizer: _privacyTap,
                                           style: TextStyle(
                                             color: colors.primary,
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
+                                            decoration:
+                                                TextDecoration.underline,
                                           ),
                                         ),
                                       ],

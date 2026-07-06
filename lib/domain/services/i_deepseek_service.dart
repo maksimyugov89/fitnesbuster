@@ -6,6 +6,8 @@ abstract interface class IDeepSeekService {
     HealthData? recentHealth,
     int weekNumber,
     String? previousPlanFeedback,
+    int? recentAvgRpe,
+    int? domsLevel,
   });
 
   Future<String> generateMealPlan(

@@ -69,5 +69,6 @@ abstract interface class IAdaptiveTrainingService {
     required TestWeekResult testResult,
     required TrainingAdjustment adjustment,
     required int durationWeeks,
+    required UserProfile profile,
   });
 }

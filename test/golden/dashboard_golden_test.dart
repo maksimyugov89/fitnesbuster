@@ -113,6 +113,9 @@ void main() {
     when(mockSettingsRepo.getWorkoutKcal(any)).thenAnswer((_) async => 0);
     when(mockSettingsRepo.getMealsDone(any)).thenAnswer((_) async => []);
     when(mockSettingsRepo.getManualSteps(any)).thenAnswer((_) async => 0);
+    // Answered already — keeps the DOMS check-in card out of the golden
+    // snapshot (its absence/presence shouldn't depend on "today's date").
+    when(mockSettingsRepo.getDomsLevel(any)).thenAnswer((_) async => 0);
 
     when(mockHealthConnect.initialize()).thenAnswer((_) async => true);
     when(mockHealthConnect.readAllToday()).thenAnswer(

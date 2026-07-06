@@ -3,8 +3,12 @@ import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
+import 'package:fitnesbuster/core/health/health_data_mapper.dart';
+import 'package:fitnesbuster/core/utils/recent_rpe.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/core/di/injection.dart';
 
 part 'ai_event.dart';
 part 'ai_state.dart';
@@ -27,7 +31,12 @@ class AiBloc extends Bloc<AiEvent, AiState> {
   ) async {
     emit(const AiStateLoading());
     try {
-      final result = await _aiService.generateWorkoutPlan(event.profile);
+      final result = await _aiService.generateWorkoutPlan(
+        event.profile,
+        recentHealth: await _readRecentHealth(),
+        recentAvgRpe: await recentAverageRpe(),
+        domsLevel: await todayDomsLevel(),
+      );
       emit(AiStateLoaded(result: result, type: AiResultType.workoutPlan));
     } on AiException catch (e) {
       emit(AiStateError(message: e.message));
@@ -80,5 +89,20 @@ class AiBloc extends Bloc<AiEvent, AiState> {
 
   void _onReset(AiReset event, Emitter<AiState> emit) {
     emit(const AiStateInitial());
+  }
+
+  /// Читает текущие показания с устройства (сон/HRV/пульс), чтобы передать
+  /// их в AI как `recentHealth` — по best-effort: при отсутствии синхронизации
+  /// или разрешений просто возвращает null, не блокируя генерацию плана.
+  Future<HealthData?> _readRecentHealth() async {
+    try {
+      final hc = sl<IHealthConnectService>();
+      await hc.initialize();
+      final synced = await hc.readAllToday();
+      return healthDataFromSynced(synced);
+    } catch (e, st) {
+      appLogger.w('[AiBloc] readRecentHealth failed', error: e, stackTrace: st);
+      return null;
+    }
   }
 }

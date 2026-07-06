@@ -9,6 +9,8 @@ class SettingsRepository implements ISettingsRepository {
   static String _wSets(String k) => 'workout_sets_$k';
   static String _wTime(String k) => 'workout_time_$k';
   static String _wRating(String k) => 'workout_rating_$k';
+  static String _wRpe(String k) => 'workout_rpe_$k';
+  static String _doms(String k) => 'doms_level_$k';
   static String _wLog(String k) => 'workout_log_detail_$k';
   static String _eaten(String k) => 'eaten_cal_$k';
   static String _target(String k) => 'target_cal_$k';
@@ -105,6 +107,18 @@ class SettingsRepository implements ISettingsRepository {
   @override
   Future<void> setWorkoutRating(String k, int v) async =>
       _set((p) => p.setInt(_wRating(k), v));
+  @override
+  Future<int?> getWorkoutRpe(String k) async =>
+      _getIntOrNull((p) => p.getInt(_wRpe(k)));
+  @override
+  Future<void> setWorkoutRpe(String k, int v) async =>
+      _set((p) => p.setInt(_wRpe(k), v));
+  @override
+  Future<int?> getDomsLevel(String k) async =>
+      _getIntOrNull((p) => p.getInt(_doms(k)));
+  @override
+  Future<void> setDomsLevel(String k, int v) async =>
+      _set((p) => p.setInt(_doms(k), v));
   @override
   Future<String?> getWorkoutLogDetail(String k) async =>
       _getStr((p) => p.getString(_wLog(k)));

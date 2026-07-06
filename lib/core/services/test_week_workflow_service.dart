@@ -20,13 +20,14 @@ class TestWeekWorkflowService {
   calculateResults({
     required List<TestExerciseResult> exercises,
     required UserProfile profile,
+    int perceivedDifficulty = 5,
   }) async {
     final testResult = TestWeekResult(
       completedAt: DateTime.now(),
       exercises: exercises,
       averageHeartRate: 0,
       averageSessionDuration: 0,
-      perceivedDifficulty: 5,
+      perceivedDifficulty: perceivedDifficulty,
     );
 
     final adjustment = _trainingService.calculateAdjustment(
@@ -59,6 +60,7 @@ class TestWeekWorkflowService {
       durationWeeks: profile.targetDate != null
           ? profile.estimatedWeeksNeeded
           : 12,
+      profile: profile,
     );
 
     return (

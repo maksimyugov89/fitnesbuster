@@ -67,6 +67,20 @@ void main() {
     });
   });
 
+  group('doms level', () {
+    test('get defaults to null when unanswered', () async {
+      when(repo.getDomsLevel(tKey)).thenAnswer((_) async => null);
+      expect(await repo.getDomsLevel(tKey), isNull);
+    });
+
+    test('set/get roundtrip', () async {
+      when(repo.getDomsLevel(tKey)).thenAnswer((_) async => 2);
+      await repo.setDomsLevel(tKey, 2);
+      expect(await repo.getDomsLevel(tKey), 2);
+      verify(repo.setDomsLevel(tKey, 2)).called(1);
+    });
+  });
+
   group('workout log detail', () {
     test('get returns null when not set', () async {
       when(repo.getWorkoutLogDetail(tKey)).thenAnswer((_) async => null);

@@ -230,6 +230,79 @@ class AdaptationBanner extends StatelessWidget {
   }
 }
 
+/// Ежедневный чек-ин мышечной усталости (DOMS) — отдельный сигнал от HRV/сна,
+/// который физиологически проявляется только на следующий день после нагрузки
+/// и не может быть выведен из данных с устройства. Показывается один раз в
+/// день; выбор сохраняется локально и передаётся в AI как сигнал накопленной
+/// усталости (принцип Селуянова/Цацулина — снижать нагрузку раньше явных
+/// признаков перетренированности).
+class DomsCheckInCard extends StatelessWidget {
+  final ValueChanged<int> onSelected;
+  const DomsCheckInCard({super.key, required this.onSelected});
+
+  static const _levels = [0, 1, 2, 3];
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final p = AppTheme.of(context);
+    final labels = [
+      l10n.domsNone,
+      l10n.domsMild,
+      l10n.domsNoticeable,
+      l10n.domsSevere,
+    ];
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: p.surfaceCard,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: p.textPrimary.withValues(alpha: 0.06)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.domsQuestionTitle, style: AppTextStyles.titleM),
+          const SizedBox(height: 12),
+          Row(
+            children: List.generate(_levels.length, (i) {
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => onSelected(_levels[i]),
+                  child: Container(
+                    height: 48,
+                    margin: EdgeInsets.only(
+                      right: i < _levels.length - 1 ? 8 : 0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: p.surfaceLight,
+                      borderRadius: BorderRadius.circular(13),
+                      border: Border.all(
+                        color: p.textPrimary.withValues(alpha: 0.06),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        labels[i],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: p.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _RecoveryStat extends StatelessWidget {
   final String icon, label, value;
   const _RecoveryStat({
