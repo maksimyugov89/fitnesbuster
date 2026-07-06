@@ -93,3 +93,6 @@ android/build/
 android/key.properties
 *.jks
 *.keystore
+
+# Golden test failure diffs (regenerated on every failing run)
+/test/golden/failures/
