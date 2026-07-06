@@ -64,25 +64,20 @@ class AppImages {
 ///
 /// These are silver/chrome illustrated assets shared across every theme.
 /// Each source icon has a companion `<name>_glow.png` — a precomputed mask
-/// built from a padded canvas (see scratchpad glow-extraction scripts):
-/// a tight highlight/sparkle layer clipped to the icon's own silhouette, plus
-/// a soft outer halo blurred from that silhouette into the surrounding
-/// padding. When [glowColor] is set, that mask is drawn oversized (by
-/// [glowOverscan]) and tinted via [BlendMode.srcIn], centered on top of the
-/// untouched base icon. [OverflowBox] + `Stack(clipBehavior: Clip.none)` let
-/// the halo visually spill past the icon's own bounding box (e.g. past a
-/// tightly-fit colored frame) instead of being clamped back down to it.
+/// containing only that icon's brightest highlight/sparkle pixels (built by
+/// thresholding luminance, see scratchpad glow-extraction scripts), fully
+/// transparent everywhere else. When [glowColor] is set, that mask is drawn
+/// on top of the untouched base icon and tinted via [BlendMode.srcIn] — safe
+/// here because the mask is almost entirely transparent, unlike tinting the
+/// whole icon, which flattens the metal shading. A soft outer bloom that
+/// spilled past the icon's own frame was tried and dropped: it read as a
+/// diffuse "RGB" haze rather than a crisp per-theme accent, so the glow stays
+/// clipped tightly to the icon's own silhouette.
 class AppIcon extends StatelessWidget {
   final String asset;
   final double size;
   final BoxFit fit;
   final Color? glowColor;
-
-  /// How much larger than [size] the glow layer renders, matching the
-  /// padding ratio baked into the `_glow.png` masks (see PAD_RATIO in the
-  /// generation script). Must stay in sync with that script to keep the
-  /// halo's silhouette aligned with the base icon.
-  static const double glowOverscan = 1.30;
 
   const AppIcon({
     super.key,
@@ -98,26 +93,20 @@ class AppIcon extends StatelessWidget {
     final glow = glowColor;
     if (glow == null) return base;
     final glowAsset = asset.replaceFirst(RegExp(r'\.png$'), '_glow.png');
-    final glowSize = size * glowOverscan;
     return SizedBox(
       width: size,
       height: size,
       child: Stack(
-        clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
           base,
-          OverflowBox(
-            maxWidth: glowSize,
-            maxHeight: glowSize,
-            child: Image.asset(
-              glowAsset,
-              width: glowSize,
-              height: glowSize,
-              fit: fit,
-              color: glow,
-              colorBlendMode: BlendMode.srcIn,
-            ),
+          Image.asset(
+            glowAsset,
+            width: size,
+            height: size,
+            fit: fit,
+            color: glow,
+            colorBlendMode: BlendMode.srcIn,
           ),
         ],
       ),

@@ -24,7 +24,11 @@ class NutritionHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          AppIcon(asset: AppImages.nutrition, glowColor: colors.primary, size: 44),
+          AppIcon(
+            asset: AppImages.nutrition,
+            glowColor: colors.primary,
+            size: 44,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
