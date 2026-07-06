@@ -78,15 +78,18 @@ void main() {
       perceivedDifficulty: 5,
     );
 
-    test('declared "experienced" yields advanced even with light test week', () {
-      final adj = service.calculateAdjustment(
-        testResult: tLightTestResult,
-        profile: tProfile.copyWith(
-          trainingExperience: TrainingExperience.experienced,
-        ),
-      );
-      expect(adj.userLevel, UserLevel.advanced);
-    });
+    test(
+      'declared "experienced" yields advanced even with light test week',
+      () {
+        final adj = service.calculateAdjustment(
+          testResult: tLightTestResult,
+          profile: tProfile.copyWith(
+            trainingExperience: TrainingExperience.experienced,
+          ),
+        );
+        expect(adj.userLevel, UserLevel.advanced);
+      },
+    );
 
     test('heavy test week can raise level above a declared novice', () {
       final adj = service.calculateAdjustment(

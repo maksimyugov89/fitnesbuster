@@ -114,9 +114,7 @@ void main() {
       'emits Saving then Complete on success',
       build: () {
         when(mockAuthRepo.currentUser).thenReturn(tUser);
-        when(
-          mockAuthRepo.userChanges,
-        ).thenAnswer((_) => Stream.value(tUser));
+        when(mockAuthRepo.userChanges).thenAnswer((_) => Stream.value(tUser));
         when(mockAuthRepo.isEmailVerified).thenReturn(true);
         when(
           mockUserRepo.saveOnboardingData(
@@ -179,9 +177,7 @@ void main() {
       'emits error when save fails',
       build: () {
         when(mockAuthRepo.currentUser).thenReturn(tUser);
-        when(
-          mockAuthRepo.userChanges,
-        ).thenAnswer((_) => Stream.value(tUser));
+        when(mockAuthRepo.userChanges).thenAnswer((_) => Stream.value(tUser));
         when(mockAuthRepo.isEmailVerified).thenReturn(true);
         when(
           mockUserRepo.saveOnboardingData(
@@ -226,9 +222,7 @@ void main() {
       'emits error when plan generation fails',
       build: () {
         when(mockAuthRepo.currentUser).thenReturn(tUser);
-        when(
-          mockAuthRepo.userChanges,
-        ).thenAnswer((_) => Stream.value(tUser));
+        when(mockAuthRepo.userChanges).thenAnswer((_) => Stream.value(tUser));
         when(mockAuthRepo.isEmailVerified).thenReturn(true);
         when(
           mockUserRepo.saveOnboardingData(

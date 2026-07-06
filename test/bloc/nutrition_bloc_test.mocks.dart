@@ -25,13 +25,8 @@ import 'package:mockito/src/dummies.dart' as _i6;
 // ignore_for_file: subtype_of_sealed_class
 
 class _FakeMacros_0 extends _i1.SmartFake implements _i2.Macros {
-  _FakeMacros_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeMacros_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [NutritionService].
@@ -43,13 +38,12 @@ class MockNutritionService extends _i1.Mock implements _i3.NutritionService {
   }
 
   @override
-  bool shouldRegenerate(DateTime? lastGenerated) => (super.noSuchMethod(
-        Invocation.method(
-          #shouldRegenerate,
-          [lastGenerated],
-        ),
-        returnValue: false,
-      ) as bool);
+  bool shouldRegenerate(DateTime? lastGenerated) =>
+      (super.noSuchMethod(
+            Invocation.method(#shouldRegenerate, [lastGenerated]),
+            returnValue: false,
+          )
+          as bool);
 
   @override
   _i4.Future<String> generateMealPlan(
@@ -57,33 +51,32 @@ class MockNutritionService extends _i1.Mock implements _i3.NutritionService {
     int? stepsToday = 0,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #generateMealPlan,
-          [profile],
-          {#stepsToday: stepsToday},
-        ),
-        returnValue: _i4.Future<String>.value(_i6.dummyValue<String>(
-          this,
-          Invocation.method(
-            #generateMealPlan,
-            [profile],
-            {#stepsToday: stepsToday},
-          ),
-        )),
-      ) as _i4.Future<String>);
+            Invocation.method(
+              #generateMealPlan,
+              [profile],
+              {#stepsToday: stepsToday},
+            ),
+            returnValue: _i4.Future<String>.value(
+              _i6.dummyValue<String>(
+                this,
+                Invocation.method(
+                  #generateMealPlan,
+                  [profile],
+                  {#stepsToday: stepsToday},
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
 
   @override
-  _i2.Macros calculateMacros(_i5.UserProfile? profile) => (super.noSuchMethod(
-        Invocation.method(
-          #calculateMacros,
-          [profile],
-        ),
-        returnValue: _FakeMacros_0(
-          this,
-          Invocation.method(
-            #calculateMacros,
-            [profile],
-          ),
-        ),
-      ) as _i2.Macros);
+  _i2.Macros calculateMacros(_i5.UserProfile? profile) =>
+      (super.noSuchMethod(
+            Invocation.method(#calculateMacros, [profile]),
+            returnValue: _FakeMacros_0(
+              this,
+              Invocation.method(#calculateMacros, [profile]),
+            ),
+          )
+          as _i2.Macros);
 }

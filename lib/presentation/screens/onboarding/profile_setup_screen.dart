@@ -917,7 +917,10 @@ class _PageExperience extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                        child: Text(emoji, style: const TextStyle(fontSize: 20)),
+                        child: Text(
+                          emoji,
+                          style: const TextStyle(fontSize: 20),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),

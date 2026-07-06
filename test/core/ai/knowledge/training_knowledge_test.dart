@@ -38,20 +38,17 @@ void main() {
       expect(block, contains('начинающего'));
     });
 
-    test(
-      'sportPerformance + experienced/intensive gets power emphasis',
-      () {
-        final block = methodologyEmphasisBlock(
-          baseProfile.copyWith(
-            goal: FitnessGoal.sportPerformance,
-            trainingExperience: TrainingExperience.experienced,
-            intensity: IntensityLevel.intensive,
-          ),
-        );
-        expect(block, contains('взрывные/плиометрические'));
-        expect(block, contains('перенос'));
-      },
-    );
+    test('sportPerformance + experienced/intensive gets power emphasis', () {
+      final block = methodologyEmphasisBlock(
+        baseProfile.copyWith(
+          goal: FitnessGoal.sportPerformance,
+          trainingExperience: TrainingExperience.experienced,
+          intensity: IntensityLevel.intensive,
+        ),
+      );
+      expect(block, contains('взрывные/плиометрические'));
+      expect(block, contains('перенос'));
+    });
 
     test('gainWeight + balanced/intensive gets volume emphasis', () {
       final block = methodologyEmphasisBlock(
@@ -71,7 +68,10 @@ void main() {
         advice: '',
         shouldReduceIntensity: true,
       );
-      final block = methodologyEmphasisBlock(baseProfile, recovery: lowRecovery);
+      final block = methodologyEmphasisBlock(
+        baseProfile,
+        recovery: lowRecovery,
+      );
       expect(block, contains('Восстановление снижено'));
     });
 
@@ -83,7 +83,10 @@ void main() {
         advice: '',
         shouldReduceIntensity: false,
       );
-      final block = methodologyEmphasisBlock(baseProfile, recovery: goodRecovery);
+      final block = methodologyEmphasisBlock(
+        baseProfile,
+        recovery: goodRecovery,
+      );
       expect(block, isNot(contains('Восстановление снижено')));
     });
 

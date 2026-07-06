@@ -12,7 +12,8 @@ part of 'test_day_exercise.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 TestDayExercise _$TestDayExerciseFromJson(Map<String, dynamic> json) {
   return _TestDayExercise.fromJson(json);
@@ -33,8 +34,9 @@ mixin _$TestDayExercise {
 /// @nodoc
 abstract class $TestDayExerciseCopyWith<$Res> {
   factory $TestDayExerciseCopyWith(
-          TestDayExercise value, $Res Function(TestDayExercise) then) =
-      _$TestDayExerciseCopyWithImpl<$Res, TestDayExercise>;
+    TestDayExercise value,
+    $Res Function(TestDayExercise) then,
+  ) = _$TestDayExerciseCopyWithImpl<$Res, TestDayExercise>;
   @useResult
   $Res call({String name, MuscleGroup muscle, double baseWeight});
 }
@@ -56,29 +58,33 @@ class _$TestDayExerciseCopyWithImpl<$Res, $Val extends TestDayExercise>
     Object? muscle = null,
     Object? baseWeight = null,
   }) {
-    return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      muscle: null == muscle
-          ? _value.muscle
-          : muscle // ignore: cast_nullable_to_non_nullable
-              as MuscleGroup,
-      baseWeight: null == baseWeight
-          ? _value.baseWeight
-          : baseWeight // ignore: cast_nullable_to_non_nullable
-              as double,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            muscle: null == muscle
+                ? _value.muscle
+                : muscle // ignore: cast_nullable_to_non_nullable
+                      as MuscleGroup,
+            baseWeight: null == baseWeight
+                ? _value.baseWeight
+                : baseWeight // ignore: cast_nullable_to_non_nullable
+                      as double,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$TestDayExerciseImplCopyWith<$Res>
     implements $TestDayExerciseCopyWith<$Res> {
-  factory _$$TestDayExerciseImplCopyWith(_$TestDayExerciseImpl value,
-          $Res Function(_$TestDayExerciseImpl) then) =
-      __$$TestDayExerciseImplCopyWithImpl<$Res>;
+  factory _$$TestDayExerciseImplCopyWith(
+    _$TestDayExerciseImpl value,
+    $Res Function(_$TestDayExerciseImpl) then,
+  ) = __$$TestDayExerciseImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String name, MuscleGroup muscle, double baseWeight});
@@ -89,8 +95,9 @@ class __$$TestDayExerciseImplCopyWithImpl<$Res>
     extends _$TestDayExerciseCopyWithImpl<$Res, _$TestDayExerciseImpl>
     implements _$$TestDayExerciseImplCopyWith<$Res> {
   __$$TestDayExerciseImplCopyWithImpl(
-      _$TestDayExerciseImpl _value, $Res Function(_$TestDayExerciseImpl) _then)
-      : super(_value, _then);
+    _$TestDayExerciseImpl _value,
+    $Res Function(_$TestDayExerciseImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -99,28 +106,33 @@ class __$$TestDayExerciseImplCopyWithImpl<$Res>
     Object? muscle = null,
     Object? baseWeight = null,
   }) {
-    return _then(_$TestDayExerciseImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      muscle: null == muscle
-          ? _value.muscle
-          : muscle // ignore: cast_nullable_to_non_nullable
-              as MuscleGroup,
-      baseWeight: null == baseWeight
-          ? _value.baseWeight
-          : baseWeight // ignore: cast_nullable_to_non_nullable
-              as double,
-    ));
+    return _then(
+      _$TestDayExerciseImpl(
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        muscle: null == muscle
+            ? _value.muscle
+            : muscle // ignore: cast_nullable_to_non_nullable
+                  as MuscleGroup,
+        baseWeight: null == baseWeight
+            ? _value.baseWeight
+            : baseWeight // ignore: cast_nullable_to_non_nullable
+                  as double,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$TestDayExerciseImpl implements _TestDayExercise {
-  const _$TestDayExerciseImpl(
-      {required this.name, required this.muscle, required this.baseWeight});
+  const _$TestDayExerciseImpl({
+    required this.name,
+    required this.muscle,
+    required this.baseWeight,
+  });
 
   factory _$TestDayExerciseImpl.fromJson(Map<String, dynamic> json) =>
       _$$TestDayExerciseImplFromJson(json);
@@ -157,21 +169,22 @@ class _$TestDayExerciseImpl implements _TestDayExercise {
   @pragma('vm:prefer-inline')
   _$$TestDayExerciseImplCopyWith<_$TestDayExerciseImpl> get copyWith =>
       __$$TestDayExerciseImplCopyWithImpl<_$TestDayExerciseImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TestDayExerciseImplToJson(
-      this,
-    );
+    return _$$TestDayExerciseImplToJson(this);
   }
 }
 
 abstract class _TestDayExercise implements TestDayExercise {
-  const factory _TestDayExercise(
-      {required final String name,
-      required final MuscleGroup muscle,
-      required final double baseWeight}) = _$TestDayExerciseImpl;
+  const factory _TestDayExercise({
+    required final String name,
+    required final MuscleGroup muscle,
+    required final double baseWeight,
+  }) = _$TestDayExerciseImpl;
 
   factory _TestDayExercise.fromJson(Map<String, dynamic> json) =
       _$TestDayExerciseImpl.fromJson;

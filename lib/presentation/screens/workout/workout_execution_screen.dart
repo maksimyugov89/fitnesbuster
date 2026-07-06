@@ -1330,7 +1330,9 @@ class _RpeRatingRow extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     height: 52,
-                    margin: EdgeInsets.only(right: i < _values.length - 1 ? 8 : 0),
+                    margin: EdgeInsets.only(
+                      right: i < _values.length - 1 ? 8 : 0,
+                    ),
                     decoration: BoxDecoration(
                       color: isSel
                           ? colors.primary.withValues(alpha: 0.15)

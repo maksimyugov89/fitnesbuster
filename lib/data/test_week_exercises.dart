@@ -165,11 +165,7 @@ const List<TestDayExercise> _kHomeExercises = [
     muscle: MuscleGroup.shoulders,
     baseWeight: 0,
   ),
-  TestDayExercise(
-    name: 'Приседания',
-    muscle: MuscleGroup.quads,
-    baseWeight: 0,
-  ),
+  TestDayExercise(name: 'Приседания', muscle: MuscleGroup.quads, baseWeight: 0),
   TestDayExercise(name: 'Выпады', muscle: MuscleGroup.glutes, baseWeight: 0),
   TestDayExercise(
     name: 'Ягодичный мостик',

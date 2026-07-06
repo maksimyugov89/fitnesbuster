@@ -7,11 +7,12 @@ void main() {
       for (final location in [null, 'gym', 'outdoor', 'home']) {
         final days = testWeekDaysForLocation(location);
         expect(days.length, 4, reason: 'location=$location');
-        expect(
-          days.map((d) => d.length).toList(),
-          [4, 3, 4, 2],
-          reason: 'location=$location',
-        );
+        expect(days.map((d) => d.length).toList(), [
+          4,
+          3,
+          4,
+          2,
+        ], reason: 'location=$location');
       }
     });
 

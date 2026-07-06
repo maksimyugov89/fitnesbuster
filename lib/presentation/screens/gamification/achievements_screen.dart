@@ -115,149 +115,144 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     int totalCount,
   ) {
     return Column(
-        children: [
-          // ── Header stats ──────────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
-            child: Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    colors.primary.withValues(alpha: 0.15),
-                    colors.elevated,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: colors.primary.withValues(alpha: 0.25),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Image.asset(
-                    lvl.icon,
-                    width: 48,
-                    height: 48,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Ур. ${lvl.level} · ${lvl.name}',
-                          style: TextStyle(
-                            fontFamily: 'Syne',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '$_totalXp XP · $unlockedCount / $totalCount значков',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: colors.textMuted,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: lvl.progress,
-                            backgroundColor: colors.primary.withValues(
-                              alpha: 0.12,
-                            ),
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              colors.primary,
-                            ),
-                            minHeight: 5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+      children: [
+        // ── Header stats ──────────────────────────────────────────────────────
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  colors.primary.withValues(alpha: 0.15),
+                  colors.elevated,
                 ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: colors.primary.withValues(alpha: 0.25)),
+            ),
+            child: Row(
+              children: [
+                Image.asset(
+                  lvl.icon,
+                  width: 48,
+                  height: 48,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Ур. ${lvl.level} · ${lvl.name}',
+                        style: TextStyle(
+                          fontFamily: 'Syne',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '$_totalXp XP · $unlockedCount / $totalCount значков',
+                        style: TextStyle(fontSize: 12, color: colors.textMuted),
+                      ),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: lvl.progress,
+                          backgroundColor: colors.primary.withValues(
+                            alpha: 0.12,
+                          ),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            colors.primary,
+                          ),
+                          minHeight: 5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
+        ),
 
-          // ── Category filter ───────────────────────────────────────────────────
-          SizedBox(
-            height: 36,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: _categories.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 8),
-              itemBuilder: (_, i) {
-                final (id, label) = _categories[i];
-                final selected = _selectedCategory == id;
-                return GestureDetector(
-                  onTap: () => setState(() => _selectedCategory = id),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: selected ? colors.primary : colors.surfaceCard,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: selected
-                            ? colors.primary
-                            : colors.textPrimary.withValues(alpha: 0.08),
-                      ),
-                    ),
-                    child: Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: selected
-                            ? colors.textOnPrimary
-                            : colors.textSecondary,
-                      ),
+        // ── Category filter ───────────────────────────────────────────────────
+        SizedBox(
+          height: 36,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: _categories.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
+            itemBuilder: (_, i) {
+              final (id, label) = _categories[i];
+              final selected = _selectedCategory == id;
+              return GestureDetector(
+                onTap: () => setState(() => _selectedCategory = id),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected ? colors.primary : colors.surfaceCard,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: selected
+                          ? colors.primary
+                          : colors.textPrimary.withValues(alpha: 0.08),
                     ),
                   ),
-                );
-              },
-            ),
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: selected
+                          ? colors.textOnPrimary
+                          : colors.textSecondary,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
+        ),
 
-          const SizedBox(height: 16),
+        const SizedBox(height: 16),
 
-          // ── Achievements grid ─────────────────────────────────────────────────
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.82,
-              ),
-              itemCount: _filtered.length,
-              itemBuilder: (_, i) {
-                final a = _filtered[i];
-                final earned = _unlocked.contains(a.id);
-                return _AchievementTile(
-                  achievement: a,
-                  earned: earned,
-                  colors: colors,
-                  onTap: () => _showDetail(a, earned),
-                );
-              },
+        // ── Achievements grid ─────────────────────────────────────────────────
+        Expanded(
+          child: GridView.builder(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 0.82,
             ),
+            itemCount: _filtered.length,
+            itemBuilder: (_, i) {
+              final a = _filtered[i];
+              final earned = _unlocked.contains(a.id);
+              return _AchievementTile(
+                achievement: a,
+                earned: earned,
+                colors: colors,
+                onTap: () => _showDetail(a, earned),
+              );
+            },
           ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 
   void _showDetail(Achievement a, bool earned) {
@@ -456,12 +451,7 @@ class _LevelsTab extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Image.asset(
-                lvl.icon,
-                width: 88,
-                height: 88,
-                fit: BoxFit.contain,
-              ),
+              Image.asset(lvl.icon, width: 88, height: 88, fit: BoxFit.contain),
               const SizedBox(height: 10),
               Text(
                 'Уровень ${lvl.level} · ${lvl.name}',

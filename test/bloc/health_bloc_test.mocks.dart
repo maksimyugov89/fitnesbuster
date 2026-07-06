@@ -35,12 +35,10 @@ class MockIHealthService extends _i1.Mock implements _i2.IHealthService {
   @override
   _i3.Future<bool> requestAuthorization(List<_i4.HealthDataType>? types) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #requestAuthorization,
-          [types],
-        ),
-        returnValue: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+            Invocation.method(#requestAuthorization, [types]),
+            returnValue: _i3.Future<bool>.value(false),
+          )
+          as _i3.Future<bool>);
 
   @override
   _i3.Future<List<_i4.HealthDataPoint>> getHealthDataFromTypes({
@@ -49,18 +47,16 @@ class MockIHealthService extends _i1.Mock implements _i2.IHealthService {
     required List<_i4.HealthDataType>? types,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #getHealthDataFromTypes,
-          [],
-          {
-            #startTime: startTime,
-            #endTime: endTime,
-            #types: types,
-          },
-        ),
-        returnValue: _i3.Future<List<_i4.HealthDataPoint>>.value(
-            <_i4.HealthDataPoint>[]),
-      ) as _i3.Future<List<_i4.HealthDataPoint>>);
+            Invocation.method(#getHealthDataFromTypes, [], {
+              #startTime: startTime,
+              #endTime: endTime,
+              #types: types,
+            }),
+            returnValue: _i3.Future<List<_i4.HealthDataPoint>>.value(
+              <_i4.HealthDataPoint>[],
+            ),
+          )
+          as _i3.Future<List<_i4.HealthDataPoint>>);
 }
 
 /// A class which mocks [IHealthAnalyticsService].
@@ -73,50 +69,28 @@ class MockIHealthAnalyticsService extends _i1.Mock
   }
 
   @override
-  int sumSleepMinutes(List<_i4.HealthDataPoint>? data) => (super.noSuchMethod(
-        Invocation.method(
-          #sumSleepMinutes,
-          [data],
-        ),
-        returnValue: 0,
-      ) as int);
+  int sumSleepMinutes(List<_i4.HealthDataPoint>? data) =>
+      (super.noSuchMethod(
+            Invocation.method(#sumSleepMinutes, [data]),
+            returnValue: 0,
+          )
+          as int);
 
   @override
-  double? sumValue(
-    List<_i4.HealthDataPoint>? data,
-    _i4.HealthDataType? type,
-  ) =>
-      (super.noSuchMethod(Invocation.method(
-        #sumValue,
-        [
-          data,
-          type,
-        ],
-      )) as double?);
+  double? sumValue(List<_i4.HealthDataPoint>? data, _i4.HealthDataType? type) =>
+      (super.noSuchMethod(Invocation.method(#sumValue, [data, type]))
+          as double?);
 
   @override
-  double? avgValue(
-    List<_i4.HealthDataPoint>? data,
-    _i4.HealthDataType? type,
-  ) =>
-      (super.noSuchMethod(Invocation.method(
-        #avgValue,
-        [
-          data,
-          type,
-        ],
-      )) as double?);
+  double? avgValue(List<_i4.HealthDataPoint>? data, _i4.HealthDataType? type) =>
+      (super.noSuchMethod(Invocation.method(#avgValue, [data, type]))
+          as double?);
 
   @override
   double? lastValue(
     List<_i4.HealthDataPoint>? data,
     _i4.HealthDataType? type,
   ) =>
-      (super.noSuchMethod(Invocation.method(
-        #lastValue,
-        [
-          data,
-          type,
-        ],
-      )) as double?);
+      (super.noSuchMethod(Invocation.method(#lastValue, [data, type]))
+          as double?);
 }

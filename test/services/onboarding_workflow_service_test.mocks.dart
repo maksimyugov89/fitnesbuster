@@ -26,13 +26,8 @@ import 'package:mockito/src/dummies.dart' as _i5;
 // ignore_for_file: subtype_of_sealed_class
 
 class _FakeUserEntity_0 extends _i1.SmartFake implements _i2.UserEntity {
-  _FakeUserEntity_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeUserEntity_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [IDeepSeekService].
@@ -53,32 +48,35 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
     int? domsLevel,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #generateWorkoutPlan,
-          [profile],
-          {
-            #recentHealth: recentHealth,
-            #weekNumber: weekNumber,
-            #previousPlanFeedback: previousPlanFeedback,
-            #recentAvgRpe: recentAvgRpe,
-            #domsLevel: domsLevel,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #generateWorkoutPlan,
-            [profile],
-            {
-              #recentHealth: recentHealth,
-              #weekNumber: weekNumber,
-              #previousPlanFeedback: previousPlanFeedback,
-              #recentAvgRpe: recentAvgRpe,
-              #domsLevel: domsLevel,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
+            Invocation.method(
+              #generateWorkoutPlan,
+              [profile],
+              {
+                #recentHealth: recentHealth,
+                #weekNumber: weekNumber,
+                #previousPlanFeedback: previousPlanFeedback,
+                #recentAvgRpe: recentAvgRpe,
+                #domsLevel: domsLevel,
+              },
+            ),
+            returnValue: _i4.Future<String>.value(
+              _i5.dummyValue<String>(
+                this,
+                Invocation.method(
+                  #generateWorkoutPlan,
+                  [profile],
+                  {
+                    #recentHealth: recentHealth,
+                    #weekNumber: weekNumber,
+                    #previousPlanFeedback: previousPlanFeedback,
+                    #recentAvgRpe: recentAvgRpe,
+                    #domsLevel: domsLevel,
+                  },
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
 
   @override
   _i4.Future<String> generateMealPlan(
@@ -90,32 +88,35 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
     String? city,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #generateMealPlan,
-          [profile],
-          {
-            #stepsToday: stepsToday,
-            #recentHealth: recentHealth,
-            #dislikedFoods: dislikedFoods,
-            #cuisinePreference: cuisinePreference,
-            #city: city,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #generateMealPlan,
-            [profile],
-            {
-              #stepsToday: stepsToday,
-              #recentHealth: recentHealth,
-              #dislikedFoods: dislikedFoods,
-              #cuisinePreference: cuisinePreference,
-              #city: city,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
+            Invocation.method(
+              #generateMealPlan,
+              [profile],
+              {
+                #stepsToday: stepsToday,
+                #recentHealth: recentHealth,
+                #dislikedFoods: dislikedFoods,
+                #cuisinePreference: cuisinePreference,
+                #city: city,
+              },
+            ),
+            returnValue: _i4.Future<String>.value(
+              _i5.dummyValue<String>(
+                this,
+                Invocation.method(
+                  #generateMealPlan,
+                  [profile],
+                  {
+                    #stepsToday: stepsToday,
+                    #recentHealth: recentHealth,
+                    #dislikedFoods: dislikedFoods,
+                    #cuisinePreference: cuisinePreference,
+                    #city: city,
+                  },
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
 
   @override
   _i4.Future<String> refineWorkoutPlan(
@@ -123,24 +124,15 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
     List<_i2.TestExerciseResult>? exercises,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #refineWorkoutPlan,
-          [
-            profile,
-            exercises,
-          ],
-        ),
-        returnValue: _i4.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #refineWorkoutPlan,
-            [
-              profile,
-              exercises,
-            ],
-          ),
-        )),
-      ) as _i4.Future<String>);
+            Invocation.method(#refineWorkoutPlan, [profile, exercises]),
+            returnValue: _i4.Future<String>.value(
+              _i5.dummyValue<String>(
+                this,
+                Invocation.method(#refineWorkoutPlan, [profile, exercises]),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
 
   @override
   _i4.Future<String> analyzeProgress({
@@ -150,30 +142,25 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
     bool? hasPhotos,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #analyzeProgress,
-          [],
-          {
-            #profile: profile,
-            #latest: latest,
-            #previous: previous,
-            #hasPhotos: hasPhotos,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #analyzeProgress,
-            [],
-            {
+            Invocation.method(#analyzeProgress, [], {
               #profile: profile,
               #latest: latest,
               #previous: previous,
               #hasPhotos: hasPhotos,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
+            }),
+            returnValue: _i4.Future<String>.value(
+              _i5.dummyValue<String>(
+                this,
+                Invocation.method(#analyzeProgress, [], {
+                  #profile: profile,
+                  #latest: latest,
+                  #previous: previous,
+                  #hasPhotos: hasPhotos,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
 
   @override
   _i4.Future<String> generateWeeklyDebrief({
@@ -187,26 +174,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
     required List<String>? weekPrNames,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #generateWeeklyDebrief,
-          [],
-          {
-            #profile: profile,
-            #workoutsDone: workoutsDone,
-            #dailyWorkoutKcal: dailyWorkoutKcal,
-            #dailyWaterMl: dailyWaterMl,
-            #dailyEatenCal: dailyEatenCal,
-            #dailyCalTarget: dailyCalTarget,
-            #dailyWaterTarget: dailyWaterTarget,
-            #weekPrNames: weekPrNames,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #generateWeeklyDebrief,
-            [],
-            {
+            Invocation.method(#generateWeeklyDebrief, [], {
               #profile: profile,
               #workoutsDone: workoutsDone,
               #dailyWorkoutKcal: dailyWorkoutKcal,
@@ -215,10 +183,24 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
               #dailyCalTarget: dailyCalTarget,
               #dailyWaterTarget: dailyWaterTarget,
               #weekPrNames: weekPrNames,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
+            }),
+            returnValue: _i4.Future<String>.value(
+              _i5.dummyValue<String>(
+                this,
+                Invocation.method(#generateWeeklyDebrief, [], {
+                  #profile: profile,
+                  #workoutsDone: workoutsDone,
+                  #dailyWorkoutKcal: dailyWorkoutKcal,
+                  #dailyWaterMl: dailyWaterMl,
+                  #dailyEatenCal: dailyEatenCal,
+                  #dailyCalTarget: dailyCalTarget,
+                  #dailyWaterTarget: dailyWaterTarget,
+                  #weekPrNames: weekPrNames,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
 
   @override
   _i4.Future<String> askWithHistory(
@@ -227,26 +209,23 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
     _i2.UserProfile? profile,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #askWithHistory,
-          [
-            history,
-            newQuestion,
-          ],
-          {#profile: profile},
-        ),
-        returnValue: _i4.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #askWithHistory,
-            [
-              history,
-              newQuestion,
-            ],
-            {#profile: profile},
-          ),
-        )),
-      ) as _i4.Future<String>);
+            Invocation.method(
+              #askWithHistory,
+              [history, newQuestion],
+              {#profile: profile},
+            ),
+            returnValue: _i4.Future<String>.value(
+              _i5.dummyValue<String>(
+                this,
+                Invocation.method(
+                  #askWithHistory,
+                  [history, newQuestion],
+                  {#profile: profile},
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
 
   @override
   _i4.Future<String> askQuestion(
@@ -255,26 +234,23 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
     List<String>? recentTopics,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #askQuestion,
-          [question],
-          {
-            #profile: profile,
-            #recentTopics: recentTopics,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #askQuestion,
-            [question],
-            {
-              #profile: profile,
-              #recentTopics: recentTopics,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
+            Invocation.method(
+              #askQuestion,
+              [question],
+              {#profile: profile, #recentTopics: recentTopics},
+            ),
+            returnValue: _i4.Future<String>.value(
+              _i5.dummyValue<String>(
+                this,
+                Invocation.method(
+                  #askQuestion,
+                  [question],
+                  {#profile: profile, #recentTopics: recentTopics},
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
 
   @override
   _i4.Future<String> parseWorkoutFromContent(
@@ -282,20 +258,23 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
     String? sourceHint,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #parseWorkoutFromContent,
-          [content],
-          {#sourceHint: sourceHint},
-        ),
-        returnValue: _i4.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #parseWorkoutFromContent,
-            [content],
-            {#sourceHint: sourceHint},
-          ),
-        )),
-      ) as _i4.Future<String>);
+            Invocation.method(
+              #parseWorkoutFromContent,
+              [content],
+              {#sourceHint: sourceHint},
+            ),
+            returnValue: _i4.Future<String>.value(
+              _i5.dummyValue<String>(
+                this,
+                Invocation.method(
+                  #parseWorkoutFromContent,
+                  [content],
+                  {#sourceHint: sourceHint},
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
 
   @override
   _i4.Future<String> correctWorkoutPlan({
@@ -305,39 +284,31 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
     String? sourceHint,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #correctWorkoutPlan,
-          [],
-          {
-            #currentPlanJson: currentPlanJson,
-            #userInput: userInput,
-            #correctionType: correctionType,
-            #sourceHint: sourceHint,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #correctWorkoutPlan,
-            [],
-            {
+            Invocation.method(#correctWorkoutPlan, [], {
               #currentPlanJson: currentPlanJson,
               #userInput: userInput,
               #correctionType: correctionType,
               #sourceHint: sourceHint,
-            },
-          ),
-        )),
-      ) as _i4.Future<String>);
+            }),
+            returnValue: _i4.Future<String>.value(
+              _i5.dummyValue<String>(
+                this,
+                Invocation.method(#correctWorkoutPlan, [], {
+                  #currentPlanJson: currentPlanJson,
+                  #userInput: userInput,
+                  #correctionType: correctionType,
+                  #sourceHint: sourceHint,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
 
   @override
   void dispose() => super.noSuchMethod(
-        Invocation.method(
-          #dispose,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
+    Invocation.method(#dispose, []),
+    returnValueForMissingStub: null,
+  );
 }
 
 /// A class which mocks [IUserRepository].
@@ -349,35 +320,27 @@ class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
   }
 
   @override
-  _i4.Future<_i2.UserEntity> getUser(String? userId) => (super.noSuchMethod(
-        Invocation.method(
-          #getUser,
-          [userId],
-        ),
-        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
-          this,
-          Invocation.method(
-            #getUser,
-            [userId],
-          ),
-        )),
-      ) as _i4.Future<_i2.UserEntity>);
+  _i4.Future<_i2.UserEntity> getUser(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getUser, [userId]),
+            returnValue: _i4.Future<_i2.UserEntity>.value(
+              _FakeUserEntity_0(this, Invocation.method(#getUser, [userId])),
+            ),
+          )
+          as _i4.Future<_i2.UserEntity>);
 
   @override
   _i4.Future<_i2.UserEntity> updateProfile(_i2.UserEntity? user) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateProfile,
-          [user],
-        ),
-        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
-          this,
-          Invocation.method(
-            #updateProfile,
-            [user],
-          ),
-        )),
-      ) as _i4.Future<_i2.UserEntity>);
+            Invocation.method(#updateProfile, [user]),
+            returnValue: _i4.Future<_i2.UserEntity>.value(
+              _FakeUserEntity_0(
+                this,
+                Invocation.method(#updateProfile, [user]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.UserEntity>);
 
   @override
   _i4.Future<_i2.UserEntity> saveOnboardingData({
@@ -390,25 +353,7 @@ class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
     _i2.UserProfile? profile,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #saveOnboardingData,
-          [],
-          {
-            #userId: userId,
-            #goal: goal,
-            #intensity: intensity,
-            #location: location,
-            #running: running,
-            #city: city,
-            #profile: profile,
-          },
-        ),
-        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
-          this,
-          Invocation.method(
-            #saveOnboardingData,
-            [],
-            {
+            Invocation.method(#saveOnboardingData, [], {
               #userId: userId,
               #goal: goal,
               #intensity: intensity,
@@ -416,10 +361,23 @@ class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
               #running: running,
               #city: city,
               #profile: profile,
-            },
-          ),
-        )),
-      ) as _i4.Future<_i2.UserEntity>);
+            }),
+            returnValue: _i4.Future<_i2.UserEntity>.value(
+              _FakeUserEntity_0(
+                this,
+                Invocation.method(#saveOnboardingData, [], {
+                  #userId: userId,
+                  #goal: goal,
+                  #intensity: intensity,
+                  #location: location,
+                  #running: running,
+                  #city: city,
+                  #profile: profile,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.UserEntity>);
 
   @override
   _i4.Future<_i2.UserEntity> updateWorkoutSettings({
@@ -428,28 +386,23 @@ class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
     required String? running,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateWorkoutSettings,
-          [],
-          {
-            #userId: userId,
-            #location: location,
-            #running: running,
-          },
-        ),
-        returnValue: _i4.Future<_i2.UserEntity>.value(_FakeUserEntity_0(
-          this,
-          Invocation.method(
-            #updateWorkoutSettings,
-            [],
-            {
+            Invocation.method(#updateWorkoutSettings, [], {
               #userId: userId,
               #location: location,
               #running: running,
-            },
-          ),
-        )),
-      ) as _i4.Future<_i2.UserEntity>);
+            }),
+            returnValue: _i4.Future<_i2.UserEntity>.value(
+              _FakeUserEntity_0(
+                this,
+                Invocation.method(#updateWorkoutSettings, [], {
+                  #userId: userId,
+                  #location: location,
+                  #running: running,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.UserEntity>);
 
   @override
   _i4.Future<void> saveAiPlans({
@@ -458,39 +411,32 @@ class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
     required String? mealPlanJson,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #saveAiPlans,
-          [],
-          {
-            #userId: userId,
-            #workoutPlanJson: workoutPlanJson,
-            #mealPlanJson: mealPlanJson,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#saveAiPlans, [], {
+              #userId: userId,
+              #workoutPlanJson: workoutPlanJson,
+              #mealPlanJson: mealPlanJson,
+            }),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
   _i4.Future<void> saveTestWeekCompleted({required String? userId}) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #saveTestWeekCompleted,
-          [],
-          {#userId: userId},
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#saveTestWeekCompleted, [], {#userId: userId}),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
-  _i4.Future<bool> isTestWeekCompleted(String? userId) => (super.noSuchMethod(
-        Invocation.method(
-          #isTestWeekCompleted,
-          [userId],
-        ),
-        returnValue: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+  _i4.Future<bool> isTestWeekCompleted(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#isTestWeekCompleted, [userId]),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
 
   @override
   _i4.Future<void> bootstrapStreak({
@@ -499,18 +445,15 @@ class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
     required String? lastWorkoutDate,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #bootstrapStreak,
-          [],
-          {
-            #userId: userId,
-            #streak: streak,
-            #lastWorkoutDate: lastWorkoutDate,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#bootstrapStreak, [], {
+              #userId: userId,
+              #streak: streak,
+              #lastWorkoutDate: lastWorkoutDate,
+            }),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
   _i4.Future<void> updateGoal({
@@ -518,17 +461,11 @@ class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
     required _i2.FitnessGoal? goal,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateGoal,
-          [],
-          {
-            #userId: userId,
-            #goal: goal,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#updateGoal, [], {#userId: userId, #goal: goal}),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
   _i4.Future<void> updateTrainingExperience({
@@ -536,17 +473,14 @@ class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
     required _i2.TrainingExperience? trainingExperience,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateTrainingExperience,
-          [],
-          {
-            #userId: userId,
-            #trainingExperience: trainingExperience,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#updateTrainingExperience, [], {
+              #userId: userId,
+              #trainingExperience: trainingExperience,
+            }),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
   _i4.Future<void> saveMeasurement({
@@ -554,28 +488,24 @@ class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
     required _i7.BodyMeasurement? measurement,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #saveMeasurement,
-          [],
-          {
-            #userId: userId,
-            #measurement: measurement,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#saveMeasurement, [], {
+              #userId: userId,
+              #measurement: measurement,
+            }),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
   _i4.Future<List<_i7.BodyMeasurement>> getMeasurements(String? userId) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #getMeasurements,
-          [userId],
-        ),
-        returnValue: _i4.Future<List<_i7.BodyMeasurement>>.value(
-            <_i7.BodyMeasurement>[]),
-      ) as _i4.Future<List<_i7.BodyMeasurement>>);
+            Invocation.method(#getMeasurements, [userId]),
+            returnValue: _i4.Future<List<_i7.BodyMeasurement>>.value(
+              <_i7.BodyMeasurement>[],
+            ),
+          )
+          as _i4.Future<List<_i7.BodyMeasurement>>);
 
   @override
   _i4.Future<void> updateWorkoutPlan({
@@ -583,26 +513,22 @@ class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
     required String? workoutPlanJson,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateWorkoutPlan,
-          [],
-          {
-            #userId: userId,
-            #workoutPlanJson: workoutPlanJson,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#updateWorkoutPlan, [], {
+              #userId: userId,
+              #workoutPlanJson: workoutPlanJson,
+            }),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
   _i4.Future<Map<String, String?>> getAiPlans(String? userId) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #getAiPlans,
-          [userId],
-        ),
-        returnValue:
-            _i4.Future<Map<String, String?>>.value(<String, String?>{}),
-      ) as _i4.Future<Map<String, String?>>);
+            Invocation.method(#getAiPlans, [userId]),
+            returnValue: _i4.Future<Map<String, String?>>.value(
+              <String, String?>{},
+            ),
+          )
+          as _i4.Future<Map<String, String?>>);
 }

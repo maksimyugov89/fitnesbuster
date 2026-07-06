@@ -30,7 +30,9 @@ Future<int?> recentAverageRpe({int days = 7}) async {
 /// физиологический эффект прошлой нагрузки, ощутимый именно сегодня.
 Future<int?> todayDomsLevel() async {
   try {
-    return await sl<ISettingsRepository>().getDomsLevel(dateKey(DateTime.now()));
+    return await sl<ISettingsRepository>().getDomsLevel(
+      dateKey(DateTime.now()),
+    );
   } catch (_) {
     return null;
   }
