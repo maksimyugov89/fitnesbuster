@@ -63,6 +63,7 @@ jobs:
 
       - name: Report coverage in PR comment
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         uses: zgosalvez/github-actions-report-lcov@v7
         with:
           coverage-files: coverage/lcov.info
@@ -71,11 +72,12 @@ jobs:
           update-comment: true
 
       - name: Upload coverage artifact
+        continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage/lcov.info
-          retention-days: 14
+          retention-days: 3
 
       - name: Notify Telegram on failure
         if: failure() && github.event_name == 'push'
