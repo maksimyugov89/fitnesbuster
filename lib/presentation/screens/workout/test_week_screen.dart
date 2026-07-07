@@ -688,8 +688,8 @@ class _PlanResultsView extends StatelessWidget {
                   children: [
                     Text(
                       f.isFeasible
-                          ? 'Цель достижима ✅'
-                          : 'Требуется корректировка ⚠️',
+                          ? 'Цель достижима'
+                          : 'Требуется корректировка',
                       style: TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 16,

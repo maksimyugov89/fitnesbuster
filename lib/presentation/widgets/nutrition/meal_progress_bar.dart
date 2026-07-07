@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class MealProgressBar extends StatelessWidget {
   final List<Map<String, dynamic>> meals;
@@ -31,9 +32,10 @@ class MealProgressBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 2),
             child: Column(
               children: [
-                Text(
-                  mealIcons[type] ?? '🍽️',
-                  style: const TextStyle(fontSize: 14),
+                Image.asset(
+                  mealIcons[type] ?? AppImages.snack,
+                  width: 16,
+                  height: 16,
                 ),
                 const SizedBox(height: 4),
                 Container(

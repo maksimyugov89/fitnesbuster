@@ -605,13 +605,22 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen>
               color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(
-              '${context.l10n.setsLabel} ${_setIdx + 1} / ${_ex.sets}${isLastSet ? '  🏁' : ''}',
-              style: TextStyle(
-                fontSize: 13,
-                color: color,
-                fontWeight: FontWeight.w700,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${context.l10n.setsLabel} ${_setIdx + 1} / ${_ex.sets}',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (isLastSet) ...[
+                  const SizedBox(width: 6),
+                  Image.asset(AppImages.achievements, width: 16, height: 16),
+                ],
+              ],
             ),
           ),
           const SizedBox(height: 20),

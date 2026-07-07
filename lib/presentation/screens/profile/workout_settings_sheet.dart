@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/screens/onboarding/workout_location_screen.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class WorkoutSettingsSheet extends StatefulWidget {
   final WorkoutLocation currentLocation;
@@ -94,7 +95,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
                 Expanded(
                   child: _buildRunOption(
                     RunningPreference.withRunning,
-                    '🏃‍♂️',
+                    AppImages.running,
                     l10n.withRunningLabel,
                     AppColors.success,
                   ),
@@ -103,7 +104,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
                 Expanded(
                   child: _buildRunOption(
                     RunningPreference.noRunning,
-                    '🚫',
+                    null,
                     l10n.withoutRunningLabel,
                     AppColors.accentOrange,
                   ),
@@ -237,7 +238,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
           ),
           child: Row(
             children: [
-              Text(opt.emoji, style: const TextStyle(fontSize: 24)),
+              Image.asset(opt.iconAsset, width: 28, height: 28),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -272,7 +273,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
 
   Widget _buildRunOption(
     RunningPreference val,
-    String emoji,
+    String? iconAsset,
     String label,
     Color color,
   ) {
@@ -296,7 +297,9 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 20)),
+            iconAsset != null
+                ? Image.asset(iconAsset, width: 24, height: 24)
+                : Icon(Icons.block_rounded, color: color, size: 20),
             const SizedBox(width: 8),
             Text(
               label,
@@ -339,21 +342,21 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
     return [
       _LocOpt(
         WorkoutLocation.gym,
-        '🏋️',
+        AppImages.workoutsTab,
         l10n.gymLocation,
         l10n.gymLocationSub,
         AppColors.accentPurple,
       ),
       _LocOpt(
         WorkoutLocation.outdoor,
-        '🏃',
+        AppImages.running,
         l10n.stadiumLocation,
         l10n.stadiumLocationSub,
         AppColors.success,
       ),
       _LocOpt(
         WorkoutLocation.home,
-        '🏠',
+        AppImages.home,
         l10n.homeLocation,
         l10n.homeLocationSub,
         AppColors.accentOrange,
@@ -364,7 +367,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
 
 class _LocOpt {
   final WorkoutLocation value;
-  final String emoji, title, sub;
+  final String iconAsset, title, sub;
   final Color color;
-  const _LocOpt(this.value, this.emoji, this.title, this.sub, this.color);
+  const _LocOpt(this.value, this.iconAsset, this.title, this.sub, this.color);
 }

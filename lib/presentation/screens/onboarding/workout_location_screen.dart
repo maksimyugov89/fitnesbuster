@@ -28,7 +28,7 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
       value: WorkoutLocation.gym,
       title: 'Фитнес\nклуб',
       subtitle: 'Полный доступ к тренажёрам\nстанки, веса, кардио',
-      emoji: '🏋️',
+      iconAsset: AppImages.workoutsTab,
       tags: ['Всё включено', 'Тренажёры', 'Веса', 'Кардио'],
       gradientIndex: 0,
       features: ['Максимум оборудования', 'Без погоды', 'Профессионально'],
@@ -37,7 +37,7 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
       value: WorkoutLocation.outdoor,
       title: 'Уличный\nворкаут',
       subtitle: 'Брусья, бег, свежий воздух\nполная свобода',
-      emoji: '🌳',
+      iconAsset: AppImages.outdoorActivity,
       tags: ['Брусья', 'Бег', 'Воздух', 'Калистеника'],
       gradientIndex: 1,
       features: ['Свежий воздух', 'Функционально', 'Бесплатно'],
@@ -46,7 +46,7 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
       value: WorkoutLocation.home,
       title: 'Дом',
       subtitle: 'Тренировки с комфортом\nковрик, гантели, HIIT',
-      emoji: '🏠',
+      iconAsset: AppImages.home,
       tags: ['Без зала', 'Коврик', 'Гантели', 'HIIT'],
       gradientIndex: 2,
       features: ['Без дороги', 'В любое время', 'Приватность'],
@@ -236,7 +236,7 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
               children: [
                 Row(
                   children: [
-                    Text(opt.emoji, style: const TextStyle(fontSize: 36)),
+                    Image.asset(opt.iconAsset, width: 44, height: 44),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(
@@ -659,7 +659,7 @@ class _RunningCard extends StatelessWidget {
 // Data model
 class _LocationOption {
   final WorkoutLocation value;
-  final String title, subtitle, emoji;
+  final String title, subtitle, iconAsset;
   final List<String> tags, features;
   final int gradientIndex;
 
@@ -667,7 +667,7 @@ class _LocationOption {
     required this.value,
     required this.title,
     required this.subtitle,
-    required this.emoji,
+    required this.iconAsset,
     required this.tags,
     required this.features,
     required this.gradientIndex,

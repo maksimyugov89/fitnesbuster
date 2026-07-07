@@ -5,6 +5,7 @@ import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/presentation/widgets/segmented_tab_bar.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class AchievementsScreen extends StatefulWidget {
   const AchievementsScreen({super.key});
@@ -328,13 +329,22 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                         : colors.elevated,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
-                    earned ? '✓ Получено' : '🔒 Не получено',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: earned ? colors.primary : colors.textMuted,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!earned) ...[
+                        Image.asset(AppImages.lock, width: 14, height: 14),
+                        const SizedBox(width: 4),
+                      ],
+                      Text(
+                        earned ? '✓ Получено' : 'Не получено',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: earned ? colors.primary : colors.textMuted,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

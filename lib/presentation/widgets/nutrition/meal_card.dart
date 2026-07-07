@@ -116,7 +116,7 @@ class _MealCardHeader extends StatelessWidget {
               color: mealColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(mealIcon, style: const TextStyle(fontSize: 22)),
+            child: Image.asset(mealIcon, width: 26, height: 26),
           ),
           const SizedBox(width: 12),
           Expanded(

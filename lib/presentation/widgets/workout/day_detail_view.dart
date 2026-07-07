@@ -121,13 +121,20 @@ class DayDetailView extends StatelessWidget {
                   color: colors.accentOrange.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
-                  '🏃 ${l10n.minSuffix(cardio)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: colors.accentOrange,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(AppImages.running, width: 14, height: 14),
+                    const SizedBox(width: 4),
+                    Text(
+                      l10n.minSuffix(cardio),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.accentOrange,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -524,7 +531,7 @@ class DayDetailView extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Text('😴', style: TextStyle(fontSize: 32)),
+          Image.asset(AppImages.sleep, width: 36, height: 36),
           const SizedBox(width: 16),
           Expanded(
             child: Column(

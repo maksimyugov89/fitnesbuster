@@ -404,7 +404,7 @@ class _GenderSelector extends StatelessWidget {
           children: [
             _GenderCard(
               label: context.l10n.genderMale,
-              emoji: '♂',
+              iconAsset: AppImages.genderMale,
               gender: Gender.male,
               selected: selected,
               onTap: onChanged,
@@ -412,7 +412,7 @@ class _GenderSelector extends StatelessWidget {
             const SizedBox(width: 12),
             _GenderCard(
               label: context.l10n.genderFemale,
-              emoji: '♀',
+              iconAsset: AppImages.genderFemale,
               gender: Gender.female,
               selected: selected,
               onTap: onChanged,
@@ -425,12 +425,12 @@ class _GenderSelector extends StatelessWidget {
 }
 
 class _GenderCard extends StatelessWidget {
-  final String label, emoji;
+  final String label, iconAsset;
   final Gender gender, selected;
   final ValueChanged<Gender> onTap;
   const _GenderCard({
     required this.label,
-    required this.emoji,
+    required this.iconAsset,
     required this.gender,
     required this.selected,
     required this.onTap,
@@ -464,7 +464,7 @@ class _GenderCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 24)),
+              Image.asset(iconAsset, width: 28, height: 28),
               const SizedBox(height: 4),
               Text(
                 label,
@@ -800,9 +800,10 @@ class _PageActivity extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                        child: Text(
-                          _emoji(lvl),
-                          style: const TextStyle(fontSize: 20),
+                        child: Image.asset(
+                          _iconAsset(lvl),
+                          width: 24,
+                          height: 24,
                         ),
                       ),
                     ),
@@ -833,18 +834,18 @@ class _PageActivity extends StatelessWidget {
     );
   }
 
-  String _emoji(ActivityLevel l) {
+  String _iconAsset(ActivityLevel l) {
     switch (l) {
       case ActivityLevel.sedentary:
-        return '🪑';
+        return AppImages.sedentary;
       case ActivityLevel.lightlyActive:
-        return '🚶';
+        return AppImages.steps;
       case ActivityLevel.moderatelyActive:
-        return '🏃';
+        return AppImages.running;
       case ActivityLevel.veryActive:
-        return '🔥';
+        return AppImages.energy;
       case ActivityLevel.extraActive:
-        return '⚡';
+        return AppImages.hardcore;
     }
   }
 }
@@ -862,19 +863,19 @@ class _PageExperience extends StatelessWidget {
     final options = [
       (
         TrainingExperience.novice,
-        '🌱',
+        AppImages.beginner,
         l10n.experienceNovice,
         l10n.experienceNoviceDesc,
       ),
       (
         TrainingExperience.intermediate,
-        '💪',
+        AppImages.workoutsTab,
         l10n.experienceIntermediate,
         l10n.experienceIntermediateDesc,
       ),
       (
         TrainingExperience.experienced,
-        '🏆',
+        AppImages.achievements,
         l10n.experienceExperienced,
         l10n.experienceExperiencedDesc,
       ),
@@ -883,7 +884,7 @@ class _PageExperience extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: options.map((o) {
-          final (value, emoji, label, desc) = o;
+          final (value, iconAsset, label, desc) = o;
           final isSel = experience == value;
           return Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -917,10 +918,7 @@ class _PageExperience extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                        child: Text(
-                          emoji,
-                          style: const TextStyle(fontSize: 20),
-                        ),
+                        child: Image.asset(iconAsset, width: 24, height: 24),
                       ),
                     ),
                     const SizedBox(width: 12),

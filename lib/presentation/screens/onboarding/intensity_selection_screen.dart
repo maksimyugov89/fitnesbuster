@@ -7,6 +7,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class IntensitySelectionScreen extends StatefulWidget {
   const IntensitySelectionScreen({super.key});
@@ -27,7 +28,7 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
       weeks: '8-12 недель',
       daysPerWeek: '6 дн/нед',
       description: AppLocalizations.tl('intensityHardcoreDesc'),
-      emoji: '💀',
+      iconAsset: AppImages.hardcore,
       colorVariant: 0,
       tags: [
         AppLocalizations.tl('intensityTagHeavy'),
@@ -41,7 +42,7 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
       weeks: '12-16 недель',
       daysPerWeek: '5 дн/нед',
       description: AppLocalizations.tl('intensityIntenseDesc'),
-      emoji: '🚀',
+      iconAsset: AppImages.rocket,
       colorVariant: 1,
       tags: [
         AppLocalizations.tl('intensityTagHeavy'),
@@ -55,7 +56,7 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
       weeks: '16-20 недель',
       daysPerWeek: '4 дн/нед',
       description: AppLocalizations.tl('intensityBalancedDesc'),
-      emoji: '⚖️',
+      iconAsset: AppImages.balance,
       colorVariant: 2,
       tags: ['Гибкость', 'Сплит', 'Постоянство'],
       recommended: true,
@@ -66,7 +67,7 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
       weeks: '20-26 недель',
       daysPerWeek: '3 дн/нед',
       description: AppLocalizations.tl('intensityGradualDesc'),
-      emoji: '🌱',
+      iconAsset: AppImages.beginner,
       colorVariant: 3,
       tags: ['Для новичков', 'Без перетрена', 'Стабильно'],
     ),
@@ -76,7 +77,7 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
       weeks: '26-52 недель',
       daysPerWeek: '2-3 дн/нед',
       description: AppLocalizations.tl('intensityLightDesc'),
-      emoji: '🧘',
+      iconAsset: AppImages.yoga,
       colorVariant: 4,
       tags: ['По выходным', 'Легко', 'Чилл'],
     ),
@@ -237,7 +238,7 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
               children: [
                 Row(
                   children: [
-                    Text(opt.emoji, style: const TextStyle(fontSize: 28)),
+                    Image.asset(opt.iconAsset, width: 34, height: 34),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -405,7 +406,7 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
 
 class _IntOption {
   final IntensityLevel level;
-  final String label, weeks, daysPerWeek, description, emoji;
+  final String label, weeks, daysPerWeek, description, iconAsset;
   final int colorVariant;
   final List<String> tags;
   final bool recommended;
@@ -415,7 +416,7 @@ class _IntOption {
     required this.weeks,
     required this.daysPerWeek,
     required this.description,
-    required this.emoji,
+    required this.iconAsset,
     required this.colorVariant,
     required this.tags,
     this.recommended = false,

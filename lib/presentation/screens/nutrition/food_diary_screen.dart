@@ -5,6 +5,7 @@ import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class FoodDiaryScreen extends StatefulWidget {
   const FoodDiaryScreen({super.key});
@@ -216,14 +217,14 @@ class _FoodDiaryScreenState extends State<FoodDiaryScreen> {
         Row(
           children: [
             _StripStat(
-              icon: '📅',
+              icon: AppImages.calendar,
               label: 'Дней с данными',
               value: '$activeDays / 30',
               colors: colors,
             ),
             const SizedBox(width: 10),
             _StripStat(
-              icon: '🔥',
+              icon: AppImages.energy,
               label: 'Ср. калории/день',
               value: activeDays > 0 ? '${(_weekEaten / 7).round()}' : '—',
               colors: colors,
@@ -404,7 +405,7 @@ class _DayTile extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Text('🍽️', style: TextStyle(fontSize: 13)),
+            Image.asset(AppImages.snack, width: 15, height: 15),
             const SizedBox(width: 6),
             Text(
               record.eaten > 0
@@ -419,7 +420,7 @@ class _DayTile extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            const Text('💧', style: TextStyle(fontSize: 13)),
+            Image.asset(AppImages.water, width: 15, height: 15),
             const SizedBox(width: 4),
             Text(
               '${record.waterGlasses} ст.',
@@ -562,7 +563,7 @@ class _StripStat extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Text(icon, style: const TextStyle(fontSize: 20)),
+            Image.asset(icon, width: 24, height: 24),
             const SizedBox(width: 10),
             Expanded(
               child: Column(

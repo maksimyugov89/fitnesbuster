@@ -337,7 +337,16 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
               ),
               child: Row(
                 children: [
-                  Text(p.emoji, style: const TextStyle(fontSize: 20)),
+                  p.iconAsset != null
+                      ? Image.asset(p.iconAsset!, width: 22, height: 22)
+                      : Container(
+                          width: 14,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: p.dotColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(

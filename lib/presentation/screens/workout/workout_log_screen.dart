@@ -6,6 +6,7 @@ import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class WorkoutLogScreen extends StatefulWidget {
   final String logId; // date key "YYYY_M_D" or workout id
@@ -303,9 +304,16 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
                         ),
                       ),
                       child: Center(
-                        child: Text(
-                          ['😞', '😐', '🙂', '💪', '🔥'][i],
-                          style: const TextStyle(fontSize: 22),
+                        child: Image.asset(
+                          [
+                            AppImages.moodBad,
+                            AppImages.moodNeutral,
+                            AppImages.moodGood,
+                            AppImages.workoutsTab,
+                            AppImages.energy,
+                          ][i],
+                          width: 26,
+                          height: 26,
                         ),
                       ),
                     ),
@@ -411,7 +419,7 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
                   children: [
                     Expanded(
                       child: _WeekStat(
-                        icon: '💪',
+                        icon: AppImages.workoutsTab,
                         label: context.l10n.taskWorkout,
                         value: '$_weekDone / 7',
                         colors: colors,
@@ -419,7 +427,7 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
                     ),
                     Expanded(
                       child: _WeekStat(
-                        icon: '🔥',
+                        icon: AppImages.energy,
                         label: context.l10n.kcalShort,
                         value: '$_weekKcal',
                         colors: colors,
@@ -427,7 +435,7 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
                     ),
                     Expanded(
                       child: _WeekStat(
-                        icon: '📊',
+                        icon: AppImages.progressTab,
                         label: context.l10n.setsCompletedLabel,
                         value: '${(_weekDone / 7 * 100).round()}%',
                         colors: colors,
@@ -452,7 +460,7 @@ class _WorkoutLogScreenState extends State<WorkoutLogScreen> {
             ),
             child: Row(
               children: [
-                const Text('💡', style: TextStyle(fontSize: 20)),
+                Image.asset(AppImages.tip, width: 22, height: 22),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -767,7 +775,7 @@ class _WeekStat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(icon, style: const TextStyle(fontSize: 20)),
+        Image.asset(icon, width: 24, height: 24),
         const SizedBox(height: 4),
         Text(
           value,

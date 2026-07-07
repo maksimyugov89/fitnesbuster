@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
@@ -124,15 +125,25 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   }
 
   String _dayIcon(Map<String, dynamic>? day) {
-    if (day == null || _isRest(day)) return '😴';
+    if (day == null || _isRest(day)) return AppImages.sleep;
     final focus = (day['focus'] as String? ?? day['name'] as String? ?? '')
         .toLowerCase();
-    if (focus.contains('кардио') || focus.contains('интервал')) return '🏃';
-    if (focus.contains('нога') || focus.contains('ягодиц')) return '🦵';
-    if (focus.contains('грудн') || focus.contains('трицепс')) return '💪';
-    if (focus.contains('спина') || focus.contains('бицепс')) return '🏋️';
-    if (focus.contains('плечи') || focus.contains('пресс')) return '⚡';
-    return '🏋️';
+    if (focus.contains('кардио') || focus.contains('интервал')) {
+      return AppImages.running;
+    }
+    if (focus.contains('нога') || focus.contains('ягодиц')) {
+      return AppImages.legDay;
+    }
+    if (focus.contains('грудн') || focus.contains('трицепс')) {
+      return AppImages.workoutsTab;
+    }
+    if (focus.contains('спина') || focus.contains('бицепс')) {
+      return AppImages.workoutsTab;
+    }
+    if (focus.contains('плечи') || focus.contains('пресс')) {
+      return AppImages.energy;
+    }
+    return AppImages.workoutsTab;
   }
 
   List<_WorkoutEvent> _eventsFor(DateTime day) {
@@ -193,7 +204,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
-                      const Text('📅', style: TextStyle(fontSize: 22)),
+                      Image.asset(AppImages.calendar, width: 26, height: 26),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -232,10 +243,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                           : Colors.transparent,
                       child: Row(
                         children: [
-                          Text(
-                            _dayIcon(d),
-                            style: const TextStyle(fontSize: 20),
-                          ),
+                          Image.asset(_dayIcon(d), width: 24, height: 24),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -386,7 +394,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('📅', style: TextStyle(fontSize: 56)),
+            Image.asset(AppImages.calendar, width: 64, height: 64),
             const SizedBox(height: 16),
             Text(
               'Нет плана тренировок',
@@ -582,7 +590,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             children: [
               Row(
                 children: [
-                  Text(icon, style: const TextStyle(fontSize: 28)),
+                  Image.asset(icon, width: 32, height: 32),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
@@ -732,7 +740,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(
-                    child: Text(icon, style: const TextStyle(fontSize: 20)),
+                    child: Image.asset(icon, width: 24, height: 24),
                   ),
                 ),
                 const SizedBox(width: 12),

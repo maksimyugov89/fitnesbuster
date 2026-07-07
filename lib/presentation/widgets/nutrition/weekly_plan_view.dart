@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class WeeklyPlanView extends StatelessWidget {
   final bool isLoading;
@@ -92,7 +93,7 @@ class WeeklyPlanView extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const Text('📅', style: TextStyle(fontSize: 28)),
+              Image.asset(AppImages.calendar, width: 32, height: 32),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -198,7 +199,7 @@ class WeeklyPlanView extends StatelessWidget {
                 final time = meal['time'] as String? ?? '';
                 final foods = (meal['foods'] as List? ?? []).cast<String>();
                 final cal = (meal['calories'] as num?)?.toInt() ?? 0;
-                final icon = mealIcons[type] ?? '🍽️';
+                final icon = mealIcons[type] ?? AppImages.snack;
                 final label2 = mealLabels[type] ?? type;
                 final mealColor = mealColors[type] ?? colors.primary;
                 return Padding(
@@ -214,9 +215,10 @@ class WeeklyPlanView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(
-                          child: Text(
+                          child: Image.asset(
                             icon,
-                            style: const TextStyle(fontSize: 16),
+                            width: 20,
+                            height: 20,
                           ),
                         ),
                       ),
@@ -288,7 +290,7 @@ class WeeklyPlanView extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Text('🛒', style: TextStyle(fontSize: 22)),
+                  Image.asset(AppImages.shoppingList, width: 26, height: 26),
                   const SizedBox(width: 10),
                   Text(
                     AppLocalizations.tl('weeklyShoppingList'),

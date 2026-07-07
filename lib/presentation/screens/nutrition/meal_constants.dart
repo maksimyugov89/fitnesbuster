@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 const mealIcons = {
-  'breakfast': '🌅',
-  'lunch': '☀️',
-  'dinner': '🌙',
-  'snack': '🍎',
-  'pre_workout': '🏋️',
-  'post_workout': '💪',
-  'evening_snack': '🌛',
-  'morning_snack': '🌤️',
+  'breakfast': AppImages.breakfast,
+  'lunch': AppImages.lunch,
+  'dinner': AppImages.dinner,
+  'snack': AppImages.snack,
+  'pre_workout': AppImages.workoutsTab,
+  'post_workout': AppImages.energy,
+  'evening_snack': AppImages.dinner,
+  'morning_snack': AppImages.snack,
 };
 
 const mealLabels = {

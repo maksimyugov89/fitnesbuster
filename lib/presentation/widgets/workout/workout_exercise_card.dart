@@ -5,6 +5,7 @@ import 'package:fitnesbuster/core/services/muscle_zone_matcher.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 import 'package:fitnesbuster/presentation/widgets/workout/workout_plan_widgets.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class WorkoutExerciseCard extends StatelessWidget {
   final Map<String, dynamic> exercise;
@@ -127,9 +128,16 @@ class WorkoutExerciseCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    '⏱ $rest с',
-                    style: TextStyle(fontSize: 11, color: colors.textMuted),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(AppImages.workoutTimer, width: 12, height: 12),
+                      const SizedBox(width: 3),
+                      Text(
+                        '$rest с',
+                        style: TextStyle(fontSize: 11, color: colors.textMuted),
+                      ),
+                    ],
                   ),
                   if (rpe > 0) ...[
                     const SizedBox(height: 4),

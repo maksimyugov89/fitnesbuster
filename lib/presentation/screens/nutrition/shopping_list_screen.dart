@@ -143,13 +143,13 @@ String _categorize(String ingredient) {
 }
 
 const _categoryEmoji = {
-  'proteins': '🥩',
-  'dairy': '🥛',
-  'grains': '🌾',
-  'vegetables': '🥦',
-  'fruits': '🍎',
-  'fats': '🥑',
-  'other': '🧂',
+  'proteins': AppImages.meat,
+  'dairy': AppImages.dairy,
+  'grains': AppImages.grains,
+  'vegetables': AppImages.vegetables,
+  'fruits': AppImages.vegetables,
+  'fats': AppImages.healthyFats,
+  'other': AppImages.spices,
 };
 
 String _categoryLabel(BuildContext context, String key) {
@@ -459,7 +459,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('🛒', style: TextStyle(fontSize: 56)),
+            Image.asset(AppImages.shoppingList, width: 64, height: 64),
             const SizedBox(height: 16),
             Text(
               'Список пуст',
@@ -590,7 +590,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
         for (final cat in orderedCats) ...[
           _CategoryHeader(
-            emoji: _categoryEmoji[cat] ?? '🍽️',
+            emoji: _categoryEmoji[cat] ?? AppImages.snack,
             label: _categoryLabel(context, cat),
             count: _grouped[cat]!.length,
             checkedCount: _grouped[cat]!.where(_isGroupBought).length,
@@ -666,10 +666,19 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
         // Hint
         Center(
-          child: Text(
-            '💡 Нажми ↔ чтобы выбрать замену · Долгое нажатие — спросить AI',
-            style: TextStyle(fontSize: 11, color: colors.textMuted),
-            textAlign: TextAlign.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(AppImages.tip, width: 13, height: 13),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  'Нажми ↔ чтобы выбрать замену · Долгое нажатие — спросить AI',
+                  style: TextStyle(fontSize: 11, color: colors.textMuted),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -708,7 +717,7 @@ class _CategoryHeader extends StatelessWidget {
     final allDone = checkedCount == count && count > 0;
     return Row(
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 16)),
+        Image.asset(emoji, width: 18, height: 18),
         const SizedBox(width: 8),
         Text(
           label,
@@ -997,7 +1006,7 @@ class _SubstitutionSheetState extends State<_SubstitutionSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                const Text('🔄', style: TextStyle(fontSize: 22)),
+                Image.asset(AppImages.sync, width: 26, height: 26),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(

@@ -406,7 +406,7 @@ class _PrScreenState extends State<PrScreen> {
         child: Row(
           children: [
             if (isBest)
-              const Text('🏆', style: TextStyle(fontSize: 14))
+              Image.asset(AppImages.achievements, width: 16, height: 16)
             else
               Icon(
                 Icons.radio_button_unchecked_rounded,

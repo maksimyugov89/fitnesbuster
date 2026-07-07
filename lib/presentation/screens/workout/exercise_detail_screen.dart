@@ -10,6 +10,7 @@ import 'package:fitnesbuster/data/models/exercise_db_model.dart';
 import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class ExerciseDetailScreen extends StatefulWidget {
   final String exerciseId;
@@ -513,7 +514,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           children: [
             Row(
               children: [
-                const Text('🤖', style: TextStyle(fontSize: 14)),
+                Image.asset(AppImages.robot, width: 16, height: 16),
                 const SizedBox(width: 6),
                 Text(
                   'AI-советы по технике',

@@ -104,7 +104,7 @@ class _ProfileEditSheetState extends State<ProfileEditSheet> {
           shape: BoxShape.circle,
         ),
         child: Center(
-          child: Text(p.emoji, style: const TextStyle(fontSize: 34)),
+          child: Image.asset(p.iconAsset, width: 44, height: 44),
         ),
       );
     } else {
@@ -465,7 +465,7 @@ class _GoalEditSheetState extends State<GoalEditSheet> {
                   ),
                   child: Row(
                     children: [
-                      Text(emoji, style: const TextStyle(fontSize: 32)),
+                      Image.asset(emoji, width: 38, height: 38),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Column(
@@ -537,17 +537,29 @@ class _GoalEditSheetState extends State<GoalEditSheet> {
   }
 
   static const _goalsData = [
-    {'label': 'Похудение веса', 'emoji': '🔥', 'desc': 'Сжечь жир, сухое тело'},
-    {'label': 'Набор массы', 'emoji': '💪', 'desc': 'Сила и мышечная масса'},
+    {
+      'label': 'Похудение веса',
+      'emoji': AppImages.energy,
+      'desc': 'Сжечь жир, сухое тело',
+    },
+    {
+      'label': 'Набор массы',
+      'emoji': AppImages.workoutsTab,
+      'desc': 'Сила и мышечная масса',
+    },
     {
       'label': 'Поддержание веса',
-      'emoji': '⚖️',
+      'emoji': AppImages.balance,
       'desc': 'Держать форму и здоровье',
     },
-    {'label': 'К пляжному сезону', 'emoji': '🏖️', 'desc': 'Подготовка к лету'},
+    {
+      'label': 'К пляжному сезону',
+      'emoji': AppImages.relax,
+      'desc': 'Подготовка к лету',
+    },
     {
       'label': 'Спортивные рекорды',
-      'emoji': '🏆',
+      'emoji': AppImages.achievements,
       'desc': 'Максимальная производительность',
     },
   ];
@@ -587,19 +599,19 @@ class _TrainingExperienceEditSheetState
     final options = [
       (
         TrainingExperience.novice,
-        '🌱',
+        AppImages.beginner,
         l10n.experienceNovice,
         l10n.experienceNoviceDesc,
       ),
       (
         TrainingExperience.intermediate,
-        '💪',
+        AppImages.workoutsTab,
         l10n.experienceIntermediate,
         l10n.experienceIntermediateDesc,
       ),
       (
         TrainingExperience.experienced,
-        '🏆',
+        AppImages.achievements,
         l10n.experienceExperienced,
         l10n.experienceExperiencedDesc,
       ),
@@ -632,7 +644,7 @@ class _TrainingExperienceEditSheetState
                   ),
                   child: Row(
                     children: [
-                      Text(emoji, style: const TextStyle(fontSize: 28)),
+                      Image.asset(emoji, width: 32, height: 32),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(

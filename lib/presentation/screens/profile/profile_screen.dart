@@ -502,7 +502,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
         child: Center(
-          child: Text(preset.emoji, style: TextStyle(fontSize: fontSize * 1.1)),
+          child: Image.asset(
+            preset.iconAsset,
+            width: size * 0.62,
+            height: size * 0.62,
+          ),
         ),
       );
     }

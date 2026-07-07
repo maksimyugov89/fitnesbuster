@@ -7,6 +7,7 @@ import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/data/models/user_search_result.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({super.key});
@@ -184,7 +185,7 @@ class _FriendsScreenState extends State<FriendsScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('🤝', style: TextStyle(fontSize: 48)),
+                Image.asset(AppImages.friends, width: 56, height: 56),
                 const SizedBox(height: 12),
                 Text(
                   'Нет друзей',
@@ -289,7 +290,7 @@ class _FriendsScreenState extends State<FriendsScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('📭', style: TextStyle(fontSize: 48)),
+                Image.asset(AppImages.emptyState, width: 56, height: 56),
                 const SizedBox(height: 12),
                 Text(
                   'Нет входящих запросов',

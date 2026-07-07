@@ -1,11 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitnesbuster/core/services/social_models.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 void main() {
   // ── FeedEvent ───────────────────────────────────────────────────
 
   group('FeedEvent', () {
-    test('emoji returns correct emoji for workout_done', () {
+    test('iconAsset returns correct icon for workout_done', () {
       final event = FeedEvent(
         id: '1',
         type: 'workout_done',
@@ -14,10 +15,10 @@ void main() {
         data: {},
         timestamp: DateTime.utc(2026),
       );
-      expect(event.emoji, '🏋️');
+      expect(event.iconAsset, AppImages.workoutsTab);
     });
 
-    test('emoji returns correct emoji for pr_set', () {
+    test('iconAsset returns correct icon for pr_set', () {
       final event = FeedEvent(
         id: '1',
         type: 'pr_set',
@@ -26,10 +27,10 @@ void main() {
         data: {},
         timestamp: DateTime.utc(2026),
       );
-      expect(event.emoji, '🏅');
+      expect(event.iconAsset, AppImages.medalGold);
     });
 
-    test('emoji returns correct emoji for achievement', () {
+    test('iconAsset returns correct icon for achievement', () {
       final event = FeedEvent(
         id: '1',
         type: 'achievement',
@@ -38,10 +39,10 @@ void main() {
         data: {},
         timestamp: DateTime.utc(2026),
       );
-      expect(event.emoji, '🏆');
+      expect(event.iconAsset, AppImages.achievements);
     });
 
-    test('emoji returns correct emoji for challenge_won', () {
+    test('iconAsset returns correct icon for challenge_won', () {
       final event = FeedEvent(
         id: '1',
         type: 'challenge_won',
@@ -50,10 +51,10 @@ void main() {
         data: {},
         timestamp: DateTime.utc(2026),
       );
-      expect(event.emoji, '⚡');
+      expect(event.iconAsset, AppImages.energy);
     });
 
-    test('emoji returns default for unknown type', () {
+    test('iconAsset returns default for unknown type', () {
       final event = FeedEvent(
         id: '1',
         type: 'unknown',
@@ -62,7 +63,7 @@ void main() {
         data: {},
         timestamp: DateTime.utc(2026),
       );
-      expect(event.emoji, '📌');
+      expect(event.iconAsset, AppImages.pin);
     });
   });
 

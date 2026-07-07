@@ -274,7 +274,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           ),
           child: Row(
             children: [
-              const Text('💧', style: TextStyle(fontSize: 28)),
+              Image.asset(AppImages.water, width: 32, height: 32),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -354,7 +354,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   Widget _buildMealCard(ThemePalette colors, AiMeal meal) {
     final normalizedType = meal.type.replaceAll(' ', '').toLowerCase();
-    final icon = mealIcons[normalizedType] ?? '🍽️';
+    final icon = mealIcons[normalizedType] ?? AppImages.snack;
     final label = mealLabels[normalizedType] ?? meal.type;
 
     return Container(
@@ -370,7 +370,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         children: [
           Row(
             children: [
-              Text(icon, style: const TextStyle(fontSize: 26)),
+              Image.asset(icon, width: 30, height: 30),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

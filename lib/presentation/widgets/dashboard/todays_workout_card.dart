@@ -5,6 +5,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class StreakCard extends StatelessWidget {
   final UserLevel level;
@@ -87,7 +88,7 @@ class StreakCard extends StatelessWidget {
                   color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text('🏅', style: TextStyle(fontSize: 16)),
+                child: Image.asset(AppImages.achievements, width: 18, height: 18),
               ),
             ),
           ),
@@ -334,8 +335,8 @@ class _TestWeekBanner extends StatelessWidget {
                   color: p.info.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Center(
-                  child: Text('🎯', style: TextStyle(fontSize: 26)),
+                child: Center(
+                  child: Image.asset(AppImages.target, width: 30, height: 30),
                 ),
               ),
               const SizedBox(width: 14),

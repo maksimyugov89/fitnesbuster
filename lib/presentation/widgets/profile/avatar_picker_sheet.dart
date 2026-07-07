@@ -263,10 +263,7 @@ class _AvatarPickerSheetState extends State<AvatarPickerSheet> {
                               : [],
                         ),
                         child: Center(
-                          child: Text(
-                            p.emoji,
-                            style: const TextStyle(fontSize: 22),
-                          ),
+                          child: Image.asset(p.iconAsset, width: 30, height: 30),
                         ),
                       ),
                       const SizedBox(height: 5),

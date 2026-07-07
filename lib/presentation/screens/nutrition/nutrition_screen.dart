@@ -53,14 +53,14 @@ class _NutritionScreenState extends State<NutritionScreen>
   final List<_FoodEntry> _addedFoods = [];
 
   static const _mealIcons = {
-    'breakfast': '🌅',
-    'lunch': '☀️',
-    'dinner': '🌙',
-    'snack': '🍎',
-    'pre_workout': '🏋️',
-    'post_workout': '💪',
-    'evening_snack': '🌛',
-    'morning_snack': '🌤️',
+    'breakfast': AppImages.breakfast,
+    'lunch': AppImages.lunch,
+    'dinner': AppImages.dinner,
+    'snack': AppImages.snack,
+    'pre_workout': AppImages.workoutsTab,
+    'post_workout': AppImages.energy,
+    'evening_snack': AppImages.dinner,
+    'morning_snack': AppImages.snack,
   };
   static const _mealLabels = {
     'breakfast': 'Завтрак',
@@ -361,7 +361,7 @@ class _NutritionScreenState extends State<NutritionScreen>
             meal: e.value,
             isDone: _completedMeals.contains(e.key),
             mealLabel: _mealLabels[type] ?? type,
-            mealIcon: _mealIcons[type] ?? '🍽️',
+            mealIcon: _mealIcons[type] ?? AppImages.snack,
             mealColor: _mealColors[type] ?? colors.primary,
             onToggle: () => _toggleMealCompletion(e.key),
           );
@@ -396,7 +396,7 @@ class _NutritionScreenState extends State<NutritionScreen>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('💊', style: TextStyle(fontSize: 18)),
+                  Image.asset(AppImages.supplements, width: 20, height: 20),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Column(
@@ -609,11 +609,19 @@ class _WaterCard extends StatelessWidget {
             children: [
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
-                child: Text(
-                  done ? '✅' : '💧',
-                  key: ValueKey(done),
-                  style: const TextStyle(fontSize: 24),
-                ),
+                child: done
+                    ? const Icon(
+                        Icons.check_circle_rounded,
+                        key: ValueKey(true),
+                        color: Colors.greenAccent,
+                        size: 26,
+                      )
+                    : Image.asset(
+                        AppImages.water,
+                        key: const ValueKey(false),
+                        width: 26,
+                        height: 26,
+                      ),
               ),
               const SizedBox(width: 10),
               Expanded(

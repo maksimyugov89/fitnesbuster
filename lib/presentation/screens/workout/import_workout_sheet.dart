@@ -1356,9 +1356,10 @@ class _PreviewView extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Text(
-                  isRest ? '😴' : '💪',
-                  style: const TextStyle(fontSize: 14),
+                Image.asset(
+                  isRest ? AppImages.sleep : AppImages.workoutsTab,
+                  width: 16,
+                  height: 16,
                 ),
                 const SizedBox(width: 8),
                 Text(

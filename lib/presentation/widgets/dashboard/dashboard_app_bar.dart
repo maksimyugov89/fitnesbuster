@@ -127,7 +127,11 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         child: Center(
-          child: Text(preset.emoji, style: const TextStyle(fontSize: 20)),
+          child: Image.asset(
+            preset.iconAsset,
+            width: size * 0.62,
+            height: size * 0.62,
+          ),
         ),
       );
     }

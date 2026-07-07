@@ -6,6 +6,7 @@ import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({super.key});
@@ -63,7 +64,7 @@ class FeedScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('👥', style: TextStyle(fontSize: 56)),
+            Image.asset(AppImages.friends, width: 64, height: 64),
             const SizedBox(height: 16),
             Text(
               'Лента пуста',
@@ -160,7 +161,7 @@ class _FeedCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(event.emoji, style: const TextStyle(fontSize: 24)),
+          Image.asset(event.iconAsset, width: 28, height: 28),
         ],
       ),
     );

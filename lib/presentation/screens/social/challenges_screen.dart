@@ -10,6 +10,7 @@ import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 import 'package:fitnesbuster/presentation/widgets/segmented_tab_bar.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class ChallengesScreen extends StatefulWidget {
   const ChallengesScreen({super.key});
@@ -145,7 +146,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('⚡', style: TextStyle(fontSize: 56)),
+            Image.asset(AppImages.energy, width: 64, height: 64),
             const SizedBox(height: 16),
             Text(
               title,
@@ -175,7 +176,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('🏆', style: TextStyle(fontSize: 56)),
+            Image.asset(AppImages.achievements, width: 64, height: 64),
             const SizedBox(height: 16),
             Text(
               'Нет публичных челленджей',
@@ -907,7 +908,7 @@ class _LeaderboardSheet extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                const Text('🏆', style: TextStyle(fontSize: 20)),
+                Image.asset(AppImages.achievements, width: 22, height: 22),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -953,13 +954,12 @@ class _LeaderboardSheet extends StatelessWidget {
                     final isMe = p.uid == myUid;
                     final progress = (p.currentValue / challenge.targetValue)
                         .clamp(0.0, 1.0);
-                    final medal = i == 0
-                        ? '🥇'
-                        : i == 1
-                        ? '🥈'
-                        : i == 2
-                        ? '🥉'
-                        : '${i + 1}.';
+                    final medalIcon = switch (i) {
+                      0 => AppImages.medalGold,
+                      1 => AppImages.medalSilver,
+                      2 => AppImages.medalBronze,
+                      _ => null,
+                    };
                     return Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -979,10 +979,16 @@ class _LeaderboardSheet extends StatelessWidget {
                             children: [
                               SizedBox(
                                 width: 28,
-                                child: Text(
-                                  medal,
-                                  style: const TextStyle(fontSize: 14),
-                                ),
+                                child: medalIcon != null
+                                    ? Image.asset(
+                                        medalIcon,
+                                        width: 20,
+                                        height: 20,
+                                      )
+                                    : Text(
+                                        '${i + 1}.',
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
                               ),
                               Expanded(
                                 child: Text(

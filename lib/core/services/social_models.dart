@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class FriendRequest {
   final String id;
@@ -83,18 +84,18 @@ class FeedEvent {
     );
   }
 
-  String get emoji {
+  String get iconAsset {
     switch (type) {
       case 'workout_done':
-        return '🏋️';
+        return AppImages.workoutsTab;
       case 'pr_set':
-        return '🏅';
+        return AppImages.medalGold;
       case 'achievement':
-        return '🏆';
+        return AppImages.achievements;
       case 'challenge_won':
-        return '⚡';
+        return AppImages.energy;
       default:
-        return '📌';
+        return AppImages.pin;
     }
   }
 

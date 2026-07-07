@@ -84,7 +84,7 @@ class NutritionHeader extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('🛒', style: TextStyle(fontSize: 14)),
+                    Image.asset(AppImages.shoppingList, width: 16, height: 16),
                     const SizedBox(width: 4),
                     Text(
                       context.l10n.shoppingListLabel,

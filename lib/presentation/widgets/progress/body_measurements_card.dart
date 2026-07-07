@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class ProgressBodyMeasurementsDialog extends StatefulWidget {
   final Future<void> Function(BodyMeasurement) onSave;
@@ -194,14 +195,27 @@ class _ProgressBodyMeasurementsDialogState
                   style: TextStyle(fontSize: 10, color: colors.textMuted),
                 ),
               const SizedBox(height: 8),
-              Text(
-                '💡 Измеряйте сантиметровой лентой утром натощак в одних и тех же условиях',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: colors.textMuted,
-                  height: 1.5,
-                ),
-                textAlign: TextAlign.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Image.asset(AppImages.tip, width: 13, height: 13),
+                  ),
+                  const SizedBox(width: 5),
+                  Flexible(
+                    child: Text(
+                      'Измеряйте сантиметровой лентой утром натощак в одних и тех же условиях',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colors.textMuted,
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

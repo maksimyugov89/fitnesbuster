@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class WorkoutWeekSummary extends StatelessWidget {
   final WorkoutPlanMeta meta;
@@ -21,7 +22,7 @@ class WorkoutWeekSummary extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Text('📊', style: TextStyle(fontSize: 22)),
+          Image.asset(AppImages.progressTab, width: 26, height: 26),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

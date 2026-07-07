@@ -6,6 +6,7 @@ import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class GoalSelectionScreen extends StatefulWidget {
   const GoalSelectionScreen({super.key});
@@ -21,35 +22,35 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
     _GoalOption(
       goal: FitnessGoal.loseWeight,
       title: 'Похудеть',
-      emoji: '🔥',
+      iconAsset: AppImages.energy,
       description: 'Сжечь жир, сухое тело',
       gradientIndex: 0,
     ),
     _GoalOption(
       goal: FitnessGoal.gainWeight,
       title: 'Набрать\nмассу',
-      emoji: '💪',
+      iconAsset: AppImages.workoutsTab,
       description: 'Сила и мышечная масса',
       gradientIndex: 1,
     ),
     _GoalOption(
       goal: FitnessGoal.maintain,
       title: 'Держать\nформу',
-      emoji: '⚖️',
+      iconAsset: AppImages.balance,
       description: 'Быть в форме и здоровым',
       gradientIndex: 2,
     ),
     _GoalOption(
       goal: FitnessGoal.beachBody,
       title: 'Пляжный\nсезон',
-      emoji: '🏖️',
+      iconAsset: AppImages.relax,
       description: 'Подготовка к лету',
       gradientIndex: 3,
     ),
     _GoalOption(
       goal: FitnessGoal.sportPerformance,
       title: 'Спортивная\nформа',
-      emoji: '🏆',
+      iconAsset: AppImages.achievements,
       description: 'Максимальная производительность',
       gradientIndex: 4,
     ),
@@ -245,7 +246,7 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
             ),
             child: Row(
               children: [
-                Text(option.emoji, style: const TextStyle(fontSize: 40)),
+                Image.asset(option.iconAsset, width: 48, height: 48),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -365,14 +366,14 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
 class _GoalOption {
   final FitnessGoal goal;
   final String title;
-  final String emoji;
+  final String iconAsset;
   final String description;
   final int gradientIndex;
 
   const _GoalOption({
     required this.goal,
     required this.title,
-    required this.emoji,
+    required this.iconAsset,
     required this.description,
     required this.gradientIndex,
   });

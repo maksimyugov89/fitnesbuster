@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class DashboardXpBar extends StatelessWidget {
   final dynamic level;
@@ -84,7 +85,7 @@ class DashboardXpBar extends StatelessWidget {
                   color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text('🏅', style: TextStyle(fontSize: 16)),
+                child: Image.asset(AppImages.achievements, width: 18, height: 18),
               ),
             ),
           ),

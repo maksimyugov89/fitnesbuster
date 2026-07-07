@@ -60,6 +60,72 @@ class AppImages {
   static const String terms = 'assets/icons/article_outlined.png';
   static const String about = 'assets/icons/info_outline_rounded.png';
 
+  // ─── Workout types ──────────────────────────────────────────────
+  static const String legDay = 'assets/icons/leg_day_rounded.png';
+  static const String yoga = 'assets/icons/yoga_rounded.png';
+  static const String cycling = 'assets/icons/cycling_rounded.png';
+  static const String boxing = 'assets/icons/boxing_rounded.png';
+  static const String swimming = 'assets/icons/swimming_rounded.png';
+  static const String climbing = 'assets/icons/climbing_rounded.png';
+  static const String gymnastics = 'assets/icons/gymnastics_rounded.png';
+  static const String outdoorActivity = 'assets/icons/outdoor_rounded.png';
+  static const String sedentary = 'assets/icons/sedentary_rounded.png';
+
+  // ─── Gamification / achievements ────────────────────────────────
+  static const String energy = 'assets/icons/energy_rounded.png';
+  static const String rocket = 'assets/icons/rocket_rounded.png';
+  static const String crown = 'assets/icons/crown_rounded.png';
+  static const String dna = 'assets/icons/dna_rounded.png';
+  static const String star = 'assets/icons/star_rounded.png';
+  static const String graduation = 'assets/icons/graduation_rounded.png';
+  static const String owl = 'assets/icons/owl_rounded.png';
+  static const String medalGold = 'assets/icons/medal_gold_rounded.png';
+  static const String medalSilver = 'assets/icons/medal_silver_rounded.png';
+  static const String medalBronze = 'assets/icons/medal_bronze_rounded.png';
+  static const String lock = 'assets/icons/lock_rounded.png';
+  static const String target = 'assets/icons/target_rounded.png';
+  static const String crystalBall = 'assets/icons/crystal_ball_rounded.png';
+
+  // ─── Nutrition: food groups ─────────────────────────────────────
+  static const String meat = 'assets/icons/meat_rounded.png';
+  static const String dairy = 'assets/icons/dairy_rounded.png';
+  static const String grains = 'assets/icons/grains_rounded.png';
+  static const String vegetables = 'assets/icons/vegetables_rounded.png';
+  static const String healthyFats = 'assets/icons/healthy_fats_rounded.png';
+  static const String spices = 'assets/icons/spices_rounded.png';
+
+  // ─── Nutrition: meal times ──────────────────────────────────────
+  static const String breakfast = 'assets/icons/breakfast_rounded.png';
+  static const String lunch = 'assets/icons/lunch_rounded.png';
+  static const String dinner = 'assets/icons/dinner_rounded.png';
+  static const String snack = 'assets/icons/snack_rounded.png';
+
+  // ─── Mood ────────────────────────────────────────────────────────
+  static const String moodBad = 'assets/icons/mood_bad_rounded.png';
+  static const String moodNeutral = 'assets/icons/mood_neutral_rounded.png';
+  static const String moodGood = 'assets/icons/mood_good_rounded.png';
+
+  // ─── Utility / misc ─────────────────────────────────────────────
+  static const String tip = 'assets/icons/tip_rounded.png';
+  static const String sync = 'assets/icons/sync_rounded.png';
+  static const String calendar = 'assets/icons/calendar_rounded.png';
+  static const String emptyState = 'assets/icons/empty_state_rounded.png';
+  static const String pin = 'assets/icons/pin_rounded.png';
+  static const String clipboard = 'assets/icons/clipboard_rounded.png';
+  static const String ringDevice = 'assets/icons/ring_device_rounded.png';
+  static const String phone = 'assets/icons/phone_rounded.png';
+  static const String balance = 'assets/icons/balance_rounded.png';
+  static const String relax = 'assets/icons/relax_rounded.png';
+  static const String beginner = 'assets/icons/beginner_rounded.png';
+  static const String hardcore = 'assets/icons/hardcore_rounded.png';
+  static const String genderMale = 'assets/icons/gender_male_rounded.png';
+  static const String genderFemale = 'assets/icons/gender_female_rounded.png';
+
+  // ─── Theme picker accents ───────────────────────────────────────
+  static const String wave = 'assets/icons/wave_rounded.png';
+  static const String leaf = 'assets/icons/leaf_rounded.png';
+  static const String robot = 'assets/icons/robot_rounded.png';
+
   // ─── Gamification levels (ordered lowest → highest) ─────────────
   static const List<String> levelIcons = [
     'assets/images/levels/level_novice.png',

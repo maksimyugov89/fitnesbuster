@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitnesbuster/bloc/ai/ai_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 /// AI Assistant chat bottom sheet.
 class AiAssistantSheet extends StatefulWidget {
@@ -236,10 +237,10 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
   Widget _buildQuickActions() {
     final colors = AppTheme.of(context);
     final suggestions = [
-      ('💪', 'Как часто тренироваться новичку?'),
-      ('🥗', 'Что съесть после тренировки?'),
-      ('😴', 'Сколько нужно спать?'),
-      ('🔥', 'Как ускорить метаболизм?'),
+      (AppImages.workoutsTab, 'Как часто тренироваться новичку?'),
+      (AppImages.vegetables, 'Что съесть после тренировки?'),
+      (AppImages.sleep, 'Сколько нужно спать?'),
+      (AppImages.energy, 'Как ускорить метаболизм?'),
     ];
 
     return Padding(
@@ -277,7 +278,7 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                     ),
                     child: Row(
                       children: [
-                        Text(s.$1, style: const TextStyle(fontSize: 20)),
+                        Image.asset(s.$1, width: 24, height: 24),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(

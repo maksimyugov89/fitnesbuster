@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class WaterTrackerCard extends StatelessWidget {
   final int intakeMl;
@@ -44,11 +45,19 @@ class WaterTrackerCard extends StatelessWidget {
             children: [
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
-                child: Text(
-                  done ? '✅' : '💧',
-                  key: ValueKey(done),
-                  style: const TextStyle(fontSize: 24),
-                ),
+                child: done
+                    ? const Icon(
+                        Icons.check_circle_rounded,
+                        key: ValueKey(true),
+                        color: Colors.greenAccent,
+                        size: 26,
+                      )
+                    : Image.asset(
+                        AppImages.water,
+                        key: const ValueKey(false),
+                        width: 26,
+                        height: 26,
+                      ),
               ),
               const SizedBox(width: 10),
               Expanded(
