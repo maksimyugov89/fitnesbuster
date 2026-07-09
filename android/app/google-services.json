@@ -8,18 +8,26 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:184541768053:android:dcba6eb4f5611b9d3c4b3c",
+        "mobilesdk_app_id": "1:184541768053:android:c2e5c53ee52e6c133c4b3c",
         "android_client_info": {
-          "package_name": "com.example.fitnesbuster"
+          "package_name": "com.fitnesbuster.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "184541768053-b2n40fvr6udtvdr6tgct4v539ip1j9rp.apps.googleusercontent.com",
+          "client_id": "184541768053-1vb404u9a01u57fs8ld4e7cli9v0cptu.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.fitnesbuster",
-            "certificate_hash": "0a0a9f2a6772942557ab5355d76af442f8f65e01"
+            "package_name": "com.fitnesbuster.app",
+            "certificate_hash": "e90c4127a1489513f50d16c0b2ca41574db71152"
+          }
+        },
+        {
+          "client_id": "184541768053-hil582smvuom96t9qjo8564c0fs14bfl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fitnesbuster.app",
+            "certificate_hash": "b54dde5f14943ede71d4757b38e34df89409340e"
           }
         },
         {

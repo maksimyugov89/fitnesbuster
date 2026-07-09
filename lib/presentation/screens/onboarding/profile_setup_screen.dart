@@ -1008,6 +1008,14 @@ class _PageCityState extends State<_PageCity> {
       }
       var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(context.l10n.locationNote),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
         permission = await Geolocator.requestPermission();
       }
       if (permission == LocationPermission.denied ||

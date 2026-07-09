@@ -55,6 +55,7 @@ import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/core/services/exercise_gif_service.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 import 'package:fitnesbuster/core/cache/offline_queue.dart';
+import 'package:fitnesbuster/core/constants/firebase_config.dart';
 
 final sl = GetIt.instance;
 StreamSubscription<fb.User?>? _authFcmSub;
@@ -65,7 +66,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(
     () => FirebaseFirestore.instanceFor(
       app: Firebase.app(),
-      databaseId: 'fitnesbuster',
+      databaseId: FirebaseConfig.firestoreDatabaseId,
     ),
   );
 
@@ -135,7 +136,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<IHealthService>(() => healthServiceAdapter);
 
   // Social — same instance under both types (screens use concrete, tests use interface)
-  final socialService = SocialService();
+  final socialService = SocialService(firestore: sl());
   sl.registerLazySingleton<ISocialService>(() => socialService);
   sl.registerLazySingleton<SocialService>(() => socialService);
 
@@ -158,11 +159,20 @@ Future<void> initDependencies() async {
 
   // Repositories — registered against interfaces for testability.
   // Concrete types also registered for call sites that resolve the implementation directly.
+  // Offline queue: created before repositories so they can register real sync handlers.
+  final offlineQueue = OfflineQueue();
+  await offlineQueue.init();
+  sl.registerLazySingleton<OfflineQueue>(() => offlineQueue);
+
   final authRepo = AuthRepository(auth: sl(), firestore: sl());
   sl.registerLazySingleton<IAuthRepository>(() => authRepo);
   sl.registerLazySingleton<AuthRepository>(() => authRepo);
 
-  final userRepo = UserRepository(auth: sl(), firestore: sl());
+  final userRepo = UserRepository(
+    auth: sl(),
+    firestore: sl(),
+    offlineQueue: offlineQueue,
+  );
   sl.registerLazySingleton<IUserRepository>(() => userRepo);
   sl.registerLazySingleton<UserRepository>(() => userRepo);
 
@@ -183,11 +193,6 @@ Future<void> initDependencies() async {
   final exerciseService = ExerciseGifService();
   sl.registerLazySingleton<IExerciseService>(() => exerciseService);
   sl.registerLazySingleton<ExerciseGifService>(() => exerciseService);
-
-  // Offline queue
-  final offlineQueue = OfflineQueue();
-  await offlineQueue.init();
-  sl.registerLazySingleton<OfflineQueue>(() => offlineQueue);
 
   // Onboarding workflow
   final onboardingWorkflow = OnboardingWorkflowService(

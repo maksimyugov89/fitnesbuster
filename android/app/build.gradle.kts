@@ -20,7 +20,7 @@ if (hasReleaseKeystore) {
 }
 
 android {
-    namespace = "com.example.fitnesbuster"
+    namespace = "com.fitnesbuster.app"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -35,7 +35,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.fitnesbuster"
+        applicationId = "com.fitnesbuster.app"
         minSdk = 26
         targetSdk = 34
         versionCode = flutter.versionCode

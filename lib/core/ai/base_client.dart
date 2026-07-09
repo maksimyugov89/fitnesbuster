@@ -58,17 +58,16 @@ String _productLanguageInstruction() {
 }
 
 class BaseClient {
+  static const _functionsRegion = 'europe-west1';
+
   Future<String> sendMessage(
     String prompt, {
     int maxTokens = 8192,
     double temperature = 0.7,
   }) {
-    return withRetry(() async {
-      final callable = FirebaseFunctions.instanceFor(
-        region: 'europe-west1',
-      ).httpsCallable('deepseekProxy');
-      final result = await callable.call<Map<String, dynamic>>({
-        'messages': [
+    return withRetry(
+      () => _callDeepSeek(
+        messages: [
           {
             'role': 'system',
             'content':
@@ -76,37 +75,26 @@ class BaseClient {
           },
           {'role': 'user', 'content': prompt},
         ],
-        'maxTokens': maxTokens,
-        'temperature': temperature,
-      });
-      final content = result.data['content'] as String?;
-      if (content == null || content.isEmpty) {
-        throw const AiException('Пустой ответ от AI. Попробуйте ещё раз.');
-      }
-      return content;
-    }, shouldRethrow: (e) => e.statusCode == 401 || e.statusCode == 429);
+        maxTokens: maxTokens,
+        temperature: temperature,
+      ),
+      shouldRethrow: _shouldNotRetry,
+    );
   }
 
   Future<String> sendMessagesList(
     List<Map<String, String>> messages, {
-    int maxTokens = 2048,
+    int maxTokens = 4096,
     double temperature = 0.8,
   }) {
-    return withRetry(() async {
-      final callable = FirebaseFunctions.instanceFor(
-        region: 'europe-west1',
-      ).httpsCallable('deepseekProxy');
-      final result = await callable.call<Map<String, dynamic>>({
-        'messages': messages,
-        'maxTokens': maxTokens,
-        'temperature': temperature,
-      });
-      final content = result.data['content'] as String?;
-      if (content == null || content.isEmpty) {
-        throw const AiException('Пустой ответ от AI. Попробуйте ещё раз.');
-      }
-      return content;
-    }, shouldRethrow: (e) => e.statusCode == 401 || e.statusCode == 429);
+    return withRetry(
+      () => _callDeepSeek(
+        messages: messages,
+        maxTokens: maxTokens,
+        temperature: temperature,
+      ),
+      shouldRethrow: _shouldNotRetry,
+    );
   }
 
   Future<String> callWithValidation({
@@ -116,8 +104,28 @@ class BaseClient {
     required String Function(String raw) validator,
   }) {
     return withRetry(() async {
+      final content = await _callDeepSeek(
+        messages: messages,
+        maxTokens: maxTokens,
+        temperature: temperature,
+      );
+      return validator(extractJson(content));
+    }, shouldRethrow: _shouldNotRetry);
+  }
+
+  String get languageInstruction => _languageInstruction();
+  String get productLanguageInstruction => _productLanguageInstruction();
+
+  void dispose() {}
+
+  Future<String> _callDeepSeek({
+    required List<Map<String, String>> messages,
+    required int maxTokens,
+    required double temperature,
+  }) async {
+    try {
       final callable = FirebaseFunctions.instanceFor(
-        region: 'europe-west1',
+        region: _functionsRegion,
       ).httpsCallable('deepseekProxy');
       final result = await callable.call<Map<String, dynamic>>({
         'messages': messages,
@@ -128,12 +136,48 @@ class BaseClient {
       if (content == null || content.isEmpty) {
         throw const AiException('Пустой ответ от AI. Попробуйте ещё раз.');
       }
-      return validator(extractJson(content));
-    }, shouldRethrow: (e) => e.statusCode == 401 || e.statusCode == 429);
+      return content;
+    } on FirebaseFunctionsException catch (e) {
+      throw mapFirebaseFunctionsException(e.code, e.message);
+    }
   }
 
-  String get languageInstruction => _languageInstruction();
-  String get productLanguageInstruction => _productLanguageInstruction();
+  bool _shouldNotRetry(AiException e) {
+    return shouldNotRetryAiException(e);
+  }
+}
 
-  void dispose() {}
+bool shouldNotRetryAiException(AiException e) {
+  return switch (e.statusCode) {
+    400 || 401 || 403 || 429 => true,
+    _ => false,
+  };
+}
+
+AiException mapFirebaseFunctionsException(
+  String code,
+  String? fallbackMessage,
+) {
+  final statusCode = switch (code) {
+    'invalid-argument' => 400,
+    'unauthenticated' => 401,
+    'permission-denied' => 403,
+    'resource-exhausted' => 429,
+    'deadline-exceeded' => 504,
+    'unavailable' => 503,
+    'internal' => 500,
+    _ => null,
+  };
+  final message = switch (code) {
+    'unauthenticated' => 'Войдите в аккаунт, чтобы использовать AI.',
+    'resource-exhausted' =>
+      'Слишком много AI-запросов. Попробуйте немного позже.',
+    'invalid-argument' => 'AI-запрос некорректен. Попробуйте изменить ввод.',
+    'permission-denied' => 'Недостаточно прав для AI-запроса.',
+    'deadline-exceeded' ||
+    'unavailable' ||
+    'internal' => 'AI временно недоступен. Пробуем ещё раз.',
+    _ => fallbackMessage ?? 'Не удалось получить ответ от AI.',
+  };
+  return AiException(message, statusCode: statusCode);
 }

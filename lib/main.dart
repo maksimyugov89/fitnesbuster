@@ -141,7 +141,11 @@ class FitnesBusterApp extends StatelessWidget {
                       child: MediaQuery(
                         data: MediaQuery.of(
                           context,
-                        ).copyWith(textScaler: TextScaler.noScaling),
+                        ).copyWith(
+                          textScaler: MediaQuery.textScalerOf(
+                            context,
+                          ).clamp(maxScaleFactor: 1.4),
+                        ),
                         child: AnimatedThemeBackground(
                           palette: palette,
                           child: child!,

@@ -11,13 +11,28 @@ import 'package:fitnesbuster/data/models/user_search_result.dart';
 
 export 'package:fitnesbuster/core/services/social_models.dart';
 
+typedef CurrentUidProvider = String? Function();
+typedef SocialCallableInvoker =
+    Future<Object?> Function(String name, Map<String, dynamic> data);
+
 class SocialService implements ISocialService {
-  SocialService();
+  SocialService({
+    required FirebaseFirestore firestore,
+    FirebaseFunctions? functions,
+    CurrentUidProvider? currentUidProvider,
+    SocialCallableInvoker? callableInvoker,
+  }) : _db = firestore,
+       _functions = functions,
+       _currentUidProvider =
+           currentUidProvider ?? (() => FirebaseAuth.instance.currentUser?.uid),
+       _callableInvoker = callableInvoker;
 
-  final _db = FirebaseFirestore.instance;
-  final _functions = FirebaseFunctions.instanceFor(region: 'europe-west1');
+  final FirebaseFirestore _db;
+  final FirebaseFunctions? _functions;
+  final CurrentUidProvider _currentUidProvider;
+  final SocialCallableInvoker? _callableInvoker;
 
-  String? get _uid => FirebaseAuth.instance.currentUser?.uid;
+  String? get _uid => _currentUidProvider();
 
   // ── FCM token registration ─────────────────────────────────────────────────
 
@@ -74,11 +89,7 @@ class SocialService implements ISocialService {
     final uid = _uid;
     if (uid == null) return;
     try {
-      await _db.collection(FirestoreCollections.activityEvents(uid)).add({
-        'type': type,
-        'data': data,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      await _call('publishActivity', {'type': type, 'data': data});
     } catch (e, st) {
       appLogger.w(
         'SocialService: publish activity failed',
@@ -149,8 +160,8 @@ class SocialService implements ISocialService {
   @override
   Future<List<UserSearchResult>> searchUsers(String query) async {
     try {
-      final result = await _call('searchUsers', {'query': query});
-      return (result.data as List? ?? [])
+      final data = await _call('searchUsers', {'query': query});
+      return (data as List? ?? [])
           .map(
             (e) =>
                 UserSearchResult.fromJson(Map<String, dynamic>.from(e as Map)),
@@ -270,14 +281,14 @@ class SocialService implements ISocialService {
     required int streak,
   }) async {
     try {
-      final result = await _call('recordWorkout', {
+      final data = await _call('recordWorkout', {
         'durationMinutes': durationMinutes,
         'caloriesBurned': caloriesBurned,
         'cardioMinutes': cardioMinutes,
         'streak': streak,
       });
-      final data = result.data as Map<String, dynamic>?;
-      return ((data?['completed'] as List?) ?? []).cast<String>();
+      final response = data as Map<String, dynamic>?;
+      return ((response?['completed'] as List?) ?? []).cast<String>();
     } catch (e, st) {
       appLogger.w(
         'SocialService: recordWorkout failed',
@@ -324,11 +335,13 @@ class SocialService implements ISocialService {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  Future<HttpsCallableResult<dynamic>> _call(
-    String name,
-    Map<String, dynamic> data,
-  ) async {
-    final fn = _functions.httpsCallable(name);
-    return fn.call(data);
+  Future<Object?> _call(String name, Map<String, dynamic> data) async {
+    final invoker = _callableInvoker;
+    if (invoker != null) return invoker(name, data);
+    final functions =
+        _functions ?? FirebaseFunctions.instanceFor(region: 'europe-west1');
+    final fn = functions.httpsCallable(name);
+    final result = await fn.call(data);
+    return result.data;
   }
 }

@@ -187,33 +187,49 @@ class AppRouter {
   static String? _redirect(BuildContext context, GoRouterState state) {
     final isAuthenticated = FirebaseAuth.instance.currentUser != null;
     final loc = state.matchedLocation;
+    final authState = context.read<AuthBloc>().state;
+    final isAuthStateAuthenticated = authState is AuthStateAuthenticated;
 
-    if (loc == splash) return null;
+    return resolveAuthRedirect(
+      loc: loc,
+      isAuthenticated: isAuthenticated,
+      isAuthStateAuthenticated: isAuthStateAuthenticated,
+      emailVerified: isAuthStateAuthenticated ? authState.emailVerified : false,
+      hasProfile: isAuthStateAuthenticated
+          ? authState.user.profile != null
+          : false,
+    );
+  }
+}
 
-    final isOnboarding = loc.startsWith(onboarding);
-    final isVerifyEmail = loc == verifyEmail;
-    final isPublic = loc == login || loc == register || isOnboarding;
+String? resolveAuthRedirect({
+  required String loc,
+  required bool isAuthenticated,
+  required bool isAuthStateAuthenticated,
+  required bool emailVerified,
+  required bool hasProfile,
+}) {
+  if (loc == AppRouter.splash) return null;
 
-    if (!isAuthenticated && !isPublic) return login;
+  final isOnboarding = loc.startsWith(AppRouter.onboarding);
+  final isVerifyEmail = loc == AppRouter.verifyEmail;
+  final isPublic =
+      loc == AppRouter.login || loc == AppRouter.register || isOnboarding;
 
-    if (isAuthenticated) {
-      final authState = context.read<AuthBloc>().state;
+  if (!isAuthenticated && !isPublic) return AppRouter.login;
 
-      // AuthBloc ещё не подтвердил аутентификацию — ждём, не редиректим
-      if (authState is! AuthStateAuthenticated) return null;
+  if (isAuthenticated) {
+    if (!isAuthStateAuthenticated) return null;
 
-      // Email не подтверждён — блокируем доступ ко всему, кроме экрана верификации
-      if (!authState.emailVerified) {
-        return isVerifyEmail ? null : verifyEmail;
-      }
-
-      if (isPublic || isVerifyEmail) {
-        final hasProfile = authState.user.profile != null;
-        if (isOnboarding) return hasProfile ? dashboard : null;
-        return hasProfile ? dashboard : onboarding;
-      }
+    if (!emailVerified) {
+      return isVerifyEmail ? null : AppRouter.verifyEmail;
     }
 
-    return null;
+    if (isPublic || isVerifyEmail) {
+      if (isOnboarding) return hasProfile ? AppRouter.dashboard : null;
+      return hasProfile ? AppRouter.dashboard : AppRouter.onboarding;
+    }
   }
+
+  return null;
 }

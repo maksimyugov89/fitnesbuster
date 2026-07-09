@@ -16,6 +16,11 @@ export interface SearchUsersData {
   query: string;
 }
 
+export interface PublishActivityData {
+  type: string;
+  data?: Record<string, unknown>;
+}
+
 export interface CreateChallengeData {
   title: string;
   description: string;

@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 /// Handles content shared into the app from other Android apps via
 /// ACTION_SEND intents. Works in tandem with MainActivity.kt.
 class ShareIntentService {
-  static const _channel = MethodChannel('com.example.fitnesbuster/share');
+  static const _channel = MethodChannel('com.fitnesbuster.app/share');
 
   static final ValueNotifier<String?> pendingShare = ValueNotifier(null);
 

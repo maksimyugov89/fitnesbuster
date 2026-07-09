@@ -1,4 +1,4 @@
-package com.example.fitnesbuster
+package com.fitnesbuster.app
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterFragmentActivity() {
 
     companion object {
-        private const val CHANNEL = "com.example.fitnesbuster/share"
+        private const val CHANNEL = "com.fitnesbuster.app/share"
     }
 
     private var pendingSharedText: String? = null

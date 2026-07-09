@@ -169,6 +169,14 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      'При первом запуске Android покажет системный запрос доступа только к выбранным данным здоровья.',
+                      style: TextStyle(fontSize: 11, color: colors.textMuted),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -504,6 +512,8 @@ class _DataTile extends StatelessWidget {
               fontWeight: FontWeight.w800,
               color: colors.textPrimary,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 2),
           Text(label, style: TextStyle(fontSize: 11, color: colors.textMuted)),

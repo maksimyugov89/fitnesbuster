@@ -30,9 +30,8 @@ service cloud.firestore {
     }
 
     // ── Activity events (written by Cloud Functions only) ─────────────────────
-    // Previously client-writable; nothing in the app writes here directly
-    // (publishActivity() is currently unused), so this is locked down to avoid
-    // unvalidated events being fanned out to friends' feeds.
+    // Clients publish via the validated publishActivity callable; direct writes
+    // stay locked down so unvalidated events cannot be fanned out to friends.
     match /activity_events/{uid}/items/{eventId} {
       allow read: if request.auth != null && request.auth.uid == uid;
       // Write only via Cloud Functions (Admin SDK bypasses rules)

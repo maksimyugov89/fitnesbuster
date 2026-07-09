@@ -10,6 +10,13 @@ import {
   RATE_LIMIT_WINDOW_MS,
 } from "./constants";
 import type {FriendRequestData, AcceptDeclineData, RemoveFriendData, SearchUsersData} from "./types";
+import {
+  mergeSearchResults,
+  normalizeSearchQuery,
+  validateFriendRequestId,
+  validateFriendUid,
+  validateSendFriendRequest,
+} from "./friendsValidation";
 
 /**
  * Sends a friend request from the authenticated user to another user.
@@ -32,18 +39,15 @@ export const sendFriendRequest = onCall(
     const allowed = await checkRateLimit(fromUid, "sendFriendRequest", SEND_FRIEND_REQUEST_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    if (typeof toUid !== "string" || toUid.trim().length === 0) {
-      throw new HttpsError("invalid-argument", "toUid must be a non-empty string");
-    }
-    if (fromUid === toUid) throw new HttpsError("invalid-argument", "Cannot add yourself");
+    const normalizedToUid = validateSendFriendRequest(fromUid, toUid);
 
-    const friendDoc = await db.doc(`friends/${fromUid}/list/${toUid}`).get();
+    const friendDoc = await db.doc(`friends/${fromUid}/list/${normalizedToUid}`).get();
     if (friendDoc.exists) throw new HttpsError("already-exists", "Already friends");
 
     const existing = await db
       .collection("friend_requests")
       .where("fromUid", "==", fromUid)
-      .where("toUid", "==", toUid)
+      .where("toUid", "==", normalizedToUid)
       .where("status", "==", "pending")
       .limit(1)
       .get();
@@ -54,14 +58,14 @@ export const sendFriendRequest = onCall(
 
     const ref = await db.collection("friend_requests").add({
       fromUid,
-      toUid,
+      toUid: normalizedToUid,
       fromName,
       status: "pending",
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    await createNotification(toUid, "friend_request", `${fromName} хочет добавить вас в друзья`, fromUid, fromName, {requestId: ref.id});
-    await sendPush(toUid, "Запрос в друзья", `${fromName} хочет добавить вас в друзья`, {type: "friend_request", requestId: ref.id});
+    await createNotification(normalizedToUid, "friend_request", `${fromName} хочет добавить вас в друзья`, fromUid, fromName, {requestId: ref.id});
+    await sendPush(normalizedToUid, "Запрос в друзья", `${fromName} хочет добавить вас в друзья`, {type: "friend_request", requestId: ref.id});
 
     return {requestId: ref.id};
   }
@@ -84,11 +88,9 @@ export const acceptFriendRequest = onCall(
     const allowed = await checkRateLimit(uid, "acceptFriendRequest", FRIEND_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    if (typeof requestId !== "string" || requestId.trim().length === 0) {
-      throw new HttpsError("invalid-argument", "requestId must be a non-empty string");
-    }
+    const normalizedRequestId = validateFriendRequestId(requestId);
 
-    const reqRef = db.doc(`friend_requests/${requestId}`);
+    const reqRef = db.doc(`friend_requests/${normalizedRequestId}`);
     let fromUidFinal = "";
     let fromNameFinal = "";
     let toNameFinal = "";
@@ -117,7 +119,7 @@ export const acceptFriendRequest = onCall(
       tx.set(db.doc(`friends/${uid}/list/${fromUid}`), {addedAt: now, name: fromNameFinal});
     });
 
-    logInfo("Friend request accepted", {uid, requestId});
+    logInfo("Friend request accepted", {uid, requestId: normalizedRequestId});
 
     await createNotification(fromUidFinal, "friend_accepted", `${toNameFinal} принял(а) ваш запрос в друзья`, uid, toNameFinal);
     await sendPush(fromUidFinal, "Запрос принят", `${toNameFinal} теперь ваш друг!`, {type: "friend_accepted"});
@@ -139,11 +141,9 @@ export const declineFriendRequest = onCall(
     const allowed = await checkRateLimit(uid, "declineFriendRequest", FRIEND_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    if (typeof requestId !== "string" || requestId.trim().length === 0) {
-      throw new HttpsError("invalid-argument", "requestId must be a non-empty string");
-    }
+    const normalizedRequestId = validateFriendRequestId(requestId);
 
-    const reqRef = db.doc(`friend_requests/${requestId}`);
+    const reqRef = db.doc(`friend_requests/${normalizedRequestId}`);
     const reqSnap = await reqRef.get();
     if (!reqSnap.exists) throw new HttpsError("not-found", "Request not found");
     if (reqSnap.data()!.toUid !== uid) throw new HttpsError("permission-denied", "Not your request");
@@ -166,13 +166,11 @@ export const removeFriend = onCall(
     const allowed = await checkRateLimit(uid, "removeFriend", FRIEND_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    if (typeof friendUid !== "string" || friendUid.trim().length === 0) {
-      throw new HttpsError("invalid-argument", "friendUid must be a non-empty string");
-    }
+    const normalizedFriendUid = validateFriendUid(friendUid);
 
     const batch = db.batch();
-    batch.delete(db.doc(`friends/${uid}/list/${friendUid}`));
-    batch.delete(db.doc(`friends/${friendUid}/list/${uid}`));
+    batch.delete(db.doc(`friends/${uid}/list/${normalizedFriendUid}`));
+    batch.delete(db.doc(`friends/${normalizedFriendUid}/list/${uid}`));
     await batch.commit();
 
     return {success: true};
@@ -193,12 +191,10 @@ export const searchUsers = onCall(
   async (request: {auth?: {uid: string}; data: SearchUsersData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const {query} = request.data;
-    if (typeof query !== "string" || query.length < 2) throw new HttpsError("invalid-argument", "Query too short (min 2 chars)");
+    const q = normalizeSearchQuery(query);
 
     const allowed = await checkRateLimit(request.auth.uid, "searchUsers", SEARCH_USERS_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
-
-    const q = query.toLowerCase().trim();
 
     const [nameSnap, usernameSnap, callerFriendsSnap] = await Promise.all([
       db.collection("users")
@@ -215,19 +211,11 @@ export const searchUsers = onCall(
     ]);
 
     const friendUids = new Set(callerFriendsSnap.docs.map((d) => d.id));
-
-    const seen = new Set<string>();
-    const merged = [...nameSnap.docs, ...usernameSnap.docs].filter((d) => {
-      if (d.id === request.auth!.uid || seen.has(d.id)) return false;
-      seen.add(d.id);
-      return true;
-    });
-
-    return merged.map((d) => ({
-      uid: d.id,
-      name: d.data().name ?? "",
-      username: d.data().username ?? "",
-      isFriend: friendUids.has(d.id),
-    }));
+    return mergeSearchResults(
+      request.auth.uid,
+      nameSnap.docs.map((d) => ({id: d.id, data: d.data()})),
+      usernameSnap.docs.map((d) => ({id: d.id, data: d.data()})),
+      friendUids
+    );
   }
 );

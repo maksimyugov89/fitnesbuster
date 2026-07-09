@@ -51,7 +51,5 @@
 	<string>FitnesBuster записывает данные тренировок в Apple Health</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Для определения вашего города и подбора доступных продуктов питания</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Для определения вашего города и подбора доступных продуктов питания</string>
 </dict>
 </plist>

@@ -263,7 +263,11 @@ class _AvatarPickerSheetState extends State<AvatarPickerSheet> {
                               : [],
                         ),
                         child: Center(
-                          child: Image.asset(p.iconAsset, width: 30, height: 30),
+                          child: Image.asset(
+                            p.iconAsset,
+                            width: 30,
+                            height: 30,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -323,12 +327,18 @@ class _SourceButton extends StatelessWidget {
             children: [
               Icon(icon, color: color, size: 28),
               const SizedBox(height: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: color,
-                  fontWeight: FontWeight.w600,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],

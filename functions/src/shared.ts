@@ -1,7 +1,10 @@
 import * as admin from "firebase-admin";
+import {getFirestore} from "firebase-admin/firestore";
+import {FIRESTORE_DATABASE_ID} from "./firebaseConfig";
 import {RETRY_BASE_DELAY_MS, RETRY_MAX_ATTEMPTS} from "./constants";
+import {evaluateRateLimit, isRateLimitContentionError} from "./rateLimitLogic";
 
-const db = admin.firestore();
+const db = getFirestore(FIRESTORE_DATABASE_ID);
 const messaging = admin.messaging();
 
 // ─── Logging ──────────────────────────────────────────────────────────────────
@@ -43,27 +46,21 @@ async function checkRateLimit(
     return await db.runTransaction(async (tx) => {
       const snap = await tx.get(ref);
       const now = Date.now();
-      if (!snap.exists) {
-        tx.set(ref, {count: 1, windowStart: now});
-        return true;
-      }
-      const data = snap.data()!;
-      const windowStart = data.windowStart as number;
-      if (now - windowStart > windowMs) {
-        tx.set(ref, {count: 1, windowStart: now});
-        return true;
-      }
-      const count = data.count as number;
-      if (count >= maxRequests) {
-        logWarn("Rate limit exceeded", {uid, action, count, maxRequests});
+      const decision = evaluateRateLimit(
+        snap.exists ? snap.data()! : undefined,
+        now,
+        maxRequests,
+        windowMs
+      );
+      if (!decision.allowed) {
+        logWarn("Rate limit exceeded", {uid, action, maxRequests});
         return false;
       }
-      tx.set(ref, {count: count + 1, windowStart}, {merge: true});
+      tx.set(ref, decision.nextState!, {merge: snap.exists});
       return true;
     }, {maxAttempts: 15});
   } catch (e) {
-    const code = (e as {code?: number}).code;
-    if (code === 10) {
+    if (isRateLimitContentionError(e)) {
       // ABORTED: Firestore's own concurrency control gave up retrying after
       // exhausting maxAttempts under heavy contention on this exact document
       // (many requests racing for the same rate-limit slot at once). Fail

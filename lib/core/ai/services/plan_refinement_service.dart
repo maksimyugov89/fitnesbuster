@@ -235,7 +235,7 @@ $taskBlock
 
     return _client.callWithValidation(
       messages: messages,
-      maxTokens: 5000,
+      maxTokens: 8192,
       temperature: 0.4,
       validator: validateWorkoutJson,
     );
