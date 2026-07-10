@@ -215,11 +215,7 @@ class WeeklyPlanView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(
-                          child: Image.asset(
-                            icon,
-                            width: 20,
-                            height: 20,
-                          ),
+                          child: Image.asset(icon, width: 20, height: 20),
                         ),
                       ),
                       const SizedBox(width: 10),

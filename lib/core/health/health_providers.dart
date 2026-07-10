@@ -5,17 +5,9 @@ import 'package:fitnesbuster/core/theme/app_images.dart';
 /// The app uses Health Connect (Android) as the central aggregation layer,
 /// so any app that writes to Health Connect is supported automatically.
 enum HealthProvider {
-  garminConnect(
-    'Garmin Connect',
-    'garmin',
-    iconAsset: AppImages.workoutsTab,
-  ),
+  garminConnect('Garmin Connect', 'garmin', iconAsset: AppImages.workoutsTab),
   fitbit('Fitbit', 'fitbit', dotColor: Color(0xFF00B0B9)),
-  samsungHealth(
-    'Samsung Health',
-    'samsung',
-    iconAsset: AppImages.ringDevice,
-  ),
+  samsungHealth('Samsung Health', 'samsung', iconAsset: AppImages.ringDevice),
   appleHealth('Apple Health', 'apple', iconAsset: AppImages.hrv),
   huaweiHealth('Huawei Health', 'huawei', iconAsset: AppImages.phone),
   zeppLife('Zepp Life', 'zepp', dotColor: Color(0xFF2196F3)),
@@ -40,7 +32,12 @@ enum HealthProvider {
   bool get isAvailable =>
       true; // All providers are available via Health Connect
 
-  const HealthProvider(this.displayName, this.id, {this.iconAsset, this.dotColor});
+  const HealthProvider(
+    this.displayName,
+    this.id, {
+    this.iconAsset,
+    this.dotColor,
+  });
 
   /// Providers that natively write to Health Connect on Android.
   static List<HealthProvider> get androidHealthConnect => [

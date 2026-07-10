@@ -139,9 +139,7 @@ class FitnesBusterApp extends StatelessWidget {
                     return Directionality(
                       textDirection: dir,
                       child: MediaQuery(
-                        data: MediaQuery.of(
-                          context,
-                        ).copyWith(
+                        data: MediaQuery.of(context).copyWith(
                           textScaler: MediaQuery.textScalerOf(
                             context,
                           ).clamp(maxScaleFactor: 1.4),

@@ -157,11 +157,7 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
                         ),
                         child: Row(
                           children: [
-                            Image.asset(
-                              mode.iconAsset,
-                              width: 36,
-                              height: 36,
-                            ),
+                            Image.asset(mode.iconAsset, width: 36, height: 36),
                             const SizedBox(width: 14),
                             Expanded(
                               child: Column(

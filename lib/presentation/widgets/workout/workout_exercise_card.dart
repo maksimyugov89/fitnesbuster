@@ -131,7 +131,11 @@ class WorkoutExerciseCard extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(AppImages.workoutTimer, width: 12, height: 12),
+                      Image.asset(
+                        AppImages.workoutTimer,
+                        width: 12,
+                        height: 12,
+                      ),
                       const SizedBox(width: 3),
                       Text(
                         '$rest с',

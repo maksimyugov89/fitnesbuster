@@ -9,19 +9,15 @@ class AvatarPreset {
 }
 
 const kAvatarPresets = [
-  AvatarPreset(
-    AppImages.workoutsTab,
-    'Атлет',
-    [Color(0xFF6C63FF), Color(0xFF3D5AFE)],
-  ),
+  AvatarPreset(AppImages.workoutsTab, 'Атлет', [
+    Color(0xFF6C63FF),
+    Color(0xFF3D5AFE),
+  ]),
   AvatarPreset(AppImages.steps, 'Бегун', [
     Color(0xFF00BFA5),
     Color(0xFF00695C),
   ]),
-  AvatarPreset(AppImages.yoga, 'Йога', [
-    Color(0xFFAB47BC),
-    Color(0xFF6A1B9A),
-  ]),
+  AvatarPreset(AppImages.yoga, 'Йога', [Color(0xFFAB47BC), Color(0xFF6A1B9A)]),
   AvatarPreset(AppImages.cycling, 'Велосипед', [
     Color(0xFFFF7043),
     Color(0xFFBF360C),

@@ -88,7 +88,11 @@ class StreakCard extends StatelessWidget {
                   color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Image.asset(AppImages.achievements, width: 18, height: 18),
+                child: Image.asset(
+                  AppImages.achievements,
+                  width: 18,
+                  height: 18,
+                ),
               ),
             ),
           ),

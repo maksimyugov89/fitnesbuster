@@ -103,9 +103,7 @@ class _ProfileEditSheetState extends State<ProfileEditSheet> {
           ),
           shape: BoxShape.circle,
         ),
-        child: Center(
-          child: Image.asset(p.iconAsset, width: 44, height: 44),
-        ),
+        child: Center(child: Image.asset(p.iconAsset, width: 44, height: 44)),
       );
     } else {
       circle = _fallbackCircle(size, colors);

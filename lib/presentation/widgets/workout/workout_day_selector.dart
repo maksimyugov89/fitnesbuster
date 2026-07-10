@@ -78,10 +78,7 @@ class WorkoutDaySelector extends StatelessWidget {
                       const SizedBox(height: 4),
                       SizedBox(
                         height: 24,
-                        child: Image.asset(
-                          dayIcon(day),
-                          fit: BoxFit.contain,
-                        ),
+                        child: Image.asset(dayIcon(day), fit: BoxFit.contain),
                       ),
                     ],
                   ),
