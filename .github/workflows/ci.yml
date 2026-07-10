@@ -80,17 +80,8 @@ jobs:
         uses: zgosalvez/github-actions-report-lcov@v7
         with:
           coverage-files: coverage/lcov.info
-          artifact-name: coverage-html-report
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-comment: true
-
-      - name: Upload coverage artifact
-        continue-on-error: true
-        uses: actions/upload-artifact@v7
-        with:
-          name: coverage-report
-          path: coverage/lcov.info
-          retention-days: 3
 
       - name: Notify Telegram on failure
         if: failure() && github.event_name == 'push'

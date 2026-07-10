@@ -7,7 +7,7 @@
 | Файл | Триггер | Что делает |
 |---|---|---|
 | [`ci.yml`](../.github/workflows/ci.yml) | push/PR → `master` | `dart format`, `flutter analyze`, полный Flutter suite (текущий baseline: 489 результатов), coverage/Codecov, Cloud Functions build + 38 unit/spec тестов + 6 callable-тестов в Auth/Firestore/Functions emulators |
-| [`build.yml`](../.github/workflows/build.yml) | push/PR → `master`, ручной запуск | Собирает APK и AAB (debug-подпись, для внутреннего тестирования) и сохраняет их как build-артефакты на 14 дней |
+| [`build.yml`](../.github/workflows/build.yml) | push/PR → `master`, ручной запуск | Собирает APK и AAB (debug-подпись, для внутреннего тестирования); на push/manual сохраняет их как неблокирующие build-артефакты на 3 дня, на PR только проверяет сборку |
 | [`release.yml`](../.github/workflows/release.yml) | push тега `v*.*.*` **или** ручной запуск (`workflow_dispatch`) | Прогоняет `flutter analyze` + `flutter test` как гейт качества, собирает **подписанные боевым ключом** APK/AAB, публикует GitHub Release с артефактами и авто-changelog, шлёт уведомление в Telegram |
 | [`security.yml`](../.github/workflows/security.yml) | PR → `master`, push → `master`, еженедельно (пн 06:00 UTC), ручной запуск | Сканирует `pubspec.lock` и `functions/package-lock.json` через OSV-Scanner на известные CVE, роняет job при находках, шлёт уведомление в Telegram |
 | [`dependabot.yml`](../.github/dependabot.yml) | еженедельно (пн) | Автоматические PR на обновление зависимостей: `pub`, `npm` (`/functions`), `github-actions` |
@@ -28,7 +28,7 @@
 
 `GITHUB_TOKEN` для комментария с покрытием в PR создаётся GitHub автоматически на каждый workflow run — добавлять его вручную не нужно.
 
-Без Telegram-секретов `ci.yml`/`security.yml` всё равно работают (шаги уведомления молча падают только на `failure()` веток — не блокируют пайплайн). Без `CODECOV_TOKEN` шаг загрузки покрытия в Codecov будет пропущен, но PR-комментарий и GitHub artifact останутся. `release.yml` без keystore-секретов не сможет собрать подписанный релиз.
+Без Telegram-секретов `ci.yml`/`security.yml` всё равно работают (шаги уведомления молча падают только на `failure()` веток — не блокируют пайплайн). Без `CODECOV_TOKEN` шаг загрузки покрытия в Codecov будет пропущен, но PR-комментарий и job summary останутся. `release.yml` без keystore-секретов не сможет собрать подписанный релиз.
 
 ### Как подключить Codecov
 
@@ -109,8 +109,7 @@ git push origin v1.2.0
 - **Codecov** — шаг `codecov/codecov-action@v5` загружает очищенный `coverage/lcov.info` с флагом `flutter`
 - **Комментарий в PR** — на каждый PR бот ([`zgosalvez/github-actions-report-lcov`](https://github.com/zgosalvez/github-actions-report-lcov)) публикует % покрытия и таблицу по файлам, обновляя один и тот же комментарий при новых пушах
 - **Job summary** — краткая сводка `lcov --summary` видна на вкладке Summary каждого workflow run
-- **Artifact `coverage-report`** — сырой `lcov.info` на вкладке каждого workflow run в Actions (3 дня), можно открыть локально: `genhtml coverage/lcov.info -o coverage/html && open coverage/html/index.html`
-- **Artifact `coverage-html-report`** (только для PR) — готовый HTML-отчёт от того же action, тоже прикрепляется к run
+- GitHub coverage artifacts отключены: отчёт доступен в Codecov, PR-комментарии и job summary, поэтому исчерпание Actions artifact quota не создаёт ложные ошибки CI.
 
 Из покрытия исключён сгенерированный код (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`) — он не отражает реальное качество тестирования.
 
@@ -121,4 +120,5 @@ git push origin v1.2.0
 - ~~Golden-тесты исключены из CI~~ — **исправлено.** Настоящая причина зависания (10-минутный таймаут на `DashboardScreen`/`WorkoutPlanScreen`, воспроизводилось и локально, и на `ubuntu-latest`) не имела отношения к 3D-вьюеру/WebView: оба теста вызывали `bloc.close()` для блоков, всё ещё предоставленных смонтированному `BlocProvider.value`. `BlocProvider` держит собственную подписку на `bloc.stream`, а `Bloc.close()` дожидается закрытия этого стрима — что требует отмены всех подписчиков. Так как дерево виджетов ни разу не размонтировалось перед вызовом `close()`, эта внутренняя подписка никогда не отменялась, и `close()` не завершался. Минимальный репро: `bloc.stream.listen((_) {})` без отмены + `bloc.close()` — зависает даже без единого виджета. Исправление — не вызывать `close()` для блоков, которые всё ещё "живут" в смонтированном дереве (`GetIt.reset()` в `tearDownAll` — достаточная очистка для одного теста в файле). Golden-тесты снова включены в `ci.yml`/`release.yml`, оба проходят за ~0.1с.
 - Linux PNG-файлы в `test/golden/goldens` являются эталоном. На текущем Windows renderer полный локальный run даёт два известных pixel diff (`dashboard` 0.77%, `workout_plan` 0.59%); не обновлять baselines на Windows без визуального review. Проверка в `ubuntu-latest` остаётся release gate.
 - `build.yml` собирает APK/AAB с **debug-подписью** — такие артефакты годятся для внутреннего тестирования, но не для публикации в Google Play. Боевая подпись — только в `release.yml`.
-- **`security.yml` не загружает SARIF в Security → Code scanning и не запускает `dependency-review-action`.** Обе функции — часть GitHub Advanced Security, которая для приватных репозиториев платная (репозиторий `fitnesbuster` приватный). OSV-Scanner при этом работает полностью: сканирует `pubspec.lock` и `functions/package-lock.json`, роняет job и шлёт уведомление в Telegram при находках — просто результат виден в логе run'а, а не во вкладке Security. Если репозиторий станет публичным или появится лицензия GHAS, можно вернуть `upload-sarif: true` и job `dependency-review` (история осталась в git).
+- Build artifacts создаются только на push в `master` и при ручном запуске, хранятся 3 дня и не блокируют успешную сборку при исчерпанной storage quota. PR проверяет сборку APK/AAB без загрузки тяжёлых файлов.
+- **`security.yml` не загружает SARIF в Security → Code scanning и не запускает `dependency-review-action`.** Обе функции — часть GitHub Advanced Security, которая для приватных репозиториев платная (репозиторий `fitnesbuster` приватный). Прямой OSV scanner action сканирует `pubspec.lock` и `functions/package-lock.json`, сохраняет строгий ненулевой exit code при известных CVE и не использует GitHub artifact storage. Результат виден в логе run'а. Если репозиторий станет публичным или появится лицензия GHAS, можно вернуть reusable workflow с `upload-sarif: true` и job `dependency-review`.

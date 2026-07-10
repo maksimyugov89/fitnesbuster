@@ -64,7 +64,7 @@
 - Добавлены private challenge invites и UI для приглашений.
 - Расширены `SocialService` и его unit-тесты для challenge flows.
 - В `firebase.json` Firestore deployment явно привязан к database `fitnesbuster`.
-- В CI добавлена опциональная загрузка очищенного `coverage/lcov.info` в Codecov; сохранены PR comment и coverage artifact.
+- В CI добавлена загрузка очищенного `coverage/lcov.info` в Codecov и сохранены PR comment/job summary; GitHub coverage artifacts отключены, чтобы переполненная artifact quota не создавала ложные ошибки.
 - В CI добавлены `npm test` и Firebase Emulator Suite gate; локально проходят 38 Functions unit/spec и 6 callable emulator tests.
 - В emulator-прогоне найдена и исправлена несовместимость Firebase Admin v13: namespace-вызовы `admin.firestore.FieldValue/Timestamp` заменены modular imports.
 - Добавлены локализованные camera/photo/notification rationale для 15 языков и недостающие iOS Camera/Photo Library purpose strings.
@@ -380,7 +380,7 @@
 - Актуальный полный Windows run: 474 passed, 13 skipped, 2 failed golden cases; всего 489 зарегистрированных результатов.
 - Golden tests включены в общий `flutter test` и CI/release workflows, но два baseline сейчас расходятся с рендером.
 - Локальный `coverage/lcov.info`: 4406/21391, 20.60% line coverage по non-generated строкам.
-- В CI добавлены Codecov upload, PR coverage comment, job summary и `lcov.info` artifact.
+- В CI добавлены Codecov upload, PR coverage comment и job summary. GitHub coverage artifacts отключены после подтверждённого исчерпания storage quota; Codecov остаётся источником полного отчёта.
 - `docs/CI_CD.md`, `docs/RELEASE_SMOKE_CHECKLIST.md` и CI labels синхронизированы с baseline 489 / 38 / 6.
 - `docs/TEST_COVERAGE_PRIORITIES.md` — приоритеты по непокрытым risk boundaries.
 
