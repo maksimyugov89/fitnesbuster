@@ -314,4 +314,10 @@ const Map<String, String> jaTranslations = {
   'domsMild': '少し',
   'domsNoticeable': 'はっきり',
   'domsSevere': 'ひどい',
+  'permissionCameraTitle': 'カメラへのアクセス',
+  'permissionCameraBody': 'カメラはバーコード・QRコードの読み取りとプロフィール写真の撮影にのみ使用します。',
+  'permissionPhotosTitle': '写真へのアクセス',
+  'permissionPhotosBody': 'プロフィールまたは進捗写真を選ぶために使用し、他の写真は閲覧しません。',
+  'permissionNotificationsTitle': '通知を有効にする',
+  'permissionNotificationsBody': 'トレーニングのリマインダー、チャレンジ招待、重要なソーシャル更新に使用します。',
 };

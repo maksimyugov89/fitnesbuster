@@ -314,4 +314,10 @@ const Map<String, String> koTranslations = {
   'domsMild': '약간',
   'domsNoticeable': '뚜렷함',
   'domsSevere': '심함',
+  'permissionCameraTitle': '카메라 접근',
+  'permissionCameraBody': '카메라는 바코드·QR 코드 스캔과 프로필 사진 촬영에만 사용됩니다.',
+  'permissionPhotosTitle': '사진 접근',
+  'permissionPhotosBody': '프로필 또는 진행 사진을 선택할 때만 사용하며 다른 사진은 탐색하지 않습니다.',
+  'permissionNotificationsTitle': '알림 켜기',
+  'permissionNotificationsBody': '운동 알림, 챌린지 초대 및 중요한 소셜 업데이트에 사용됩니다.',
 };

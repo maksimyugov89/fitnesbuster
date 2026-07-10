@@ -30,6 +30,7 @@ import 'package:fitnesbuster/presentation/widgets/profile/profile_misc_widgets.d
 import 'package:fitnesbuster/core/localization/language_service.dart';
 import 'package:fitnesbuster/core/theme/theme_service.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
+import 'package:fitnesbuster/core/services/social_service.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 
@@ -312,9 +313,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             _buildHeader(),
             const SizedBox(height: 20),
-            _StatsRowWidget(weight: _weight, height: _height, age: _age),
+            ProfileStatsRow(weight: _weight, height: _height, age: _age),
             const SizedBox(height: 20),
-            _CurrentProgramWidget(
+            ProfileCurrentProgram(
               goal: _localizeGoal(l10n, _goal),
               dataLoaded: _dataLoaded,
             ),
@@ -938,7 +939,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const NotificationsSheet(),
+      builder: (_) => NotificationsSheet(
+        onRequestPermission: () => sl<SocialService>().requestFcmPermission(),
+      ),
     );
   }
 
@@ -1288,11 +1291,12 @@ class _LicenseBlock extends StatelessWidget {
   }
 }
 
-class _StatsRowWidget extends StatelessWidget {
+class ProfileStatsRow extends StatelessWidget {
   final double weight;
   final double height;
   final int age;
-  const _StatsRowWidget({
+  const ProfileStatsRow({
+    super.key,
     required this.weight,
     required this.height,
     required this.age,
@@ -1348,10 +1352,14 @@ class _StatsRowWidget extends StatelessWidget {
   }
 }
 
-class _CurrentProgramWidget extends StatelessWidget {
+class ProfileCurrentProgram extends StatelessWidget {
   final String goal;
   final bool dataLoaded;
-  const _CurrentProgramWidget({required this.goal, required this.dataLoaded});
+  const ProfileCurrentProgram({
+    super.key,
+    required this.goal,
+    required this.dataLoaded,
+  });
 
   @override
   Widget build(BuildContext context) {

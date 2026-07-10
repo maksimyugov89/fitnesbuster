@@ -91,6 +91,53 @@ void main() {
     });
   });
 
+  group('getCurrentUserWithProfile', () {
+    test('hydrates the Firebase user from its Firestore profile', () async {
+      when(mockAuth.currentUser).thenReturn(mockFbUser);
+      final collection = MockCollectionReference();
+      final docRef = MockDocumentReference();
+      final snapshot = MockDocumentSnapshot();
+      when(mockFirestore.collection('users')).thenReturn(collection);
+      when(collection.doc(tUid)).thenReturn(docRef);
+      when(snapshot.exists).thenReturn(true);
+      when(snapshot.data()).thenReturn({
+        'name': 'Firestore Name',
+        'email': tEmail,
+        'profile': {
+          'weight': 81,
+          'height': 178,
+          'age': 32,
+          'gender': 'male',
+          'goal': 'maintain',
+          'intensity': 'balanced',
+          'activityLevel': 'moderatelyActive',
+        },
+        'currentStreak': 4,
+      });
+      when(docRef.get()).thenAnswer((_) async => snapshot);
+
+      final user = await repo.getCurrentUserWithProfile();
+
+      expect(user?.name, 'Firestore Name');
+      expect(user?.profile?.weight, 81);
+      expect(user?.currentStreak, 4);
+    });
+
+    test('falls back to Firebase user when Firestore read fails', () async {
+      when(mockAuth.currentUser).thenReturn(mockFbUser);
+      final collection = MockCollectionReference();
+      final docRef = MockDocumentReference();
+      when(mockFirestore.collection('users')).thenReturn(collection);
+      when(collection.doc(tUid)).thenReturn(docRef);
+      when(docRef.get()).thenThrow(Exception('offline'));
+
+      final user = await repo.getCurrentUserWithProfile();
+
+      expect(user?.name, tName);
+      expect(user?.profile, isNull);
+    });
+  });
+
   group('login', () {
     test('returns UserEntity on successful login', () async {
       when(
@@ -99,6 +146,14 @@ void main() {
           password: 'password',
         ),
       ).thenAnswer((_) async => _FakeUserCredential(mockFbUser));
+      final collection = MockCollectionReference();
+      final docRef = MockDocumentReference();
+      final snapshot = MockDocumentSnapshot();
+      when(mockFirestore.collection('users')).thenReturn(collection);
+      when(collection.doc(tUid)).thenReturn(docRef);
+      when(snapshot.exists).thenReturn(true);
+      when(snapshot.data()).thenReturn({'nameLower': 'test user'});
+      when(docRef.get()).thenAnswer((_) async => snapshot);
 
       final user = await repo.login(email: tEmail, password: 'password');
       expect(user.id, tUid);

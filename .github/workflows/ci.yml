@@ -51,7 +51,7 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/ test/
 
-      - name: Test (335 unit/widget/golden + 16 E2E из test/integration)
+      - name: Test (unit, widget, golden, integration)
         run: flutter test --coverage --reporter=expanded
 
       - name: Strip generated code from coverage
@@ -103,7 +103,7 @@ jobs:
           message: 'Job: Flutter — analyze, format, test, coverage'
 
   functions:
-    name: Cloud Functions — build
+    name: Cloud Functions — build, unit, emulator
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -119,7 +119,19 @@ jobs:
           cache-dependency-path: functions/package-lock.json
 
       - run: npm ci
-      - run: npm run build
+      - name: Unit/spec tests (38)
+        run: npm test
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools@15.22.0
+
+      - name: Callable integration tests (6 — Auth/Firestore/Functions emulators)
+        run: npm run test:emulator:exec
 
       - name: Notify Telegram on failure
         if: failure() && github.event_name == 'push'
@@ -129,4 +141,4 @@ jobs:
           chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
           status: failure
           title: 'CI упал на master'
-          message: 'Job: Cloud Functions — build'
+          message: 'Job: Cloud Functions — build, unit, emulator'

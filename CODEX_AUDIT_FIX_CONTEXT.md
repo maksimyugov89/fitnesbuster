@@ -1,6 +1,7 @@
 # FitnesBuster: Codex Audit Fix Context
 
 Дата аудита: 2026-07-09
+Дата последней сверки с git history и текущими проверками: 2026-07-11
 Проект: Flutter/Firebase приложение FitnesBuster
 Назначение файла: рабочая память для будущих правок после аудита. Перед фиксом открывать этот файл, чтобы быстро понять, что было найдено, какие риски приоритетны и какие файлы смотреть первыми.
 
@@ -8,21 +9,31 @@
 
 Проект уже выглядит заметно зрелее обычного прототипа: есть Clean Architecture/BLoC, GetIt DI, Firebase Auth/Firestore/Functions/FCM, AI через Cloud Function proxy, Health Connect/HealthKit, локализация, тесты, CI/CD, security scan, legal docs и большая база упражнений.
 
-Главный риск не в качестве отдельных виджетов, а в системных несостыковках между слоями: Firestore database id, частично недоделанная offline queue, конфликт client writes с Firestore rules, незавершенно подтвержденный Flutter toolchain/testability и релизные настройки.
+На момент аудита главными рисками были системные несостыковки между слоями: Firestore database id, недоделанная OfflineQueue и конфликт client writes с Firestore rules. Эти P0/P1-дефекты исправлены в коде и покрыты unit/callable tests. Firebase Emulator Suite добавлен; permissions/rationale прошли статический аудит; `deepseekProxy` получил fail-closed rate limiter. Открыты внешние Firebase/release проверки и технические P2-задачи: Windows golden review, real-device permissions/text scaling, workout execution/session UI coverage и дополнительные rules/provider integration tests.
 
-Оценка состояния на момент аудита: примерно 7/10.
+Оценка состояния на момент первоначального аудита: примерно 7/10. Это историческая оценка, а не текущий пересчитанный рейтинг: большая часть найденных P0/P1-дефектов после аудита уже исправлена в коде, но внешние Firebase/release проверки еще не закрыты.
 
-## Важный контекст worktree
+## Актуальный контекст worktree и истории изменений
 
-На момент аудита в git уже были пользовательские незакоммиченные изменения:
+До обновления этого файла 2026-07-10 `git status --short` был чистым. Audit-fixes и пользовательские изменения больше не являются незакоммиченным worktree: они вошли в историю git.
+
+- `7202ac1` — основной пакет audit-fixes, Functions/Dart tests и пользовательское увеличение DeepSeek limits. В этот же коммит вошел `CODEX_AUDIT_FIX_CONTEXT.md`.
+- `b2bf833` — private challenge invites, дополнительные SocialService tests, явный Firestore database id в `firebase.json` и загрузка покрытия в Codecov.
+- `82862b4` — итоговый `dart format` по проекту.
+
+Текущая ветка — `feature/replace-emoji-with-illustrated-icons`; до правки этого документа локальный HEAD `82862b4` совпадал с `origin/feature/replace-emoji-with-illustrated-icons`. По локальным remote refs `origin/master` остается на `04a8464`, поэтому audit-fixes еще не считаются подтвержденно влитыми в `master`.
+
+После проходов 2026-07-10—2026-07-11 в worktree находятся незакоммиченные CI/Emulator/permissions/test/coverage изменения. Также остается историческая untracked `.codex-skill-staging/`; она не относится к приложению и в этот проход не изменялась.
+
+Исторически до audit-fixes пользователь уже изменил:
 
 - `functions/src/constants.ts`
 - `lib/core/ai/base_client.dart`
 - `lib/core/ai/services/plan_refinement_service.dart`
 
-Суть изменений: увеличены лимиты AI-запросов (`maxTokens`, длина сообщений). Эти изменения не трогать без явного запроса. Если правка касается тех же файлов, сначала внимательно смотреть diff и работать поверх текущего состояния.
+Суть пользовательских изменений: увеличены лимиты AI-запросов (`maxTokens`, длина сообщений). Они уже закоммичены, но по-прежнему не менять их смысл без явного запроса.
 
-Дополнительно после правок Codex в worktree появились изменения по audit-fixes:
+В `7202ac1` были зафиксированы следующие audit-fixes:
 
 - `.github/workflows/ci.yml` — Node 22 для Cloud Functions CI.
 - `android/app/build.gradle.kts`, `android/app/google-services.json`, `android/app/src/main/kotlin/com/fitnesbuster/app/MainActivity.kt`, `lib/core/services/share_intent_service.dart` — Android package id переведен на `com.fitnesbuster.app`.
@@ -46,40 +57,55 @@
 - `lib/presentation/widgets/profile/avatar_picker.dart`, `lib/presentation/widgets/profile/avatar_picker_sheet.dart`, `lib/presentation/screens/profile/health_sync_screen.dart` — точечные text-scale overflow fixes.
 - `docs/RELEASE_SMOKE_CHECKLIST.md` — добавлен release/manual smoke checklist.
 
-Также в worktree есть удаление `REFACTORING_REPORT_V2.md`; Codex его не делал и не должен восстанавливать/трогать без явного запроса.
+Удаление `REFACTORING_REPORT_V2.md` также уже находится в коммите `7202ac1`. Codex его не инициировал; не восстанавливать файл без явного запроса.
+
+После основного audit-fix дополнительно сделано:
+
+- Добавлены private challenge invites и UI для приглашений.
+- Расширены `SocialService` и его unit-тесты для challenge flows.
+- В `firebase.json` Firestore deployment явно привязан к database `fitnesbuster`.
+- В CI добавлена опциональная загрузка очищенного `coverage/lcov.info` в Codecov; сохранены PR comment и coverage artifact.
+- В CI добавлены `npm test` и Firebase Emulator Suite gate; локально проходят 38 Functions unit/spec и 6 callable emulator tests.
+- В emulator-прогоне найдена и исправлена несовместимость Firebase Admin v13: namespace-вызовы `admin.firestore.FieldValue/Timestamp` заменены modular imports.
+- Добавлены локализованные camera/photo/notification rationale для 15 языков и недостающие iOS Camera/Photo Library purpose strings.
+- Реализован fail-closed rate limiter для `deepseekProxy`: при инфраструктурной ошибке Firestore AI-прокси возвращает `UNAVAILABLE` вместо пропуска запроса без проверки лимита. Social endpoints (friends, challenges, feed) оставлены fail-open.
+- Принято решение НЕ расширять OfflineQueue за пределы `user.aiPlans.sync`: Firestore SDK уже имеет встроенную offline persistence для прямых записей; вторая очередь создала бы риск дубликатов.
 
 ## Проверки, которые запускались
 
-Успешно:
+Актуально перепроверено 2026-07-11:
 
-- `npm run build` в `functions` прошел успешно, `tsc` собрал Cloud Functions.
-- `npm test` в `functions` прошел успешно после добавления `node:test` suites: 35/35 tests.
-- `dart --version` и `flutter --version` зависают внутри sandbox, но успешно проходят вне sandbox: Dart 3.10.4, Flutter 3.38.5.
-- `dart format` по затронутым Dart-файлам успешно прошел вне sandbox; контрольный `dart format --output=none --set-exit-if-changed ...` показал 0 changes.
-- Точечный `flutter test test/core/offline_queue_test.dart test/core/ai/base_client_error_test.dart test/core/router/auth_redirect_test.dart test/core/health/health_data_mapper_test.dart test/core/services/social_service_test.dart --reporter=expanded` успешно прошел вне sandbox: 21/21 tests.
-- Точечный `flutter analyze --no-fatal-infos --no-fatal-warnings ...` по затронутым файлам успешно прошел вне sandbox: No issues found.
-- Полный `flutter analyze --no-fatal-infos --no-fatal-warnings lib test` успешно прошел вне sandbox: No issues found.
+- `npm run build` в `functions`: успешно.
+- `npm test` в `functions`: 38/38 tests успешно.
+- `npm run test:emulator:exec` в `functions`: 6/6 callable integration tests успешно на Auth/Firestore/Functions emulators.
+- `dart format --output=none --set-exit-if-changed lib test`: после форматирования изменённых файлов gate чистый.
+- `flutter analyze --no-fatal-infos --no-fatal-warnings lib test`: No issues found.
+- Полный Windows suite: 474 passed, 13 skipped, 2 known golden pixel diffs; 489 зарегистрированных результатов.
+- Coverage: 4406/21391 = 20.60% non-generated lines (was 13.15%).
+- Проверено 48 Dart `_test.dart` файлов; Functions считаются отдельно.
+- Новые production-widget slices (`ImportOptionCard`, `ImportActionButton`, `ProfileStatsRow`, `ProfileCurrentProgram`) и injectable `HealthSyncBloc` targeted suite: 13/13 успешно.
+
+Ранее успешно проверено после audit-fixes:
+
 - `.\gradlew.bat :app:processDebugMainManifest --stacktrace` прошел успешно вне sandbox после удаления лишних permissions.
 - `.\gradlew.bat :app:processDebugGoogleServices --stacktrace` прошел успешно после смены Android package id.
 - `.\gradlew.bat :app:compileDebugKotlin --stacktrace` прошел успешно после переноса `MainActivity`.
-- `.\gradlew.bat :app:processDebugMainManifest --stacktrace` прошел успешно после правки permissions.
-- Контрольный `rg` не находит в проверяемых путях: `admin.firestore()`, `FirebaseFirestore.instance`, `BODY_SENSORS_BACKGROUND`, `NSLocationAlwaysAndWhenInUseUsageDescription`, `TextScaler.noScaling`, `node-version: '20'`.
+- Контрольный `rg` не находит в проверяемых путях: namespace `admin.firestore().FieldValue/Timestamp`, неименованный `FirebaseFirestore.instance`, `BODY_SENSORS_BACKGROUND`, `NSLocationAlwaysAndWhenInUseUsageDescription`, `TextScaler.noScaling`, `node-version: '20'`.
 
-Не удалось подтвердить в текущей среде:
+Остающиеся проблемы проверок:
 
-- `flutter analyze --no-fatal-infos --no-fatal-warnings lib test` не завершился за 5 минут.
-- `dart format --output=none --set-exit-if-changed lib test` не завершился за 2 минуты.
-- `flutter test test/services/recovery_score_service_test.dart --reporter=expanded` не завершился за 2 минуты.
-- Внутри sandbox даже `dart --version`/`flutter --version` зависают; вне sandbox tooling работает. Для Flutter/Dart проверок в этой среде использовать approved/escalated command.
-- Полный `flutter test --reporter=expanded` вне sandbox доходит до конца, но падают 2 существующих golden tests: `test/golden/dashboard_golden_test.dart` (`goldens/dashboard.png`, 0.77% diff) и `test/golden/workout_plan_golden_test.dart` (`goldens/workout_plan.png`, 0.59% diff). Новые targeted tests проходят.
+- `test/golden/dashboard_golden_test.dart`: `goldens/dashboard.png`, 0.77% / 3684 px diff.
+- `test/golden/workout_plan_golden_test.dart`: `goldens/workout_plan.png`, 0.59% / 2836 px diff.
+- Текущий реальный GitHub Actions run после последних коммитов не подтвержден. Установленный GitHub-коннектор не получил доступ к приватному репозиторию, поэтому состояние Actions нельзя считать проверенным. Workflow запускается на push в `master` либо PR в `master`; текущая feature-ветка требует PR/merge для гарантированного CI run.
+- В текущей среде Flutter/Dart команды надежно работают только через approved/escalated execution; это ограничение среды, а не проекта.
 
-Это не доказывает, что Flutter-часть сломана: вне sandbox Dart/Flutter tooling работает. Полный analyze чистый; полный test suite блокируют только существующие golden pixel diffs, которые нужно визуально ревьюить/обновлять отдельно.
+Итог по toolchain: format и analyze чистые; полный test suite блокируют только два подтвержденных golden pixel diff. Предыдущее утверждение о неподтвержденных полном analyze/format устарело.
 
-## P0: Firestore database id mismatch
+## P0: Firestore database id mismatch — исправлено в коде
 
 Статус: исправлено в коде, но нужен внешний smoke-check с реальным Firebase проектом.
 
-Риск: разные части приложения могут читать и писать в разные Firestore databases.
+Исходный риск: разные части приложения могли читать и писать в разные Firestore databases.
 
 Факты:
 
@@ -87,6 +113,7 @@
 - `SocialService` теперь получает `FirebaseFirestore` через DI и использует тот же named database.
 - Cloud Functions теперь используют `getFirestore(FIRESTORE_DATABASE_ID)`, где `FIRESTORE_DATABASE_ID = "fitnesbuster"`.
 - Firestore trigger `fanoutActivityEvent` теперь явно указывает `database: FIRESTORE_DATABASE_ID`.
+- `firebase.json` теперь также содержит `firestore.database: "fitnesbuster"` для deploy rules/indexes в ту же named database.
 
 Что уже сделано:
 
@@ -96,6 +123,7 @@
 - `functions/src/shared.ts` переведен с `admin.firestore()` на `getFirestore("fitnesbuster")`.
 - `lib/core/services/social_service.dart` больше не использует `FirebaseFirestore.instance`.
 - `functions/src/feed.ts` trigger слушает named database.
+- `firebase.json` явно направляет Firestore rules/indexes deployment в `fitnesbuster`.
 
 Что еще нужно доделать:
 
@@ -114,11 +142,11 @@
 - `firestore.rules`
 - `firestore.indexes.json`
 
-## P0: OfflineQueue недоделана
+## P0: OfflineQueue — техническое ядро исправлено, расширение не требуется
 
-Статус: основная техническая проблема исправлена, unit-тесты добавлены, первый реальный product handler подключен для deferred AI-plan sync.
+Статус: исправлено, покрыто unit-тестами и закрыто. Принято продуктовое решение: очередь обслуживает исключительно `user.aiPlans.sync` и не расширяется на обычные Firestore-записи.
 
-Риск: механизм офлайн-синхронизации выглядит как существующий, но фактически не исполняет операции типизированно.
+Исходный риск: механизм офлайн-синхронизации выглядел существующим, но фактически не исполнял операции типизированно.
 
 Факты:
 
@@ -136,21 +164,20 @@
 - Удаление битых JSON-записей, которые нельзя распарсить.
 - Retry attempts и dead-letter после лимита.
 
-Что еще нужно доделать:
+Что еще можно доделать по продуктовой необходимости:
 
-- Решить продуктово, какие еще реальные операции должны enqueue/registerHandler.
-- Пока очередь покрывает только AI-plan sync; не позиционировать приложение как полноценное offline-first для всех действий.
+- Очередь покрывает только AI-plan sync и этого достаточно. Firestore SDK имеет встроенную offline persistence для всех прямых `doc.set()`/`collection.add()` — добавлять их в кастомную очередь не нужно во избежание двойного хранения и дубликатов. Расширение очереди целесообразно только для операций, где Firestore SDK не участвует напрямую (например, Health Connect → Firestore pipeline или собственный analytics backend).
 
 Файлы:
 
 - `lib/core/cache/offline_queue.dart`
 - `lib/core/di/injection.dart`
 
-## P1: publishActivity конфликтует с Firestore rules
+## P1: publishActivity и Firestore rules — исправлено
 
 Статус: исправлено, добавлен server path и validation.
 
-Риск: если клиент начнет использовать `publishActivity()`, запись будет отклонена правилами, а social feed будет работать нестабильно.
+Исходный риск: клиентская запись `publishActivity()` могла отклоняться rules, из-за чего social feed работал бы нестабильно.
 
 Факты:
 
@@ -162,7 +189,7 @@
 Что еще нужно доделать:
 
 - Расширить allowed activity types при появлении новых событий.
-- Добавить callable/integration тест с mock/emulator DB, если будет выбрана полноценная Functions test-инфраструктура.
+- Callable auth/write/rate-limit path теперь покрыт Firebase Emulator Suite; при необходимости отдельно добавить client-SDK rules tests.
 
 Файлы:
 
@@ -174,11 +201,11 @@
 - `functions/src/index.ts`
 - `firestore.rules`
 
-## P1: Node version mismatch в CI
+## P1: Node version mismatch в CI — исправлено
 
 Статус: исправлено.
 
-Риск: локально/деплой требуют Node 22, CI собирает на Node 20.
+Исходный риск: локально/деплой требовали Node 22, а CI собирал на Node 20.
 
 Факты:
 
@@ -187,7 +214,8 @@
 
 Что еще нужно доделать:
 
-- Ничего по этому пункту, кроме проверки реального GitHub Actions run после push/PR.
+- Сам Node mismatch закрыт; остается проверить реальный GitHub Actions run после push/PR.
+- Functions job теперь запускает и `npm test`, и `npm run test:emulator:exec`; локально оба gate подтверждены. Остается проверить реальный GitHub Actions run.
 
 Файлы:
 
@@ -195,11 +223,11 @@
 - `.github/workflows/ci.yml`
 - возможно `.github/workflows/release.yml`/deploy workflow, если появится деплой functions.
 
-## P1: AI retry ловит не все реальные сбои
+## P1: AI retry и Firebase callable errors — исправлено
 
-Статус: исправлено в `BaseClient`, unit-тесты mapping/retry classifier добавлены и точечно пройдены вне sandbox.
+Статус: исправлено в `BaseClient`; mapping/retry classifier покрыты unit-тестами, а полный Flutter suite проходит за исключением двух несвязанных golden diffs.
 
-Риск: transient ошибки Firebase callable могут не ретраиться, хотя пользователь ожидает повтор.
+Исходный риск: transient ошибки Firebase callable могли не ретраиться, хотя пользователь ожидает повтор.
 
 Факты:
 
@@ -210,7 +238,6 @@
 
 Что еще нужно доделать:
 
-- Прогнать полный Flutter test suite в CI/вне sandbox; точечные новые Dart unit-тесты уже прошли вне sandbox.
 - При желании расширить `AiException` типом ошибки, если UI должен различать rate limit/network/auth.
 
 Файлы:
@@ -219,11 +246,11 @@
 - `lib/core/ai/network/retry_handler.dart`
 - `lib/core/ai/ai_exception.dart`
 
-## P1: Cloud Functions без unit/spec тестов
+## P1: Cloud Functions tests — pure/spec и callable emulator готовы
 
-Статус: существенно продвинуто. Инфраструктура появилась; pure/spec tests покрывают `publishActivity`, `deepseekProxy`, friends validation/search merge, challenges validation/streak/progress, rate limiter logic, deleteAccount cleanup plan. Полноценные emulator/callable integration tests еще не закрыты.
+Статус: закрыт основной test-infrastructure gap. Pure/spec tests покрывают validation/logic, а Firebase Emulator Suite проверяет реальные callable + Auth/Firestore взаимодействия.
 
-Риск: самая критичная серверная логика не покрыта локальными тестами.
+Остающийся риск: внешний DeepSeek provider/Secret Manager не эмулируется; emulator test проверяет auth и validation до сетевого обращения. Production smoke-test AI endpoint по-прежнему нужен.
 
 Что уже сделано:
 
@@ -232,27 +259,33 @@
 - Добавлен `functions/src/feedValidation.ts` как pure validation module.
 - Добавлен `functions/test/feedValidation.test.js`: 5 тестов, проходят через `npm test`.
 - Добавлен `functions/src/proxiesValidation.ts` и `functions/test/proxiesValidation.test.js`: 7 тестов на `deepseekProxy` payload/limits, проходят через `npm test`.
-- Добавлены `functions/src/friendsValidation.ts`, `functions/src/challengesValidation.ts`, `functions/src/rateLimitLogic.ts`, `functions/src/accountCleanupPlan.ts` и соответствующие tests. Всего `npm test`: 35/35.
+- Добавлены `functions/src/friendsValidation.ts`, `functions/src/challengesValidation.ts`, `functions/src/rateLimitLogic.ts`, `functions/src/accountCleanupPlan.ts` и соответствующие tests. Всего `npm test`: 38/38.
+- `rateLimitFailureAction` покрывает три failure-policy ветки: contention → deny, DeepSeek infrastructure → throw, social infrastructure → allow.
+- `npm run build` и `npm test` повторно пройдены 2026-07-11.
+- В `firebase.json` настроены Auth 9099, Firestore 8080, Functions 5001 и named database `fitnesbuster`.
+- Добавлен `functions/test/emulator/callables.test.js`: 6 последовательных demo-project сценариев.
+- Проверены `publishActivity` auth/write, duplicate-safe friends lifecycle, private challenge invite/join/leave/delete permissions, `deepseekProxy` auth/validation, concurrent rate limit 30/32 и полный `deleteAccount` cleanup вместе с Auth user.
+- `.github/workflows/ci.yml` теперь запускает 38 unit/spec tests и 6 emulator tests на Node 22 + Java 21 + Firebase CLI 15.22.0.
+- Emulator run выявил реальные runtime-ошибки modular Firebase Admin v13; все `admin.firestore.FieldValue/Timestamp` заменены поддерживаемыми imports и повторный run прошел 6/6.
 
-Что нужно покрыть:
+Что еще можно покрыть:
 
-- `deepseekProxy`: auth required и сетевые/secret сценарии еще не покрыты; pure tests уже покрывают limits, invalid messages, maxTokens cap, invalid temperature, missing payload.
-- friends: callable/emulator tests на реальные Firestore reads/writes, duplicate request behavior.
-- challenges: callable/emulator tests join/leave/delete permissions, transaction behavior.
-- deleteAccount: emulator test полного удаления профиля, friends, requests, feeds, challenge progress, auth user last.
-- rate limiter: emulator/concurrency test contention fail-closed.
-- `publishActivity`: callable auth/rate-limit/write behavior через mock/emulator DB, не только pure validation.
+- `deepseekProxy`: сетевые/Secret Manager/provider response сценарии через управляемый mock transport; не обращаться к платному production API из CI.
+- Добавить Firestore security-rules tests через client SDK для прямых client reads/writes; текущие callable tests намеренно выполняют серверный путь через Admin SDK.
+- При расширении challenges добавить отдельные transaction race cases для одновременного join/leave.
 
 Файлы:
 
 - `functions/src/*.ts`
 - `functions/test/*.test.js`
+- `functions/test/emulator/callables.test.js`
+- `firebase.json`
 
-## P2: Accessibility/Text scaling
+## P2: Accessibility/Text scaling — частично закрыто
 
 Статус: исправлено в коде, добавлены точечные overflow fixes, нужна визуальная проверка экранов.
 
-Риск: приложение полностью отключает системное масштабирование текста, что плохо для accessibility и может ухудшать UX на устройствах пользователей с крупным шрифтом.
+Исходный риск: приложение полностью отключало системное масштабирование текста. Это устранено, но текущий clamp все еще ограничивает максимальный scale значением 1.4.
 
 Факт:
 
@@ -261,19 +294,19 @@
 
 Что еще нужно доделать:
 
-- Проверить ключевые экраны при 1.2x/1.4x/1.6x.
-- Если 1.6x должен поддерживаться полностью, пройтись по плотным карточкам/табам и исправить layout overflow.
+- Проверить ключевые экраны при фактически поддерживаемых 1.2x и 1.4x.
+- Системный scale 1.6x сейчас будет ограничен до 1.4x. Если нужна настоящая поддержка 1.6x, сначала поднять/убрать clamp, затем пройтись по плотным карточкам/табам и исправить layout overflow.
 - Отдельно визуально ревьюить golden diffs dashboard/workout_plan перед обновлением эталонов.
 
 Файл:
 
 - `lib/main.dart`
 
-## P2: Android package id все еще example
+## P2: Android package id и Firebase config — настроено
 
-Статус: исправлено в репозитории, нужен официальный Firebase config для нового package id.
+Статус: package id, официальный Firebase Android app config, локальные debug/release SHA и Google Auth provider настроены. Остается runtime smoke-test Google Sign-In; Play App Signing SHA потребуется отдельно для сборок, распространяемых через Play Console.
 
-Риск: перед публикацией менять package id болезненно; лучше сделать до реального релиза.
+Исходный риск: перед публикацией пришлось бы менять package id, что лучше было сделать до реального релиза.
 
 Факты:
 
@@ -281,14 +314,23 @@
 - `android/app/build.gradle.kts`: `applicationId = "com.fitnesbuster.app"`.
 - `MainActivity.kt` перенесен в `android/app/src/main/kotlin/com/fitnesbuster/app`.
 - MethodChannel обновлен на `com.fitnesbuster.app/share`.
-- `google-services.json` repo-level обновлен на `package_name = "com.fitnesbuster.app"`, чтобы локальная сборка не падала.
+- В Firebase Console подтвержден Android app `com.fitnesbuster.app`.
+- Официальный `android/app/google-services.json` заменен в проекте и содержит Firebase Android app id `1:184541768053:android:c2e5c53ee52e6c133c4b3c`.
+- В `google-services.json` присутствуют Android OAuth clients для release SHA-1 `e90c4127...` и debug SHA-1 `b54dde5f...`, оба с package `com.fitnesbuster.app`, а также Web OAuth client.
+- В Firebase Console добавлены debug/release SHA-1 и SHA-256 fingerprints.
+- Firebase Authentication: Google provider включен, Project support email настроен; Email/Password и Phone providers также включены.
+- `:app:processDebugGoogleServices` и `:app:compileDebugKotlin` прошли успешно после обновления package/config.
 
-Что еще нужно доделать:
+Что уже не требуется:
 
-- Перегенерировать/обновить `google-services.json`.
-- Проверить Google Sign-In SHA fingerprints и Firebase Auth settings.
-- В Firebase Console добавить/подтвердить Android app с package `com.fitnesbuster.app`.
-- Проверить, что Play Console/Google Sign-In/OAuth client используют новый package и нужные SHA.
+- Повторно генерировать `google-services.json` для локальных debug/release сборок без изменения Firebase app или SHA.
+- Повторно включать Google provider или добавлять уже подтвержденные debug/release fingerprints.
+
+Что еще нужно проверить:
+
+- На реальном устройстве/эмуляторе выполнить Google Sign-In, подтвердить появление/обновление пользователя в Firebase Authentication → Users и профиля в Firestore database `fitnesbuster` → `users`.
+- Выполнить sign-out/sign-in повторно и подтвердить чтение существующего профиля.
+- Перед распространением через Play Console добавить в Firebase SHA-1/SHA-256 из Play App Signing и подтвердить package `com.fitnesbuster.app` в Play Console. Upload/release keystore SHA не заменяет Play App Signing SHA для установленной из Google Play сборки.
 
 Файлы:
 
@@ -298,7 +340,7 @@
 
 ## P2: Permissions слишком широкие
 
-Статус: частично исправлено. Background permissions и широкие sensor/activity permissions убраны, policy review еще нужен.
+Статус: код и manifests статически приведены в соответствие с фактическими flows; внешний Store/Data Safety policy review еще нужен.
 
 Риск: Store review и доверие пользователя. Особенно чувствительны background sensors/location и health permissions.
 
@@ -308,13 +350,20 @@
 - Android `BODY_SENSORS_BACKGROUND` убран.
 - Android `ACTIVITY_RECOGNITION` и `BODY_SENSORS` убраны, так как код читает метрики через scoped Health Connect permissions.
 - iOS `NSLocationAlwaysAndWhenInUseUsageDescription` убран; остался `NSLocationWhenInUseUsageDescription`.
+- Каждый Android Health Connect READ scope соответствует типу в `HealthConnectService._types`; лишние широкие sensor/activity permissions не найдены.
+- Добавлены недостающие iOS `NSCameraUsageDescription` и `NSPhotoLibraryUsageDescription`.
+- Camera/photo/notification rationale добавлены для всех 15 локалей и покрыты translation parity + widget tests.
+- Barcode/QR scanner, avatar и progress photo flows показывают rationale до системного запроса.
+- FCM больше не запрашивает permission автоматически при sign-in: background init регистрирует token только при уже выданном разрешении; явный prompt вызывается после rationale из notification settings.
+- `HealthSyncScreen` теперь тестируем через injected BLoC; loading/loaded/not-installed/lifecycle состояния покрыты widget tests.
 
 Что еще нужно доделать:
 
-- Убедиться, что каждое permission реально нужно.
-- Добавить/локализовать более полные runtime rationale там, где нужно. Сейчас добавлены location SnackBar и Health Connect пояснение.
 - Проверить Health Connect policy и Google Play Data safety.
-- Отдельно пересмотреть полный список Health Connect read permissions: возможно часть метрик можно запрашивать лениво/опционально.
+- На реальных Android/iOS устройствах проверить deny/deny-forever и переход в Settings для camera/photo/notifications/health/location.
+- Продуктово решить, нужно ли запрашивать весь Health Connect набор сразу или часть метрик сделать ленивой/опциональной.
+- Для международного iOS release добавить локализованные `InfoPlist.strings`: текущие native purpose strings в `Info.plist` только на русском, хотя in-app rationale локализован на 15 языков.
+- Локализовать сам Health Sync screen: его rationale/status/action copy пока hardcoded на русском; 15-язычная локализация подтверждена только для camera/photo/notification и location rationale.
 
 Файлы:
 
@@ -323,20 +372,34 @@
 
 ## P2: Coverage и тесты
 
-Статус: не закрыто, но Functions/Dart hotspot tests усилены.
+Статус: существенно усилены risk-boundary tests и реальный production-widget coverage. Общий non-generated показатель вырос с 13.15% до 20.60%.
 
 Факты:
 
-- Есть 53 Dart test/integration файла и 20 mocks.
-- Golden tests присутствуют.
-- Локальный `coverage/lcov.info` показывает около 12.5% line coverage по non-generated строкам, что низко для такого объема.
-- При этом отдельные сервисы/BLoC покрыты хорошо, но общий UI/infrastructure слой слабее.
+- В текущем дереве 48 Dart `_test.dart` файлов.
+- Актуальный полный Windows run: 474 passed, 13 skipped, 2 failed golden cases; всего 489 зарегистрированных результатов.
+- Golden tests включены в общий `flutter test` и CI/release workflows, но два baseline сейчас расходятся с рендером.
+- Локальный `coverage/lcov.info`: 4406/21391, 20.60% line coverage по non-generated строкам.
+- В CI добавлены Codecov upload, PR coverage comment, job summary и `lcov.info` artifact.
+- `docs/CI_CD.md`, `docs/RELEASE_SMOKE_CHECKLIST.md` и CI labels синхронизированы с baseline 489 / 38 / 6.
+- `docs/TEST_COVERAGE_PRIORITIES.md` — приоритеты по непокрытым risk boundaries.
+
+Что сделано:
+
+- **SocialService**: добавлены тесты для всех 6 Firestore streams (friendsStream, incomingRequestsStream, feedStream, publicChallengesStream, myChallengesStream, challengeLeaderboardStream) — проверка пустых uid, маппинга snapshot→модель. Добавлены тесты error propagation для sendFriendRequest, createChallenge, removeFriend. С `@GenerateNiceMocks`.
+- **Auth redirect**: 18 тестов вместо 6 — покрыты все комбинации: public routes (login/register), social routes (feed/friends), onboarding sub-routes, verifyEmail переходы, edge cases без redirect loop.
+- **HiveCache**: новый файл `test/core/cache/hive_cache_test.dart`, 23 теста. Покрыты AI-планы (save/get/update), cache metadata (isFresh/getCacheTime/hasAiPlans), test-week flag, per-user изоляция, chat history (включая malformed JSON), sync-флаг (setNeedsSync/clearSyncNeeded).
+- **Social/UI**: production screens feed/friends/challenges и profile sheets покрыты empty/data/tab scenarios; фактическое покрытие составляет 57.81%, 51.99%, 33.33% и 31.67% соответственно.
+- **Health Sync**: экран теперь принимает injected `HealthSyncBloc`; покрыты loading, loaded metrics, not-installed UI и ownership. Фактическое покрытие 89.05%.
+- **Workout models/session**: `WorkoutDay` — 65.52%, `WorkoutSession` — 62.96%.
+- **Проверка качества тестов**: исходные Priority 3 тесты копировали private widgets в test-файлы и не проверяли production-код. Они заменены тестами реальных `ImportOptionCard`, `ImportActionButton`, `ProfileStatsRow`, `ProfileCurrentProgram`. Это подняло production coverage import/profile до 8.62%/8.60% и выявило реальный баг: loading-кнопка импорта оставалась кликабельной.
 
 Что делать:
 
-- Не гнаться за общим процентом вслепую.
-- Усилить тесты вокруг risk hotspots: auth router, Firestore repository behavior, AI error mapping, offline queue, social service, health mapper.
-- Продолжить Cloud Functions emulator/callable tests: pure/spec layer уже расширен до 35 tests.
+- Priority 1/2 существенно продвинуты, но не считать все UI priorities полностью закрытыми.
+- `workout_execution_screen.dart` (0/739) и `workout_session_screen.dart` (0/483): сначала внедрить clock/timer, TTS и wakelock adapters, затем тестировать реальные phase/lifecycle transitions.
+- Продолжить полные workflows `import_workout_sheet.dart` (8.62%), `profile_screen.dart` (8.60%) и actual GoRouter integration (pure redirect helper уже покрыт).
+- Добавить client-SDK Firestore rules tests и DeepSeek mock-transport/secret/network tests.
 
 ## Дополнительные наблюдения
 
@@ -344,7 +407,8 @@ AI и безопасность:
 
 - Хорошо: DeepSeek key не в клиенте, используется Secret в Functions.
 - Хорошо: request auth и rate limit есть.
-- Риск: rate limiter fail-open на инфраструктурной ошибке. Для дорогих AI endpoint можно рассмотреть fail-closed или degraded quota.
+- Защита от transaction contention уже исправлена: Firestore `ABORTED` обрабатывается fail-closed и покрыт pure test.
+- Rate limiter теперь имеет двойную стратегию: social endpoints (friends, challenges, feed) — fail-open при инфраструктурной ошибке; `deepseekProxy` — fail-closed с `HttpsError("unavailable", …)`, чтобы при падении Firestore платные AI-запросы не уходили без проверки лимита.
 - Недавние изменения увеличивают `maxTokens` и message length. Это может быть нужно для больших планов, но растит стоимость, latency и нагрузку.
 
 Локализация:
@@ -360,29 +424,38 @@ AI и безопасность:
 Firebase client config:
 
 - `android/app/google-services.json` и `lib/firebase_options.dart` закоммичены. Это нормально для Firebase client config, но API key нужно ограничить в Google Cloud Console по package/bundle/SHA и разрешенным API.
-- После смены Android package id на `com.fitnesbuster.app` нужно официально перегенерировать `google-services.json` из Firebase Console. Repo-level package_name уже изменен, но OAuth/SHA/client ids должны быть подтверждены в Firebase/Google Cloud.
+- Официальный Firebase Android config для `com.fitnesbuster.app`, debug/release SHA-1/SHA-256 и Google Auth provider подтверждены. Отдельно остаются runtime Google login smoke-test и будущие Play App Signing fingerprints.
 
 ## Рекомендуемый порядок будущих фиксов
 
-1. Подтвердить реальную Firestore DB в Firebase Console и прогнать social/challenges/profile smoke-check.
-2. Перегенерировать официальный `google-services.json` для `com.fitnesbuster.app`, проверить Google Sign-In SHA fingerprints и Firebase Auth settings.
-3. Добить Cloud Functions emulator/callable tests: deepseekProxy auth/secret/network, friends, challenges, deleteAccount, rate limiter contention, callable publishActivity.
-4. Визуально проверить и либо принять/обновить golden baselines `dashboard.png`/`workout_plan.png`, либо исправить расхождения.
-5. Проверить ключевые экраны при text scaling 1.2x/1.4x/1.6x и поправить overflow.
-6. Провести permissions/policy review: Health Connect scopes, runtime rationale, Google Play Data safety.
-7. Усилить coverage вокруг risk hotspots: auth router, Firestore repositories, social service, health mapper.
+1. Выполнить реальный Google Sign-In smoke-test и подтвердить пользователя в Firebase Auth и профиль в named Firestore database `fitnesbuster`.
+2. Прогнать social/challenges/profile smoke-check с реальным Firebase проектом.
+3. Открыть/обновить PR feature-ветки в `master` и подтвердить реальный GitHub Actions run: Flutter 489 результатов, Functions 38 unit/spec + 6 emulator, Codecov upload.
+4. Визуально проверить Windows golden diffs `dashboard.png`/`workout_plan.png`; Linux CI baselines не обновлять с Windows автоматически.
+5. На реальных устройствах пройти permission deny/settings flows и заполнить Google Play Data safety / Health Connect policy declarations.
+6. Проверить ключевые экраны при text scaling 1.2x/1.4x; отдельно решить, нужна ли настоящая поддержка 1.6x вместо текущего clamp.
+7. Подготовить test seams и тесты для `workout_execution_screen.dart` (0/739) и `workout_session_screen.dart` (0/483): clock/timer, FlutterTts и Wakelock adapters, phase/lifecycle transitions.
+8. Продолжить реальные workflow tests для import/profile/router; не копировать production widgets в test-файлы.
+9. Добавить mock-transport tests DeepSeek provider/secret/network и client-SDK Firestore rules tests.
+10. Для международного iOS release добавить локализованные `InfoPlist.strings` purpose descriptions.
+11. Перенести hardcoded Health Sync copy в `AppLocalizations` для всех поддерживаемых языков.
+12. Перед Play-distributed release добавить Play App Signing SHA-1/SHA-256 в Firebase и подтвердить package в Play Console.
 
 ## Быстрые команды для повторной проверки
 
 ```powershell
 git status --short
+Push-Location functions
 npm run build
 npm test
+npm run test:emulator:exec
+Pop-Location
 flutter analyze --no-fatal-infos --no-fatal-warnings lib test
 dart format --output=none --set-exit-if-changed lib test
 flutter test --coverage --reporter=expanded
-cd android
+Push-Location android
 .\gradlew.bat :app:processDebugGoogleServices :app:processDebugMainManifest :app:compileDebugKotlin --stacktrace
+Pop-Location
 ```
 
 Если Flutter-команды снова зависают локально, проверять в CI или отдельной чистой Flutter среде.

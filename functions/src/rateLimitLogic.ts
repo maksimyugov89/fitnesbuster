@@ -30,3 +30,13 @@ export function evaluateRateLimit(
 export function isRateLimitContentionError(error: unknown): boolean {
   return (error as {code?: number}).code === 10;
 }
+
+export type RateLimitFailureAction = "deny" | "throw" | "allow";
+
+export function rateLimitFailureAction(
+  error: unknown,
+  failClosed: boolean
+): RateLimitFailureAction {
+  if (isRateLimitContentionError(error)) return "deny";
+  return failClosed ? "throw" : "allow";
+}

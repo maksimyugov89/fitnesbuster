@@ -6,7 +6,7 @@
 
 | Файл | Триггер | Что делает |
 |---|---|---|
-| [`ci.yml`](../.github/workflows/ci.yml) | push/PR → `master` | `dart format`, `flutter analyze`, все 337 тестов (`flutter test --coverage`), загрузка покрытия в Codecov, отчёт о покрытии в комментарии PR + артефакт `lcov.info`, сборка Cloud Functions (`npm run build`) |
+| [`ci.yml`](../.github/workflows/ci.yml) | push/PR → `master` | `dart format`, `flutter analyze`, полный Flutter suite (текущий baseline: 489 результатов), coverage/Codecov, Cloud Functions build + 38 unit/spec тестов + 6 callable-тестов в Auth/Firestore/Functions emulators |
 | [`build.yml`](../.github/workflows/build.yml) | push/PR → `master`, ручной запуск | Собирает APK и AAB (debug-подпись, для внутреннего тестирования) и сохраняет их как build-артефакты на 14 дней |
 | [`release.yml`](../.github/workflows/release.yml) | push тега `v*.*.*` **или** ручной запуск (`workflow_dispatch`) | Прогоняет `flutter analyze` + `flutter test` как гейт качества, собирает **подписанные боевым ключом** APK/AAB, публикует GitHub Release с артефактами и авто-changelog, шлёт уведомление в Telegram |
 | [`security.yml`](../.github/workflows/security.yml) | PR → `master`, push → `master`, еженедельно (пн 06:00 UTC), ручной запуск | Сканирует `pubspec.lock` и `functions/package-lock.json` через OSV-Scanner на известные CVE, роняет job при находках, шлёт уведомление в Telegram |
@@ -38,6 +38,18 @@
 4. Запустите `CI` заново через новый push или вручную перезапустите failed/skipped workflow run.
 
 В [`ci.yml`](../.github/workflows/ci.yml) загружается уже очищенный `coverage/lcov.info`: сгенерированный Dart-код (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`) предварительно исключается через `lcov --remove`.
+
+## Firebase Emulator Suite
+
+Callable integration tests используют demo project `demo-fitnesbuster` и не обращаются к production Firebase. Конфигурация портов хранится в `firebase.json`: Auth `9099`, Firestore `8080`, Functions `5001`; тесты работают с named database `fitnesbuster`.
+
+```powershell
+cd functions
+npm test
+npm run test:emulator:exec
+```
+
+`npm test` запускает 38 pure/unit/spec тестов. Три из них фиксируют failure policy rate limiter: contention всегда deny, инфраструктурная ошибка DeepSeek fail-closed, а social endpoints сохраняют fail-open. `npm run test:emulator:exec` собирает TypeScript, поднимает три эмулятора и запускает 6 последовательных callable-сценариев: `publishActivity`, friends lifecycle, private challenge invite/join/leave/delete, `deepseekProxy` auth/validation, concurrent rate limit и `deleteAccount` cleanup. Для локального запуска нужны Node 22, Java 21+ и Firebase CLI 15.22.0; CI закрепляет эти версии.
 
 ### Как создать Telegram-бота и получить chat_id
 
@@ -97,13 +109,16 @@ git push origin v1.2.0
 - **Codecov** — шаг `codecov/codecov-action@v5` загружает очищенный `coverage/lcov.info` с флагом `flutter`
 - **Комментарий в PR** — на каждый PR бот ([`zgosalvez/github-actions-report-lcov`](https://github.com/zgosalvez/github-actions-report-lcov)) публикует % покрытия и таблицу по файлам, обновляя один и тот же комментарий при новых пушах
 - **Job summary** — краткая сводка `lcov --summary` видна на вкладке Summary каждого workflow run
-- **Artifact `coverage-report`** — сырой `lcov.info` на вкладке каждого workflow run в Actions (14 дней), можно открыть локально: `genhtml coverage/lcov.info -o coverage/html && open coverage/html/index.html`
+- **Artifact `coverage-report`** — сырой `lcov.info` на вкладке каждого workflow run в Actions (3 дня), можно открыть локально: `genhtml coverage/lcov.info -o coverage/html && open coverage/html/index.html`
 - **Artifact `coverage-html-report`** (только для PR) — готовый HTML-отчёт от того же action, тоже прикрепляется к run
 
 Из покрытия исключён сгенерированный код (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`) — он не отражает реальное качество тестирования.
 
+Локальный verified baseline 2026-07-11: 4406/21391 non-generated lines, 20.60%. Windows: 474 passed, 13 skipped, 2 known golden pixel diffs. Реальный Actions run после текущих изменений ещё не подтверждён; ожидаемый Linux baseline — 476 passed и 13 skipped, если tracked goldens остаются валидны.
+
 ## Известные ограничения
 
 - ~~Golden-тесты исключены из CI~~ — **исправлено.** Настоящая причина зависания (10-минутный таймаут на `DashboardScreen`/`WorkoutPlanScreen`, воспроизводилось и локально, и на `ubuntu-latest`) не имела отношения к 3D-вьюеру/WebView: оба теста вызывали `bloc.close()` для блоков, всё ещё предоставленных смонтированному `BlocProvider.value`. `BlocProvider` держит собственную подписку на `bloc.stream`, а `Bloc.close()` дожидается закрытия этого стрима — что требует отмены всех подписчиков. Так как дерево виджетов ни разу не размонтировалось перед вызовом `close()`, эта внутренняя подписка никогда не отменялась, и `close()` не завершался. Минимальный репро: `bloc.stream.listen((_) {})` без отмены + `bloc.close()` — зависает даже без единого виджета. Исправление — не вызывать `close()` для блоков, которые всё ещё "живут" в смонтированном дереве (`GetIt.reset()` в `tearDownAll` — достаточная очистка для одного теста в файле). Golden-тесты снова включены в `ci.yml`/`release.yml`, оба проходят за ~0.1с.
+- Linux PNG-файлы в `test/golden/goldens` являются эталоном. На текущем Windows renderer полный локальный run даёт два известных pixel diff (`dashboard` 0.77%, `workout_plan` 0.59%); не обновлять baselines на Windows без визуального review. Проверка в `ubuntu-latest` остаётся release gate.
 - `build.yml` собирает APK/AAB с **debug-подписью** — такие артефакты годятся для внутреннего тестирования, но не для публикации в Google Play. Боевая подпись — только в `release.yml`.
 - **`security.yml` не загружает SARIF в Security → Code scanning и не запускает `dependency-review-action`.** Обе функции — часть GitHub Advanced Security, которая для приватных репозиториев платная (репозиторий `fitnesbuster` приватный). OSV-Scanner при этом работает полностью: сканирует `pubspec.lock` и `functions/package-lock.json`, роняет job и шлёт уведомление в Telegram при находках — просто результат виден в логе run'а, а не во вкладке Security. Если репозиторий станет публичным или появится лицензия GHAS, можно вернуть `upload-sarif: true` и job `dependency-review` (история осталась в git).

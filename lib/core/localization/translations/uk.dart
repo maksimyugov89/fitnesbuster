@@ -315,4 +315,13 @@ const Map<String, String> ukTranslations = {
   'domsMild': 'Трохи',
   'domsNoticeable': 'Помітно',
   'domsSevere': 'Сильно',
+  'permissionCameraTitle': 'Доступ до камери',
+  'permissionCameraBody':
+      'Камера використовується лише для сканування штрихкоду або QR-коду та фото профілю.',
+  'permissionPhotosTitle': 'Доступ до фотографій',
+  'permissionPhotosBody':
+      'Оберіть фото профілю або прогресу. Інші фотографії не переглядаються.',
+  'permissionNotificationsTitle': 'Увімкнути сповіщення',
+  'permissionNotificationsBody':
+      'Для нагадувань про тренування, запрошень до челенджів і важливих соціальних подій.',
 };

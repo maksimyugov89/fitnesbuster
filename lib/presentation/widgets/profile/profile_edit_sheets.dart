@@ -8,6 +8,7 @@ import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/profile/profile_sheet_widgets.dart';
 import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 import 'package:fitnesbuster/domain/entities/user_entities.dart';
+import 'package:fitnesbuster/presentation/widgets/common/permission_rationale_dialog.dart';
 
 void showProfileSuccess(BuildContext context, String msg) {
   final colors = AppTheme.of(context);
@@ -760,7 +761,9 @@ class NumSlider extends StatelessWidget {
 // ── Notifications Sheet ────────────────────────────────────────────────────
 
 class NotificationsSheet extends StatefulWidget {
-  const NotificationsSheet({super.key});
+  const NotificationsSheet({super.key, this.onRequestPermission});
+
+  final Future<void> Function()? onRequestPermission;
   @override
   State<NotificationsSheet> createState() => _NotificationsSheetState();
 }
@@ -770,6 +773,24 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
   bool _eveningSync = true;
   bool _mealReminder = false;
   bool _progressWeekly = true;
+  bool _saving = false;
+
+  Future<void> _save() async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    final needsNotifications =
+        _workoutReminder || _eveningSync || _mealReminder || _progressWeekly;
+    if (needsNotifications && widget.onRequestPermission != null) {
+      final accepted = await showPermissionRationaleDialog(
+        context,
+        PermissionRationaleKind.notifications,
+      );
+      if (accepted) await widget.onRequestPermission!();
+    }
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    showProfileSuccess(context, AppLocalizations.tl('settingsSaved'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -807,12 +828,7 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
             onChanged: (v) => setState(() => _progressWeekly = v),
           ),
           const SizedBox(height: 24),
-          SaveButton(
-            onTap: () {
-              Navigator.of(context).pop();
-              showProfileSuccess(context, AppLocalizations.tl('settingsSaved'));
-            },
-          ),
+          SaveButton(onTap: _saving ? () {} : _save),
         ],
       ),
     );

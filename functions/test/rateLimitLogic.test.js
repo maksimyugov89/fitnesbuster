@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const {
   evaluateRateLimit,
   isRateLimitContentionError,
+  rateLimitFailureAction,
 } = require("../lib/rateLimitLogic");
 
 test("evaluateRateLimit allows first request and starts a window", () => {
@@ -40,4 +41,17 @@ test("evaluateRateLimit resets expired windows", () => {
 test("isRateLimitContentionError detects Firestore ABORTED", () => {
   assert.equal(isRateLimitContentionError({code: 10}), true);
   assert.equal(isRateLimitContentionError({code: 14}), false);
+});
+
+test("rateLimitFailureAction denies contention regardless of failure mode", () => {
+  assert.equal(rateLimitFailureAction({code: 10}, false), "deny");
+  assert.equal(rateLimitFailureAction({code: 10}, true), "deny");
+});
+
+test("rateLimitFailureAction fails closed for paid endpoint infrastructure errors", () => {
+  assert.equal(rateLimitFailureAction({code: 14}, true), "throw");
+});
+
+test("rateLimitFailureAction preserves fail-open behavior for social endpoints", () => {
+  assert.equal(rateLimitFailureAction({code: 14}, false), "allow");
 });

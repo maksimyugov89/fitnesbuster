@@ -1,4 +1,4 @@
-import * as admin from "firebase-admin";
+import {FieldValue, Timestamp} from "firebase-admin/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {db, logInfo, logWarn, sendPush, checkRateLimit} from "./shared";
 import {
@@ -39,8 +39,8 @@ export const createChallenge = onCall(
     const allowed = await checkRateLimit(uid, "createChallenge", CREATE_CHALLENGE_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    const now = admin.firestore.Timestamp.now();
-    const endDate = admin.firestore.Timestamp.fromDate(
+    const now = Timestamp.now();
+    const endDate = Timestamp.fromDate(
       new Date(Date.now() + durationDays * ONE_DAY_MS)
     );
 
@@ -77,7 +77,7 @@ export const createChallenge = onCall(
           challengeTitle: title,
           isPublic: false,
         },
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        timestamp: FieldValue.serverTimestamp(),
       });
     }
 
@@ -115,7 +115,7 @@ export const joinChallenge = onCall(
       if (!chalSnap.exists) throw new HttpsError("not-found", "Challenge not found");
 
       const chal = chalSnap.data()!;
-      const now = admin.firestore.Timestamp.now();
+      const now = Timestamp.now();
       if (chal.endDate.toMillis() < now.toMillis()) {
         throw new HttpsError("failed-precondition", "Challenge already ended");
       }
@@ -132,7 +132,7 @@ export const joinChallenge = onCall(
       }
 
       tx.update(chalRef, {
-        participants: admin.firestore.FieldValue.arrayUnion(uid),
+        participants: FieldValue.arrayUnion(uid),
       });
       tx.set(db.doc(`challenge_progress/${normalizedChallengeId}/participants/${uid}`), {
         uid,
@@ -184,7 +184,7 @@ export const leaveChallenge = onCall(
       }
 
       tx.update(chalRef, {
-        participants: admin.firestore.FieldValue.arrayRemove(uid),
+        participants: FieldValue.arrayRemove(uid),
       });
       tx.delete(progressRef);
     }, {maxAttempts: 15});
@@ -269,7 +269,7 @@ export const updateChallengeProgress = onCall(
 
       tx.update(progressRef, {
         currentValue: newValue,
-        lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+        lastUpdated: FieldValue.serverTimestamp(),
       });
 
       return crossesTarget(prev, newValue, chal.targetValue as number);
@@ -293,7 +293,7 @@ export const updateChallengeProgress = onCall(
       await db.collection(`activity_events/${uid}/items`).add({
         type: "challenge_won",
         data: {challengeTitle: chal.title, challengeId: normalizedChallengeId},
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        timestamp: FieldValue.serverTimestamp(),
       });
     }
 
@@ -333,7 +333,7 @@ export const recordWorkout = onCall(
     const allowed = await checkRateLimit(uid, "recordWorkout", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    const now = admin.firestore.Timestamp.now();
+    const now = Timestamp.now();
     const [challengesSnap, userSnap] = await Promise.all([
       db.collection("challenges")
         .where("participants", "array-contains", uid)
@@ -380,7 +380,7 @@ export const recordWorkout = onCall(
           uid,
           name: userName,
           currentValue: newValue,
-          lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+          lastUpdated: FieldValue.serverTimestamp(),
         }, {merge: true});
 
         return crossesTarget(prev, newValue, chal.targetValue as number);
@@ -391,7 +391,7 @@ export const recordWorkout = onCall(
         await db.collection(`activity_events/${uid}/items`).add({
           type: "challenge_won",
           data: {challengeTitle: chal.title, challengeId},
-          timestamp: admin.firestore.FieldValue.serverTimestamp(),
+          timestamp: FieldValue.serverTimestamp(),
         });
         if ((chal.createdBy as string) !== "system" && (chal.createdBy as string) !== uid) {
           await sendPush(
@@ -433,8 +433,8 @@ export const seedChallenges = onCall(
       .get();
     if (!existing.empty) return {skipped: true, reason: "Already seeded"};
 
-    const farFuture = admin.firestore.Timestamp.fromDate(new Date("2030-01-01"));
-    const now = admin.firestore.Timestamp.now();
+    const farFuture = Timestamp.fromDate(new Date("2030-01-01"));
+    const now = Timestamp.now();
 
     const predefined = [
       {title: "Первые шаги", description: "Выполни 3 тренировки и начни свой путь к здоровью", goalType: "workout_count", targetValue: 3, emoji: "👟"},

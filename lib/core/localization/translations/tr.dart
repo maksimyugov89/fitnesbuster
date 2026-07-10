@@ -314,4 +314,13 @@ const Map<String, String> trTranslations = {
   'domsMild': 'Biraz',
   'domsNoticeable': 'Belirgin',
   'domsSevere': 'Şiddetli',
+  'permissionCameraTitle': 'Kamera erişimi',
+  'permissionCameraBody':
+      'Kamera yalnızca barkod veya QR kod taramak ve profil fotoğrafı çekmek için kullanılır.',
+  'permissionPhotosTitle': 'Fotoğraf erişimi',
+  'permissionPhotosBody':
+      'Profil veya ilerleme fotoğrafı seçin. Diğer fotoğraflar incelenmez.',
+  'permissionNotificationsTitle': 'Bildirimleri aç',
+  'permissionNotificationsBody':
+      'Antrenman hatırlatmaları, meydan okuma davetleri ve önemli sosyal güncellemeler için.',
 };

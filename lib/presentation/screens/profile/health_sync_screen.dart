@@ -10,7 +10,9 @@ import 'package:fitnesbuster/bloc/health/health_sync_bloc.dart';
 
 /// Health Connect sync screen — data from all fitness apps via Google Health Connect.
 class HealthSyncScreen extends StatefulWidget {
-  const HealthSyncScreen({super.key});
+  const HealthSyncScreen({super.key, this.bloc});
+
+  final HealthSyncBloc? bloc;
 
   @override
   State<HealthSyncScreen> createState() => _HealthSyncScreenState();
@@ -18,17 +20,19 @@ class HealthSyncScreen extends StatefulWidget {
 
 class _HealthSyncScreenState extends State<HealthSyncScreen> {
   late final HealthSyncBloc _bloc;
+  late final bool _ownsBloc;
 
   @override
   void initState() {
     super.initState();
-    _bloc = HealthSyncBloc(hcService: HealthConnectService());
-    _bloc.add(const HealthSyncInitializeRequested());
+    _ownsBloc = widget.bloc == null;
+    _bloc = widget.bloc ?? HealthSyncBloc(hcService: HealthConnectService());
+    if (_ownsBloc) _bloc.add(const HealthSyncInitializeRequested());
   }
 
   @override
   void dispose() {
-    _bloc.close();
+    if (_ownsBloc) _bloc.close();
     super.dispose();
   }
 

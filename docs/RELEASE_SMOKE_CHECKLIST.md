@@ -8,13 +8,16 @@ Use this checklist before a release candidate or after Firebase/config changes.
 - Deploy rules/indexes/functions to the same Firebase project/environment.
 - Confirm Cloud Functions run on Node 22.
 - Confirm `DEEPSEEK_API_KEY` secret is set for the functions region.
+- Run the local demo-project emulator gate; it must not read or mutate production data.
 
 ## Android identity
 
-- Regenerate `android/app/google-services.json` from Firebase Console for `com.fitnesbuster.app`.
-- Confirm SHA-1/SHA-256 fingerprints for debug/release signing keys.
-- Confirm Google Sign-In OAuth client uses `com.fitnesbuster.app`.
-- Confirm Play Console package name is `com.fitnesbuster.app` before publishing.
+- [x] Official `android/app/google-services.json` is installed for Firebase Android app `com.fitnesbuster.app`.
+- [x] Debug/release SHA-1 and SHA-256 fingerprints are registered in Firebase Console.
+- [x] Android OAuth clients in `google-services.json` use `com.fitnesbuster.app` and the confirmed debug/release SHA-1 hashes.
+- [x] Firebase Authentication Google provider is enabled and Project support email is configured.
+- [ ] Run real Google Sign-In and confirm the user in Firebase Authentication → Users and profile in Firestore `fitnesbuster/users`.
+- [ ] Before Play distribution, confirm Play Console package `com.fitnesbuster.app` and add Play App Signing SHA-1/SHA-256 to Firebase. Upload/release keystore SHA alone is not sufficient for Play-installed builds.
 
 ## Auth and profile
 
@@ -41,6 +44,8 @@ Use this checklist before a release candidate or after Firebase/config changes.
 ## Challenges
 
 - Create, join, leave, and delete challenge.
+- Create a private challenge and confirm only friends receive the invite/feed event.
+- Confirm a stranger cannot join a private challenge and a non-owner cannot delete it.
 - Update progress with lower value and confirm progress remains monotonic.
 - Record workout and confirm active challenges update correctly.
 - Complete challenge and confirm `challenge_won` event appears.
@@ -51,7 +56,12 @@ Use this checklist before a release candidate or after Firebase/config changes.
 - Grant only Health Connect permissions needed for selected metrics.
 - Deny Health Connect permissions and confirm graceful error.
 - Detect city from onboarding; deny location and confirm manual-entry fallback.
-- Confirm notifications prompt is expected and token registration succeeds after sign-in.
+- Enable notifications from settings and confirm the system prompt appears only after the in-app rationale; confirm token registration succeeds after grant.
+- Confirm camera rationale appears before barcode/QR scanning and avatar/progress capture.
+- Confirm photo-library rationale appears before avatar/progress photo selection.
+- Confirm notification permission is not requested automatically at sign-in; it appears after saving enabled notification settings.
+- On iOS, confirm Camera, Photo Library, Health, and When-In-Use Location system prompts show the matching purpose text.
+- For an international release, verify localized Health Sync copy and localized iOS `InfoPlist.strings`; these remain pending in the current repository.
 
 ## Accessibility / UI
 
@@ -64,6 +74,7 @@ Use this checklist before a release candidate or after Firebase/config changes.
 ```powershell
 cd functions
 npm test
+npm run test:emulator:exec
 
 cd ..
 flutter analyze --no-fatal-infos --no-fatal-warnings lib test
@@ -72,3 +83,13 @@ flutter test --coverage --reporter=expanded
 cd android
 .\gradlew.bat :app:processDebugGoogleServices :app:processDebugMainManifest :app:compileDebugKotlin --stacktrace
 ```
+
+Expected current automated baseline:
+
+- Functions unit/spec: 38 passed.
+- Functions callable emulator: 6 passed.
+- Flutter: 489 registered results. Current Windows run: 474 passed, 13 skipped, 2 known golden diffs.
+- Non-generated Flutter line coverage: 4406/21391 (20.60%).
+- `flutter analyze --no-fatal-infos --no-fatal-warnings lib test`: no issues.
+
+Linux/Flutter 3.38.5 CI is authoritative for the two golden tests. Do not update their tracked PNG baselines from Windows without visual review.

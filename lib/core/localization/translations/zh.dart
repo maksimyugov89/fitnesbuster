@@ -314,4 +314,10 @@ const Map<String, String> zhTranslations = {
   'domsMild': '轻微',
   'domsNoticeable': '明显',
   'domsSevere': '严重',
+  'permissionCameraTitle': '相机权限',
+  'permissionCameraBody': '相机仅用于扫描条形码或二维码，以及拍摄头像。',
+  'permissionPhotosTitle': '照片权限',
+  'permissionPhotosBody': '用于选择头像或进度照片，不会浏览其他照片。',
+  'permissionNotificationsTitle': '开启通知',
+  'permissionNotificationsBody': '用于训练提醒、挑战邀请和重要社交动态。',
 };

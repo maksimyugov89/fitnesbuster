@@ -85,4 +85,193 @@ void main() {
       );
     },
   );
+
+  // Edge cases — public routes, social routes, onboarding sub-routes
+
+  test('unauthenticated user stays on login without redirect loop', () {
+    expect(
+      resolveAuthRedirect(
+        loc: AppRouter.login,
+        isAuthenticated: false,
+        isAuthStateAuthenticated: false,
+        emailVerified: false,
+        hasProfile: false,
+      ),
+      isNull,
+    );
+  });
+
+  test('unauthenticated user stays on register without redirect loop', () {
+    expect(
+      resolveAuthRedirect(
+        loc: AppRouter.register,
+        isAuthenticated: false,
+        isAuthStateAuthenticated: false,
+        emailVerified: false,
+        hasProfile: false,
+      ),
+      isNull,
+    );
+  });
+
+  test(
+    'authenticated+verified+noProfile redirects from register to onboarding',
+    () {
+      expect(
+        resolveAuthRedirect(
+          loc: AppRouter.register,
+          isAuthenticated: true,
+          isAuthStateAuthenticated: true,
+          emailVerified: true,
+          hasProfile: false,
+        ),
+        AppRouter.onboarding,
+      );
+    },
+  );
+
+  test('unauthenticated user is redirected to login from social feed', () {
+    expect(
+      resolveAuthRedirect(
+        loc: AppRouter.feed,
+        isAuthenticated: false,
+        isAuthStateAuthenticated: false,
+        emailVerified: false,
+        hasProfile: false,
+      ),
+      AppRouter.login,
+    );
+  });
+
+  test('unauthenticated user is redirected to login from friends', () {
+    expect(
+      resolveAuthRedirect(
+        loc: AppRouter.friends,
+        isAuthenticated: false,
+        isAuthStateAuthenticated: false,
+        emailVerified: false,
+        hasProfile: false,
+      ),
+      AppRouter.login,
+    );
+  });
+
+  test('unauthenticated user is redirected from verifyEmail to login', () {
+    expect(
+      resolveAuthRedirect(
+        loc: AppRouter.verifyEmail,
+        isAuthenticated: false,
+        isAuthStateAuthenticated: false,
+        emailVerified: false,
+        hasProfile: false,
+      ),
+      AppRouter.login,
+    );
+  });
+
+  test(
+    'authenticated+verified+hasProfile stays on social feed (no redirect)',
+    () {
+      expect(
+        resolveAuthRedirect(
+          loc: AppRouter.feed,
+          isAuthenticated: true,
+          isAuthStateAuthenticated: true,
+          emailVerified: true,
+          hasProfile: true,
+        ),
+        isNull,
+      );
+    },
+  );
+
+  test(
+    'authenticated+unverified stays on verifyEmail without redirect loop',
+    () {
+      expect(
+        resolveAuthRedirect(
+          loc: AppRouter.verifyEmail,
+          isAuthenticated: true,
+          isAuthStateAuthenticated: true,
+          emailVerified: false,
+          hasProfile: true,
+        ),
+        isNull,
+      );
+    },
+  );
+
+  test('authenticated+verified leaves verifyEmail for dashboard', () {
+    expect(
+      resolveAuthRedirect(
+        loc: AppRouter.verifyEmail,
+        isAuthenticated: true,
+        isAuthStateAuthenticated: true,
+        emailVerified: true,
+        hasProfile: true,
+      ),
+      AppRouter.dashboard,
+    );
+  });
+
+  test(
+    'authenticated+verified+hasProfile is redirected from onboarding sub-route',
+    () {
+      expect(
+        resolveAuthRedirect(
+          loc: '${AppRouter.onboarding}/goal',
+          isAuthenticated: true,
+          isAuthStateAuthenticated: true,
+          emailVerified: true,
+          hasProfile: true,
+        ),
+        AppRouter.dashboard,
+      );
+    },
+  );
+
+  test('authenticated+verified+noProfile stays on onboarding sub-route', () {
+    expect(
+      resolveAuthRedirect(
+        loc: '${AppRouter.onboarding}/goal',
+        isAuthenticated: true,
+        isAuthStateAuthenticated: true,
+        emailVerified: true,
+        hasProfile: false,
+      ),
+      isNull,
+    );
+  });
+
+  test(
+    'authenticated+verified+hasProfile stays on private dashboard sub-route',
+    () {
+      expect(
+        resolveAuthRedirect(
+          loc: AppRouter.workoutPlan,
+          isAuthenticated: true,
+          isAuthStateAuthenticated: true,
+          emailVerified: true,
+          hasProfile: true,
+        ),
+        isNull,
+      );
+    },
+  );
+
+  test(
+    'authenticated+verified+noProfile stays on private route (not redirected)',
+    () {
+      expect(
+        resolveAuthRedirect(
+          loc: AppRouter.dashboard,
+          isAuthenticated: true,
+          isAuthStateAuthenticated: true,
+          emailVerified: true,
+          hasProfile: false,
+        ),
+        isNull,
+      );
+    },
+  );
 }

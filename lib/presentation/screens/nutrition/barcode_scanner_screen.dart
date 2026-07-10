@@ -5,6 +5,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/presentation/widgets/common/permission_rationale_dialog.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
   const BarcodeScannerScreen({super.key});
@@ -16,6 +17,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   final MobileScannerController _ctrl = MobileScannerController();
   bool _scanned = false;
   bool _loading = false;
+  bool _cameraAccepted = false;
   String _status = 'Наведите камеру на штрихкод продукта';
 
   @override
@@ -30,6 +32,20 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       OpenFoodFactsLanguage.RUSSIAN,
       OpenFoodFactsLanguage.ENGLISH,
     ];
+    WidgetsBinding.instance.addPostFrameCallback((_) => _askForCameraUse());
+  }
+
+  Future<void> _askForCameraUse() async {
+    final accepted = await showPermissionRationaleDialog(
+      context,
+      PermissionRationaleKind.camera,
+    );
+    if (!mounted) return;
+    if (!accepted) {
+      Navigator.of(context).maybePop();
+      return;
+    }
+    setState(() => _cameraAccepted = true);
   }
 
   @override
@@ -350,6 +366,12 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     final c = AppTheme.of(context);
+    if (!_cameraAccepted) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(

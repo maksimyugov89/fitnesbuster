@@ -1,4 +1,4 @@
-import * as admin from "firebase-admin";
+import {FieldValue} from "firebase-admin/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {db, logInfo, createNotification, sendPush, checkRateLimit} from "./shared";
 import {
@@ -61,7 +61,7 @@ export const sendFriendRequest = onCall(
       toUid: normalizedToUid,
       fromName,
       status: "pending",
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
 
     await createNotification(normalizedToUid, "friend_request", `${fromName} хочет добавить вас в друзья`, fromUid, fromName, {requestId: ref.id});
@@ -112,7 +112,7 @@ export const acceptFriendRequest = onCall(
       ]);
       fromNameFinal = (fromSnap.data()?.name as string) ?? "Пользователь";
       toNameFinal = (toSnap.data()?.name as string) ?? "Пользователь";
-      const now = admin.firestore.FieldValue.serverTimestamp();
+      const now = FieldValue.serverTimestamp();
 
       tx.update(reqRef, {status: "accepted"});
       tx.set(db.doc(`friends/${fromUid}/list/${uid}`), {addedAt: now, name: toNameFinal});

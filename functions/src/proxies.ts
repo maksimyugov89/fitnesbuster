@@ -28,7 +28,9 @@ export const deepseekProxy = onCall(
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
 
     const uid = request.auth.uid;
-    const allowed = await checkRateLimit(uid, "deepseekProxy", DEEPSEEK_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
+    const allowed = await checkRateLimit(
+      uid, "deepseekProxy", DEEPSEEK_RATE_LIMIT, RATE_LIMIT_WINDOW_MS, {failClosed: true}
+    );
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many AI requests. Try again later.");
 
     const {messages, maxTokens, temperature} = validateDeepSeekRequest(request.data);

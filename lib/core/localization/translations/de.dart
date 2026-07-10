@@ -314,4 +314,13 @@ const Map<String, String> deTranslations = {
   'domsMild': 'Etwas',
   'domsNoticeable': 'Deutlich',
   'domsSevere': 'Stark',
+  'permissionCameraTitle': 'Kamerazugriff',
+  'permissionCameraBody':
+      'Die Kamera wird nur zum Scannen von Barcodes oder QR-Codes und für Profilfotos verwendet.',
+  'permissionPhotosTitle': 'Zugriff auf Fotos',
+  'permissionPhotosBody':
+      'Wähle ein Profil- oder Fortschrittsfoto aus. Andere Fotos werden nicht durchsucht.',
+  'permissionNotificationsTitle': 'Benachrichtigungen aktivieren',
+  'permissionNotificationsBody':
+      'Für Trainingserinnerungen, Challenge-Einladungen und wichtige soziale Updates.',
 };

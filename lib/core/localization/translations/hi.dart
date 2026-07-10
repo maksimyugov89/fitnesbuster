@@ -315,4 +315,13 @@ const Map<String, String> hiTranslations = {
   'domsMild': 'थोड़ा',
   'domsNoticeable': 'ध्यान देने योग्य',
   'domsSevere': 'गंभीर',
+  'permissionCameraTitle': 'कैमरा एक्सेस',
+  'permissionCameraBody':
+      'कैमरा केवल बारकोड या QR कोड स्कैन करने और प्रोफ़ाइल फ़ोटो लेने के लिए उपयोग होता है।',
+  'permissionPhotosTitle': 'फ़ोटो एक्सेस',
+  'permissionPhotosBody':
+      'प्रोफ़ाइल या प्रगति फ़ोटो चुनें। अन्य फ़ोटो नहीं देखी जातीं।',
+  'permissionNotificationsTitle': 'सूचनाएँ चालू करें',
+  'permissionNotificationsBody':
+      'वर्कआउट रिमाइंडर, चुनौती आमंत्रण और महत्वपूर्ण सामाजिक अपडेट के लिए।',
 };

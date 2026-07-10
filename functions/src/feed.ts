@@ -1,4 +1,4 @@
-import * as admin from "firebase-admin";
+import {FieldValue} from "firebase-admin/firestore";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {db, logInfo, logError, withRetry, checkRateLimit} from "./shared";
@@ -29,7 +29,7 @@ export const publishActivity = onCall(
     const ref = await db.collection(`activity_events/${uid}/items`).add({
       type,
       data,
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      timestamp: FieldValue.serverTimestamp(),
     });
 
     logInfo("Activity published", {uid, type, eventId: ref.id});
@@ -67,7 +67,7 @@ export const fanoutActivityEvent = onDocumentCreated(
       fromUid: uid,
       fromName,
       data: data.data ?? {},
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      timestamp: FieldValue.serverTimestamp(),
     };
 
     // Split friend list into chunks to stay within Firestore batch write limits

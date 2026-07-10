@@ -968,4 +968,13 @@ const Map<String, String> enTranslations = {
   'goalReachedMsg': 'Goal reached!',
   'drankOf': 'Drank {intake} L of {target} L',
   'moreMl': '{ml} ml more',
+  'permissionCameraTitle': 'Camera access',
+  'permissionCameraBody':
+      'The camera is used only to scan a barcode or QR code, or take a profile photo.',
+  'permissionPhotosTitle': 'Photo library access',
+  'permissionPhotosBody':
+      'Choose a profile or progress photo. FitnesBuster does not browse other photos.',
+  'permissionNotificationsTitle': 'Enable notifications',
+  'permissionNotificationsBody':
+      'For workout reminders, challenge invitations, and important social updates.',
 };

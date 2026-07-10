@@ -7,6 +7,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/constants/avatar_presets.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/presentation/widgets/common/permission_rationale_dialog.dart';
 
 class AvatarPickerSheet extends StatefulWidget {
   final int currentPresetIndex;
@@ -38,6 +39,13 @@ class _AvatarPickerSheetState extends State<AvatarPickerSheet> {
 
   Future<void> _pickImage(ImageSource source) async {
     if (_picking) return;
+    final accepted = await showPermissionRationaleDialog(
+      context,
+      source == ImageSource.camera
+          ? PermissionRationaleKind.camera
+          : PermissionRationaleKind.photos,
+    );
+    if (!accepted || !mounted) return;
     setState(() => _picking = true);
     try {
       final picker = ImagePicker();

@@ -15,13 +15,13 @@ import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart' as _i4;
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart'
     as _i8;
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart' as _i6;
-import 'package:fitnesbuster/domain/services/i_deepseek_service.dart' as _i14;
+import 'package:fitnesbuster/domain/services/i_deepseek_service.dart' as _i15;
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart'
-    as _i13;
+    as _i14;
 import 'package:fitnesbuster/domain/services/i_health_connect_service.dart'
     as _i9;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i15;
+import 'package:mockito/src/dummies.dart' as _i13;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -1082,8 +1082,19 @@ class MockISocialService extends _i1.Mock implements _i10.ISocialService {
               #durationDays: durationDays,
               #isPublic: isPublic,
             }),
-            returnValue: _i5.Future<String>.value(''),
-            returnValueForMissingStub: _i5.Future<String>.value(''),
+            returnValue: _i5.Future<String>.value(
+              _i13.dummyValue<String>(
+                this,
+                Invocation.method(#createChallenge, [], {
+                  #title: title,
+                  #description: description,
+                  #goalType: goalType,
+                  #targetValue: targetValue,
+                  #durationDays: durationDays,
+                  #isPublic: isPublic,
+                }),
+              ),
+            ),
           )
           as _i5.Future<String>);
 
@@ -1163,7 +1174,7 @@ class MockISocialService extends _i1.Mock implements _i10.ISocialService {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIGamificationService extends _i1.Mock
-    implements _i13.IGamificationService {
+    implements _i14.IGamificationService {
   MockIGamificationService() {
     _i1.throwOnMissingStub(this);
   }
@@ -1301,7 +1312,7 @@ class MockIGamificationService extends _i1.Mock
 /// A class which mocks [IDeepSeekService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
+class MockIDeepSeekService extends _i1.Mock implements _i15.IDeepSeekService {
   MockIDeepSeekService() {
     _i1.throwOnMissingStub(this);
   }
@@ -1328,7 +1339,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               },
             ),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(
                   #generateWorkoutPlan,
@@ -1368,7 +1379,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               },
             ),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(
                   #generateMealPlan,
@@ -1394,7 +1405,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
       (super.noSuchMethod(
             Invocation.method(#refineWorkoutPlan, [profile, exercises]),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(#refineWorkoutPlan, [profile, exercises]),
               ),
@@ -1417,7 +1428,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               #hasPhotos: hasPhotos,
             }),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(#analyzeProgress, [], {
                   #profile: profile,
@@ -1453,7 +1464,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               #weekPrNames: weekPrNames,
             }),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(#generateWeeklyDebrief, [], {
                   #profile: profile,
@@ -1483,7 +1494,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               {#profile: profile},
             ),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(
                   #askWithHistory,
@@ -1508,7 +1519,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               {#profile: profile, #recentTopics: recentTopics},
             ),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(
                   #askQuestion,
@@ -1532,7 +1543,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               {#sourceHint: sourceHint},
             ),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(
                   #parseWorkoutFromContent,
@@ -1559,7 +1570,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               #sourceHint: sourceHint,
             }),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(#correctWorkoutPlan, [], {
                   #currentPlanJson: currentPlanJson,

@@ -314,4 +314,13 @@ const Map<String, String> arTranslations = {
   'domsMild': 'قليلاً',
   'domsNoticeable': 'ملحوظ',
   'domsSevere': 'شديد',
+  'permissionCameraTitle': 'الوصول إلى الكاميرا',
+  'permissionCameraBody':
+      'تُستخدم الكاميرا فقط لمسح الباركود أو رمز QR والتقاط صورة للملف الشخصي.',
+  'permissionPhotosTitle': 'الوصول إلى الصور',
+  'permissionPhotosBody':
+      'اختر صورة للملف الشخصي أو التقدم. لا يتم تصفح الصور الأخرى.',
+  'permissionNotificationsTitle': 'تفعيل الإشعارات',
+  'permissionNotificationsBody':
+      'لتذكيرات التمرين ودعوات التحديات والتحديثات الاجتماعية المهمة.',
 };

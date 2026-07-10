@@ -314,4 +314,13 @@ const Map<String, String> beTranslations = {
   'domsMild': 'Крыху',
   'domsNoticeable': 'Заўважна',
   'domsSevere': 'Моцна',
+  'permissionCameraTitle': 'Доступ да камеры',
+  'permissionCameraBody':
+      'Камера выкарыстоўваецца толькі для сканавання штрыхкода або QR-кода і фота профілю.',
+  'permissionPhotosTitle': 'Доступ да фотаздымкаў',
+  'permissionPhotosBody':
+      'Абярыце фота профілю або прагрэсу. Іншыя фотаздымкі не праглядаюцца.',
+  'permissionNotificationsTitle': 'Уключыць апавяшчэнні',
+  'permissionNotificationsBody':
+      'Для напамінаў пра трэніроўкі, запрашэнняў у чэленджы і важных сацыяльных падзей.',
 };

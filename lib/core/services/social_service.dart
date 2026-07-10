@@ -42,7 +42,8 @@ class SocialService implements ISocialService {
     if (uid == null) return;
     try {
       final messaging = FirebaseMessaging.instance;
-      await messaging.requestPermission(alert: true, badge: true, sound: true);
+      final settings = await messaging.getNotificationSettings();
+      if (!_notificationsAllowed(settings.authorizationStatus)) return;
       final token = await messaging.getToken();
       if (token != null) {
         await _db.doc('${FirestoreCollections.users}/$uid').set({
@@ -59,6 +60,30 @@ class SocialService implements ISocialService {
       appLogger.w('SocialService: FCM init failed', error: e, stackTrace: st);
     }
   }
+
+  Future<bool> requestFcmPermission() async {
+    try {
+      final settings = await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      final allowed = _notificationsAllowed(settings.authorizationStatus);
+      if (allowed) await initFcm();
+      return allowed;
+    } catch (e, st) {
+      appLogger.w(
+        'SocialService: notification permission failed',
+        error: e,
+        stackTrace: st,
+      );
+      return false;
+    }
+  }
+
+  bool _notificationsAllowed(AuthorizationStatus status) =>
+      status == AuthorizationStatus.authorized ||
+      status == AuthorizationStatus.provisional;
 
   // ── Save username (called once from profile setup) ─────────────────────────
 

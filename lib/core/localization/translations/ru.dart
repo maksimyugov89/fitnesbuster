@@ -992,4 +992,13 @@ const Map<String, String> ruTranslations = {
   'goalReachedMsg': 'Цель достигнута!',
   'drankOf': 'Выпито {intake} л из {target} л',
   'moreMl': 'ещё {ml} мл',
+  'permissionCameraTitle': 'Доступ к камере',
+  'permissionCameraBody':
+      'Камера используется только для сканирования штрихкода или QR-кода и съёмки фото профиля.',
+  'permissionPhotosTitle': 'Доступ к фотографиям',
+  'permissionPhotosBody':
+      'Доступ нужен, чтобы выбрать фото профиля или прогресса. Другие фотографии не просматриваются.',
+  'permissionNotificationsTitle': 'Включить уведомления',
+  'permissionNotificationsBody':
+      'Для напоминаний о тренировках, приглашений в челленджи и важных социальных событий.',
 };

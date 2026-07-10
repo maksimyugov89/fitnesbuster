@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import {FieldValue} from "firebase-admin/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {db, logInfo} from "./shared";
 import {FRIEND_LIST_LIMIT} from "./constants";
@@ -72,7 +73,7 @@ export const deleteAccount = onCall(
     // Challenge participation: leave the challenge + drop progress doc
     const challengesSnap = await db.collection("challenges").where("participants", "array-contains", uid).get();
     for (const chalDoc of challengesSnap.docs) {
-      batch.update(chalDoc.ref, {participants: admin.firestore.FieldValue.arrayRemove(uid)});
+      batch.update(chalDoc.ref, {participants: FieldValue.arrayRemove(uid)});
       opCount++;
       await flushIfNeeded();
       await queueDelete(db.doc(challengeProgressPath(chalDoc.id, uid)));

@@ -15,6 +15,7 @@ import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
+import 'package:fitnesbuster/presentation/widgets/common/permission_rationale_dialog.dart';
 
 // ─── Entry points ─────────────────────────────────────────────────────────────
 
@@ -374,7 +375,14 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
         key: const ValueKey('select'),
         colors: colors,
         scrollCtrl: scrollCtrl,
-        onSelected: (source) {
+        onSelected: (source) async {
+          if (source == _ImportSource.qr) {
+            final accepted = await showPermissionRationaleDialog(
+              context,
+              PermissionRationaleKind.camera,
+            );
+            if (!accepted || !mounted) return;
+          }
           setState(() {
             _source = source;
           });
@@ -539,7 +547,7 @@ class _SourceSelector extends StatelessWidget {
         ),
         const SizedBox(height: 20),
 
-        _OptionCard(
+        ImportOptionCard(
           colors: c,
           icon: Icons.chat_bubble_outline_rounded,
           iconColor: SemanticColors.importSuccess,
@@ -548,7 +556,7 @@ class _SourceSelector extends StatelessWidget {
           onTap: () => onSelected(_ImportSource.text),
         ),
         const SizedBox(height: 10),
-        _OptionCard(
+        ImportOptionCard(
           colors: c,
           icon: Icons.link_rounded,
           iconColor: SemanticColors.importWarning,
@@ -557,7 +565,7 @@ class _SourceSelector extends StatelessWidget {
           onTap: () => onSelected(_ImportSource.url),
         ),
         const SizedBox(height: 10),
-        _OptionCard(
+        ImportOptionCard(
           colors: c,
           icon: Icons.content_paste_rounded,
           iconColor: SemanticColors.importInfo,
@@ -566,7 +574,7 @@ class _SourceSelector extends StatelessWidget {
           onTap: () => onSelected(_ImportSource.sharedApp),
         ),
         const SizedBox(height: 10),
-        _OptionCard(
+        ImportOptionCard(
           colors: c,
           icon: Icons.insert_drive_file_rounded,
           iconColor: SemanticColors.importFlex,
@@ -575,7 +583,7 @@ class _SourceSelector extends StatelessWidget {
           onTap: () => onSelected(_ImportSource.file),
         ),
         const SizedBox(height: 10),
-        _OptionCard(
+        ImportOptionCard(
           colors: c,
           icon: Icons.qr_code_scanner_rounded,
           iconAsset: AppImages.barcodeScanner,
@@ -585,7 +593,7 @@ class _SourceSelector extends StatelessWidget {
           onTap: () => onSelected(_ImportSource.qr),
         ),
         const SizedBox(height: 10),
-        _OptionCard(
+        ImportOptionCard(
           colors: c,
           icon: Icons.share_rounded,
           iconColor: SemanticColors.importWater,
@@ -613,7 +621,7 @@ class _SourceSelector extends StatelessWidget {
   }
 }
 
-class _OptionCard extends StatelessWidget {
+class ImportOptionCard extends StatelessWidget {
   final dynamic colors;
   final IconData icon;
   final String? iconAsset;
@@ -623,7 +631,8 @@ class _OptionCard extends StatelessWidget {
   final Widget? trailing;
   final VoidCallback onTap;
 
-  const _OptionCard({
+  const ImportOptionCard({
+    super.key,
     required this.colors,
     required this.icon,
     this.iconAsset,
@@ -874,7 +883,7 @@ class _ContentInputState extends State<_ContentInput> {
         ],
       ),
       const SizedBox(height: 24),
-      _ActionButton(
+      ImportActionButton(
         colors: c,
         label: AppLocalizations.of(context).loadAndCorrectPlanBtn,
         iconAsset: AppImages.aiAssistant,
@@ -941,7 +950,7 @@ class _ContentInputState extends State<_ContentInput> {
       const SizedBox(height: 24),
       ListenableBuilder(
         listenable: widget.textCtrl,
-        builder: (_, _) => _ActionButton(
+        builder: (_, _) => ImportActionButton(
           colors: c,
           label: AppLocalizations.of(context).correctPlanWithAiBtn,
           iconAsset: AppImages.aiAssistant,
@@ -1474,7 +1483,7 @@ class _PreviewView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        _ActionButton(
+        ImportActionButton(
           colors: c,
           label: saving
               ? AppLocalizations.of(context).savingLabel
@@ -1534,7 +1543,7 @@ class _ErrorView extends StatelessWidget {
               ),
             ),
 
-            _ActionButton(
+            ImportActionButton(
               colors: c,
               label: AppLocalizations.tl('tryAgainBtn'),
               icon: Icons.refresh_rounded,
@@ -1549,7 +1558,7 @@ class _ErrorView extends StatelessWidget {
 
 // ─── Shared action button ─────────────────────────────────────────────────────
 
-class _ActionButton extends StatelessWidget {
+class ImportActionButton extends StatelessWidget {
   final dynamic colors;
   final String label;
   final IconData? icon;
@@ -1557,7 +1566,8 @@ class _ActionButton extends StatelessWidget {
   final bool loading;
   final VoidCallback? onTap;
 
-  const _ActionButton({
+  const ImportActionButton({
+    super.key,
     required this.colors,
     required this.label,
     this.icon,
@@ -1571,7 +1581,7 @@ class _ActionButton extends StatelessWidget {
     final c = colors;
     final enabled = onTap != null && !loading;
     return GestureDetector(
-      onTap: onTap,
+      onTap: enabled ? onTap : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),

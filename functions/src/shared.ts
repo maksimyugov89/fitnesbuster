@@ -1,8 +1,9 @@
 import * as admin from "firebase-admin";
-import {getFirestore} from "firebase-admin/firestore";
+import {FieldValue, getFirestore} from "firebase-admin/firestore";
+import {HttpsError} from "firebase-functions/v2/https";
 import {FIRESTORE_DATABASE_ID} from "./firebaseConfig";
 import {RETRY_BASE_DELAY_MS, RETRY_MAX_ATTEMPTS} from "./constants";
-import {evaluateRateLimit, isRateLimitContentionError} from "./rateLimitLogic";
+import {evaluateRateLimit, rateLimitFailureAction} from "./rateLimitLogic";
 
 const db = getFirestore(FIRESTORE_DATABASE_ID);
 const messaging = admin.messaging();
@@ -33,13 +34,21 @@ function logError(msg: string, error: unknown, data?: Record<string, unknown>): 
  * @param action     Name of the rate-limited action (e.g. "deepseekProxy").
  * @param maxRequests Maximum allowed requests within the sliding window.
  * @param windowMs   Sliding window duration in milliseconds.
+ * @param failClosed When `true`, a genuine infrastructure error (Firestore
+ *                   transaction failure that is NOT contention) throws
+ *                   `HttpsError("unavailable", …)` instead of silently
+ *                   permitting the request.  Use for paid/costly endpoints
+ *                   where a blind permit could burn budget.
  * @returns `true` if the request is allowed, `false` if the limit has been exceeded.
+ * @throws `HttpsError("unavailable", …)` — only when `failClosed` is true and the
+ *         rate-limiter infrastructure itself is unreachable.
  */
 async function checkRateLimit(
   uid: string,
   action: string,
   maxRequests: number,
-  windowMs: number
+  windowMs: number,
+  {failClosed = false}: {failClosed?: boolean} = {}
 ): Promise<boolean> {
   const ref = db.collection("rate_limits").doc(`${uid}_${action}`);
   try {
@@ -60,7 +69,8 @@ async function checkRateLimit(
       return true;
     }, {maxAttempts: 15});
   } catch (e) {
-    if (isRateLimitContentionError(e)) {
+    const failureAction = rateLimitFailureAction(e, failClosed);
+    if (failureAction === "deny") {
       // ABORTED: Firestore's own concurrency control gave up retrying after
       // exhausting maxAttempts under heavy contention on this exact document
       // (many requests racing for the same rate-limit slot at once). Fail
@@ -71,6 +81,12 @@ async function checkRateLimit(
       return false;
     }
     logError("Rate limiter check failed", e, {uid, action});
+    if (failureAction === "throw") {
+      throw new HttpsError(
+        "unavailable",
+        "Rate limiter is temporarily unavailable. Please try again later."
+      );
+    }
     return true; // fail-open: permit on genuine infrastructure error
   }
 }
@@ -106,7 +122,7 @@ async function sendPush(
       apns: {payload: {aps: {sound: "default"}}},
     });
   } catch (e) {
-    await db.doc(`users/${toUid}`).update({fcmToken: admin.firestore.FieldValue.delete()});
+    await db.doc(`users/${toUid}`).update({fcmToken: FieldValue.delete()});
   }
 }
 
@@ -139,7 +155,7 @@ async function createNotification(
     fromName,
     data: extraData,
     read: false,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
   });
 }
 

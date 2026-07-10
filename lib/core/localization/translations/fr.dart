@@ -315,4 +315,13 @@ const Map<String, String> frTranslations = {
   'domsMild': 'Un peu',
   'domsNoticeable': 'Notable',
   'domsSevere': 'Fortement',
+  'permissionCameraTitle': 'Accès à la caméra',
+  'permissionCameraBody':
+      'La caméra sert uniquement à scanner un code-barres ou QR et à prendre une photo de profil.',
+  'permissionPhotosTitle': 'Accès aux photos',
+  'permissionPhotosBody':
+      'Choisissez une photo de profil ou de progression. Les autres photos ne sont pas parcourues.',
+  'permissionNotificationsTitle': 'Activer les notifications',
+  'permissionNotificationsBody':
+      'Pour les rappels d’entraînement, invitations aux défis et mises à jour sociales importantes.',
 };

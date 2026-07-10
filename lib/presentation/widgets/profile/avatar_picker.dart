@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/presentation/widgets/common/permission_rationale_dialog.dart';
 
 class ProfileAvatarPicker extends StatelessWidget {
   final String? currentPath;
@@ -28,13 +29,13 @@ class ProfileAvatarPicker extends StatelessWidget {
           icon: Icons.camera_alt_outlined,
           label: AppLocalizations.tl('takePhoto'),
           color: colors.primary,
-          onTap: () => _pick(ImageSource.camera),
+          onTap: () => _pick(context, ImageSource.camera),
         ),
         _PickTile(
           icon: Icons.photo_library_outlined,
           label: AppLocalizations.tl('chooseFromGallery'),
           color: colors.accent,
-          onTap: () => _pick(ImageSource.gallery),
+          onTap: () => _pick(context, ImageSource.gallery),
         ),
         if (currentPath != null || previewFile != null)
           _PickTile(
@@ -47,7 +48,14 @@ class ProfileAvatarPicker extends StatelessWidget {
     );
   }
 
-  Future<void> _pick(ImageSource source) async {
+  Future<void> _pick(BuildContext context, ImageSource source) async {
+    final accepted = await showPermissionRationaleDialog(
+      context,
+      source == ImageSource.camera
+          ? PermissionRationaleKind.camera
+          : PermissionRationaleKind.photos,
+    );
+    if (!accepted) return;
     final file = await ImagePicker().pickImage(
       source: source,
       maxWidth: 512,
