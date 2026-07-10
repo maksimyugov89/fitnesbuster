@@ -66,6 +66,39 @@ void main() {
     expect(results.single.isFriend, isTrue);
   });
 
+  test(
+    'createChallenge sends callable payload and returns challenge id',
+    () async {
+      final service = SocialService(
+        firestore: MockFirebaseFirestore(),
+        currentUidProvider: () => 'u1',
+        callableInvoker: (name, data) async {
+          expect(name, 'createChallenge');
+          expect(data, {
+            'title': 'Week of strength',
+            'description': 'Finish 3 workouts',
+            'goalType': 'workout_count',
+            'targetValue': 3,
+            'durationDays': 7,
+            'isPublic': true,
+          });
+          return {'challengeId': 'challenge-1'};
+        },
+      );
+
+      final challengeId = await service.createChallenge(
+        title: 'Week of strength',
+        description: 'Finish 3 workouts',
+        goalType: 'workout_count',
+        targetValue: 3,
+        durationDays: 7,
+        isPublic: true,
+      );
+
+      expect(challengeId, 'challenge-1');
+    },
+  );
+
   test('recordWorkout returns completed challenge names', () async {
     final service = SocialService(
       firestore: MockFirebaseFirestore(),

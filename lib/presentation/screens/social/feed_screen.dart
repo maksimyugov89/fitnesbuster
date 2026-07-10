@@ -93,6 +93,11 @@ class _FeedCard extends StatelessWidget {
   final ThemePalette colors;
   const _FeedCard({required this.event, required this.colors});
 
+  String get _challengeId {
+    final value = event.data['challengeId'];
+    return value is String ? value : '';
+  }
+
   String _timeAgo(DateTime dt) {
     final diff = DateTime.now().difference(dt);
     if (diff.inMinutes < 1) return 'только что';
@@ -157,6 +162,14 @@ class _FeedCard extends StatelessWidget {
                   _timeAgo(event.timestamp),
                   style: TextStyle(fontSize: 11, color: colors.textMuted),
                 ),
+                if (event.type == 'challenge_created' &&
+                    _challengeId.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  _JoinChallengeFromFeedButton(
+                    challengeId: _challengeId,
+                    colors: colors,
+                  ),
+                ],
               ],
             ),
           ),
@@ -165,5 +178,106 @@ class _FeedCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _JoinChallengeFromFeedButton extends StatefulWidget {
+  final String challengeId;
+  final ThemePalette colors;
+
+  const _JoinChallengeFromFeedButton({
+    required this.challengeId,
+    required this.colors,
+  });
+
+  @override
+  State<_JoinChallengeFromFeedButton> createState() =>
+      _JoinChallengeFromFeedButtonState();
+}
+
+class _JoinChallengeFromFeedButtonState
+    extends State<_JoinChallengeFromFeedButton> {
+  var _loading = false;
+  var _joined = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = _joined ? 'Вы участвуете' : 'Присоединиться';
+    return GestureDetector(
+      onTap: _loading || _joined ? null : _join,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        decoration: BoxDecoration(
+          color: _joined
+              ? widget.colors.success.withValues(alpha: 0.12)
+              : widget.colors.primary,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: _loading
+              ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: widget.colors.textOnPrimary,
+                  ),
+                )
+              : Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: _joined
+                        ? widget.colors.success
+                        : widget.colors.textOnPrimary,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _join() async {
+    setState(() => _loading = true);
+    try {
+      await sl<ISocialService>().joinChallenge(widget.challengeId);
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _joined = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Вы присоединились к челленджу')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      final message = e.toString().toLowerCase();
+      if (message.contains('already-exists') ||
+          message.contains('already joined')) {
+        setState(() {
+          _loading = false;
+          _joined = true;
+        });
+        return;
+      }
+
+      setState(() => _loading = false);
+      final isPermissionError =
+          message.contains('permission-denied') ||
+          message.contains('permission denied');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isPermissionError
+                ? 'К приватному челленджу могут присоединиться только друзья автора'
+                : 'Не удалось присоединиться: ${e.toString()}',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      );
+    }
   }
 }

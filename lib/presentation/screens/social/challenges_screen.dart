@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/social_models.dart';
-import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 import 'package:fitnesbuster/presentation/widgets/segmented_tab_bar.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
@@ -84,25 +84,50 @@ class _ChallengesScreenState extends State<ChallengesScreen>
         if (snap.connectionState == ConnectionState.waiting) {
           return Center(child: LoadingShimmer.listView(4));
         }
+        if (snap.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                'Не удалось загрузить челленджи: ${snap.error}',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
         final challenges = snap.data ?? [];
         if (challenges.isEmpty) {
           return _buildEmpty(
             colors,
             'Нет активных челленджей',
             'Создай свой или присоединись к публичному',
+            action: _CreateChallengeInlineButton(
+              colors: colors,
+              onTap: () =>
+                  _openCreateChallengeSheet(colors, initialIsPublic: false),
+            ),
           );
         }
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 80),
-          itemCount: challenges.length,
+          itemCount: challenges.length + 1,
           separatorBuilder: (_, _) => const SizedBox(height: 10),
-          itemBuilder: (_, i) => _ChallengeCard(
-            challenge: challenges[i],
-            colors: colors,
-            showLeaderboard: true,
-            currentUid: myUid,
-            showManageAction: true,
-          ),
+          itemBuilder: (_, i) {
+            if (i == 0) {
+              return _CreateChallengeInlineButton(
+                colors: colors,
+                onTap: () =>
+                    _openCreateChallengeSheet(colors, initialIsPublic: false),
+              );
+            }
+            return _ChallengeCard(
+              challenge: challenges[i - 1],
+              colors: colors,
+              showLeaderboard: true,
+              currentUid: myUid,
+              showManageAction: true,
+            );
+          },
         );
       },
     );
@@ -117,6 +142,17 @@ class _ChallengesScreenState extends State<ChallengesScreen>
         if (snap.connectionState == ConnectionState.waiting) {
           return Center(child: LoadingShimmer.listView(4));
         }
+        if (snap.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                'Не удалось загрузить челленджи: ${snap.error}',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
         final all = snap.data ?? [];
         if (all.isEmpty) {
           return _buildEmptyPublic(colors);
@@ -126,11 +162,12 @@ class _ChallengesScreenState extends State<ChallengesScreen>
           itemCount: all.length,
           separatorBuilder: (_, _) => const SizedBox(height: 10),
           itemBuilder: (_, i) {
-            final isParticipant = all[i].participants.contains(myUid);
+            final challenge = all[i];
+            final isParticipant = challenge.participants.contains(myUid);
             return _ChallengeCard(
-              challenge: all[i],
+              challenge: challenge,
               colors: colors,
-              showJoinButton: !isParticipant && all[i].isActive,
+              showJoinButton: !isParticipant && challenge.isActive,
               isParticipant: isParticipant,
             );
           },
@@ -139,7 +176,12 @@ class _ChallengesScreenState extends State<ChallengesScreen>
     );
   }
 
-  Widget _buildEmpty(ThemePalette colors, String title, String subtitle) {
+  Widget _buildEmpty(
+    ThemePalette colors,
+    String title,
+    String subtitle, {
+    Widget? action,
+  }) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -163,6 +205,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
               style: TextStyle(fontSize: 13, color: colors.textMuted),
               textAlign: TextAlign.center,
             ),
+            if (action != null) ...[const SizedBox(height: 20), action],
           ],
         ),
       ),
@@ -189,32 +232,9 @@ class _ChallengesScreenState extends State<ChallengesScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Нажмите кнопку ниже чтобы загрузить стандартные челленджи',
+              'Публичные челленджи появятся здесь, когда пользователи создадут их с включённым флажком публичности',
               style: TextStyle(fontSize: 13, color: colors.textMuted),
               textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            GestureDetector(
-              onTap: () => _seedChallenges(colors),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.primary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Загрузить челленджи',
-                  style: TextStyle(
-                    fontFamily: 'Syne',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: colors.textOnPrimary,
-                  ),
-                ),
-              ),
             ),
           ],
         ),
@@ -222,27 +242,429 @@ class _ChallengesScreenState extends State<ChallengesScreen>
     );
   }
 
-  Future<void> _seedChallenges(ThemePalette colors) async {
-    try {
-      await sl<ISocialService>().seedChallenges();
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Челленджи добавлены!')));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.tl(
-                'genericErrorMsg',
-              ).replaceAll('{error}', e.toString()),
+  void _openCreateChallengeSheet(
+    ThemePalette colors, {
+    required bool initialIsPublic,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _CreateChallengeSheet(
+        colors: colors,
+        initialIsPublic: initialIsPublic,
+      ),
+    );
+  }
+}
+
+class _CreateChallengeInlineButton extends StatelessWidget {
+  final ThemePalette colors;
+  final VoidCallback onTap;
+
+  const _CreateChallengeInlineButton({
+    required this.colors,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+        decoration: BoxDecoration(
+          color: colors.primary,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          'Создать челлендж',
+          style: TextStyle(
+            fontFamily: 'Syne',
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: colors.textOnPrimary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CreateChallengeSheet extends StatefulWidget {
+  final ThemePalette colors;
+  final bool initialIsPublic;
+
+  const _CreateChallengeSheet({
+    required this.colors,
+    required this.initialIsPublic,
+  });
+
+  @override
+  State<_CreateChallengeSheet> createState() => _CreateChallengeSheetState();
+}
+
+class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _title = TextEditingController();
+  final _description = TextEditingController();
+  final _target = TextEditingController(text: '3');
+  final _duration = TextEditingController(text: '7');
+  var _goalType = 'workout_count';
+  late bool _isPublic;
+  var _loading = false;
+
+  static const _goalOptions = [
+    _GoalOption('workout_count', 'Тренировки', 'раз'),
+    _GoalOption('calories_burned', 'Калории', 'ккал'),
+    _GoalOption('cardio_minutes', 'Кардио', 'мин'),
+    _GoalOption('workout_streak', 'Серия дней', 'дн.'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _isPublic = widget.initialIsPublic;
+  }
+
+  @override
+  void dispose() {
+    _title.dispose();
+    _description.dispose();
+    _target.dispose();
+    _duration.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = widget.colors;
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.88,
+        ),
+        decoration: BoxDecoration(
+          color: colors.surfaceCard,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 38,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  'Создать челлендж',
+                  style: TextStyle(
+                    fontFamily: 'Syne',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _FieldLabel(colors: colors, text: 'Название'),
+                const SizedBox(height: 6),
+                TextFormField(
+                  controller: _title,
+                  maxLength: 60,
+                  decoration: _inputDecoration(colors, 'Например: Неделя силы'),
+                  validator: (value) {
+                    final text = value?.trim() ?? '';
+                    if (text.isEmpty) return 'Введите название';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                _FieldLabel(colors: colors, text: 'Описание'),
+                const SizedBox(height: 6),
+                TextFormField(
+                  controller: _description,
+                  maxLength: 160,
+                  minLines: 2,
+                  maxLines: 3,
+                  decoration: _inputDecoration(
+                    colors,
+                    'Что нужно сделать участникам',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _FieldLabel(colors: colors, text: 'Цель'),
+                const SizedBox(height: 6),
+                DropdownButtonFormField<String>(
+                  initialValue: _goalType,
+                  dropdownColor: colors.surfaceCard,
+                  decoration: _inputDecoration(colors, ''),
+                  items: _goalOptions
+                      .map(
+                        (goal) => DropdownMenuItem(
+                          value: goal.value,
+                          child: Text(goal.label),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) return;
+                    setState(() {
+                      _goalType = value;
+                      _target.text = switch (value) {
+                        'calories_burned' => '1000',
+                        'cardio_minutes' => '120',
+                        'workout_streak' => '7',
+                        _ => '3',
+                      };
+                    });
+                  },
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _NumberField(
+                        controller: _target,
+                        colors: colors,
+                        label: 'Значение',
+                        hint: _currentGoal.unit,
+                        min: 1,
+                        max: 100000,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _NumberField(
+                        controller: _duration,
+                        colors: colors,
+                        label: 'Дней',
+                        hint: '1-365',
+                        min: 1,
+                        max: 365,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SwitchListTile(
+                  value: _isPublic,
+                  contentPadding: EdgeInsets.zero,
+                  activeThumbColor: colors.primary,
+                  title: Text(
+                    'Публичный челлендж',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  subtitle: Text(
+                    _isPublic
+                        ? 'Все пользователи смогут найти его и присоединиться'
+                        : 'Только друзья увидят приглашение в ленте и смогут присоединиться',
+                    style: TextStyle(fontSize: 12, color: colors.textMuted),
+                  ),
+                  onChanged: (value) => setState(() => _isPublic = value),
+                ),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: _loading ? null : _create,
+                  child: Container(
+                    width: double.infinity,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: colors.primary,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Center(
+                      child: _loading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: colors.textOnPrimary,
+                              ),
+                            )
+                          : Text(
+                              'Создать',
+                              style: TextStyle(
+                                fontFamily: 'Syne',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: colors.textOnPrimary,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        );
-      }
+        ),
+      ),
+    );
+  }
+
+  _GoalOption get _currentGoal =>
+      _goalOptions.firstWhere((goal) => goal.value == _goalType);
+
+  InputDecoration _inputDecoration(ThemePalette colors, String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(color: colors.textMuted),
+      counterStyle: TextStyle(color: colors.textMuted),
+      filled: true,
+      fillColor: colors.elevated,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: colors.primary),
+      ),
+    );
+  }
+
+  Future<void> _create() async {
+    if (_formKey.currentState?.validate() != true) return;
+    setState(() => _loading = true);
+    try {
+      await sl<ISocialService>().createChallenge(
+        title: _title.text.trim(),
+        description: _description.text.trim(),
+        goalType: _goalType,
+        targetValue: int.parse(_target.text),
+        durationDays: int.parse(_duration.text),
+        isPublic: _isPublic,
+      );
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Челлендж создан')));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Не удалось создать челлендж: ${e.toString()}',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      );
     }
+  }
+}
+
+class _GoalOption {
+  final String value;
+  final String label;
+  final String unit;
+
+  const _GoalOption(this.value, this.label, this.unit);
+}
+
+class _FieldLabel extends StatelessWidget {
+  final ThemePalette colors;
+  final String text;
+
+  const _FieldLabel({required this.colors, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        color: colors.textMuted,
+      ),
+    );
+  }
+}
+
+class _NumberField extends StatelessWidget {
+  final TextEditingController controller;
+  final ThemePalette colors;
+  final String label;
+  final String hint;
+  final int min;
+  final int max;
+
+  const _NumberField({
+    required this.controller,
+    required this.colors,
+    required this.label,
+    required this.hint,
+    required this.min,
+    required this.max,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _FieldLabel(colors: colors, text: label),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: colors.textMuted),
+            filled: true,
+            fillColor: colors.elevated,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Colors.white.withValues(alpha: 0.08),
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Colors.white.withValues(alpha: 0.08),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colors.primary),
+            ),
+          ),
+          validator: (value) {
+            final parsed = int.tryParse(value ?? '');
+            if (parsed == null) return 'Введите число';
+            if (parsed < min || parsed > max) return '$min-$max';
+            return null;
+          },
+        ),
+      ],
+    );
   }
 }
 

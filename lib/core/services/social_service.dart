@@ -218,6 +218,36 @@ class SocialService implements ISocialService {
   // ── CHALLENGES ─────────────────────────────────────────────────────────────
 
   @override
+  Future<String> createChallenge({
+    required String title,
+    required String description,
+    required String goalType,
+    required int targetValue,
+    required int durationDays,
+    required bool isPublic,
+  }) async {
+    try {
+      final data = await _call('createChallenge', {
+        'title': title,
+        'description': description,
+        'goalType': goalType,
+        'targetValue': targetValue,
+        'durationDays': durationDays,
+        'isPublic': isPublic,
+      });
+      final response = data as Map<String, dynamic>?;
+      return response?['challengeId'] as String? ?? '';
+    } catch (e, st) {
+      appLogger.w(
+        'SocialService: createChallenge failed',
+        error: e,
+        stackTrace: st,
+      );
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> joinChallenge(String challengeId) async {
     try {
       await _call('joinChallenge', {'challengeId': challengeId});
@@ -260,20 +290,6 @@ class SocialService implements ISocialService {
   }
 
   @override
-  Future<void> seedChallenges() async {
-    try {
-      await _call('seedChallenges', {});
-    } catch (e, st) {
-      appLogger.w(
-        'SocialService: seedChallenges failed',
-        error: e,
-        stackTrace: st,
-      );
-      rethrow;
-    }
-  }
-
-  @override
   Future<List<String>> recordWorkout({
     required int durationMinutes,
     required int caloriesBurned,
@@ -307,7 +323,10 @@ class SocialService implements ISocialService {
         .orderBy('endDate', descending: true)
         .limit(30)
         .snapshots()
-        .map((s) => s.docs.map(Challenge.fromDoc).toList());
+        .map((s) {
+          appLogger.i('publicChallengesStream snapshot count=${s.docs.length}');
+          return s.docs.map(Challenge.fromDoc).toList();
+        });
   }
 
   @override
@@ -319,7 +338,12 @@ class SocialService implements ISocialService {
         .where('participants', arrayContains: uid)
         .orderBy('endDate', descending: true)
         .snapshots()
-        .map((s) => s.docs.map(Challenge.fromDoc).toList());
+        .map((s) {
+          appLogger.i(
+            'myChallengesStream snapshot count=${s.docs.length} uid=$uid',
+          );
+          return s.docs.map(Challenge.fromDoc).toList();
+        });
   }
 
   @override

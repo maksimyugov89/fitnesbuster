@@ -1065,6 +1065,29 @@ class MockISocialService extends _i1.Mock implements _i10.ISocialService {
           as _i5.Stream<List<_i12.FeedEvent>>);
 
   @override
+  _i5.Future<String> createChallenge({
+    required String? title,
+    required String? description,
+    required String? goalType,
+    required int? targetValue,
+    required int? durationDays,
+    required bool? isPublic,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createChallenge, [], {
+              #title: title,
+              #description: description,
+              #goalType: goalType,
+              #targetValue: targetValue,
+              #durationDays: durationDays,
+              #isPublic: isPublic,
+            }),
+            returnValue: _i5.Future<String>.value(''),
+            returnValueForMissingStub: _i5.Future<String>.value(''),
+          )
+          as _i5.Future<String>);
+
+  @override
   _i5.Future<void> joinChallenge(String? challengeId) =>
       (super.noSuchMethod(
             Invocation.method(#joinChallenge, [challengeId]),
@@ -1086,15 +1109,6 @@ class MockISocialService extends _i1.Mock implements _i10.ISocialService {
   _i5.Future<void> deleteChallenge(String? challengeId) =>
       (super.noSuchMethod(
             Invocation.method(#deleteChallenge, [challengeId]),
-            returnValue: _i5.Future<void>.value(),
-            returnValueForMissingStub: _i5.Future<void>.value(),
-          )
-          as _i5.Future<void>);
-
-  @override
-  _i5.Future<void> seedChallenges() =>
-      (super.noSuchMethod(
-            Invocation.method(#seedChallenges, []),
             returnValue: _i5.Future<void>.value(),
             returnValueForMissingStub: _i5.Future<void>.value(),
           )

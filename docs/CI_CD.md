@@ -6,7 +6,7 @@
 
 | Файл | Триггер | Что делает |
 |---|---|---|
-| [`ci.yml`](../.github/workflows/ci.yml) | push/PR → `master` | `dart format`, `flutter analyze`, все 337 тестов (`flutter test --coverage`), отчёт о покрытии в комментарии PR + артефакт `lcov.info`, сборка Cloud Functions (`npm run build`) |
+| [`ci.yml`](../.github/workflows/ci.yml) | push/PR → `master` | `dart format`, `flutter analyze`, все 337 тестов (`flutter test --coverage`), загрузка покрытия в Codecov, отчёт о покрытии в комментарии PR + артефакт `lcov.info`, сборка Cloud Functions (`npm run build`) |
 | [`build.yml`](../.github/workflows/build.yml) | push/PR → `master`, ручной запуск | Собирает APK и AAB (debug-подпись, для внутреннего тестирования) и сохраняет их как build-артефакты на 14 дней |
 | [`release.yml`](../.github/workflows/release.yml) | push тега `v*.*.*` **или** ручной запуск (`workflow_dispatch`) | Прогоняет `flutter analyze` + `flutter test` как гейт качества, собирает **подписанные боевым ключом** APK/AAB, публикует GitHub Release с артефактами и авто-changelog, шлёт уведомление в Telegram |
 | [`security.yml`](../.github/workflows/security.yml) | PR → `master`, push → `master`, еженедельно (пн 06:00 UTC), ручной запуск | Сканирует `pubspec.lock` и `functions/package-lock.json` через OSV-Scanner на известные CVE, роняет job при находках, шлёт уведомление в Telegram |
@@ -24,10 +24,20 @@
 | `ANDROID_KEYSTORE_PASSWORD` | `release.yml` | Подписанной release-сборки |
 | `ANDROID_KEY_ALIAS` | `release.yml` | Подписанной release-сборки |
 | `ANDROID_KEY_PASSWORD` | `release.yml` | Подписанной release-сборки |
+| `CODECOV_TOKEN` | `ci.yml` | Загрузки покрытия тестами в Codecov |
 
 `GITHUB_TOKEN` для комментария с покрытием в PR создаётся GitHub автоматически на каждый workflow run — добавлять его вручную не нужно.
 
-Без Telegram-секретов `ci.yml`/`security.yml` всё равно работают (шаги уведомления молча падают только на `failure()` веток — не блокируют пайплайн). `release.yml` без keystore-секретов не сможет собрать подписанный релиз.
+Без Telegram-секретов `ci.yml`/`security.yml` всё равно работают (шаги уведомления молча падают только на `failure()` веток — не блокируют пайплайн). Без `CODECOV_TOKEN` шаг загрузки покрытия в Codecov будет пропущен, но PR-комментарий и GitHub artifact останутся. `release.yml` без keystore-секретов не сможет собрать подписанный релиз.
+
+### Как подключить Codecov
+
+1. Откройте Codecov → нужный репозиторий → **Settings** → **General** → **Repository Upload Token**.
+2. Скопируйте токен.
+3. Добавьте его в GitHub: **Settings** → **Secrets and variables** → **Actions** → **New repository secret** → `CODECOV_TOKEN`.
+4. Запустите `CI` заново через новый push или вручную перезапустите failed/skipped workflow run.
+
+В [`ci.yml`](../.github/workflows/ci.yml) загружается уже очищенный `coverage/lcov.info`: сгенерированный Dart-код (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`) предварительно исключается через `lcov --remove`.
 
 ### Как создать Telegram-бота и получить chat_id
 
@@ -82,18 +92,15 @@ git push origin v1.2.0
 
 ## Отчёты о покрытии тестами
 
-Покрытие остаётся полностью внутри GitHub, без стороннего сервиса (см. раздел про Codecov ниже — почему):
+Покрытие публикуется в Codecov и дополнительно остаётся внутри GitHub:
 
+- **Codecov** — шаг `codecov/codecov-action@v5` загружает очищенный `coverage/lcov.info` с флагом `flutter`
 - **Комментарий в PR** — на каждый PR бот ([`zgosalvez/github-actions-report-lcov`](https://github.com/zgosalvez/github-actions-report-lcov)) публикует % покрытия и таблицу по файлам, обновляя один и тот же комментарий при новых пушах
 - **Job summary** — краткая сводка `lcov --summary` видна на вкладке Summary каждого workflow run
 - **Artifact `coverage-report`** — сырой `lcov.info` на вкладке каждого workflow run в Actions (14 дней), можно открыть локально: `genhtml coverage/lcov.info -o coverage/html && open coverage/html/index.html`
 - **Artifact `coverage-html-report`** (только для PR) — готовый HTML-отчёт от того же action, тоже прикрепляется к run
 
 Из покрытия исключён сгенерированный код (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`) — он не отражает реальное качество тестирования.
-
-### Почему не Codecov
-
-Изначально планировался Codecov, но `codecov.io`/`app.codecov.io`/`api.codecov.io` возвращают `403 Forbidden` при обращении из РФ (похоже на блокировку по региону со стороны сервиса, а не проблему настройки). Если у вас появится доступ (VPN и т.п.), Codecov можно подключить: зарегистрироваться на codecov.io, добавить репозиторий, скопировать `Repository Upload Token` и добавить его как `CODECOV_TOKEN` в секреты — затем вернуть шаг `codecov/codecov-action@v4` в `ci.yml` вместо/вместе с PR-комментарием.
 
 ## Известные ограничения
 

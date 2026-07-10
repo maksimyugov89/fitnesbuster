@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 class FriendRequest {
   final String id;
@@ -93,6 +94,7 @@ class FeedEvent {
       case 'achievement':
         return AppImages.achievements;
       case 'challenge_won':
+      case 'challenge_created':
         return AppImages.energy;
       default:
         return AppImages.pin;
@@ -118,6 +120,11 @@ class FeedEvent {
         return title.isNotEmpty
             ? AppLocalizations.tlp('socialDidChallenge', {'title': title})
             : AppLocalizations.tl('socialDidChallengeShort');
+      case 'challenge_created':
+        final title = data['challengeTitle'] as String? ?? '';
+        return title.isNotEmpty
+            ? 'создал(а) челлендж «$title»'
+            : 'создал(а) челлендж';
       default:
         return AppLocalizations.tl('socialDidSomething');
     }
@@ -158,7 +165,26 @@ class Challenge {
   });
 
   factory Challenge.fromDoc(DocumentSnapshot doc) {
-    final d = doc.data() as Map<String, dynamic>;
+    final d = doc.data() as Map<String, dynamic>?;
+    if (d == null) {
+      appLogger.w('Challenge.fromDoc: empty document id=${doc.id}');
+      return Challenge(
+        id: doc.id,
+        title: '',
+        description: '',
+        goalType: 'workout_count',
+        targetValue: 1,
+        durationDays: 365,
+        isPublic: true,
+        isPredefined: false,
+        createdBy: '',
+        creatorName: 'FitnesBuster',
+        participants: const [],
+        startDate: DateTime.now(),
+        endDate: DateTime(2030),
+        emoji: '🎯',
+      );
+    }
     return Challenge(
       id: doc.id,
       title: d['title'] as String? ?? '',

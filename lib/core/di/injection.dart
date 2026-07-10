@@ -55,6 +55,7 @@ import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/core/services/exercise_gif_service.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 import 'package:fitnesbuster/core/cache/offline_queue.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/constants/firebase_config.dart';
 
 final sl = GetIt.instance;
@@ -63,12 +64,16 @@ StreamSubscription<fb.User?>? _authFcmSub;
 Future<void> initDependencies() async {
   // Firebase
   sl.registerLazySingleton(() => fb.FirebaseAuth.instance);
-  sl.registerLazySingleton(
-    () => FirebaseFirestore.instanceFor(
+  sl.registerLazySingleton(() {
+    final instance = FirebaseFirestore.instanceFor(
       app: Firebase.app(),
       databaseId: FirebaseConfig.firestoreDatabaseId,
-    ),
-  );
+    );
+    appLogger.i(
+      'Firestore initialized databaseId=${FirebaseConfig.firestoreDatabaseId}',
+    );
+    return instance;
+  });
 
   // Notifications
   final notificationService = NotificationService();

@@ -69,6 +69,18 @@ export const createChallenge = onCall(
       lastUpdated: now,
     });
 
+    if (!isPublic) {
+      await db.collection(`activity_events/${uid}/items`).add({
+        type: "challenge_created",
+        data: {
+          challengeId: ref.id,
+          challengeTitle: title,
+          isPublic: false,
+        },
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
     return {challengeId: ref.id};
   }
 );
@@ -109,6 +121,14 @@ export const joinChallenge = onCall(
       }
       if ((chal.participants as string[]).includes(uid)) {
         throw new HttpsError("already-exists", "Already joined");
+      }
+
+      const createdBy = chal.createdBy as string;
+      if (chal.isPublic !== true && createdBy !== uid) {
+        const friendSnap = await tx.get(db.doc(`friends/${createdBy}/list/${uid}`));
+        if (!friendSnap.exists) {
+          throw new HttpsError("permission-denied", "Only the creator's friends can join this challenge");
+        }
       }
 
       tx.update(chalRef, {
