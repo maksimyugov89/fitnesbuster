@@ -238,9 +238,14 @@ test("deepseekProxy enforces auth and validates payload before provider access",
   assertCallableError(invalid, "INVALID_ARGUMENT");
 });
 
-test("rate limiter caps a concurrent publishActivity burst", {timeout: 120_000}, async () => {
+test("rate limiter caps concurrent publishActivity calls at the remaining quota", async () => {
   const user = await createUser("BurstUser");
-  const calls = Array.from({length: 32}, (_, index) =>
+  await db.doc(`rate_limits/${user.uid}_publishActivity`).set({
+    count: 29,
+    windowStart: Date.now(),
+  });
+
+  const calls = Array.from({length: 3}, (_, index) =>
     callCallable("publishActivity", user.token, {
       type: "workout_done",
       data: {sequence: index},
@@ -251,8 +256,13 @@ test("rate limiter caps a concurrent publishActivity burst", {timeout: 120_000},
   const denied = results.filter(
     (result) => result.json.error?.status === "RESOURCE_EXHAUSTED"
   );
-  assert.equal(allowed.length, 30, results.map((result) => result.json));
-  assert.equal(denied.length, 2, results.map((result) => result.json));
+  const diagnostics = results.map((result) => result.json);
+  assert.equal(allowed.length, 1, diagnostics);
+  assert.equal(denied.length, 2, diagnostics);
+  assert.equal(allowed.length + denied.length, results.length, diagnostics);
+
+  const limiter = await db.doc(`rate_limits/${user.uid}_publishActivity`).get();
+  assert.equal(limiter.data()?.count, 30, diagnostics);
 });
 
 test("deleteAccount removes owned data, reciprocal links, participation, and Auth user", async () => {
