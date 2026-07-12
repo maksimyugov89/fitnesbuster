@@ -37,8 +37,6 @@ jobs:
         with:
           path: |
             ${{ env.FLUTTER_ROOT }}/.pub-cache
-            **/.dart_tool
-            **/.packages
             pubspec.lock
           key: pub-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
           restore-keys: pub-${{ runner.os }}-
@@ -46,12 +44,12 @@ jobs:
       - run: flutter pub get
 
       - name: Format check
-        run: dart format --output=none --set-exit-if-changed lib/ test/
+        run: dart format --output=none --set-exit-if-changed lib/ test/ integration_test/
 
       - name: Analyze
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/ test/
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/ test/ integration_test/
 
-      - name: Test (unit, widget, golden, integration)
+      - name: Test (unit, widget, golden, test/integration)
         run: flutter test --coverage --reporter=expanded
 
       - name: Strip generated code from coverage

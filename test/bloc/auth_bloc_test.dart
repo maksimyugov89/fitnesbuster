@@ -27,6 +27,8 @@ void main() {
     when(repo.currentUser).thenReturn(null);
     when(repo.isEmailVerified).thenReturn(true);
     when(repo.getCurrentUserWithProfile()).thenAnswer((_) async => null);
+    when(repo.reloadUser()).thenAnswer((_) async {});
+    when(repo.signOut()).thenAnswer((_) async {});
     bloc = AuthBloc(authRepository: repo);
   });
 

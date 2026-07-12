@@ -91,11 +91,23 @@ class UserRepository implements IUserRepository {
     if (profile != null) {
       data['profile'] = _profileToMap(profile);
     }
+    appLogger.i(
+      '[UserRepo] saveOnboardingData — userId=$userId hasProfile=${profile != null} '
+      'goal=${goal.name} intensity=${intensity.name}',
+    );
     await _firestore
         .collection(FirestoreCollections.users)
         .doc(userId)
         .set(data, SetOptions(merge: true));
-    return getUser(userId);
+    appLogger.i(
+      '[UserRepo] saveOnboardingData — Firestore write DONE for userId=$userId',
+    );
+    final result = await getUser(userId);
+    appLogger.i(
+      '[UserRepo] saveOnboardingData — read back: profile=${result.profile != null} '
+      'name=${result.name}',
+    );
+    return result;
   }
 
   @override

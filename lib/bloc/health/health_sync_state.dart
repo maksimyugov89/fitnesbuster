@@ -23,9 +23,14 @@ class HealthSyncStateLoaded extends HealthSyncState {
   List<Object?> get props => [data, lastSyncAt];
 }
 
+enum HealthSyncErrorKind { notInstalled, accessDenied, initialization, read }
+
 class HealthSyncStateError extends HealthSyncState {
   final String message;
-  const HealthSyncStateError({required this.message});
+  final HealthSyncErrorKind kind;
+
+  const HealthSyncStateError({required this.message, required this.kind});
+
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, kind];
 }

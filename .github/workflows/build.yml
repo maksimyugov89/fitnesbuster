@@ -34,8 +34,6 @@ jobs:
         with:
           path: |
             ${{ env.FLUTTER_ROOT }}/.pub-cache
-            **/.dart_tool
-            **/.packages
             pubspec.lock
           key: pub-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
           restore-keys: pub-${{ runner.os }}-

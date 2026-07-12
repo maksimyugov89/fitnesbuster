@@ -38,4 +38,13 @@ abstract interface class IAuthRepository {
   /// (Firestore documents + Firebase Auth record) via the `deleteAccount`
   /// Cloud Function, then clears local caches and signs out.
   Future<void> deleteAccount();
+
+  /// Reloads the current Firebase user from the server. Throws
+  /// [FirebaseAuthException] with code `user-not-found` or
+  /// `user-token-expired` if the account was deleted / disabled.
+  Future<void> reloadUser();
+
+  /// Signs out the current Firebase user locally (no server call).
+  /// Unlike [logout], this does *not* attempt Firestore / FCM cleanup.
+  Future<void> signOut();
 }

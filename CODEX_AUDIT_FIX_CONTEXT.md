@@ -9,7 +9,7 @@
 
 Проект уже выглядит заметно зрелее обычного прототипа: есть Clean Architecture/BLoC, GetIt DI, Firebase Auth/Firestore/Functions/FCM, AI через Cloud Function proxy, Health Connect/HealthKit, локализация, тесты, CI/CD, security scan, legal docs и большая база упражнений.
 
-На момент аудита главными рисками были системные несостыковки между слоями: Firestore database id, недоделанная OfflineQueue и конфликт client writes с Firestore rules. Эти P0/P1-дефекты исправлены в коде и покрыты unit/callable tests. Firebase Emulator Suite добавлен; permissions/rationale прошли статический аудит; `deepseekProxy` получил fail-closed rate limiter. Открыты внешние Firebase/release проверки и технические P2-задачи: Windows golden review, real-device permissions/text scaling, workout execution/session UI coverage и дополнительные rules/provider integration tests.
+На момент аудита главными рисками были системные несостыковки между слоями: Firestore database id, недоделанная OfflineQueue и конфликт client writes с Firestore rules. Эти P0/P1-дефекты исправлены в коде и покрыты unit/callable tests. Firebase Emulator Suite добавлен; `deepseekProxy` получил fail-closed rate limiter. На realme RMX3853 / Android 16 проверены Health Connect, gallery Photo Picker, notifications, camera deny/lockout/Settings recovery, location deny/Settings recovery, Google re-login, Firebase reads, production AI chat, workout lifecycle, 3D/GIF и text scale 1.2/1.4. Локальный Linux/Docker CI gate на Flutter 3.38.5 подтверждён. Открытыми остаются внешние Firebase Console/Play/release checks и реальный GitHub Actions run.
 
 Оценка состояния на момент первоначального аудита: примерно 7/10. Это историческая оценка, а не текущий пересчитанный рейтинг: большая часть найденных P0/P1-дефектов после аудита уже исправлена в коде, но внешние Firebase/release проверки еще не закрыты.
 
@@ -78,9 +78,10 @@
 - `npm run build` в `functions`: успешно.
 - `npm test` в `functions`: 38/38 tests успешно.
 - `npm run test:emulator:exec` в `functions`: 6/6 callable integration tests успешно на Auth/Firestore/Functions emulators.
-- `dart format --output=none --set-exit-if-changed lib test`: после форматирования изменённых файлов gate чистый.
-- `flutter analyze --no-fatal-infos --no-fatal-warnings lib test`: No issues found.
-- Полный Windows suite: 474 passed, 13 skipped, 2 known golden pixel diffs; 489 зарегистрированных результатов.
+- `dart format --output=none --set-exit-if-changed lib test integration_test`: clean.
+- `flutter analyze --no-fatal-infos --no-fatal-warnings lib test integration_test`: No issues found.
+- Полный Linux/Docker Flutter 3.38.5 suite: 485 passed, 13 skipped; 498 зарегистрированных результатов.
+- Исторический полный Windows suite: 474 passed, 13 skipped, 2 known Windows-only golden pixel diffs; 489 зарегистрированных результатов.
 - Coverage: 4406/21391 = 20.60% non-generated lines (was 13.15%).
 - Проверено 48 Dart `_test.dart` файлов; Functions считаются отдельно.
 - Новые production-widget slices (`ImportOptionCard`, `ImportActionButton`, `ProfileStatsRow`, `ProfileCurrentProgram`) и injectable `HealthSyncBloc` targeted suite: 13/13 успешно.
@@ -92,14 +93,14 @@
 - `.\gradlew.bat :app:compileDebugKotlin --stacktrace` прошел успешно после переноса `MainActivity`.
 - Контрольный `rg` не находит в проверяемых путях: namespace `admin.firestore().FieldValue/Timestamp`, неименованный `FirebaseFirestore.instance`, `BODY_SENSORS_BACKGROUND`, `NSLocationAlwaysAndWhenInUseUsageDescription`, `TextScaler.noScaling`, `node-version: '20'`.
 
-Остающиеся проблемы проверок:
+Статус проверок:
 
-- `test/golden/dashboard_golden_test.dart`: `goldens/dashboard.png`, 0.77% / 3684 px diff.
-- `test/golden/workout_plan_golden_test.dart`: `goldens/workout_plan.png`, 0.59% / 2836 px diff.
-- Текущий реальный GitHub Actions run после последних коммитов не подтвержден. Установленный GitHub-коннектор не получил доступ к приватному репозиторию, поэтому состояние Actions нельзя считать проверенным. Workflow запускается на push в `master` либо PR в `master`; текущая feature-ветка требует PR/merge для гарантированного CI run.
+- В Docker image `ghcr.io/cirruslabs/flutter:3.38.5` оба golden PASS.
+- На Windows renderer сохраняются ожидаемые pixel diffs: `dashboard.png` 0.77% / 3684 px и `workout_plan.png` 0.59% / 2836 px. Baseline с Windows не обновлять.
+- Текущий реальный GitHub Actions run после последних коммитов не подтвержден: `gh` CLI не авторизован (`gh auth login`/`GH_TOKEN` отсутствуют), поэтому состояние Actions нельзя считать проверенным. Workflow запускается на push в `master` либо PR в `master`; текущая feature-ветка требует PR/merge для гарантированного CI run.
 - В текущей среде Flutter/Dart команды надежно работают только через approved/escalated execution; это ограничение среды, а не проекта.
 
-Итог по toolchain: format и analyze чистые; полный test suite блокируют только два подтвержденных golden pixel diff. Предыдущее утверждение о неподтвержденных полном analyze/format устарело.
+Итог по toolchain: format, analyze, Linux full Flutter suite/goldens, Functions unit/spec и callable emulator gate чистые. Предыдущее утверждение, что полный suite блокируют golden pixel diff, устарело: это Windows-only renderer diff.
 
 ## P0: Firestore database id mismatch — исправлено в коде
 
@@ -304,7 +305,7 @@
 
 ## P2: Android package id и Firebase config — настроено
 
-Статус: package id, официальный Firebase Android app config, локальные debug/release SHA и Google Auth provider настроены. Остается runtime smoke-test Google Sign-In; Play App Signing SHA потребуется отдельно для сборок, распространяемых через Play Console.
+Статус: package id, официальный Firebase Android app config, локальные debug/release SHA и Google Auth provider настроены. Реальный Google sign-out/sign-in PASS на Android 16 (2026-07-11); Play App Signing SHA потребуется отдельно для сборок, распространяемых через Play Console.
 
 Исходный риск: перед публикацией пришлось бы менять package id, что лучше было сделать до реального релиза.
 
@@ -328,8 +329,8 @@
 
 Что еще нужно проверить:
 
-- На реальном устройстве/эмуляторе выполнить Google Sign-In, подтвердить появление/обновление пользователя в Firebase Authentication → Users и профиля в Firestore database `fitnesbuster` → `users`.
-- Выполнить sign-out/sign-in повторно и подтвердить чтение существующего профиля.
+- В Firebase Console подтвердить появление/обновление уже проверенного на устройстве пользователя в Authentication → Users и профиль в Firestore database `fitnesbuster` → `users`.
+- Реальный sign-out/sign-in и чтение существующих profile/workout данных выполнены 2026-07-11 на Android 16.
 - Перед распространением через Play Console добавить в Firebase SHA-1/SHA-256 из Play App Signing и подтвердить package `com.fitnesbuster.app` в Play Console. Upload/release keystore SHA не заменяет Play App Signing SHA для установленной из Google Play сборки.
 
 Файлы:
@@ -356,11 +357,37 @@
 - Barcode/QR scanner, avatar и progress photo flows показывают rationale до системного запроса.
 - FCM больше не запрашивает permission автоматически при sign-in: background init регистрирует token только при уже выданном разрешении; явный prompt вызывается после rationale из notification settings.
 - `HealthSyncScreen` теперь тестируем через injected BLoC; loading/loaded/not-installed/lifecycle состояния покрыты widget tests.
+- 2026-07-11 выполнена реальная проверка на realme RMX3853, Android 16/API 36, Health Connect `2026.05.14.00.release`.
+- Официальный Health Connect Toolbox 2.3.3 подтвердил steps, active/total calories, HR/resting HR, HRV RMSSD, respiratory rate, weight, height, distance, hydration, sleep и workout; после проверки синтетические records и Toolbox удалены.
+- Device test обнаружил ложное состояние «Синхронизировано: 0» после полного отзыва/lockout. Исправлено: per-type permission refresh, изолированное чтение типов, типизированная denied error и recovery UI с переходом в Health Connect Settings.
+- Partial revoke HRV сохраняет остальные метрики; полный revoke показывает access-denied UI; повторная выдача 13 разрешений восстанавливает sync без перезапуска.
+- Device probe подтвердил downstream: AI DTO получил steps/weight/HRV, Dashboard/Recovery показал score 52, HRV 58 ms и resting HR 58 bpm.
+- Добавлены 6 regression tests; сфокусированный health suite 39/39 и analyzer `No issues found`.
+- Gallery rationale открыл Android Photo Picker без broad media permission; cancel безопасно вернул в приложение.
+- Notifications прошли rationale, два denial, `USER_FIXED` и Settings recovery до `POST_NOTIFICATIONS granted=true`. Найден и исправлен ложный success при denied callback; sheet теперь остаётся открытым и предлагает Settings.
+- Barcode scanner после camera `USER_FIXED` оставался пустым. Теперь permission запрашивается явно, показывается recovery UI, а status обновляется при возврате из Settings. Добавлен widget regression. На release-signed APK подтверждены два отказа, `USER_FIXED`, переход в App Info, выдача camera permission и автоматическое восстановление scanner без перезапуска.
+- Location device probe закрыт на realme RMX3853 / Android 16: первый системный отказ `Запретить` показал error/manual fallback, recovery UI открыл Android App Info, через Settings UI выдано `Разрешить только во время использования приложения`, итог `LocationPermission.whileInUse`. На этой прошивке повторный location request не даёт стабильный `deniedForever`, поэтому production UX усилен: Settings action показывается уже после обычного denial.
+
+### Review исправлений DeepSeek от 11.07.2026
+
+Переданный текстовый отчёт сверен с реальным worktree. Заявленные private-route guard, Auth reload/sign-out, принудительный Google account picker, поздняя Auth-синхронизация онбординга, overlay layout, единый hydrated Auth emit, Hive recovery, Firestore merge и location Settings action присутствуют в коде.
+
+После review реализация усилена:
+
+- удалён глобальный `onboarding_completed` fallback, небезопасный для нескольких UID на одном устройстве;
+- email и Google login возвращают entity с загруженным Firestore profile, исключая промежуточный redirect в onboarding;
+- неподтверждённый сетевой сбой `deleteAccount` больше не считается успешным cloud deletion, при этом локальный sign-out выполняется всегда;
+- Hive cipher recovery согласован для cache, offline queue и dead-letter boxes;
+- Mockito mocks регенерированы после изменения `IAuthRepository`.
+
+Regression-набор auth/router/onboarding/cache/permissions прошёл 84/84; дополнительный focused suite после location-фикса прошёл 67/67; `flutter analyze --no-fatal-infos --no-fatal-warnings lib test integration_test` — `No issues found`. Location integration probe прошёл 1/1 на устройстве. Release pipeline исправлен и подтверждён: `flutter build apk --release --no-pub` успешно собирает `build/app/outputs/flutter-apk/app-release.apk`, `flutter build appbundle --release --no-pub` — `build/app/outputs/bundle/release/app-release.aab`. Для generated-state quirk Flutter 3.38.5, где dev `integration_test` попадал в release `GeneratedPluginRegistrant`, добавлен Gradle strip-task перед release compile; production classpath остаётся без тестового plugin.
+
+На свежей release-установке подтверждены системный Google `AccountPickerActivity` и загрузка существующего Firestore-профиля непосредственно в dashboard без промежуточного onboarding redirect.
 
 Что еще нужно доделать:
 
 - Проверить Health Connect policy и Google Play Data safety.
-- На реальных Android/iOS устройствах проверить deny/deny-forever и переход в Settings для camera/photo/notifications/health/location.
+- Gallery, notifications, camera, location и Health Connect device flows закрыты на Android. Для location классический второй deny/`deniedForever` на RMX3853 не воспроизводится стабильно, поэтому закрыт более надёжный пользовательский recovery после обычного denial.
 - Продуктово решить, нужно ли запрашивать весь Health Connect набор сразу или часть метрик сделать ленивой/опциональной.
 - Для международного iOS release добавить локализованные `InfoPlist.strings`: текущие native purpose strings в `Info.plist` только на русском, хотя in-app rationale локализован на 15 языков.
 - Локализовать сам Health Sync screen: его rationale/status/action copy пока hardcoded на русском; 15-язычная локализация подтверждена только для camera/photo/notification и location rationale.
@@ -377,11 +404,11 @@
 Факты:
 
 - В текущем дереве 48 Dart `_test.dart` файлов.
-- Актуальный полный Windows run: 474 passed, 13 skipped, 2 failed golden cases; всего 489 зарегистрированных результатов.
-- Golden tests включены в общий `flutter test` и CI/release workflows, но два baseline сейчас расходятся с рендером.
+- Актуальный полный Linux/Docker Flutter 3.38.5 run: 485 passed, 13 skipped; всего 498 зарегистрированных результатов.
+- Golden tests включены в общий `flutter test` и CI/release workflows; Linux baselines проходят, Windows renderer даёт ожидаемые 0.77%/0.59% pixel diffs.
 - Локальный `coverage/lcov.info`: 4406/21391, 20.60% line coverage по non-generated строкам.
 - В CI добавлены Codecov upload, PR coverage comment и job summary. GitHub coverage artifacts отключены после подтверждённого исчерпания storage quota; Codecov остаётся источником полного отчёта.
-- `docs/CI_CD.md`, `docs/RELEASE_SMOKE_CHECKLIST.md` и CI labels синхронизированы с baseline 489 / 38 / 6.
+- `docs/CI_CD.md`, `docs/RELEASE_SMOKE_CHECKLIST.md` и CI labels синхронизированы с baseline 498 / 38 / 6.
 - `docs/TEST_COVERAGE_PRIORITIES.md` — приоритеты по непокрытым risk boundaries.
 
 Что сделано:
@@ -428,11 +455,11 @@ Firebase client config:
 
 ## Рекомендуемый порядок будущих фиксов
 
-1. Выполнить реальный Google Sign-In smoke-test и подтвердить пользователя в Firebase Auth и профиль в named Firestore database `fitnesbuster`.
+1. В Firebase Console подтвердить runtime-проверенного Google-пользователя, target project и профиль в named Firestore database `fitnesbuster`.
 2. Прогнать social/challenges/profile smoke-check с реальным Firebase проектом.
-3. Открыть/обновить PR feature-ветки в `master` и подтвердить реальный GitHub Actions run: Flutter 489 результатов, Functions 38 unit/spec + 6 emulator, Codecov upload.
-4. Визуально проверить Windows golden diffs `dashboard.png`/`workout_plan.png`; Linux CI baselines не обновлять с Windows автоматически.
-5. На реальных устройствах пройти permission deny/settings flows и заполнить Google Play Data safety / Health Connect policy declarations.
+3. Открыть/обновить PR feature-ветки в `master` и подтвердить реальный GitHub Actions run: Flutter 498 результатов, Functions 38 unit/spec + 6 emulator, Codecov upload.
+4. Не обновлять Windows golden diffs `dashboard.png`/`workout_plan.png`; Linux/Flutter 3.38.5 baselines подтверждены и остаются источником истины.
+5. Заполнить Google Play Data safety / Health Connect policy declarations. Android permission deny/settings flows для Health Connect, gallery, notifications, camera и location закрыты на realme RMX3853 / Android 16.
 6. Проверить ключевые экраны при text scaling 1.2x/1.4x; отдельно решить, нужна ли настоящая поддержка 1.6x вместо текущего clamp.
 7. Подготовить test seams и тесты для `workout_execution_screen.dart` (0/739) и `workout_session_screen.dart` (0/483): clock/timer, FlutterTts и Wakelock adapters, phase/lifecycle transitions.
 8. Продолжить реальные workflow tests для import/profile/router; не копировать production widgets в test-файлы.

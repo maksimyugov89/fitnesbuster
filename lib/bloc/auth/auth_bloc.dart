@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
@@ -47,26 +48,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(const AuthStateUnauthenticated());
       return;
     }
-    // Emit the cached user immediately so the UI has something to show, then
-    // correct with the full Firestore profile (weight, height, ...) as soon
-    // as it resolves — awaited here rather than left to the separate
-    // userChanges stream, whose timing competes with unrelated startup work
-    // and previously left screens reading a profile-less state indefinitely.
+
+    // Verify the user still exists on the server. If the account was deleted
+    // but the local Firebase Auth cache was not cleared (e.g. network error
+    // during the Cloud Function call), force a sign-out so the user cannot
+    // re-enter a deleted account.
+    try {
+      await _authRepository.reloadUser();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found' ||
+          e.code == 'user-token-expired' ||
+          e.code == 'user-disabled') {
+        await _authRepository.signOut();
+        emit(const AuthStateUnauthenticated());
+        return;
+      }
+      // Network / transient errors: continue with cached user so offline
+      // mode still works.
+    } catch (_) {
+      // Non-FirebaseAuth exceptions: continue with cached user.
+    }
+
+    // Fetch the full Firestore profile BEFORE emitting any AuthState.
+    // Previously the intermediate emit (without profile) could cause the
+    // splash screen to navigate to /dashboard with hasProfile=false,
+    // which the router would then redirect to /onboarding — trapping the
+    // user in an infinite onboarding loop even though Firestore has a
+    // complete profile.
+    final fullUser = await _authRepository.getCurrentUserWithProfile();
+
     emit(
       AuthStateAuthenticated(
-        user: fastUser,
+        user: fullUser ?? fastUser,
         emailVerified: _authRepository.isEmailVerified,
       ),
     );
-    final fullUser = await _authRepository.getCurrentUserWithProfile();
-    if (fullUser != null) {
-      emit(
-        AuthStateAuthenticated(
-          user: fullUser,
-          emailVerified: _authRepository.isEmailVerified,
-        ),
-      );
-    }
   }
 
   Future<void> _onLoginRequested(

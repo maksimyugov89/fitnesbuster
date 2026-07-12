@@ -57,8 +57,12 @@ void main() {
 
     GetIt.instance.registerLazySingleton<IAuthRepository>(() => mockAuthRepo);
     GetIt.instance.registerLazySingleton<IUserRepository>(() => mockUserRepo);
-    GetIt.instance.registerLazySingleton<ISettingsRepository>(() => mockSettingsRepo);
-    GetIt.instance.registerLazySingleton<IExerciseService>(() => mockExerciseService);
+    GetIt.instance.registerLazySingleton<ISettingsRepository>(
+      () => mockSettingsRepo,
+    );
+    GetIt.instance.registerLazySingleton<IExerciseService>(
+      () => mockExerciseService,
+    );
 
     when(mockAuthRepo.currentUser).thenReturn(testUser);
     when(mockAuthRepo.userChanges).thenAnswer((_) => Stream.value(testUser));
@@ -83,8 +87,9 @@ void main() {
         await bloc.close();
       });
 
-      testWidgets('Start request transitions to WorkoutStateInProgress',
-          (tester) async {
+      testWidgets('Start request transitions to WorkoutStateInProgress', (
+        tester,
+      ) async {
         final bloc = WorkoutBloc();
         const session = WorkoutSession(
           id: 'session-1',
@@ -131,9 +136,11 @@ void main() {
         bloc.add(const WorkoutStartRequested());
         await tester.pump(Duration.zero);
 
-        bloc.add(const WorkoutSetCompleted(
-          setLog: SetLog(setNumber: 1, reps: 10, completed: true),
-        ));
+        bloc.add(
+          const WorkoutSetCompleted(
+            setLog: SetLog(setNumber: 1, reps: 10, completed: true),
+          ),
+        );
         await tester.pump(Duration.zero);
 
         final state = bloc.state as WorkoutStateInProgress;
@@ -143,8 +150,9 @@ void main() {
         await bloc.close();
       });
 
-      testWidgets('Exercise changed updates currentExerciseIndex',
-          (tester) async {
+      testWidgets('Exercise changed updates currentExerciseIndex', (
+        tester,
+      ) async {
         final bloc = WorkoutBloc();
 
         bloc.add(const WorkoutStartRequested());
@@ -153,16 +161,14 @@ void main() {
         bloc.add(const WorkoutExerciseChanged(index: 2));
         await tester.pump(Duration.zero);
 
-        expect(
-          (bloc.state as WorkoutStateInProgress).currentExerciseIndex,
-          2,
-        );
+        expect((bloc.state as WorkoutStateInProgress).currentExerciseIndex, 2);
 
         await bloc.close();
       });
 
-      testWidgets('Stop with session emits WorkoutStateCompleted',
-          (tester) async {
+      testWidgets('Stop with session emits WorkoutStateCompleted', (
+        tester,
+      ) async {
         final bloc = WorkoutBloc();
         const session = WorkoutSession(
           id: 'session-1',
@@ -181,16 +187,14 @@ void main() {
         await tester.pump(Duration.zero);
 
         expect(bloc.state, isA<WorkoutStateCompleted>());
-        expect(
-          (bloc.state as WorkoutStateCompleted).sessionId,
-          'session-1',
-        );
+        expect((bloc.state as WorkoutStateCompleted).sessionId, 'session-1');
 
         await bloc.close();
       });
 
-      testWidgets('Stop without session emits WorkoutStateError',
-          (tester) async {
+      testWidgets('Stop without session emits WorkoutStateError', (
+        tester,
+      ) async {
         final bloc = WorkoutBloc();
 
         bloc.add(const WorkoutStartRequested());
@@ -206,8 +210,7 @@ void main() {
     });
 
     group('WorkoutPlanScreen rendering', () {
-      testWidgets('WorkoutPlanScreen renders without crashing',
-          (tester) async {
+      testWidgets('WorkoutPlanScreen renders without crashing', (tester) async {
         final authBloc = AuthBloc(authRepository: mockAuthRepo);
         when(mockAuthRepo.currentUser).thenReturn(testUser);
 

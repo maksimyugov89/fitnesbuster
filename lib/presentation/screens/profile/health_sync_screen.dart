@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,9 +13,14 @@ import 'package:fitnesbuster/bloc/health/health_sync_bloc.dart';
 
 /// Health Connect sync screen — data from all fitness apps via Google Health Connect.
 class HealthSyncScreen extends StatefulWidget {
-  const HealthSyncScreen({super.key, this.bloc});
+  const HealthSyncScreen({
+    super.key,
+    this.bloc,
+    this.onOpenHealthConnectSettings,
+  });
 
   final HealthSyncBloc? bloc;
+  final VoidCallback? onOpenHealthConnectSettings;
 
   @override
   State<HealthSyncScreen> createState() => _HealthSyncScreenState();
@@ -38,6 +46,19 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
 
   void _sync() {
     _bloc.add(const HealthSyncReadToday());
+  }
+
+  Future<void> _openHealthConnectSettings() async {
+    final callback = widget.onOpenHealthConnectSettings;
+    if (callback != null) {
+      callback();
+      return;
+    }
+    if (!Platform.isAndroid) return;
+    const intent = AndroidIntent(
+      action: 'android.health.connect.action.HEALTH_HOME_SETTINGS',
+    );
+    await intent.launch();
   }
 
   @override
@@ -69,8 +90,12 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
         },
         builder: (context, state) {
           if (state is HealthSyncStateError &&
-              state.message.contains('не установлен')) {
+              state.kind == HealthSyncErrorKind.notInstalled) {
             return _buildNotInstalled(colors);
+          }
+          if (state is HealthSyncStateError &&
+              state.kind == HealthSyncErrorKind.accessDenied) {
+            return _buildAccessDenied(colors, state.message);
           }
 
           return Scaffold(
@@ -256,6 +281,51 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAccessDenied(dynamic colors, String message) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: const Text('Синхронизация', style: AppTextStyles.titleM),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const SizedBox(height: 40),
+          Icon(
+            Icons.health_and_safety_rounded,
+            size: 72,
+            color: colors.primary,
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Нет доступа к данным здоровья',
+            style: AppTextStyles.titleL,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            style: TextStyle(fontSize: 14, color: colors.textSecondary),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: _openHealthConnectSettings,
+            icon: const Icon(Icons.settings_rounded),
+            label: const Text('Открыть настройки Health Connect'),
+          ),
+          const SizedBox(height: 12),
+          TextButton(onPressed: _sync, child: const Text('Проверить снова')),
         ],
       ),
     );

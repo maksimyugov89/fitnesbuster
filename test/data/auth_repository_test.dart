@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:fitnesbuster/data/repositories/auth_repository.dart';
@@ -48,6 +49,7 @@ void main() {
   final tCreationTime = DateTime(2024, 1, 1);
 
   setUp(() {
+    SharedPreferences.setMockInitialValues({});
     mockAuth = MockFirebaseAuth();
     mockFirestore = MockFirebaseFirestore();
     mockFbUser = MockUser();
@@ -58,7 +60,11 @@ void main() {
     when(mockFbUser.photoURL).thenReturn(null);
     when(mockFbUser.metadata).thenReturn(_FakeUserMetadata(tCreationTime));
 
-    repo = AuthRepository(auth: mockAuth, firestore: mockFirestore);
+    repo = AuthRepository(
+      auth: mockAuth,
+      firestore: mockFirestore,
+      deleteAccountCall: () async {},
+    );
   });
 
   group('currentUser', () {
@@ -152,12 +158,26 @@ void main() {
       when(mockFirestore.collection('users')).thenReturn(collection);
       when(collection.doc(tUid)).thenReturn(docRef);
       when(snapshot.exists).thenReturn(true);
-      when(snapshot.data()).thenReturn({'nameLower': 'test user'});
+      when(snapshot.data()).thenReturn({
+        'name': tName,
+        'nameLower': 'test user',
+        'email': tEmail,
+        'profile': {
+          'weight': 81,
+          'height': 178,
+          'age': 32,
+          'gender': 'male',
+          'goal': 'maintain',
+          'intensity': 'balanced',
+          'activityLevel': 'moderatelyActive',
+        },
+      });
       when(docRef.get()).thenAnswer((_) async => snapshot);
 
       final user = await repo.login(email: tEmail, password: 'password');
       expect(user.id, tUid);
       expect(user.name, tName);
+      expect(user.profile?.weight, 81);
     });
 
     test('throws on FirebaseAuthException', () async {
@@ -209,6 +229,24 @@ void main() {
     test('calls signOut on FirebaseAuth', () async {
       when(mockAuth.signOut()).thenAnswer((_) async {});
       await repo.logout();
+      verify(mockAuth.signOut()).called(1);
+    });
+  });
+
+  group('deleteAccount', () {
+    test('signs out and reports an unconfirmed server deletion', () async {
+      when(mockAuth.currentUser).thenReturn(null);
+      when(mockAuth.signOut()).thenAnswer((_) async {});
+      repo = AuthRepository(
+        auth: mockAuth,
+        firestore: mockFirestore,
+        deleteAccountCall: () async => throw Exception('network timeout'),
+      );
+
+      await expectLater(
+        repo.deleteAccount(),
+        throwsA(isA<UnknownAuthException>()),
+      );
       verify(mockAuth.signOut()).called(1);
     });
   });

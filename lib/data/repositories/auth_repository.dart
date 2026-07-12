@@ -19,18 +19,21 @@ import 'package:fitnesbuster/core/cache/hive_cache.dart';
 class AuthRepository implements IAuthRepository {
   final fb.FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
-
-  // Lazy: constructing this eagerly requires Firebase.initializeApp() to
-  // have already run, which breaks pure-mock unit tests that never touch
-  // deleteAccount().
-  FirebaseFunctions get _functions =>
-      FirebaseFunctions.instanceFor(region: 'europe-west1');
+  final Future<void> Function() _deleteAccountCall;
 
   AuthRepository({
     required fb.FirebaseAuth auth,
     required FirebaseFirestore firestore,
+    Future<void> Function()? deleteAccountCall,
   }) : _auth = auth,
-       _firestore = firestore;
+       _firestore = firestore,
+       _deleteAccountCall = deleteAccountCall ?? _callDeleteAccount;
+
+  static Future<void> _callDeleteAccount() async {
+    await FirebaseFunctions.instanceFor(
+      region: 'europe-west1',
+    ).httpsCallable('deleteAccount').call();
+  }
 
   @override
   UserEntity? get currentUser {
@@ -81,7 +84,10 @@ class AuthRepository implements IAuthRepository {
       );
       final fbUser = result.user!;
       await _ensureFirestoreDoc(fbUser);
-      return _fbUserToEntity(fbUser);
+      // The router guards private routes by profile presence. Return the
+      // hydrated Firestore entity so an existing user never transiently looks
+      // like a new account and gets redirected into onboarding.
+      return _fetchFullEntity(fbUser);
     } on fb.FirebaseAuthException catch (e) {
       throw _mapFirebaseException(e);
     }
@@ -182,6 +188,11 @@ class AuthRepository implements IAuthRepository {
 
   @override
   Future<UserEntity> signInWithGoogle() async {
+    // Sign out of the Google Sign-In SDK first so the account picker always
+    // appears, allowing users to switch between multiple Google accounts on
+    // the same device. This does NOT sign out of Firebase Auth.
+    await GoogleSignIn().signOut();
+
     final googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) {
       throw Exception(AppLocalizations.tl('googleLoginCancelled'));
@@ -193,26 +204,10 @@ class AuthRepository implements IAuthRepository {
     );
     final result = await _auth.signInWithCredential(credential);
     final fbUser = result.user!;
-    final doc = await _firestore
-        .collection(FirestoreCollections.users)
-        .doc(fbUser.uid)
-        .get();
-    if (!doc.exists) {
-      final gName =
-          fbUser.displayName ??
-          googleUser.displayName ??
-          AppLocalizations.tl('socialDefaultUser');
-      await _firestore
-          .collection(FirestoreCollections.users)
-          .doc(fbUser.uid)
-          .set({
-            'name': gName,
-            'nameLower': gName.toLowerCase(),
-            'email': fbUser.email ?? '',
-            'createdAt': FieldValue.serverTimestamp(),
-          });
-    }
-    return _fbUserToEntity(fbUser);
+    // Use the same idempotent helper as email login so existing Firestore
+    // data (profile, aiPlans, etc.) is never overwritten.
+    await _ensureFirestoreDoc(fbUser);
+    return _fetchFullEntity(fbUser);
   }
 
   @override
@@ -244,13 +239,35 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<void> deleteAccount() async {
     final uid = _auth.currentUser?.uid;
+
+    // ── Server-side deletion (best-effort) ────────────────────────────
+    String? cloudError;
     try {
-      await _functions.httpsCallable('deleteAccount').call();
+      await _deleteAccountCall();
     } on FirebaseFunctionsException catch (e) {
-      throw UnknownAuthException(e.code);
+      cloudError = e.code;
+    } catch (e, st) {
+      // Network errors, timeouts, etc. must not prevent local sign-out, but
+      // they must still be reported: server-side deletion is unconfirmed.
+      cloudError = 'unavailable';
+      appLogger.w(
+        'AuthRepository: deleteAccount Cloud Function call failed',
+        error: e,
+        stackTrace: st,
+      );
     }
+
+    // ── Local cleanup (always runs, even if server call failed) ──────
     if (uid != null) {
-      await HiveCache.clearUserCache(uid);
+      try {
+        await HiveCache.clearUserCache(uid);
+      } catch (e, st) {
+        appLogger.w(
+          'AuthRepository: clearUserCache on account deletion failed',
+          error: e,
+          stackTrace: st,
+        );
+      }
     }
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -262,6 +279,21 @@ class AuthRepository implements IAuthRepository {
         stackTrace: st,
       );
     }
+
+    // ── Sign out is always attempted — the user must not remain logged in ─
+    await _auth.signOut();
+
+    // Report server-side failure so the UI can show a warning.
+    if (cloudError != null) throw UnknownAuthException(cloudError);
+  }
+
+  @override
+  Future<void> reloadUser() async {
+    await _auth.currentUser?.reload();
+  }
+
+  @override
+  Future<void> signOut() async {
     await _auth.signOut();
   }
 

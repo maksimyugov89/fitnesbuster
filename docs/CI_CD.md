@@ -6,9 +6,9 @@
 
 | Файл | Триггер | Что делает |
 |---|---|---|
-| [`ci.yml`](../.github/workflows/ci.yml) | push/PR → `master` | `dart format`, `flutter analyze`, полный Flutter suite (текущий baseline: 489 результатов), coverage/Codecov, Cloud Functions build + 38 unit/spec тестов + 6 callable-тестов в Auth/Firestore/Functions emulators |
+| [`ci.yml`](../.github/workflows/ci.yml) | push/PR → `master` | `dart format`, `flutter analyze`, полный Flutter suite (текущий baseline: 498 результатов), coverage/Codecov, Cloud Functions build + 38 unit/spec тестов + 6 callable-тестов в Auth/Firestore/Functions emulators |
 | [`build.yml`](../.github/workflows/build.yml) | push/PR → `master`, ручной запуск | Собирает APK и AAB (debug-подпись, для внутреннего тестирования); на push/manual сохраняет их как неблокирующие build-артефакты на 3 дня, на PR только проверяет сборку |
-| [`release.yml`](../.github/workflows/release.yml) | push тега `v*.*.*` **или** ручной запуск (`workflow_dispatch`) | Прогоняет `flutter analyze` + `flutter test` как гейт качества, собирает **подписанные боевым ключом** APK/AAB, публикует GitHub Release с артефактами и авто-changelog, шлёт уведомление в Telegram |
+| [`release.yml`](../.github/workflows/release.yml) | push тега `v*.*.*` **или** ручной запуск (`workflow_dispatch`) | Прогоняет `dart format`, `flutter analyze` + `flutter test` как гейт качества, собирает **подписанные боевым ключом** APK/AAB, публикует GitHub Release с артефактами и авто-changelog, шлёт уведомление в Telegram |
 | [`security.yml`](../.github/workflows/security.yml) | PR → `master`, push → `master`, еженедельно (пн 06:00 UTC), ручной запуск | Сканирует `pubspec.lock` и `functions/package-lock.json` через OSV-Scanner на известные CVE, роняет job при находках, шлёт уведомление в Telegram |
 | [`dependabot.yml`](../.github/dependabot.yml) | еженедельно (пн) | Автоматические PR на обновление зависимостей: `pub`, `npm` (`/functions`), `github-actions` |
 
@@ -100,7 +100,7 @@ git push origin v1.2.0
 
 **Вариант 2 — вручную:** вкладка **Actions** → workflow **Release** → **Run workflow** → указать версию (например `1.2.0`, без `v`). Workflow сам создаст и запушит тег `v1.2.0`.
 
-В обоих случаях: `flutter analyze` + все тесты должны пройти, иначе релиз не соберётся. По завершении в **Releases** появится запись с `app-release.apk`, `app-release.aab` и автосгенерированным списком изменений с момента предыдущего тега; в Telegram придёт уведомление со ссылкой.
+В обоих случаях: `dart format`, `flutter analyze` + все тесты должны пройти, иначе релиз не соберётся. По завершении в **Releases** появится запись с `app-release.apk`, `app-release.aab` и автосгенерированным списком изменений с момента предыдущего тега; в Telegram придёт уведомление со ссылкой.
 
 ## Отчёты о покрытии тестами
 
@@ -113,12 +113,12 @@ git push origin v1.2.0
 
 Из покрытия исключён сгенерированный код (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`) — он не отражает реальное качество тестирования.
 
-Локальный verified baseline 2026-07-11: 4406/21391 non-generated lines, 20.60%. Windows: 474 passed, 13 skipped, 2 known golden pixel diffs. Реальный Actions run после текущих изменений ещё не подтверждён; ожидаемый Linux baseline — 476 passed и 13 skipped, если tracked goldens остаются валидны.
+Локальный verified baseline 2026-07-12: Linux/Docker Flutter 3.38.5 — 485 passed, 13 skipped, 498 зарегистрированных результатов; Functions — 38 unit/spec + 6 callable emulator. Историческое non-generated line coverage: 4406/21391, 20.60%. Windows renderer даёт два known golden pixel diff; Linux tracked goldens валидны. Реальный Actions run после текущих изменений ещё не подтверждён.
 
 ## Известные ограничения
 
 - ~~Golden-тесты исключены из CI~~ — **исправлено.** Настоящая причина зависания (10-минутный таймаут на `DashboardScreen`/`WorkoutPlanScreen`, воспроизводилось и локально, и на `ubuntu-latest`) не имела отношения к 3D-вьюеру/WebView: оба теста вызывали `bloc.close()` для блоков, всё ещё предоставленных смонтированному `BlocProvider.value`. `BlocProvider` держит собственную подписку на `bloc.stream`, а `Bloc.close()` дожидается закрытия этого стрима — что требует отмены всех подписчиков. Так как дерево виджетов ни разу не размонтировалось перед вызовом `close()`, эта внутренняя подписка никогда не отменялась, и `close()` не завершался. Минимальный репро: `bloc.stream.listen((_) {})` без отмены + `bloc.close()` — зависает даже без единого виджета. Исправление — не вызывать `close()` для блоков, которые всё ещё "живут" в смонтированном дереве (`GetIt.reset()` в `tearDownAll` — достаточная очистка для одного теста в файле). Golden-тесты снова включены в `ci.yml`/`release.yml`, оба проходят за ~0.1с.
-- Linux PNG-файлы в `test/golden/goldens` являются эталоном. На текущем Windows renderer полный локальный run даёт два известных pixel diff (`dashboard` 0.77%, `workout_plan` 0.59%); не обновлять baselines на Windows без визуального review. Проверка в `ubuntu-latest` остаётся release gate.
+- Linux PNG-файлы в `test/golden/goldens` являются эталоном. Docker image `ghcr.io/cirruslabs/flutter:3.38.5` подтвердил оба golden как PASS. На текущем Windows renderer локальная диагностика даёт два известных pixel diff (`dashboard` 0.77%, `workout_plan` 0.59%); не обновлять baselines на Windows. Проверка в `ubuntu-latest` остаётся release gate.
 - `build.yml` собирает APK/AAB с **debug-подписью** — такие артефакты годятся для внутреннего тестирования, но не для публикации в Google Play. Боевая подпись — только в `release.yml`.
 - Build artifacts создаются только на push в `master` и при ручном запуске, хранятся 3 дня и не блокируют успешную сборку при исчерпанной storage quota. PR проверяет сборку APK/AAB без загрузки тяжёлых файлов.
 - **`security.yml` не загружает SARIF в Security → Code scanning и не запускает `dependency-review-action`.** Обе функции — часть GitHub Advanced Security, которая для приватных репозиториев платная (репозиторий `fitnesbuster` приватный). Прямой OSV scanner action сканирует `pubspec.lock` и `functions/package-lock.json`, сохраняет строгий ненулевой exit code при известных CVE и не использует GitHub artifact storage. Результат виден в логе run'а. Если репозиторий станет публичным или появится лицензия GHAS, можно вернуть reusable workflow с `upload-sarif: true` и job `dependency-review`.

@@ -4,16 +4,21 @@ import 'package:health/health.dart' as hc;
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
 import 'package:fitnesbuster/domain/entities/synced_health_data.dart';
+import 'package:fitnesbuster/domain/exceptions/health_exception.dart';
 
 export 'package:fitnesbuster/domain/entities/synced_health_data.dart';
 
 /// Reads health data from Google Health Connect (Android) or Apple Health (iOS).
 class HealthConnectService implements IHealthConnectService {
-  final hc.Health _health;
+  final HealthPlatformDataSource _source;
+  final bool _isAndroid;
   bool _initialized = false;
   bool _available = false;
+  List<hc.HealthDataType> _authorizedTypes = const [];
 
-  HealthConnectService() : _health = hc.Health();
+  HealthConnectService({HealthPlatformDataSource? source, bool? isAndroid})
+    : _source = source ?? PluginHealthPlatformDataSource(),
+      _isAndroid = isAndroid ?? Platform.isAndroid;
 
   @override
   bool get isAvailable => _available;
@@ -44,7 +49,7 @@ class HealthConnectService implements IHealthConnectService {
   @override
   Future<bool> isHealthConnectAvailable() async {
     try {
-      return await _health.isHealthConnectAvailable();
+      return await _source.isHealthConnectAvailable();
     } catch (e, st) {
       appLogger.w(
         'HealthConnect: isAvailable check failed',
@@ -67,11 +72,20 @@ class HealthConnectService implements IHealthConnectService {
         return false;
       }
 
-      final granted = await _health.requestAuthorization(_types);
-
-      _available = granted;
+      if (_isAndroid) {
+        await _refreshAuthorizedTypes();
+        if (_authorizedTypes.isEmpty) {
+          await _source.requestAuthorization(_types);
+          await _refreshAuthorizedTypes();
+        }
+        _available = _authorizedTypes.isNotEmpty;
+      } else {
+        final granted = await _source.requestAuthorization(_types);
+        _authorizedTypes = granted ? List.of(_types) : const [];
+        _available = granted;
+      }
       _initialized = true;
-      return true;
+      return _available;
     } catch (e, st) {
       appLogger.w('HealthConnect: initialize failed', error: e, stackTrace: st);
       _available = false;
@@ -86,6 +100,7 @@ class HealthConnectService implements IHealthConnectService {
       final ok = await initialize();
       if (!ok) return SyncedHealthData();
     }
+    await _requireAuthorizedTypes();
 
     final now = DateTime.now();
     final todayStart = DateTime(now.year, now.month, now.day);
@@ -95,7 +110,8 @@ class HealthConnectService implements IHealthConnectService {
     final activity = await _readRange(start: todayStart, end: todayEnd);
 
     // Сон читаем с вечера предыдущего дня (18 ч назад), чтобы захватить ночной сеанс
-    if (activity.sleepMinutes == null) {
+    if (activity.sleepMinutes == null &&
+        _authorizedTypes.contains(hc.HealthDataType.SLEEP_SESSION)) {
       final sleepStart = todayStart.subtract(const Duration(hours: 18));
       final sleepMins = await _readSleepMinutes(
         start: sleepStart,
@@ -127,7 +143,7 @@ class HealthConnectService implements IHealthConnectService {
     required DateTime end,
   }) async {
     try {
-      final data = await _health.getHealthDataFromTypes(
+      final data = await _source.getHealthDataFromTypes(
         startTime: start,
         endTime: end,
         types: [hc.HealthDataType.SLEEP_SESSION],
@@ -158,6 +174,7 @@ class HealthConnectService implements IHealthConnectService {
       final ok = await initialize();
       if (!ok) return SyncedHealthData();
     }
+    await _requireAuthorizedTypes();
     return _readRange(start: start, end: end);
   }
 
@@ -166,25 +183,29 @@ class HealthConnectService implements IHealthConnectService {
     required DateTime end,
   }) async {
     try {
-      // getTotalStepsInInterval deduplicates across multiple sources (Zepp, realme GT 6T, etc.)
-      // Raw getHealthDataFromTypes sums all records from all sources = double-counting.
       int steps = 0;
-      try {
-        final totalSteps = await _health.getTotalStepsInInterval(start, end);
-        if (totalSteps != null) steps = totalSteps;
-      } catch (e, st) {
-        appLogger.w(
-          'HealthConnect: read steps failed',
-          error: e,
-          stackTrace: st,
-        );
+      if (_authorizedTypes.contains(hc.HealthDataType.STEPS)) {
+        try {
+          // Aggregation deduplicates overlapping records from multiple sources.
+          final totalSteps = await _source.getTotalStepsInInterval(start, end);
+          if (totalSteps != null) steps = totalSteps;
+        } catch (e, st) {
+          appLogger.w(
+            'HealthConnect: read steps failed',
+            error: e,
+            stackTrace: st,
+          );
+        }
       }
 
-      final data = await _health.getHealthDataFromTypes(
-        startTime: start,
-        endTime: end,
-        types: _types,
+      // Read every type independently. A revoked/unsupported optional metric
+      // must not erase successful steps, calories or other available data.
+      final chunks = await Future.wait(
+        _authorizedTypes
+            .where((type) => type != hc.HealthDataType.STEPS)
+            .map((type) => _readType(type, start: start, end: end)),
       );
+      final data = chunks.expand((points) => points);
 
       double activeCalories = 0;
       double totalCalories = 0;
@@ -290,6 +311,100 @@ class HealthConnectService implements IHealthConnectService {
     }
   }
 
+  Future<List<hc.HealthDataPoint>> _readType(
+    hc.HealthDataType type, {
+    required DateTime start,
+    required DateTime end,
+  }) async {
+    try {
+      return await _source.getHealthDataFromTypes(
+        startTime: start,
+        endTime: end,
+        types: [type],
+      );
+    } catch (e, st) {
+      appLogger.w('HealthConnect: read $type failed', error: e, stackTrace: st);
+      return const [];
+    }
+  }
+
+  Future<void> _refreshAuthorizedTypes() async {
+    if (!_isAndroid) return;
+    final checks = await Future.wait(
+      _types.map((type) async {
+        try {
+          final granted = await _source.hasPermissions([type]);
+          return granted == true ? type : null;
+        } catch (e, st) {
+          appLogger.w(
+            'HealthConnect: permission check for $type failed',
+            error: e,
+            stackTrace: st,
+          );
+          return null;
+        }
+      }),
+    );
+    _authorizedTypes = checks.whereType<hc.HealthDataType>().toList();
+  }
+
+  Future<void> _requireAuthorizedTypes() async {
+    if (_isAndroid) await _refreshAuthorizedTypes();
+    if (_authorizedTypes.isEmpty) {
+      _available = false;
+      throw const HealthConnectPermissionDeniedException();
+    }
+  }
+
   @override
   void dispose() {}
+}
+
+abstract interface class HealthPlatformDataSource {
+  Future<bool> isHealthConnectAvailable();
+
+  Future<bool> requestAuthorization(List<hc.HealthDataType> types);
+
+  Future<bool?> hasPermissions(List<hc.HealthDataType> types);
+
+  Future<int?> getTotalStepsInInterval(DateTime start, DateTime end);
+
+  Future<List<hc.HealthDataPoint>> getHealthDataFromTypes({
+    required DateTime startTime,
+    required DateTime endTime,
+    required List<hc.HealthDataType> types,
+  });
+}
+
+class PluginHealthPlatformDataSource implements HealthPlatformDataSource {
+  final hc.Health _health;
+
+  PluginHealthPlatformDataSource({hc.Health? health})
+    : _health = health ?? hc.Health();
+
+  @override
+  Future<bool> isHealthConnectAvailable() => _health.isHealthConnectAvailable();
+
+  @override
+  Future<bool> requestAuthorization(List<hc.HealthDataType> types) =>
+      _health.requestAuthorization(types);
+
+  @override
+  Future<bool?> hasPermissions(List<hc.HealthDataType> types) =>
+      _health.hasPermissions(types);
+
+  @override
+  Future<int?> getTotalStepsInInterval(DateTime start, DateTime end) =>
+      _health.getTotalStepsInInterval(start, end);
+
+  @override
+  Future<List<hc.HealthDataPoint>> getHealthDataFromTypes({
+    required DateTime startTime,
+    required DateTime endTime,
+    required List<hc.HealthDataType> types,
+  }) => _health.getHealthDataFromTypes(
+    startTime: startTime,
+    endTime: endTime,
+    types: types,
+  );
 }

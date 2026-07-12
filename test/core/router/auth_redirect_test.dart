@@ -260,8 +260,10 @@ void main() {
   );
 
   test(
-    'authenticated+verified+noProfile stays on private route (not redirected)',
+    'authenticated+verified+noProfile is redirected from private route to onboarding',
     () {
+      // e.g. Google login from Login screen navigates to /dashboard but the
+      // user hasn't completed onboarding yet → must be forced to /onboarding.
       expect(
         resolveAuthRedirect(
           loc: AppRouter.dashboard,
@@ -270,7 +272,7 @@ void main() {
           emailVerified: true,
           hasProfile: false,
         ),
-        isNull,
+        AppRouter.onboarding,
       );
     },
   );

@@ -761,9 +761,14 @@ class NumSlider extends StatelessWidget {
 // ── Notifications Sheet ────────────────────────────────────────────────────
 
 class NotificationsSheet extends StatefulWidget {
-  const NotificationsSheet({super.key, this.onRequestPermission});
+  const NotificationsSheet({
+    super.key,
+    this.onRequestPermission,
+    this.onOpenSettings,
+  });
 
-  final Future<void> Function()? onRequestPermission;
+  final Future<bool> Function()? onRequestPermission;
+  final Future<bool> Function()? onOpenSettings;
   @override
   State<NotificationsSheet> createState() => _NotificationsSheetState();
 }
@@ -785,7 +790,33 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
         context,
         PermissionRationaleKind.notifications,
       );
-      if (accepted) await widget.onRequestPermission!();
+      if (!accepted) {
+        if (mounted) setState(() => _saving = false);
+        return;
+      }
+      final allowed = await widget.onRequestPermission!();
+      if (!allowed && mounted) {
+        setState(() => _saving = false);
+        final openSettings = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(AppLocalizations.tl('permissionNotificationsTitle')),
+            content: Text(AppLocalizations.tl('permissionNotificationsBody')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(AppLocalizations.tl('cancel')),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(AppLocalizations.tl('settingsLabel')),
+              ),
+            ],
+          ),
+        );
+        if (openSettings == true) await widget.onOpenSettings?.call();
+        return;
+      }
     }
     if (!mounted) return;
     Navigator.of(context).pop();

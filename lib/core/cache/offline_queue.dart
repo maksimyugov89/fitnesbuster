@@ -27,10 +27,33 @@ class HiveOfflineQueueStore implements OfflineQueueStore {
   HiveOfflineQueueStore(this._box);
 
   static Future<OfflineQueueStore> open(String boxName) async {
-    final box = await Hive.openBox<String>(
-      boxName,
-      encryptionCipher: HiveEncryption.cipher,
-    );
+    late Box<String> box;
+    try {
+      box = await Hive.openBox<String>(
+        boxName,
+        encryptionCipher: HiveEncryption.cipher,
+      );
+    } on HiveError catch (e) {
+      appLogger.w(
+        'OfflineQueue: encrypted box $boxName is unreadable; resetting it',
+        error: e,
+      );
+      await Hive.deleteBoxFromDisk(boxName);
+      box = await Hive.openBox<String>(
+        boxName,
+        encryptionCipher: HiveEncryption.cipher,
+      );
+    } on FormatException catch (e) {
+      appLogger.w(
+        'OfflineQueue: encrypted box $boxName has invalid format; resetting it',
+        error: e,
+      );
+      await Hive.deleteBoxFromDisk(boxName);
+      box = await Hive.openBox<String>(
+        boxName,
+        encryptionCipher: HiveEncryption.cipher,
+      );
+    }
     return HiveOfflineQueueStore(box);
   }
 

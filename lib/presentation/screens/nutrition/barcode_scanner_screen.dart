@@ -3,26 +3,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/common/permission_rationale_dialog.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
-  const BarcodeScannerScreen({super.key});
+  const BarcodeScannerScreen({
+    super.key,
+    this.requestCameraPermission,
+    this.checkCameraPermission,
+    this.openPermissionSettings,
+  });
+
+  final Future<PermissionStatus> Function()? requestCameraPermission;
+  final Future<PermissionStatus> Function()? checkCameraPermission;
+  final Future<bool> Function()? openPermissionSettings;
   @override
   State<BarcodeScannerScreen> createState() => _BarcodeScannerScreenState();
 }
 
-class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
+class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
+    with WidgetsBindingObserver {
   final MobileScannerController _ctrl = MobileScannerController();
   bool _scanned = false;
   bool _loading = false;
   bool _cameraAccepted = false;
+  bool _requestingCamera = false;
+  PermissionStatus? _cameraStatus;
   String _status = 'Наведите камеру на штрихкод продукта';
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     OpenFoodAPIConfiguration.userAgent = UserAgent(
       name: 'FitnesBuster',
       version: '1.0',
@@ -45,11 +60,47 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       Navigator.of(context).maybePop();
       return;
     }
-    setState(() => _cameraAccepted = true);
+    await _requestCamera();
+  }
+
+  Future<void> _requestCamera() async {
+    if (_requestingCamera) return;
+    setState(() => _requestingCamera = true);
+    final status =
+        await (widget.requestCameraPermission?.call() ??
+            Permission.camera.request());
+    if (!mounted) return;
+    setState(() {
+      _requestingCamera = false;
+      _cameraStatus = status;
+      _cameraAccepted = status.isGranted;
+    });
+  }
+
+  Future<void> _openSettings() async {
+    await (widget.openPermissionSettings?.call() ?? openAppSettings());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed || _cameraAccepted) return;
+    _refreshCameraStatus();
+  }
+
+  Future<void> _refreshCameraStatus() async {
+    final status =
+        await (widget.checkCameraPermission?.call() ??
+            Permission.camera.status);
+    if (!mounted) return;
+    setState(() {
+      _cameraStatus = status;
+      _cameraAccepted = status.isGranted;
+    });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _ctrl.dispose();
     super.dispose();
   }
@@ -366,6 +417,57 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     final c = AppTheme.of(context);
+    if (!_cameraAccepted && _cameraStatus != null) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.no_photography_outlined,
+                    color: Colors.white70,
+                    size: 56,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    AppLocalizations.tl('permissionCameraTitle'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    AppLocalizations.tl('permissionCameraBody'),
+                    style: const TextStyle(color: Colors.white70, height: 1.4),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    onPressed: _openSettings,
+                    child: Text(AppLocalizations.tl('settingsLabel')),
+                  ),
+                  TextButton(
+                    onPressed: _requestingCamera ? null : _requestCamera,
+                    child: Text(AppLocalizations.tl('retry')),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).maybePop(),
+                    child: Text(AppLocalizations.tl('cancel')),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     if (!_cameraAccepted) {
       return const Scaffold(
         backgroundColor: Colors.black,

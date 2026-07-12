@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/router/auth_router_notifier.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/presentation/widgets/router/main_shell.dart';
 import 'package:fitnesbuster/presentation/screens/workout/workout_execution_screen.dart';
@@ -189,15 +190,22 @@ class AppRouter {
     final loc = state.matchedLocation;
     final authState = context.read<AuthBloc>().state;
     final isAuthStateAuthenticated = authState is AuthStateAuthenticated;
+    final hasProfile = isAuthStateAuthenticated
+        ? authState.user.profile != null
+        : false;
+
+    appLogger.i(
+      '[Router] _redirect loc=$loc isAuth=$isAuthenticated '
+      'blocReady=$isAuthStateAuthenticated emailVerified=${isAuthStateAuthenticated ? authState.emailVerified : false} '
+      'hasProfile=$hasProfile',
+    );
 
     return resolveAuthRedirect(
       loc: loc,
       isAuthenticated: isAuthenticated,
       isAuthStateAuthenticated: isAuthStateAuthenticated,
       emailVerified: isAuthStateAuthenticated ? authState.emailVerified : false,
-      hasProfile: isAuthStateAuthenticated
-          ? authState.user.profile != null
-          : false,
+      hasProfile: hasProfile,
     );
   }
 }
@@ -229,6 +237,11 @@ String? resolveAuthRedirect({
       if (isOnboarding) return hasProfile ? AppRouter.dashboard : null;
       return hasProfile ? AppRouter.dashboard : AppRouter.onboarding;
     }
+
+    // Guard authenticated routes: if the user has no profile yet, force
+    // onboarding regardless of which route the screen tried to navigate to
+    // (e.g. Login screen and Splash screen both navigate to /dashboard).
+    if (!hasProfile) return AppRouter.onboarding;
   }
 
   return null;

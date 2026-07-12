@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
@@ -978,6 +979,7 @@ class _PageCityState extends State<_PageCity> {
   late final TextEditingController _ctrl;
   bool _detecting = false;
   String? _errorMsg;
+  bool _showLocationSettingsAction = false;
 
   @override
   void initState() {
@@ -996,6 +998,7 @@ class _PageCityState extends State<_PageCity> {
     setState(() {
       _detecting = true;
       _errorMsg = null;
+      _showLocationSettingsAction = false;
     });
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -1022,6 +1025,7 @@ class _PageCityState extends State<_PageCity> {
           permission == LocationPermission.deniedForever) {
         setState(() {
           _errorMsg = context.l10n.geoPermissionDeniedMsg;
+          _showLocationSettingsAction = true;
           _detecting = false;
         });
         return;
@@ -1151,6 +1155,11 @@ class _PageCityState extends State<_PageCity> {
                       ),
                     ),
                   ),
+                  if (_showLocationSettingsAction)
+                    TextButton(
+                      onPressed: openAppSettings,
+                      child: Text(l10n.settingsLabel),
+                    ),
                 ],
               ),
             ),
@@ -1622,88 +1631,94 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
         );
       },
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(flex: 2),
-
-              // ── Pulsing AI plan illustration ──
-              ScaleTransition(
-                scale: _iconScale,
-                child: Image.asset(
-                  AppImages.aiPlanLoading,
-                  width: 180,
-                  fit: BoxFit.contain,
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // ── Title ──
-              Text(
-                l10n.aiPlanCreating,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Syne',
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                l10n.about30sec,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  fontSize: 13,
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // ── Progress steps ──
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
-                  ),
-                ),
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (int i = 0; i < _steps.length; i++)
-                      _buildStep(i, colors),
+                    const SizedBox(height: 32),
+
+                    // ── Pulsing AI plan illustration ──
+                    ScaleTransition(
+                      scale: _iconScale,
+                      child: Image.asset(
+                        AppImages.aiPlanLoading,
+                        width: 180,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // ── Title ──
+                    Text(
+                      l10n.aiPlanCreating,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Syne',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      l10n.about30sec,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 13,
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // ── Progress steps ──
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.08),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (int i = 0; i < _steps.length; i++)
+                            _buildStep(i, colors),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // ── Facts ticker ──
+                    if (_facts.isNotEmpty)
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        transitionBuilder: (child, animation) =>
+                            FadeTransition(opacity: animation, child: child),
+                        child: Text(
+                          _facts[_factIndex % _facts.length],
+                          key: ValueKey<int>(_factIndex),
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.55),
+                            fontSize: 12,
+                            height: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),
-
-              const Spacer(flex: 2),
-
-              // ── Facts ticker ──
-              if (_facts.isNotEmpty)
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  transitionBuilder: (child, animation) =>
-                      FadeTransition(opacity: animation, child: child),
-                  child: Text(
-                    _facts[_factIndex % _facts.length],
-                    key: ValueKey<int>(_factIndex),
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.55),
-                      fontSize: 12,
-                      height: 1.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
-              const SizedBox(height: 32),
-            ],
+            ),
           ),
         ),
       ),

@@ -66,11 +66,38 @@ void main() {
   ) async {
     await pumpScreen(
       tester,
-      const HealthSyncStateError(message: 'Health Connect не установлен'),
+      const HealthSyncStateError(
+        message: 'Health Connect не установлен',
+        kind: HealthSyncErrorKind.notInstalled,
+      ),
     );
 
     expect(find.text('Health Connect не установлен'), findsOne);
     expect(find.text('Установить Health Connect'), findsOne);
+  });
+
+  testWidgets('opens Health Connect settings when access is denied', (
+    tester,
+  ) async {
+    var openedSettings = false;
+    when(mockBloc.state).thenReturn(
+      const HealthSyncStateError(
+        message: 'Проверьте разрешения',
+        kind: HealthSyncErrorKind.accessDenied,
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: HealthSyncScreen(
+          bloc: mockBloc,
+          onOpenHealthConnectSettings: () => openedSettings = true,
+        ),
+      ),
+    );
+
+    expect(find.text('Нет доступа к данным здоровья'), findsOne);
+    await tester.tap(find.text('Открыть настройки Health Connect'));
+    expect(openedSettings, isTrue);
   });
 
   testWidgets('does not close an injected bloc when screen is disposed', (
