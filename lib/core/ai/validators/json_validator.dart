@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 /// Strips markdown code fences from AI JSON responses.
 String extractJson(String response) {
@@ -36,17 +37,13 @@ String validateWorkoutJson(String raw) {
     data = jsonDecode(raw) as Map<String, dynamic>;
   } catch (e) {
     appLogger.d('[DeepSeek] Malformed workout JSON: $raw', error: e);
-    throw const AiException(
-      'AI вернул некорректный JSON плана тренировок. Попробуйте ещё раз.',
-    );
+    throw AiException(AppLocalizations.tl('aiInvalidWorkoutJson'));
   }
 
   final plan = data['plan'];
   if (plan == null || plan is! List || plan.isEmpty) {
     appLogger.d('[DeepSeek] Missing or empty "plan" in workout JSON: $raw');
-    throw const AiException(
-      'AI не вернул план тренировок. Попробуйте ещё раз.',
-    );
+    throw AiException(AppLocalizations.tl('aiWorkoutPlanMissing'));
   }
 
   for (final item in plan) {
@@ -65,15 +62,13 @@ String validateMealJson(String raw) {
     data = jsonDecode(raw) as Map<String, dynamic>;
   } catch (e) {
     appLogger.d('[DeepSeek] Malformed meal JSON: $raw', error: e);
-    throw const AiException(
-      'AI вернул некорректный JSON плана питания. Попробуйте ещё раз.',
-    );
+    throw AiException(AppLocalizations.tl('aiInvalidMealJson'));
   }
 
   final meals = data['meals'];
   if (meals == null || meals is! List || meals.isEmpty) {
     appLogger.d('[DeepSeek] Missing "meals" in meal JSON: $raw');
-    throw const AiException('AI не вернул план питания. Попробуйте ещё раз.');
+    throw AiException(AppLocalizations.tl('aiMealPlanMissing'));
   }
 
   data['calories'] ??= data['total_calories'] ?? 0;
@@ -94,7 +89,8 @@ String validateMealJson(String raw) {
       }
       meal['foods'] = flat;
     }
-    meal['type'] ??= meal['meal_type'] ?? 'приём пищи';
+    meal['type'] ??=
+        meal['meal_type'] ?? AppLocalizations.tl('mealTypeFallback');
   }
 
   return jsonEncode(data);

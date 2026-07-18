@@ -15,6 +15,7 @@ test("delete account batch limit stays under Firestore write batch maximum", () 
 
 test("ownDeleteAccountCollectionPaths lists user-owned subcollections", () => {
   assert.deepEqual(ownDeleteAccountCollectionPaths("u1"), [
+    "users/u1/legal_consents",
     "activity_events/u1/items",
     "feed/u1/events",
     "notifications/u1/items",

@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 part 'workout_event.dart';
 part 'workout_state.dart';
@@ -81,9 +82,8 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
       }
       if (current.session == null) {
         emit(
-          const WorkoutStateError(
-            message:
-                'Не удалось завершить тренировку: данные сессии отсутствуют',
+          WorkoutStateError(
+            message: AppLocalizations.tl('workoutSessionMissing'),
           ),
         );
         return;
@@ -103,7 +103,7 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
         ),
       );
     } catch (e) {
-      emit(const WorkoutStateError(message: 'Ошибка завершения тренировки'));
+      emit(WorkoutStateError(message: AppLocalizations.tl('genericError')));
     }
   }
 

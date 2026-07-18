@@ -7,6 +7,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class GoalSelectionScreen extends StatefulWidget {
   const GoalSelectionScreen({super.key});
@@ -18,40 +19,40 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
     with SingleTickerProviderStateMixin {
   FitnessGoal? _selectedGoal;
   late AnimationController _controller;
-  final List<_GoalOption> _goals = const [
+  List<_GoalOption> get _goals => [
     _GoalOption(
       goal: FitnessGoal.loseWeight,
-      title: 'Похудеть',
+      title: AppLocalizations.tl('goalLoseWeight'),
       iconAsset: AppImages.energy,
-      description: 'Сжечь жир, сухое тело',
+      description: AppLocalizations.tl('goalLoseWeightDescription'),
       gradientIndex: 0,
     ),
     _GoalOption(
       goal: FitnessGoal.gainWeight,
-      title: 'Набрать\nмассу',
+      title: AppLocalizations.tl('goalGainMuscle'),
       iconAsset: AppImages.workoutsTab,
-      description: 'Сила и мышечная масса',
+      description: AppLocalizations.tl('goalGainMuscleDescription'),
       gradientIndex: 1,
     ),
     _GoalOption(
       goal: FitnessGoal.maintain,
-      title: 'Держать\nформу',
+      title: AppLocalizations.tl('goalMaintain'),
       iconAsset: AppImages.balance,
-      description: 'Быть в форме и здоровым',
+      description: AppLocalizations.tl('goalMaintainDescription'),
       gradientIndex: 2,
     ),
     _GoalOption(
       goal: FitnessGoal.beachBody,
-      title: 'Пляжный\nсезон',
+      title: AppLocalizations.tl('goalBeachSeason'),
       iconAsset: AppImages.relax,
-      description: 'Подготовка к лету',
+      description: AppLocalizations.tl('goalBeachSeasonDescription'),
       gradientIndex: 3,
     ),
     _GoalOption(
       goal: FitnessGoal.sportPerformance,
-      title: 'Спортивная\nформа',
+      title: AppLocalizations.tl('goalSportsRecords'),
       iconAsset: AppImages.achievements,
-      description: 'Максимальная производительность',
+      description: AppLocalizations.tl('goalSportsRecordsDescription'),
       gradientIndex: 4,
     ),
   ];
@@ -127,13 +128,13 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Выберите\nсвою цель',
+                    Text(
+                      AppLocalizations.tl('onbGoalTitle'),
                       style: AppTextStyles.displayM,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Выберите основное направление —\nпод него строится программа',
+                    Text(
+                      AppLocalizations.tl('onbGoalSubtitle'),
                       style: AppTextStyles.bodyL,
                     ),
                     const SizedBox(height: 32),
@@ -339,19 +340,19 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Продолжить',
-                      style: TextStyle(
+                      AppLocalizations.tl('continueLabel'),
+                      style: const TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Icon(Icons.arrow_forward_rounded, size: 20),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward_rounded, size: 20),
                   ],
                 ),
               ),

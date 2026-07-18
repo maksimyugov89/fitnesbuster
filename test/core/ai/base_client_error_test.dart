@@ -1,6 +1,7 @@
 import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/core/ai/base_client.dart';
 import 'package:fitnesbuster/core/ai/network/retry_handler.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -22,7 +23,7 @@ void main() {
         final exception = mapFirebaseFunctionsException(code, null);
 
         expect(exception.statusCode, isIn([500, 503, 504]));
-        expect(exception.message, contains('AI временно недоступен'));
+        expect(exception.message, AppLocalizations.tl('aiUnavailableRetry'));
         expect(shouldNotRetryAiException(exception), isFalse);
       }
     });

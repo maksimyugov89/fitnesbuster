@@ -52,6 +52,14 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
           as bool);
 
   @override
+  _i4.Future<bool> hasCurrentLegalConsent() =>
+      (super.noSuchMethod(
+            Invocation.method(#hasCurrentLegalConsent, []),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
+
+  @override
   _i4.Future<_i2.UserEntity?> getCurrentUserWithProfile() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentUserWithProfile, []),
@@ -83,12 +91,14 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
     required String? name,
     required String? email,
     required String? password,
+    required Object? consent,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#register, [], {
               #name: name,
               #email: email,
               #password: password,
+              #consent: consent,
             }),
             returnValue: _i4.Future<_i2.UserEntity>.value(
               _FakeUserEntity_0(
@@ -97,6 +107,23 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
                   #name: name,
                   #email: email,
                   #password: password,
+                  #consent: consent,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.UserEntity>);
+  @override
+  _i4.Future<_i2.UserEntity> signInWithGoogle({Object? newAccountConsent}) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithGoogle, [], {
+              #newAccountConsent: newAccountConsent,
+            }),
+            returnValue: _i4.Future<_i2.UserEntity>.value(
+              _FakeUserEntity_0(
+                this,
+                Invocation.method(#signInWithGoogle, [], {
+                  #newAccountConsent: newAccountConsent,
                 }),
               ),
             ),
@@ -104,11 +131,20 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
           as _i4.Future<_i2.UserEntity>);
 
   @override
-  _i4.Future<_i2.UserEntity> signInWithGoogle() =>
+  _i4.Future<_i2.UserEntity> acceptCurrentLegalConsent({
+    required Object? consent,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#signInWithGoogle, []),
+            Invocation.method(#acceptCurrentLegalConsent, [], {
+              #consent: consent,
+            }),
             returnValue: _i4.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(this, Invocation.method(#signInWithGoogle, [])),
+              _FakeUserEntity_0(
+                this,
+                Invocation.method(#acceptCurrentLegalConsent, [], {
+                  #consent: consent,
+                }),
+              ),
             ),
           )
           as _i4.Future<_i2.UserEntity>);

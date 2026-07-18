@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
@@ -93,7 +94,9 @@ class _ProgressBodyMeasurementsDialogState
       validator: (v) {
         if (v != null && v.trim().isNotEmpty) {
           final d = double.tryParse(v.trim().replaceAll(',', '.'));
-          if (d == null || d <= 0) return 'Введите корректное значение';
+          if (d == null || d <= 0) {
+            return AppLocalizations.tl('enterValidValue');
+          }
         }
         return null;
       },
@@ -111,7 +114,7 @@ class _ProgressBodyMeasurementsDialogState
           Icon(Icons.straighten_rounded, color: colors.primary, size: 22),
           const SizedBox(width: 8),
           Text(
-            'Замеры тела',
+            AppLocalizations.tl('bodyMeasurements'),
             style: TextStyle(
               color: colors.textPrimary,
               fontFamily: 'Syne',
@@ -128,23 +131,41 @@ class _ProgressBodyMeasurementsDialogState
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Введите актуальные значения.\nПустые поля будут пропущены.',
+                AppLocalizations.tl('measurementsHint'),
                 style: TextStyle(fontSize: 12, color: colors.textMuted),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              _buildField('Грудь', 'см', _chest, colors, Icons.circle_outlined),
+              _buildField(
+                AppLocalizations.tl('chest'),
+                AppLocalizations.tl('cmUnit'),
+                _chest,
+                colors,
+                Icons.circle_outlined,
+              ),
               const SizedBox(height: 12),
-              _buildField('Талия', 'см', _waist, colors, Icons.circle_outlined),
+              _buildField(
+                AppLocalizations.tl('waist'),
+                AppLocalizations.tl('cmUnit'),
+                _waist,
+                colors,
+                Icons.circle_outlined,
+              ),
               const SizedBox(height: 12),
-              _buildField('Бёдра', 'см', _hips, colors, Icons.circle_outlined),
+              _buildField(
+                AppLocalizations.tl('hips'),
+                AppLocalizations.tl('cmUnit'),
+                _hips,
+                colors,
+                Icons.circle_outlined,
+              ),
               const SizedBox(height: 12),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: _buildField(
-                      'Жир тела',
+                      AppLocalizations.tl('bodyFat'),
                       '%',
                       _fat,
                       colors,
@@ -156,7 +177,7 @@ class _ProgressBodyMeasurementsDialogState
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Semantics(
-                        label: 'Рассчитать',
+                        label: AppLocalizations.tl('calculate'),
                         button: true,
                         child: TextButton(
                           style: TextButton.styleFrom(
@@ -175,9 +196,9 @@ class _ProgressBodyMeasurementsDialogState
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           onPressed: _calcBodyFat,
-                          child: const Text(
-                            'Рассчитать',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.tl('calculate'),
+                            style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                             ),
@@ -191,7 +212,7 @@ class _ProgressBodyMeasurementsDialogState
               const SizedBox(height: 4),
               if (widget.profile != null)
                 Text(
-                  'Расчёт по BMI (вес/рост/возраст/пол)',
+                  AppLocalizations.tl('bmiCalculation'),
                   style: TextStyle(fontSize: 10, color: colors.textMuted),
                 ),
               const SizedBox(height: 8),
@@ -206,7 +227,7 @@ class _ProgressBodyMeasurementsDialogState
                   const SizedBox(width: 5),
                   Flexible(
                     child: Text(
-                      'Измеряйте сантиметровой лентой утром натощак в одних и тех же условиях',
+                      AppLocalizations.tl('measurementsTapeTip'),
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.textMuted,
@@ -223,15 +244,18 @@ class _ProgressBodyMeasurementsDialogState
       ),
       actions: [
         Semantics(
-          label: 'Отмена',
+          label: AppLocalizations.tl('cancel'),
           button: true,
           child: TextButton(
             onPressed: _saving ? null : () => Navigator.pop(context),
-            child: Text('Отмена', style: TextStyle(color: colors.textMuted)),
+            child: Text(
+              AppLocalizations.tl('cancel'),
+              style: TextStyle(color: colors.textMuted),
+            ),
           ),
         ),
         Semantics(
-          label: 'Сохранить',
+          label: AppLocalizations.tl('save'),
           button: true,
           child: FilledButton(
             style: FilledButton.styleFrom(
@@ -250,7 +274,7 @@ class _ProgressBodyMeasurementsDialogState
                       color: Colors.white,
                     ),
                   )
-                : const Text('Сохранить'),
+                : Text(AppLocalizations.tl('save')),
           ),
         ),
       ],

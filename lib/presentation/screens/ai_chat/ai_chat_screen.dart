@@ -9,6 +9,7 @@ import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 
 class AiChatScreen extends StatefulWidget {
@@ -28,16 +29,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
   String? _uid;
   UserProfile? _profile;
 
-  static const _welcomeText =
-      'Привет! Я твой персональный AI-тренер FitnesBuster 💪\n\n'
-      'Задавай вопросы о тренировках, питании, восстановлении и прогрессе — '
-      'отвечу конкретно с учётом твоего профиля.';
+  String get _welcomeText => AppLocalizations.tl('aiChatWelcome');
 
-  static const _suggestions = [
-    'Как ускорить восстановление после тренировки?',
-    'Что есть до и после тренировки?',
-    'Сколько белка мне нужно в день?',
-    'Как правильно делать приседания со штангой?',
+  List<String> get _suggestions => [
+    AppLocalizations.tl('aiQuestionRecovery'),
+    AppLocalizations.tl('aiQuestionNutrition'),
+    AppLocalizations.tl('aiQuestionProtein'),
+    AppLocalizations.tl('aiQuestionSquat'),
   ];
 
   @override
@@ -142,7 +140,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Ошибка: $e'),
+            content: Text(
+              AppLocalizations.tlp('genericErrorWithDetails', {'error': '$e'}),
+            ),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
@@ -158,7 +158,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: colors.surfaceCard,
         title: Text(
-          'Очистить историю?',
+          AppLocalizations.tl('aiClearHistoryTitle'),
           style: TextStyle(
             color: colors.textPrimary,
             fontFamily: 'Syne',
@@ -166,17 +166,23 @@ class _AiChatScreenState extends State<AiChatScreen> {
           ),
         ),
         content: Text(
-          'Все сообщения будут удалены.',
+          AppLocalizations.tl('aiClearHistoryBody'),
           style: TextStyle(color: colors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Отмена', style: TextStyle(color: colors.textMuted)),
+            child: Text(
+              AppLocalizations.tl('cancel'),
+              style: TextStyle(color: colors.textMuted),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('Очистить', style: TextStyle(color: colors.error)),
+            child: Text(
+              AppLocalizations.tl('aiClearHistoryAction'),
+              style: TextStyle(color: colors.error),
+            ),
           ),
         ],
       ),
@@ -212,7 +218,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'AI-тренер',
+              AppLocalizations.tl('aiChatTitle'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 18,
@@ -221,7 +227,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
               ),
             ),
             Text(
-              'Персональный фитнес-эксперт',
+              AppLocalizations.tl('aiChatSubtitle'),
               style: TextStyle(fontSize: 11, color: colors.textMuted),
             ),
           ],
@@ -337,7 +343,7 @@ class _WelcomeBubble extends StatelessWidget {
           if (showSuggestions) ...[
             const SizedBox(height: 16),
             Text(
-              'Попробуй спросить:',
+              AppLocalizations.tl('aiTryAsking'),
               style: TextStyle(
                 fontSize: 12,
                 color: colors.textMuted,
@@ -566,7 +572,7 @@ class _InputBar extends StatelessWidget {
               minLines: 1,
               style: TextStyle(color: colors.textPrimary, fontSize: 15),
               decoration: InputDecoration(
-                hintText: 'Задать вопрос...',
+                hintText: AppLocalizations.tl('aiQuestionHint'),
                 hintStyle: TextStyle(color: colors.textMuted, fontSize: 15),
                 filled: true,
                 fillColor: colors.surfaceCard,

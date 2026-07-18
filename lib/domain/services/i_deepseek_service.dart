@@ -56,7 +56,11 @@ abstract interface class IDeepSeekService {
 
   /// Parses any workout description (text, URL content, file, QR) into the
   /// app's JSON plan format. [sourceHint] helps the AI understand the origin.
-  Future<String> parseWorkoutFromContent(String content, {String sourceHint});
+  Future<String> parseWorkoutFromContent(
+    String content, {
+    String sourceHint,
+    UserProfile? profile,
+  });
 
   /// Corrects/adjusts an existing workout plan based on user input.
   ///
@@ -70,6 +74,7 @@ abstract interface class IDeepSeekService {
     required String userInput,
     String correctionType,
     String sourceHint,
+    UserProfile? profile,
   });
 
   void dispose();

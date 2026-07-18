@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class WorkoutWeekSummary extends StatelessWidget {
   final WorkoutPlanMeta meta;
@@ -29,7 +30,7 @@ class WorkoutWeekSummary extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Неделя ${meta.weekNumber}${meta.phase.isNotEmpty ? " · ${meta.phase}" : ""}',
+                  '${AppLocalizations.tlp('weekNumShort', {'n': '${meta.weekNumber}'})}${meta.phase.isNotEmpty ? " · ${meta.phase}" : ""}',
                   style: TextStyle(
                     fontFamily: 'Syne',
                     fontSize: 13,
@@ -64,7 +65,7 @@ class WorkoutWeekSummary extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'подх.',
+                  AppLocalizations.tl('setsShort'),
                   style: TextStyle(fontSize: 9, color: colors.textMuted),
                 ),
               ],

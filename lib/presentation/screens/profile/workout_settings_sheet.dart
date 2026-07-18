@@ -123,18 +123,18 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
                     color: AppColors.info.withValues(alpha: 0.2),
                   ),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.info_outline_rounded,
                       color: AppColors.info,
                       size: 16,
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Кардио через берпи, прыжки и функциональные комплексы',
-                        style: TextStyle(
+                        AppLocalizations.tl('workoutSettingsNoRunningInfo'),
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.info,
                           height: 1.4,
@@ -158,18 +158,20 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
                       color: AppColors.warning.withValues(alpha: 0.25),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.warning_amber_rounded,
                         color: AppColors.warning,
                         size: 18,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Смена места тренировок пересоздаст программу под новое оборудование. Текущий прогресс сохранится.',
-                          style: TextStyle(
+                          AppLocalizations.tl(
+                            'workoutSettingsLocationChangeInfo',
+                          ),
+                          style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.warning,
                             height: 1.4,
@@ -320,13 +322,17 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Row(
+        content: Row(
           children: [
-            Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
-            SizedBox(width: 10),
+            const Icon(
+              Icons.check_circle_rounded,
+              color: Colors.white,
+              size: 18,
+            ),
+            const SizedBox(width: 10),
             Text(
-              'Программа будет обновлена',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              AppLocalizations.tl('workoutProgramUpdated'),
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ],
         ),

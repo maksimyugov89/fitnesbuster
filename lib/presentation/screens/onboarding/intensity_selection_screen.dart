@@ -21,12 +21,15 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
   IntensityLevel? _selected;
   late AnimationController _ctrl;
 
-  final List<_IntOption> _options = [
+  List<_IntOption> get _options => [
     _IntOption(
       level: IntensityLevel.hardcore,
       label: AppLocalizations.tl('intensityHardcore'),
-      weeks: '8-12 недель',
-      daysPerWeek: '6 дн/нед',
+      weeks: AppLocalizations.tlp('intensityWeeksRange', {
+        'min': '8',
+        'max': '12',
+      }),
+      daysPerWeek: AppLocalizations.tlp('intensityDaysPerWeek', {'count': '6'}),
       description: AppLocalizations.tl('intensityHardcoreDesc'),
       iconAsset: AppImages.hardcore,
       colorVariant: 0,
@@ -39,47 +42,74 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
     _IntOption(
       level: IntensityLevel.intensive,
       label: AppLocalizations.tl('intensityIntense'),
-      weeks: '12-16 недель',
-      daysPerWeek: '5 дн/нед',
+      weeks: AppLocalizations.tlp('intensityWeeksRange', {
+        'min': '12',
+        'max': '16',
+      }),
+      daysPerWeek: AppLocalizations.tlp('intensityDaysPerWeek', {'count': '5'}),
       description: AppLocalizations.tl('intensityIntenseDesc'),
       iconAsset: AppImages.rocket,
       colorVariant: 1,
       tags: [
         AppLocalizations.tl('intensityTagHeavy'),
-        'Круговая',
-        'Умеренное кардио',
+        AppLocalizations.tl('intensityTagCircuit'),
+        AppLocalizations.tl('intensityTagModerateCardio'),
       ],
     ),
     _IntOption(
       level: IntensityLevel.balanced,
       label: AppLocalizations.tl('intensityBalanced'),
-      weeks: '16-20 недель',
-      daysPerWeek: '4 дн/нед',
+      weeks: AppLocalizations.tlp('intensityWeeksRange', {
+        'min': '16',
+        'max': '20',
+      }),
+      daysPerWeek: AppLocalizations.tlp('intensityDaysPerWeek', {'count': '4'}),
       description: AppLocalizations.tl('intensityBalancedDesc'),
       iconAsset: AppImages.balance,
       colorVariant: 2,
-      tags: ['Гибкость', 'Сплит', 'Постоянство'],
+      tags: [
+        AppLocalizations.tl('intensityTagFlexibility'),
+        AppLocalizations.tl('intensityTagSplit'),
+        AppLocalizations.tl('intensityTagConsistency'),
+      ],
       recommended: true,
     ),
     _IntOption(
       level: IntensityLevel.gradual,
       label: AppLocalizations.tl('intensityGradual'),
-      weeks: '20-26 недель',
-      daysPerWeek: '3 дн/нед',
+      weeks: AppLocalizations.tlp('intensityWeeksRange', {
+        'min': '20',
+        'max': '26',
+      }),
+      daysPerWeek: AppLocalizations.tlp('intensityDaysPerWeek', {'count': '3'}),
       description: AppLocalizations.tl('intensityGradualDesc'),
       iconAsset: AppImages.beginner,
       colorVariant: 3,
-      tags: ['Для новичков', 'Без перетрена', 'Стабильно'],
+      tags: [
+        AppLocalizations.tl('intensityTagBeginners'),
+        AppLocalizations.tl('intensityTagNoOvertraining'),
+        AppLocalizations.tl('intensityTagSteady'),
+      ],
     ),
     _IntOption(
       level: IntensityLevel.relaxed,
       label: AppLocalizations.tl('intensityLight'),
-      weeks: '26-52 недель',
-      daysPerWeek: '2-3 дн/нед',
+      weeks: AppLocalizations.tlp('intensityWeeksRange', {
+        'min': '26',
+        'max': '52',
+      }),
+      daysPerWeek: AppLocalizations.tlp('intensityDaysPerWeekRange', {
+        'min': '2',
+        'max': '3',
+      }),
       description: AppLocalizations.tl('intensityLightDesc'),
       iconAsset: AppImages.yoga,
       colorVariant: 4,
-      tags: ['По выходным', 'Легко', 'Чилл'],
+      tags: [
+        AppLocalizations.tl('intensityTagWeekends'),
+        AppLocalizations.tl('intensityTagEasy'),
+        AppLocalizations.tl('intensityTagChill'),
+      ],
     ),
   ];
 
@@ -130,13 +160,13 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Выберите режим\nинтенсивности',
+                    Text(
+                      AppLocalizations.tl('onbIntensityTitle'),
                       style: AppTextStyles.displayM,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Насколько усердно\nвы готовы тренироваться',
+                    Text(
+                      AppLocalizations.tl('onbIntensitySubtitle'),
                       style: AppTextStyles.bodyL,
                     ),
                     const SizedBox(height: 28),
@@ -271,9 +301,9 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
                                     color: colors.primary,
                                     borderRadius: BorderRadius.circular(6),
                                   ),
-                                  child: const Text(
-                                    'РЕКОМ.',
-                                    style: TextStyle(
+                                  child: Text(
+                                    AppLocalizations.tl('intensityRecommended'),
+                                    style: const TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w700,
                                       color: AppColors.textPrimary,
@@ -383,19 +413,19 @@ class _IntensitySelectionScreenState extends State<IntensitySelectionScreen>
               borderRadius: BorderRadius.circular(16),
             ),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Продолжить',
-                style: TextStyle(
+                AppLocalizations.tl('continueLabel'),
+                style: const TextStyle(
                   fontFamily: 'Syne',
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(width: 8),
-              Icon(Icons.arrow_forward_rounded, size: 20),
+              const SizedBox(width: 8),
+              const Icon(Icons.arrow_forward_rounded, size: 20),
             ],
           ),
         ),

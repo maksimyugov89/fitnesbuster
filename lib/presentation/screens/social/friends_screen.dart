@@ -78,9 +78,9 @@ class _FriendsScreenState extends State<FriendsScreen>
     try {
       await sl<ISocialService>().sendFriendRequest(uid);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Запрос отправлен!')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.tl('friendRequestSent'))),
+        );
       }
     } catch (e) {
       // Revert on error
@@ -127,7 +127,10 @@ class _FriendsScreenState extends State<FriendsScreen>
             ),
           ),
         ),
-        title: const Text('Друзья', style: AppTextStyles.titleL),
+        title: Text(
+          AppLocalizations.tl('friendsTitle'),
+          style: AppTextStyles.titleL,
+        ),
         bottom: TabBar(
           controller: _tabs,
           indicator: BoxDecoration(
@@ -151,10 +154,10 @@ class _FriendsScreenState extends State<FriendsScreen>
             fontSize: 11,
           ),
           labelPadding: EdgeInsets.zero,
-          tabs: const [
-            Tab(text: 'Мои друзья', height: 36),
-            Tab(text: 'Запросы', height: 36),
-            Tab(text: 'Поиск', height: 36),
+          tabs: [
+            Tab(text: AppLocalizations.tl('friendsTabMy'), height: 36),
+            Tab(text: AppLocalizations.tl('friendsTabRequests'), height: 36),
+            Tab(text: AppLocalizations.tl('friendsTabSearch'), height: 36),
           ],
           padding: const EdgeInsets.symmetric(horizontal: 12),
         ),
@@ -188,7 +191,7 @@ class _FriendsScreenState extends State<FriendsScreen>
                 Image.asset(AppImages.friends, width: 56, height: 56),
                 const SizedBox(height: 12),
                 Text(
-                  'Нет друзей',
+                  AppLocalizations.tl('friendsEmptyTitle'),
                   style: TextStyle(
                     fontSize: 16,
                     fontFamily: 'Syne',
@@ -198,7 +201,7 @@ class _FriendsScreenState extends State<FriendsScreen>
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Найди друзей во вкладке «Поиск»',
+                  AppLocalizations.tl('friendsEmptyBody'),
                   style: TextStyle(fontSize: 12, color: colors.textMuted),
                 ),
               ],
@@ -236,7 +239,7 @@ class _FriendsScreenState extends State<FriendsScreen>
       builder: (_) => AlertDialog(
         backgroundColor: colors.surfaceCard,
         title: Text(
-          'Удалить друга?',
+          AppLocalizations.tl('friendRemoveConfirmTitle'),
           style: TextStyle(
             color: colors.textPrimary,
             fontFamily: 'Syne',
@@ -244,20 +247,26 @@ class _FriendsScreenState extends State<FriendsScreen>
           ),
         ),
         content: Text(
-          '${user.name} будет удалён из списка друзей.',
+          AppLocalizations.tlp('friendRemoveConfirmBody', {'name': user.name}),
           style: TextStyle(color: colors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Отмена', style: TextStyle(color: colors.textMuted)),
+            child: Text(
+              AppLocalizations.tl('cancel'),
+              style: TextStyle(color: colors.textMuted),
+            ),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
               await sl<ISocialService>().removeFriend(user.uid);
             },
-            child: Text('Удалить', style: TextStyle(color: colors.error)),
+            child: Text(
+              AppLocalizations.tl('delete'),
+              style: TextStyle(color: colors.error),
+            ),
           ),
         ],
       ),
@@ -278,7 +287,9 @@ class _FriendsScreenState extends State<FriendsScreen>
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Text(
-                'Ошибка: ${snap.error}',
+                AppLocalizations.tlp('genericErrorWithDetails', {
+                  'error': '${snap.error}',
+                }),
                 style: TextStyle(color: colors.error, fontSize: 13),
               ),
             ),
@@ -293,7 +304,7 @@ class _FriendsScreenState extends State<FriendsScreen>
                 Image.asset(AppImages.emptyState, width: 56, height: 56),
                 const SizedBox(height: 12),
                 Text(
-                  'Нет входящих запросов',
+                  AppLocalizations.tl('friendRequestsEmptyTitle'),
                   style: TextStyle(
                     fontSize: 16,
                     fontFamily: 'Syne',
@@ -303,7 +314,7 @@ class _FriendsScreenState extends State<FriendsScreen>
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Запросы появятся здесь когда\nкто-то захочет добавить вас',
+                  AppLocalizations.tl('friendRequestsEmptyBody'),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 12, color: colors.textMuted),
                 ),
@@ -334,7 +345,7 @@ class _FriendsScreenState extends State<FriendsScreen>
             onChanged: _search,
             style: TextStyle(color: colors.textPrimary),
             decoration: InputDecoration(
-              hintText: 'Поиск по имени пользователя...',
+              hintText: AppLocalizations.tl('searchFriendsHint'),
               hintStyle: TextStyle(color: colors.textMuted, fontSize: 14),
               prefixIcon: Icon(Icons.search_rounded, color: colors.textMuted),
               filled: true,
@@ -426,7 +437,7 @@ class _FriendsScreenState extends State<FriendsScreen>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'Друг',
+                            AppLocalizations.tl('friendLabel'),
                             style: TextStyle(
                               fontSize: 11,
                               color: colors.success,
@@ -445,7 +456,7 @@ class _FriendsScreenState extends State<FriendsScreen>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'Отправлено',
+                            AppLocalizations.tl('friendRequestStatusSent'),
                             style: TextStyle(
                               fontSize: 11,
                               color: colors.textMuted,
@@ -465,7 +476,7 @@ class _FriendsScreenState extends State<FriendsScreen>
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              'Добавить',
+                              AppLocalizations.tl('addFriendBtn'),
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
@@ -570,9 +581,13 @@ class _RequestTileState extends State<_RequestTile> {
       await sl<ISocialService>().acceptFriendRequest(widget.request.id);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.tlp('genericErrorWithDetails', {'error': '$e'}),
+            ),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -615,7 +630,7 @@ class _RequestTileState extends State<_RequestTile> {
                   ),
                 ),
                 Text(
-                  'хочет добавить вас в друзья',
+                  AppLocalizations.tl('friendRequestFromUser'),
                   style: TextStyle(fontSize: 11, color: colors.textMuted),
                 ),
               ],
@@ -646,7 +661,7 @@ class _RequestTileState extends State<_RequestTile> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'Принять',
+                      AppLocalizations.tl('accept'),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -668,7 +683,7 @@ class _RequestTileState extends State<_RequestTile> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'Отклонить',
+                      AppLocalizations.tl('decline'),
                       style: TextStyle(fontSize: 12, color: colors.textMuted),
                     ),
                   ),

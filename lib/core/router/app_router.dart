@@ -190,6 +190,7 @@ class AppRouter {
     final loc = state.matchedLocation;
     final authState = context.read<AuthBloc>().state;
     final isAuthStateAuthenticated = authState is AuthStateAuthenticated;
+    final requiresLegalConsent = authState is AuthStateLegalConsentRequired;
     final hasProfile = isAuthStateAuthenticated
         ? authState.user.profile != null
         : false;
@@ -204,6 +205,7 @@ class AppRouter {
       loc: loc,
       isAuthenticated: isAuthenticated,
       isAuthStateAuthenticated: isAuthStateAuthenticated,
+      requiresLegalConsent: requiresLegalConsent,
       emailVerified: isAuthStateAuthenticated ? authState.emailVerified : false,
       hasProfile: hasProfile,
     );
@@ -214,6 +216,7 @@ String? resolveAuthRedirect({
   required String loc,
   required bool isAuthenticated,
   required bool isAuthStateAuthenticated,
+  bool requiresLegalConsent = false,
   required bool emailVerified,
   required bool hasProfile,
 }) {
@@ -225,6 +228,10 @@ String? resolveAuthRedirect({
       loc == AppRouter.login || loc == AppRouter.register || isOnboarding;
 
   if (!isAuthenticated && !isPublic) return AppRouter.login;
+
+  if (requiresLegalConsent) {
+    return loc == AppRouter.login ? null : AppRouter.login;
+  }
 
   if (isAuthenticated) {
     if (!isAuthStateAuthenticated) return null;

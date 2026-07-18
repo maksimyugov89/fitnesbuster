@@ -116,15 +116,15 @@ class _InitProgressScreenState extends State<InitProgressScreen> {
   String _stageLabel(String stage) {
     switch (stage) {
       case 'Firebase':
-        return 'Firebase...';
+        return AppLocalizations.tl('initFirebase');
       case 'Storage':
-        return 'Storage...';
+        return AppLocalizations.tl('initStorage');
       case 'Services':
-        return 'Services...';
+        return AppLocalizations.tl('initServices');
       case 'Exercises':
-        return 'Exercises...';
+        return AppLocalizations.tl('initExercises');
       case 'Locale':
-        return 'Locale...';
+        return AppLocalizations.tl('initLocale');
       default:
         return '';
     }

@@ -117,21 +117,21 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
               const SizedBox(height: 16),
               MeasurementField(
                 label: AppLocalizations.tl('chest'),
-                unit: 'см',
+                unit: AppLocalizations.tl('cmUnit'),
                 controller: _chest,
                 icon: Icons.circle_outlined,
               ),
               const SizedBox(height: 12),
               MeasurementField(
                 label: AppLocalizations.tl('waist'),
-                unit: 'см',
+                unit: AppLocalizations.tl('cmUnit'),
                 controller: _waist,
                 icon: Icons.circle_outlined,
               ),
               const SizedBox(height: 12),
               MeasurementField(
                 label: AppLocalizations.tl('hips'),
-                unit: 'см',
+                unit: AppLocalizations.tl('cmUnit'),
                 controller: _hips,
                 icon: Icons.circle_outlined,
               ),
@@ -202,7 +202,7 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
                   const SizedBox(width: 5),
                   Flexible(
                     child: Text(
-                      'Измеряйте сантиметровой лентой утром натощак в одних и тех же условиях',
+                      AppLocalizations.tl('measurementsTapeTip'),
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.textMuted,

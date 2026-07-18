@@ -4,7 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/localization/language_service.dart';
+import 'package:fitnesbuster/core/legal/legal_consent.dart';
+import 'package:fitnesbuster/core/legal/legal_documents.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
+import 'package:fitnesbuster/presentation/screens/legal/legal_document_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen>
   bool _obscure = true;
   bool _loading = false;
   bool _googleLoading = false;
+  bool _consentDialogShowing = false;
   String? _errorMessage;
 
   late AnimationController _animCtrl;
@@ -39,6 +44,13 @@ class _LoginScreenState extends State<LoginScreen>
     ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut));
     _fadeAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
     _animCtrl.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final state = context.read<AuthBloc>().state;
+      if (state is AuthStateLegalConsentRequired) {
+        _showLegalConsentDialog(state.source);
+      }
+    });
   }
 
   @override
@@ -88,6 +100,92 @@ class _LoginScreenState extends State<LoginScreen>
     context.read<AuthBloc>().add(const AuthGoogleLoginRequested());
   }
 
+  void _openLegalDocument(LegalDocument document) {
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (_) => LegalDocumentScreen(document: document),
+      ),
+    );
+  }
+
+  Future<void> _showLegalConsentDialog(LegalConsentSource source) async {
+    if (_consentDialogShowing || !mounted) return;
+
+    setState(() {
+      _consentDialogShowing = true;
+      _loading = false;
+      _googleLoading = false;
+    });
+
+    final colors = AppTheme.of(context);
+    final l10n = context.l10n;
+    final accepted = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: colors.surfaceCard,
+        title: Text(
+          AppLocalizations.tl('authTermsRequired'),
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${AppLocalizations.tl('authConsentPrefix')}'
+              '${AppLocalizations.tl('authTermsOfUse')}'
+              '${AppLocalizations.tl('authAnd')}'
+              '${AppLocalizations.tl('authPrivacyPolicy')}.',
+              style: TextStyle(color: colors.textSecondary, height: 1.45),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                TextButton(
+                  onPressed: () => _openLegalDocument(termsOfUse),
+                  child: Text(AppLocalizations.tl('authTermsOfUse')),
+                ),
+                TextButton(
+                  onPressed: () => _openLegalDocument(privacyPolicy),
+                  child: Text(AppLocalizations.tl('authPrivacyPolicy')),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.continueLabel),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted) return;
+    setState(() => _consentDialogShowing = false);
+
+    if (accepted == true) {
+      context.read<AuthBloc>().add(
+        AuthLegalConsentAccepted(
+          consent: LegalConsentAcceptance(
+            source: source,
+            localeCode: LanguageService.current.code,
+          ),
+        ),
+      );
+    } else {
+      context.read<AuthBloc>().add(const AuthLogoutRequested());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -103,6 +201,8 @@ class _LoginScreenState extends State<LoginScreen>
             _googleLoading = false;
           });
           context.go('/dashboard');
+        } else if (state is AuthStateLegalConsentRequired) {
+          _showLegalConsentDialog(state.source);
         } else if (state is AuthStateError) {
           setState(() {
             _loading = false;
@@ -404,7 +504,7 @@ class _LoginScreenState extends State<LoginScreen>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'или',
+            AppLocalizations.tl('authOr'),
             style: TextStyle(color: colors.textMuted, fontSize: 13),
           ),
         ),

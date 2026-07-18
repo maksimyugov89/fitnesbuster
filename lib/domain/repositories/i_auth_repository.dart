@@ -1,4 +1,5 @@
 import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/core/legal/legal_consent.dart';
 
 abstract interface class IAuthRepository {
   UserEntity? get currentUser;
@@ -16,13 +17,20 @@ abstract interface class IAuthRepository {
   /// accounts are verified automatically by Firebase.
   bool get isEmailVerified;
 
+  Future<bool> hasCurrentLegalConsent();
   Future<UserEntity> login({required String email, required String password});
   Future<UserEntity> register({
     required String name,
     required String email,
     required String password,
+    required LegalConsentAcceptance consent,
   });
-  Future<UserEntity> signInWithGoogle();
+  Future<UserEntity> signInWithGoogle({
+    LegalConsentAcceptance? newAccountConsent,
+  });
+  Future<UserEntity> acceptCurrentLegalConsent({
+    required LegalConsentAcceptance consent,
+  });
   Future<void> resetPassword(String email);
   Future<void> logout();
   Future<void> updateProfile({String? name, String? photoUrl});

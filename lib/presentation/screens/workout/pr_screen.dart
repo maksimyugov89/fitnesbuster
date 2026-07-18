@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/domain/entities/personal_record.dart';
 import 'package:fitnesbuster/data/repositories/pr_repository.dart';
 
@@ -41,6 +42,27 @@ class _PrScreenState extends State<PrScreen> {
     await _load();
   }
 
+  String _displayWeight(PersonalRecord pr) {
+    if (pr.weightKg == null || pr.weightKg! <= 0) {
+      return AppLocalizations.tl('bodyWeightLabel');
+    }
+    final value = pr.weightKg!.toStringAsFixed(pr.weightKg! % 1 == 0 ? 0 : 1);
+    return '$value ${AppLocalizations.tl('kgUnit')}';
+  }
+
+  String _displayReps(PersonalRecord pr) =>
+      pr.reps != null ? '${pr.reps} ${AppLocalizations.tl('repsShort')}' : '—';
+
+  String _displaySummary(PersonalRecord pr) {
+    final parts = <String>[];
+    if (pr.sets != null) parts.add('${pr.sets}×');
+    if (pr.reps != null) parts.add(_displayReps(pr));
+    if (pr.weightKg != null && pr.weightKg! > 0) {
+      parts.add('@ ${_displayWeight(pr)}');
+    }
+    return parts.isNotEmpty ? parts.join(' ') : '—';
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
@@ -67,9 +89,9 @@ class _PrScreenState extends State<PrScreen> {
         backgroundColor: colors.primary,
         foregroundColor: colors.textOnPrimary,
         icon: const Icon(Icons.add_rounded),
-        label: const Text(
-          'Добавить',
-          style: TextStyle(fontWeight: FontWeight.w700),
+        label: Text(
+          AppLocalizations.tl('add'),
+          style: const TextStyle(fontWeight: FontWeight.w700),
         ),
       ),
     );
@@ -101,11 +123,17 @@ class _PrScreenState extends State<PrScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Личные рекорды', style: AppTextStyles.displayM),
+                Text(
+                  AppLocalizations.tl('prTitle'),
+                  style: AppTextStyles.displayM,
+                ),
                 Text(
                   totalRecords == 0
-                      ? 'Нет записей'
-                      : '$totalRecords записей · ${_grouped.length} упражнений',
+                      ? AppLocalizations.tl('prNoRecords')
+                      : AppLocalizations.tlp('prRecordsSummary', {
+                          'records': '$totalRecords',
+                          'exercises': '${_grouped.length}',
+                        }),
                   style: TextStyle(fontSize: 13, color: colors.textMuted),
                 ),
               ],
@@ -149,7 +177,7 @@ class _PrScreenState extends State<PrScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Нет личных рекордов',
+              AppLocalizations.tl('prEmptyTitle'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 18,
@@ -159,7 +187,7 @@ class _PrScreenState extends State<PrScreen> {
             ),
             const SizedBox(height: 10),
             Text(
-              'Записывайте лучшие результаты после тренировок — вес, повторения, подходы.',
+              AppLocalizations.tl('prEmptyBody'),
               style: TextStyle(
                 fontSize: 13,
                 color: colors.textMuted,
@@ -171,9 +199,9 @@ class _PrScreenState extends State<PrScreen> {
             FilledButton.icon(
               onPressed: () => _showAddSheet(context, colors),
               icon: const Icon(Icons.add_rounded, size: 18),
-              label: const Text(
-                'Добавить первый рекорд',
-                style: TextStyle(fontWeight: FontWeight.w700),
+              label: Text(
+                AppLocalizations.tl('prAddFirstRecord'),
+                style: const TextStyle(fontWeight: FontWeight.w700),
               ),
               style: FilledButton.styleFrom(
                 backgroundColor: colors.primary,
@@ -210,7 +238,10 @@ class _PrScreenState extends State<PrScreen> {
   ) {
     final best = _repo.getBest(records)!;
     final isExpanded = _expanded.contains(name);
-    final dateStr = DateFormat('d MMM yyyy', 'ru').format(best.date);
+    final dateStr = DateFormat(
+      'd MMM yyyy',
+      Localizations.localeOf(context).toLanguageTag(),
+    ).format(best.date);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -270,14 +301,14 @@ class _PrScreenState extends State<PrScreen> {
                           children: [
                             if (!best.isBodyweight) ...[
                               _Badge(
-                                text: best.displayWeight,
+                                text: _displayWeight(best),
                                 color: colors.primary,
                               ),
                               const SizedBox(width: 6),
                             ],
                             if (best.reps != null)
                               _Badge(
-                                text: best.displayReps,
+                                text: _displayReps(best),
                                 color: colors.success,
                               ),
                             const SizedBox(width: 8),
@@ -354,7 +385,7 @@ class _PrScreenState extends State<PrScreen> {
                         color: colors.primary,
                       ),
                       label: Text(
-                        'Добавить результат',
+                        AppLocalizations.tl('add'),
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.primary,
@@ -379,7 +410,10 @@ class _PrScreenState extends State<PrScreen> {
   }
 
   Widget _buildHistoryRow(ThemePalette colors, PersonalRecord pr, bool isBest) {
-    final dateStr = DateFormat('d MMM', 'ru').format(pr.date);
+    final dateStr = DateFormat(
+      'd MMM',
+      Localizations.localeOf(context).toLanguageTag(),
+    ).format(pr.date);
     return Dismissible(
       key: Key(pr.id),
       direction: DismissDirection.endToStart,
@@ -416,7 +450,7 @@ class _PrScreenState extends State<PrScreen> {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                pr.summary.isNotEmpty ? pr.summary : '—',
+                _displaySummary(pr),
                 style: TextStyle(
                   fontSize: 13,
                   color: isBest ? colors.textPrimary : colors.textSecondary,
@@ -447,7 +481,7 @@ class _PrScreenState extends State<PrScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             title: Text(
-              'Удалить запись?',
+              AppLocalizations.tl('prDeleteConfirm'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 17,
@@ -459,14 +493,14 @@ class _PrScreenState extends State<PrScreen> {
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
                 child: Text(
-                  'Отмена',
+                  AppLocalizations.tl('cancel'),
                   style: TextStyle(color: colors.textMuted),
                 ),
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(ctx, true),
                 style: FilledButton.styleFrom(backgroundColor: colors.error),
-                child: const Text('Удалить'),
+                child: Text(AppLocalizations.tl('delete')),
               ),
             ],
           ),
@@ -505,7 +539,9 @@ class _PrScreenState extends State<PrScreen> {
             setState(() => _expanded.add(name));
             messenger.showSnackBar(
               SnackBar(
-                content: Text('Рекорд сохранён: $name'),
+                content: Text(
+                  AppLocalizations.tlp('prRecordSaved', {'name': name}),
+                ),
                 backgroundColor: colors.success,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
@@ -617,7 +653,7 @@ class _AddPrSheetState extends State<_AddPrSheet> {
             const SizedBox(height: 20),
 
             Text(
-              'Записать рекорд',
+              AppLocalizations.tl('prRecordTitle'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 18,
@@ -627,7 +663,7 @@ class _AddPrSheetState extends State<_AddPrSheet> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Введите упражнение и ваш лучший результат',
+              AppLocalizations.tl('prRecordSubtitle'),
               style: TextStyle(fontSize: 12, color: c.textMuted),
             ),
             const SizedBox(height: 20),
@@ -635,7 +671,7 @@ class _AddPrSheetState extends State<_AddPrSheet> {
             // Exercise name
             _SheetField(
               ctrl: _nameCtrl,
-              hint: 'Упражнение',
+              hint: AppLocalizations.tl('exerciseDefault'),
               icon: Icons.fitness_center_rounded,
               colors: c,
               onChanged: _filterSuggestions,
@@ -691,7 +727,7 @@ class _AddPrSheetState extends State<_AddPrSheet> {
                 Expanded(
                   child: _SheetField(
                     ctrl: _weightCtrl,
-                    hint: 'Вес (кг)',
+                    hint: AppLocalizations.tl('weightKgHeader'),
                     icon: Icons.monitor_weight_outlined,
                     colors: c,
                     inputType: TextInputType.number,
@@ -701,7 +737,7 @@ class _AddPrSheetState extends State<_AddPrSheet> {
                 Expanded(
                   child: _SheetField(
                     ctrl: _repsCtrl,
-                    hint: 'Повторения',
+                    hint: AppLocalizations.tl('repsLabel'),
                     icon: Icons.repeat_rounded,
                     colors: c,
                     inputType: TextInputType.number,
@@ -711,7 +747,7 @@ class _AddPrSheetState extends State<_AddPrSheet> {
                 Expanded(
                   child: _SheetField(
                     ctrl: _setsCtrl,
-                    hint: 'Подходы',
+                    hint: AppLocalizations.tl('setsLabel'),
                     icon: Icons.layers_rounded,
                     colors: c,
                     inputType: TextInputType.number,
@@ -724,7 +760,7 @@ class _AddPrSheetState extends State<_AddPrSheet> {
             // Notes
             _SheetField(
               ctrl: _notesCtrl,
-              hint: 'Заметка (необязательно)',
+              hint: AppLocalizations.tl('prNotesHint'),
               icon: Icons.notes_rounded,
               colors: c,
             ),
@@ -735,9 +771,12 @@ class _AddPrSheetState extends State<_AddPrSheet> {
               child: FilledButton.icon(
                 onPressed: _submit,
                 icon: const AppIcon(asset: AppImages.achievements, size: 18),
-                label: const Text(
-                  'Сохранить рекорд',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                label: Text(
+                  AppLocalizations.tl('prSaveRecord'),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 style: FilledButton.styleFrom(
                   backgroundColor: c.primary,
@@ -902,7 +941,7 @@ class _PrLogCardState extends State<PrLogCard> {
             ),
             const SizedBox(width: 10),
             Text(
-              'Рекорд сохранён!',
+              AppLocalizations.tl('prRecordSavedTitle'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 15,
@@ -934,7 +973,7 @@ class _PrLogCardState extends State<PrLogCard> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Записать личный рекорд',
+                AppLocalizations.tl('prRecordTitle'),
                 style: TextStyle(
                   fontFamily: 'Syne',
                   fontSize: 14,
@@ -991,15 +1030,27 @@ class _PrLogCardState extends State<PrLogCard> {
           Row(
             children: [
               Expanded(
-                child: _MiniField(ctrl: _weightCtrl, hint: 'кг', colors: c),
+                child: _MiniField(
+                  ctrl: _weightCtrl,
+                  hint: AppLocalizations.tl('kgUnit'),
+                  colors: c,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _MiniField(ctrl: _repsCtrl, hint: 'повт', colors: c),
+                child: _MiniField(
+                  ctrl: _repsCtrl,
+                  hint: AppLocalizations.tl('repsShort'),
+                  colors: c,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _MiniField(ctrl: _setsCtrl, hint: 'сетов', colors: c),
+                child: _MiniField(
+                  ctrl: _setsCtrl,
+                  hint: AppLocalizations.tl('setsLabel'),
+                  colors: c,
+                ),
               ),
             ],
           ),
@@ -1017,9 +1068,12 @@ class _PrLogCardState extends State<PrLogCard> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'Записать',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              child: Text(
+                AppLocalizations.tl('recordMetric'),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),

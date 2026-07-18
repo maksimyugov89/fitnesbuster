@@ -9,6 +9,7 @@ import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
 import 'package:fitnesbuster/data/models/weekly_debrief.dart';
 import 'package:fitnesbuster/data/repositories/pr_repository.dart';
@@ -142,7 +143,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Дебриф недели'),
+        title: Text(AppLocalizations.tl('weeklyDebriefTitle')),
         centerTitle: true,
         actions: [
           if (_debrief != null)
@@ -165,7 +166,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
             Icon(Icons.person_off_rounded, size: 48, color: colors.textMuted),
             const SizedBox(height: 12),
             Text(
-              'Заполни профиль для дебрифа',
+              AppLocalizations.tl('weeklyDebriefProfileRequired'),
               style: TextStyle(fontSize: 15, color: colors.textMuted),
             ),
           ],
@@ -181,7 +182,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
             CircularProgressIndicator(color: colors.primary),
             const SizedBox(height: 16),
             Text(
-              'Анализирую неделю...',
+              AppLocalizations.tl('weeklyDebriefAnalyzing'),
               style: TextStyle(fontSize: 14, color: colors.textSecondary),
             ),
           ],
@@ -212,7 +213,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('Попробовать снова'),
+                child: Text(AppLocalizations.tl('retry')),
               ),
             ],
           ),
@@ -231,7 +232,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
         const SizedBox(height: 16),
         _SummaryCard(
           icon: AppImages.workoutsTab,
-          title: 'Тренировки',
+          title: AppLocalizations.tl('workoutsTitle'),
           text: _debrief!.workoutSummary,
           colors: colors,
           accentColor: colors.primary,
@@ -239,14 +240,14 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
         const SizedBox(height: 10),
         _SummaryCard(
           icon: AppImages.nutritionTab,
-          title: 'Питание',
+          title: AppLocalizations.tl('nutritionTitle'),
           text: _debrief!.nutritionSummary,
           colors: colors,
           accentColor: colors.accent,
         ),
         const SizedBox(height: 16),
         _BulletSection(
-          label: 'Достижения',
+          label: AppLocalizations.tl('achievementsTitle'),
           icon: AppImages.achievements,
           items: _debrief!.highlights,
           color: colors.success,
@@ -254,7 +255,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
         ),
         const SizedBox(height: 12),
         _BulletSection(
-          label: 'Области роста',
+          label: AppLocalizations.tl('weeklyDebriefGrowthAreas'),
           icon: AppImages.trend,
           items: _debrief!.improvements,
           color: colors.accentOrange,
@@ -264,7 +265,7 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
         _FocusCard(text: _debrief!.nextWeekFocus, colors: colors),
         const SizedBox(height: 12),
         _BulletSection(
-          label: 'Восстановление',
+          label: AppLocalizations.tl('recoveryTitle'),
           icon: AppImages.sleep,
           items: _debrief!.recoveryTips,
           color: colors.primary,
@@ -316,7 +317,7 @@ class _ScoreHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'ИТОГ НЕДЕЛИ',
+                      AppLocalizations.tl('weeklyDebriefSummary'),
                       style: TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 20,
@@ -326,7 +327,10 @@ class _ScoreHeader extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Тренировок: ${(debrief.workoutAdherence * 7 / 100).round()}/7',
+                      AppLocalizations.tlp('workoutsWeekCount', {
+                        'done':
+                            '${(debrief.workoutAdherence * 7 / 100).round()}',
+                      }),
                       style: TextStyle(
                         fontSize: 14,
                         color: colors.textSecondary,
@@ -576,7 +580,7 @@ class _FocusCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Фокус следующей недели',
+                  AppLocalizations.tl('weeklyDebriefNextWeekFocus'),
                   style: TextStyle(
                     fontFamily: 'Syne',
                     fontSize: 15,

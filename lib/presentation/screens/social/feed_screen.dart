@@ -7,6 +7,7 @@ import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({super.key});
@@ -34,7 +35,10 @@ class FeedScreen extends StatelessWidget {
             ),
           ),
         ),
-        title: const Text('Лента друзей', style: AppTextStyles.titleL),
+        title: Text(
+          AppLocalizations.tl('friendsFeedTitle'),
+          style: AppTextStyles.titleL,
+        ),
       ),
       body: StreamBuilder<List<FeedEvent>>(
         stream: sl<ISocialService>().feedStream(),
@@ -67,7 +71,7 @@ class FeedScreen extends StatelessWidget {
             Image.asset(AppImages.friends, width: 64, height: 64),
             const SizedBox(height: 16),
             Text(
-              'Лента пуста',
+              AppLocalizations.tl('feedEmptyTitle'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 18,
@@ -77,7 +81,7 @@ class FeedScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Добавь друзей, чтобы видеть\nих тренировки и достижения',
+              AppLocalizations.tl('feedEmptyBody'),
               style: TextStyle(fontSize: 13, color: colors.textMuted),
               textAlign: TextAlign.center,
             ),
@@ -98,13 +102,24 @@ class _FeedCard extends StatelessWidget {
     return value is String ? value : '';
   }
 
-  String _timeAgo(DateTime dt) {
+  String _timeAgo(BuildContext context, DateTime dt) {
     final diff = DateTime.now().difference(dt);
-    if (diff.inMinutes < 1) return 'только что';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} мин. назад';
-    if (diff.inHours < 24) return '${diff.inHours} ч. назад';
-    if (diff.inDays < 7) return '${diff.inDays} дн. назад';
-    return DateFormat('d MMM', 'ru').format(dt);
+    if (diff.inMinutes < 1) return AppLocalizations.tl('feedJustNow');
+    if (diff.inMinutes < 60) {
+      return AppLocalizations.tlp('feedMinutesAgo', {
+        'count': '${diff.inMinutes}',
+      });
+    }
+    if (diff.inHours < 24) {
+      return AppLocalizations.tlp('feedHoursAgo', {'count': '${diff.inHours}'});
+    }
+    if (diff.inDays < 7) {
+      return AppLocalizations.tlp('feedDaysAgo', {'count': '${diff.inDays}'});
+    }
+    return DateFormat(
+      'd MMM',
+      Localizations.localeOf(context).languageCode,
+    ).format(dt);
   }
 
   @override
@@ -159,7 +174,7 @@ class _FeedCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _timeAgo(event.timestamp),
+                  _timeAgo(context, event.timestamp),
                   style: TextStyle(fontSize: 11, color: colors.textMuted),
                 ),
                 if (event.type == 'challenge_created' &&
@@ -202,7 +217,9 @@ class _JoinChallengeFromFeedButtonState
 
   @override
   Widget build(BuildContext context) {
-    final text = _joined ? 'Вы участвуете' : 'Присоединиться';
+    final text = AppLocalizations.tl(
+      _joined ? 'feedChallengeJoined' : 'feedChallengeJoin',
+    );
     return GestureDetector(
       onTap: _loading || _joined ? null : _join,
       child: AnimatedContainer(
@@ -249,7 +266,9 @@ class _JoinChallengeFromFeedButtonState
         _joined = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Вы присоединились к челленджу')),
+        SnackBar(
+          content: Text(AppLocalizations.tl('feedChallengeJoinSuccess')),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
@@ -271,8 +290,10 @@ class _JoinChallengeFromFeedButtonState
         SnackBar(
           content: Text(
             isPermissionError
-                ? 'К приватному челленджу могут присоединиться только друзья автора'
-                : 'Не удалось присоединиться: ${e.toString()}',
+                ? AppLocalizations.tl('feedPrivateChallengeOnlyFriends')
+                : AppLocalizations.tlp('feedChallengeJoinFailed', {
+                    'error': e.toString(),
+                  }),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),

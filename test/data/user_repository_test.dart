@@ -262,7 +262,14 @@ void main() {
       );
 
       expect(result.id, tUid);
-      verify(docRef.set(any, any)).called(1);
+      final captured = Map<String, dynamic>.from(
+        verify(docRef.set(captureAny, any)).captured.single as Map,
+      );
+      expect(captured['onboarding'], {
+        'location': 'outdoor',
+        'running': 'noRunning',
+      });
+      expect(captured, isNot(contains('onboarding.location')));
     });
   });
 

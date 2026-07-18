@@ -2,6 +2,7 @@ export const DELETE_ACCOUNT_BATCH_LIMIT = 450;
 
 export function ownDeleteAccountCollectionPaths(uid: string): string[] {
   return [
+    `users/${uid}/legal_consents`,
     `activity_events/${uid}/items`,
     `feed/${uid}/events`,
     `notifications/${uid}/items`,

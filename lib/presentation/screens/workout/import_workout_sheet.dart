@@ -131,6 +131,7 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
       if (uid != null) {
         final plans = await sl<IUserRepository>().getAiPlans(uid);
         final currentPlanJson = plans['workoutPlan'];
+        final profile = (await sl<IUserRepository>().getUser(uid)).profile;
         if (currentPlanJson != null) {
           // Correction mode: AI sees current plan and adjusts it
           final type = _resolveType(sourceHint);
@@ -139,12 +140,14 @@ class _ImportWorkoutSheetState extends State<ImportWorkoutSheet> {
             userInput: userInput,
             correctionType: type,
             sourceHint: sourceHint,
+            profile: profile,
           );
         } else {
           // No plan yet — create from scratch
           jsonStr = await service.parseWorkoutFromContent(
             userInput,
             sourceHint: sourceHint,
+            profile: profile,
           );
         }
       } else {
@@ -1042,11 +1045,11 @@ class _ExamplesHint extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           for (final ex in [
-            '"Замени жим штанги на жим гантелей — болят запястья"',
-            '"Хочу больше упражнений на ноги и ягодицы"',
-            '"Убери кардио, я бегаю отдельно"',
-            '"Добавь суперсеты для плеч и трицепса"',
-            '"Уменьши интенсивность — я только начинаю"',
+            AppLocalizations.tl('importExampleWristPain'),
+            AppLocalizations.tl('importExampleLegsGlutes'),
+            AppLocalizations.tl('importExampleRemoveCardio'),
+            AppLocalizations.tl('importExampleSupersets'),
+            AppLocalizations.tl('importExampleLowerIntensity'),
           ])
             Padding(
               padding: const EdgeInsets.only(bottom: 3),

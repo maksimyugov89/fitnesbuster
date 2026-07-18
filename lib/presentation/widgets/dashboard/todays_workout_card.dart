@@ -43,7 +43,9 @@ class StreakCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${AppLocalizations.of(context).levelLabel} ${lvl.level} · ${lvl.name}',
+                      '${AppLocalizations.of(context).levelLabel} '
+                      '${lvl.level} · '
+                      '${GamificationService.localizedLevelName(lvl.level)}',
                       style: TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 13,
@@ -390,25 +392,25 @@ class _TestWeekBanner extends StatelessWidget {
                       style: TextStyle(fontSize: 12, color: p.textSecondary),
                     ),
                     const SizedBox(height: 8),
-                    const Row(
+                    Row(
                       children: [
                         Flexible(
                           child: _InfoPill(
-                            'Индивидуально',
+                            l10n.dashboardIndividualLabel,
                             SemanticColors.featurePill,
                           ),
                         ),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Flexible(
                           child: _InfoPill(
-                            'Ваш график',
+                            l10n.dashboardYourSchedule,
                             SemanticColors.featurePill,
                           ),
                         ),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Flexible(
                           child: _InfoPill(
-                            'Без спешки',
+                            AppLocalizations.tl('dashboardAtYourPace'),
                             SemanticColors.featurePill,
                           ),
                         ),

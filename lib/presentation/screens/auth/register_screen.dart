@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/localization/language_service.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
+import 'package:fitnesbuster/core/legal/legal_consent.dart';
 import 'package:fitnesbuster/core/legal/legal_documents.dart';
 import 'package:fitnesbuster/presentation/screens/legal/legal_document_screen.dart';
 
@@ -122,41 +124,53 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   String _strengthLabel(double s) {
-    if (s <= 0.25) return 'Слабый';
-    if (s <= 0.5) return 'Средний';
-    if (s <= 0.75) return 'Хороший';
-    return 'Сильный';
+    if (s <= 0.25) return AppLocalizations.tl('passwordStrengthWeak');
+    if (s <= 0.5) return AppLocalizations.tl('passwordStrengthMedium');
+    if (s <= 0.75) return AppLocalizations.tl('passwordStrengthGood');
+    return AppLocalizations.tl('passwordStrengthStrong');
   }
 
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
-    if (!_acceptTerms) {
-      final colors = AppTheme.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Примите условия использования'),
-          backgroundColor: colors.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-      return;
-    }
+    if (!_ensureTermsAccepted()) return;
+
     setState(() => _loading = true);
     context.read<AuthBloc>().add(
       AuthRegisterRequested(
         name: '',
         email: _emailCtrl.text.trim(),
         password: _passCtrl.text,
+        consent: LegalConsentAcceptance.emailRegistration(
+          localeCode: LanguageService.current.code,
+        ),
       ),
     );
   }
 
+  bool _ensureTermsAccepted() {
+    if (_acceptTerms) return true;
+    final colors = AppTheme.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.tl('authTermsRequired')),
+        backgroundColor: colors.error,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+    return false;
+  }
+
   void _handleGoogleRegister() {
+    if (!_ensureTermsAccepted()) return;
     setState(() => _googleLoading = true);
-    context.read<AuthBloc>().add(const AuthGoogleLoginRequested());
+    context.read<AuthBloc>().add(
+      AuthGoogleLoginRequested(
+        newAccountConsent: LegalConsentAcceptance.googleRegistration(
+          localeCode: LanguageService.current.code,
+        ),
+      ),
+    );
   }
 
   @override
@@ -392,14 +406,18 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: 'Я принимаю ',
+                                          text: AppLocalizations.tl(
+                                            'authConsentPrefix',
+                                          ),
                                           style: TextStyle(
                                             color: colors.textSecondary,
                                             fontSize: 13,
                                           ),
                                         ),
                                         TextSpan(
-                                          text: 'условия использования',
+                                          text: AppLocalizations.tl(
+                                            'authTermsOfUse',
+                                          ),
                                           recognizer: _termsTap,
                                           style: TextStyle(
                                             color: colors.primary,
@@ -410,14 +428,16 @@ class _RegisterScreenState extends State<RegisterScreen>
                                           ),
                                         ),
                                         TextSpan(
-                                          text: ' и ',
+                                          text: AppLocalizations.tl('authAnd'),
                                           style: TextStyle(
                                             color: colors.textSecondary,
                                             fontSize: 13,
                                           ),
                                         ),
                                         TextSpan(
-                                          text: 'политику конфиденциальности',
+                                          text: AppLocalizations.tl(
+                                            'authPrivacyPolicy',
+                                          ),
                                           recognizer: _privacyTap,
                                           style: TextStyle(
                                             color: colors.primary,
@@ -483,7 +503,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   horizontal: 16,
                                 ),
                                 child: Text(
-                                  'или',
+                                  AppLocalizations.tl('authOr'),
                                   style: TextStyle(
                                     color: colors.textMuted,
                                     fontSize: 13,

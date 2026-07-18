@@ -9,6 +9,7 @@ import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/data/models/exercise_db_model.dart';
 import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/localization/language_service.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
 
@@ -54,8 +55,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         _exercise = ex;
         _loading = false;
       });
-      _loadAiTips(ex);
-      _loadInstructionsRu(ex);
+      // These prompts intentionally remain Russian.  Do not send them for a
+      // different UI locale; English users see the canonical source content.
+      if (LanguageService.current.code == 'ru') {
+        _loadAiTips(ex);
+        _loadInstructionsRu(ex);
+      }
       // _loadGif(ex); — disabled: current ExerciseDB API has no gifUrl
     }
   }
@@ -167,7 +172,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           SliverToBoxAdapter(child: _buildInfoChips(c, ex)),
           SliverToBoxAdapter(child: _buildGifDemo(c, ex)),
           SliverToBoxAdapter(child: _buildInstructions(c, ex)),
-          SliverToBoxAdapter(child: _buildAiTips(c)),
+          if (LanguageService.current.code == 'ru')
+            SliverToBoxAdapter(child: _buildAiTips(c)),
           if (ex.tags.isNotEmpty) SliverToBoxAdapter(child: _buildTags(c, ex)),
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
@@ -200,7 +206,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            ex.nameRu,
+            ex.displayNameForLocale(LanguageService.current.code),
             style: TextStyle(
               fontFamily: 'Syne',
               fontSize: 16,
@@ -210,7 +216,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          if (ex.name != ex.nameRu)
+          if (LanguageService.current.code == 'ru' && ex.name != ex.nameRu)
             Text(
               ex.name,
               style: TextStyle(fontSize: 10, color: c.textMuted),
@@ -248,33 +254,41 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           ),
           const SizedBox(height: 14),
           // Legend
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _LegendDot(
                 color: SemanticColors.primaryMuscle,
-                label: 'Основные',
+                label: AppLocalizations.tl('exercisePrimaryMuscles'),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               _LegendDot(
                 color: SemanticColors.secondaryMuscle,
-                label: 'Вторичные',
+                label: AppLocalizations.tl('exerciseSecondaryMuscles'),
               ),
             ],
           ),
           const SizedBox(height: 12),
           if (ex.primaryMuscles.isNotEmpty)
             _MuscleRow(
-              label: 'Основные',
-              muscles: ex.primaryMuscles.map((m) => m.displayNameRu).toList(),
+              label: AppLocalizations.tl('exercisePrimaryMuscles'),
+              muscles: ex.primaryMuscles
+                  .map(
+                    (m) => m.displayNameForLocale(LanguageService.current.code),
+                  )
+                  .toList(),
               color: SemanticColors.primaryMuscle,
               c: c,
             ),
           if (ex.secondaryMuscles.isNotEmpty) ...[
             const SizedBox(height: 8),
             _MuscleRow(
-              label: 'Вторичные',
-              muscles: ex.secondaryMuscles.map((m) => m.displayNameRu).toList(),
+              label: AppLocalizations.tl('exerciseSecondaryMuscles'),
+              muscles: ex.secondaryMuscles
+                  .map(
+                    (m) => m.displayNameForLocale(LanguageService.current.code),
+                  )
+                  .toList(),
               color: SemanticColors.secondaryMuscle,
               c: c,
             ),
@@ -291,26 +305,40 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       ExDifficulty.advanced => SemanticColors.difficultyAdvanced,
     };
     final diffLabel = switch (ex.difficulty) {
-      ExDifficulty.beginner => 'Начинающий',
-      ExDifficulty.intermediate => 'Средний',
-      ExDifficulty.advanced => 'Продвинутый',
+      ExDifficulty.beginner => AppLocalizations.tl(
+        'exerciseDifficultyBeginner',
+      ),
+      ExDifficulty.intermediate => AppLocalizations.tl(
+        'exerciseDifficultyIntermediate',
+      ),
+      ExDifficulty.advanced => AppLocalizations.tl(
+        'exerciseDifficultyAdvanced',
+      ),
     };
     final movLabel = switch (ex.movementType) {
-      ExMovementType.push => 'Толчок',
-      ExMovementType.pull => 'Тяга',
-      ExMovementType.hinge => 'Шарнир',
-      ExMovementType.squat => 'Присед',
-      ExMovementType.lunge => 'Выпад',
-      ExMovementType.rotation => 'Вращение',
-      ExMovementType.isolation => 'Изоляция',
+      ExMovementType.push => AppLocalizations.tl('exerciseMovementPush'),
+      ExMovementType.pull => AppLocalizations.tl('exerciseMovementPull'),
+      ExMovementType.hinge => AppLocalizations.tl('exerciseMovementHinge'),
+      ExMovementType.squat => AppLocalizations.tl('exerciseMovementSquat'),
+      ExMovementType.lunge => AppLocalizations.tl('exerciseMovementLunge'),
+      ExMovementType.rotation => AppLocalizations.tl(
+        'exerciseMovementRotation',
+      ),
+      ExMovementType.isolation => AppLocalizations.tl(
+        'exerciseMovementIsolation',
+      ),
     };
     String equipLabel(ExEquipment e) => switch (e) {
-      ExEquipment.barbell => 'Штанга',
-      ExEquipment.dumbbell => 'Гантели',
-      ExEquipment.machine => 'Тренажёр',
-      ExEquipment.bodyweight => 'Без веса',
-      ExEquipment.cables => 'Блок',
-      ExEquipment.kettlebell => 'Гиря',
+      ExEquipment.barbell => AppLocalizations.tl('exerciseEquipmentBarbell'),
+      ExEquipment.dumbbell => AppLocalizations.tl('exerciseEquipmentDumbbell'),
+      ExEquipment.machine => AppLocalizations.tl('exerciseEquipmentMachine'),
+      ExEquipment.bodyweight => AppLocalizations.tl(
+        'exerciseEquipmentBodyweight',
+      ),
+      ExEquipment.cables => AppLocalizations.tl('exerciseEquipmentCables'),
+      ExEquipment.kettlebell => AppLocalizations.tl(
+        'exerciseEquipmentKettlebell',
+      ),
       ExEquipment.none => '',
     };
 
@@ -350,8 +378,11 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
 
   Widget _buildInstructions(ThemePalette c, ExerciseDbModel ex) {
     if (ex.instructions.isEmpty) return const SizedBox.shrink();
-    // Only show when Russian translation is ready or loading
-    if (_instructionsRu == null && !_instructionsLoading) {
+    final isRussian = LanguageService.current.code == 'ru';
+    final instructions = isRussian ? _instructionsRu : ex.instructions;
+    // The AI translation exists only for Russian; other locales use canonical
+    // English instructions until their exercise catalogs are localized.
+    if (instructions == null && !_instructionsLoading) {
       return const SizedBox.shrink();
     }
 
@@ -371,7 +402,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                   color: c.textPrimary,
                 ),
               ),
-              if (_instructionsLoading) ...[
+              if (isRussian && _instructionsLoading) ...[
                 const SizedBox(width: 8),
                 SizedBox(
                   width: 12,
@@ -384,7 +415,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               ],
             ],
           ),
-          if (_instructionsRu != null) ...[
+          if (instructions != null) ...[
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
@@ -395,10 +426,10 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                 ),
               ),
               child: Column(
-                children: _instructionsRu!.asMap().entries.map((entry) {
+                children: instructions.asMap().entries.map((entry) {
                   final i = entry.key;
                   final step = entry.value;
-                  final isLast = i == _instructionsRu!.length - 1;
+                  final isLast = i == instructions.length - 1;
                   return Padding(
                     padding: EdgeInsets.fromLTRB(
                       16,
@@ -462,7 +493,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Как выполнять',
+            AppLocalizations.tl('howToPerform'),
             style: TextStyle(
               fontFamily: 'Syne',
               fontSize: 15,
@@ -517,7 +548,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                 Image.asset(AppImages.robot, width: 16, height: 16),
                 const SizedBox(width: 6),
                 Text(
-                  'AI-советы по технике',
+                  AppLocalizations.tl('aiTechniqueTips'),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -540,7 +571,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'Анализирую технику...',
+                    AppLocalizations.tl('analyzingTechnique'),
                     style: TextStyle(fontSize: 12, color: c.textMuted),
                   ),
                 ],
@@ -560,7 +591,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                   Icon(Icons.wifi_off_rounded, size: 14, color: c.textMuted),
                   const SizedBox(width: 6),
                   Text(
-                    'Нет соединения',
+                    AppLocalizations.tl('noConnection'),
                     style: TextStyle(fontSize: 12, color: c.textMuted),
                   ),
                   const Spacer(),
@@ -569,7 +600,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                       if (_exercise != null) _loadAiTips(_exercise!);
                     },
                     child: Text(
-                      'Повторить',
+                      AppLocalizations.tl('retry'),
                       style: TextStyle(
                         fontSize: 12,
                         color: c.primary,
@@ -581,7 +612,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               )
             else
               Text(
-                'Советы загружаются...',
+                AppLocalizations.tl('aiTipsLoading'),
                 style: TextStyle(fontSize: 12, color: c.textMuted),
               ),
           ],

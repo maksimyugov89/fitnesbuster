@@ -123,8 +123,8 @@ class FeedEvent {
       case 'challenge_created':
         final title = data['challengeTitle'] as String? ?? '';
         return title.isNotEmpty
-            ? 'создал(а) челлендж «$title»'
-            : 'создал(а) челлендж';
+            ? '${AppLocalizations.tl('challengeCreated')}: "$title"'
+            : AppLocalizations.tl('challengeCreated');
       default:
         return AppLocalizations.tl('socialDidSomething');
     }

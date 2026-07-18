@@ -11,6 +11,7 @@ import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 import 'package:fitnesbuster/presentation/widgets/segmented_tab_bar.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class ChallengesScreen extends StatefulWidget {
   const ChallengesScreen({super.key});
@@ -58,13 +59,19 @@ class _ChallengesScreenState extends State<ChallengesScreen>
             ),
           ),
         ),
-        title: const Text('Челленджи', style: AppTextStyles.titleL),
+        title: Text(
+          AppLocalizations.tl('challengesTitle'),
+          style: AppTextStyles.titleL,
+        ),
         actions: const [],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(52),
           child: SegmentedTabBar(
             controller: _tabs,
-            labels: const ['Мои', 'Публичные'],
+            labels: [
+              AppLocalizations.tl('myChallengesLabel'),
+              AppLocalizations.tl('publicChallengesLabel'),
+            ],
           ),
         ),
       ),
@@ -89,7 +96,9 @@ class _ChallengesScreenState extends State<ChallengesScreen>
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Text(
-                'Не удалось загрузить челленджи: ${snap.error}',
+                AppLocalizations.tlp('challengeLoadFailed', {
+                  'error': '${snap.error}',
+                }),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -99,8 +108,8 @@ class _ChallengesScreenState extends State<ChallengesScreen>
         if (challenges.isEmpty) {
           return _buildEmpty(
             colors,
-            'Нет активных челленджей',
-            'Создай свой или присоединись к публичному',
+            AppLocalizations.tl('challengeEmptyActiveTitle'),
+            AppLocalizations.tl('challengeEmptyActiveBody'),
             action: _CreateChallengeInlineButton(
               colors: colors,
               onTap: () =>
@@ -147,7 +156,9 @@ class _ChallengesScreenState extends State<ChallengesScreen>
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Text(
-                'Не удалось загрузить челленджи: ${snap.error}',
+                AppLocalizations.tlp('challengeLoadFailed', {
+                  'error': '${snap.error}',
+                }),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -222,7 +233,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
             Image.asset(AppImages.achievements, width: 64, height: 64),
             const SizedBox(height: 16),
             Text(
-              'Нет публичных челленджей',
+              AppLocalizations.tl('challengeEmptyPublicTitle'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 18,
@@ -232,7 +243,7 @@ class _ChallengesScreenState extends State<ChallengesScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Публичные челленджи появятся здесь, когда пользователи создадут их с включённым флажком публичности',
+              AppLocalizations.tl('challengeEmptyPublicBody'),
               style: TextStyle(fontSize: 13, color: colors.textMuted),
               textAlign: TextAlign.center,
             ),
@@ -278,7 +289,7 @@ class _CreateChallengeInlineButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
-          'Создать челлендж',
+          AppLocalizations.tl('challengeCreateTitle'),
           style: TextStyle(
             fontFamily: 'Syne',
             fontSize: 14,
@@ -314,11 +325,27 @@ class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
   late bool _isPublic;
   var _loading = false;
 
-  static const _goalOptions = [
-    _GoalOption('workout_count', 'Тренировки', 'раз'),
-    _GoalOption('calories_burned', 'Калории', 'ккал'),
-    _GoalOption('cardio_minutes', 'Кардио', 'мин'),
-    _GoalOption('workout_streak', 'Серия дней', 'дн.'),
+  List<_GoalOption> get _goalOptions => [
+    _GoalOption(
+      'workout_count',
+      AppLocalizations.tl('socialWorkouts'),
+      AppLocalizations.tl('challengeUnitTimes'),
+    ),
+    _GoalOption(
+      'calories_burned',
+      AppLocalizations.tl('socialKcal'),
+      AppLocalizations.tl('socialKcal'),
+    ),
+    _GoalOption(
+      'cardio_minutes',
+      AppLocalizations.tl('socialCardioMin'),
+      AppLocalizations.tl('minSuffix').replaceAll('{n}', ''),
+    ),
+    _GoalOption(
+      'workout_streak',
+      AppLocalizations.tl('socialDayStreak'),
+      AppLocalizations.tl('challengeUnitDays'),
+    ),
   ];
 
   @override
@@ -373,7 +400,7 @@ class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Создать челлендж',
+                  AppLocalizations.tl('challengeCreateTitle'),
                   style: TextStyle(
                     fontFamily: 'Syne',
                     fontSize: 20,
@@ -382,20 +409,31 @@ class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _FieldLabel(colors: colors, text: 'Название'),
+                _FieldLabel(
+                  colors: colors,
+                  text: AppLocalizations.tl('challengeNameLabel'),
+                ),
                 const SizedBox(height: 6),
                 TextFormField(
                   controller: _title,
                   maxLength: 60,
-                  decoration: _inputDecoration(colors, 'Например: Неделя силы'),
+                  decoration: _inputDecoration(
+                    colors,
+                    AppLocalizations.tl('challengeNameHint'),
+                  ),
                   validator: (value) {
                     final text = value?.trim() ?? '';
-                    if (text.isEmpty) return 'Введите название';
+                    if (text.isEmpty) {
+                      return AppLocalizations.tl('challengeNameRequired');
+                    }
                     return null;
                   },
                 ),
                 const SizedBox(height: 10),
-                _FieldLabel(colors: colors, text: 'Описание'),
+                _FieldLabel(
+                  colors: colors,
+                  text: AppLocalizations.tl('challengeDescriptionLabel'),
+                ),
                 const SizedBox(height: 6),
                 TextFormField(
                   controller: _description,
@@ -404,11 +442,14 @@ class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
                   maxLines: 3,
                   decoration: _inputDecoration(
                     colors,
-                    'Что нужно сделать участникам',
+                    AppLocalizations.tl('challengeDescriptionHint'),
                   ),
                 ),
                 const SizedBox(height: 10),
-                _FieldLabel(colors: colors, text: 'Цель'),
+                _FieldLabel(
+                  colors: colors,
+                  text: AppLocalizations.tl('challengeGoalLabel'),
+                ),
                 const SizedBox(height: 6),
                 DropdownButtonFormField<String>(
                   initialValue: _goalType,
@@ -442,7 +483,7 @@ class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
                       child: _NumberField(
                         controller: _target,
                         colors: colors,
-                        label: 'Значение',
+                        label: AppLocalizations.tl('challengeTargetLabel'),
                         hint: _currentGoal.unit,
                         min: 1,
                         max: 100000,
@@ -453,7 +494,7 @@ class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
                       child: _NumberField(
                         controller: _duration,
                         colors: colors,
-                        label: 'Дней',
+                        label: AppLocalizations.tl('challengeDaysLabel'),
                         hint: '1-365',
                         min: 1,
                         max: 365,
@@ -467,7 +508,7 @@ class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
                   contentPadding: EdgeInsets.zero,
                   activeThumbColor: colors.primary,
                   title: Text(
-                    'Публичный челлендж',
+                    AppLocalizations.tl('challengePublicTitle'),
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: colors.textPrimary,
@@ -475,8 +516,8 @@ class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
                   ),
                   subtitle: Text(
                     _isPublic
-                        ? 'Все пользователи смогут найти его и присоединиться'
-                        : 'Только друзья увидят приглашение в ленте и смогут присоединиться',
+                        ? AppLocalizations.tl('challengePublicEnabled')
+                        : AppLocalizations.tl('challengePublicDisabled'),
                     style: TextStyle(fontSize: 12, color: colors.textMuted),
                   ),
                   onChanged: (value) => setState(() => _isPublic = value),
@@ -502,7 +543,7 @@ class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
                               ),
                             )
                           : Text(
-                              'Создать',
+                              AppLocalizations.tl('createChallengeBtn'),
                               style: TextStyle(
                                 fontFamily: 'Syne',
                                 fontSize: 15,
@@ -560,16 +601,18 @@ class _CreateChallengeSheetState extends State<_CreateChallengeSheet> {
       );
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Челлендж создан')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.tl('challengeCreated'))),
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Не удалось создать челлендж: ${e.toString()}',
+            AppLocalizations.tlp('challengeCreateFailed', {
+              'error': e.toString(),
+            }),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -658,7 +701,9 @@ class _NumberField extends StatelessWidget {
           ),
           validator: (value) {
             final parsed = int.tryParse(value ?? '');
-            if (parsed == null) return 'Введите число';
+            if (parsed == null) {
+              return AppLocalizations.tl('challengeNumberRequired');
+            }
             if (parsed < min || parsed > max) return '$min-$max';
             return null;
           },
@@ -703,9 +748,13 @@ class _ChallengeCard extends StatelessWidget {
   }
 
   String get _daysLabel {
-    if (!challenge.isActive) return 'Завершён';
+    if (!challenge.isActive) {
+      return AppLocalizations.tl('challengeCompletedState');
+    }
     final d = challenge.endDate.difference(DateTime.now()).inDays;
-    return d == 0 ? 'Последний день!' : 'Осталось $d дн.';
+    return d == 0
+        ? AppLocalizations.tl('challengeLastDay')
+        : AppLocalizations.tlp('challengeDaysLeft', {'days': '$d'});
   }
 
   @override
@@ -742,7 +791,9 @@ class _ChallengeCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        'от ${challenge.creatorName}',
+                        AppLocalizations.tlp('challengeCreatedBy', {
+                          'name': challenge.creatorName,
+                        }),
                         style: TextStyle(fontSize: 11, color: colors.textMuted),
                       ),
                     ],
@@ -773,22 +824,24 @@ class _ChallengeCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: _Stat(
-                    label: 'Цель',
+                    label: AppLocalizations.tl('challengeGoalLabel'),
                     value: '${challenge.targetValue} ${challenge.goalLabel}',
                     colors: colors,
                   ),
                 ),
                 Expanded(
                   child: _Stat(
-                    label: 'Участники',
+                    label: AppLocalizations.tl('challengeParticipantsLabel'),
                     value: '${challenge.participants.length}',
                     colors: colors,
                   ),
                 ),
                 Expanded(
                   child: _Stat(
-                    label: 'Длительность',
-                    value: '${challenge.durationDays} дн.',
+                    label: AppLocalizations.tl('durationLabel'),
+                    value: AppLocalizations.tlp('challengeDurationValue', {
+                      'days': '${challenge.durationDays}',
+                    }),
                     colors: colors,
                   ),
                 ),
@@ -813,7 +866,7 @@ class _ChallengeCard extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    '✓ Вы участвуете',
+                    AppLocalizations.tl('challengeParticipating'),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -844,7 +897,7 @@ class _ChallengeCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Челлендж завершён',
+                        AppLocalizations.tl('challengeEnded'),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -870,7 +923,7 @@ class _ChallengeCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Таблица лидеров →',
+                    '${AppLocalizations.tl('leaderboardLabel')} →',
                     style: TextStyle(fontSize: 11, color: colors.textMuted),
                   ),
                 ],
@@ -954,7 +1007,7 @@ class _JoinButtonState extends State<_JoinButton> {
         ),
         child: Center(
           child: Text(
-            '✓ Вы участвуете!',
+            AppLocalizations.tl('challengeParticipating'),
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
@@ -985,7 +1038,7 @@ class _JoinButtonState extends State<_JoinButton> {
               ),
               const SizedBox(width: 6),
               Text(
-                'Челлендж завершён',
+                AppLocalizations.tl('challengeEnded'),
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -1016,7 +1069,7 @@ class _JoinButtonState extends State<_JoinButton> {
                   ),
                 )
               : Text(
-                  'Присоединиться',
+                  AppLocalizations.tl('joinChallengeBtn'),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -1047,17 +1100,17 @@ class _JoinButtonState extends State<_JoinButton> {
           setState(() => _ended = true);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Row(
+              content: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.info_outline_rounded,
                     color: Colors.white,
                     size: 16,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
-                    'Этот челлендж уже завершён',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    AppLocalizations.tl('challengeAlreadyEnded'),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -1072,7 +1125,9 @@ class _JoinButtonState extends State<_JoinButton> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Ошибка: ${e.toString()}',
+                AppLocalizations.tlp('genericErrorWithDetails', {
+                  'error': e.toString(),
+                }),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1105,19 +1160,17 @@ class _DeleteChallengeButtonState extends State<_DeleteChallengeButton> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Удалить челлендж?'),
-        content: const Text(
-          'Челлендж и прогресс всех участников будут удалены безвозвратно.',
-        ),
+        title: Text(AppLocalizations.tl('challengeDeleteConfirmTitle')),
+        content: Text(AppLocalizations.tl('challengeDeleteConfirmBody')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Отмена'),
+            child: Text(AppLocalizations.tl('cancel')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Удалить',
+              AppLocalizations.tl('delete'),
               style: TextStyle(color: widget.colors.error),
             ),
           ),
@@ -1135,7 +1188,9 @@ class _DeleteChallengeButtonState extends State<_DeleteChallengeButton> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Ошибка: ${e.toString()}',
+              AppLocalizations.tlp('genericErrorWithDetails', {
+                'error': e.toString(),
+              }),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -1175,7 +1230,7 @@ class _DeleteChallengeButtonState extends State<_DeleteChallengeButton> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Удалить челлендж',
+                      AppLocalizations.tl('challengeDeleteAction'),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -1209,17 +1264,17 @@ class _LeaveChallengeButtonState extends State<_LeaveChallengeButton> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Покинуть челлендж?'),
-        content: const Text('Ваш прогресс в этом челлендже будет удалён.'),
+        title: Text(AppLocalizations.tl('challengeLeaveConfirmTitle')),
+        content: Text(AppLocalizations.tl('challengeLeaveConfirmBody')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Отмена'),
+            child: Text(AppLocalizations.tl('cancel')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Покинуть',
+              AppLocalizations.tl('challengeLeaveAction'),
               style: TextStyle(color: widget.colors.error),
             ),
           ),
@@ -1237,7 +1292,9 @@ class _LeaveChallengeButtonState extends State<_LeaveChallengeButton> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Ошибка: ${e.toString()}',
+              AppLocalizations.tlp('genericErrorWithDetails', {
+                'error': e.toString(),
+              }),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -1280,7 +1337,7 @@ class _LeaveChallengeButtonState extends State<_LeaveChallengeButton> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Покинуть челлендж',
+                      AppLocalizations.tl('challengeLeaveAction'),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -1352,7 +1409,9 @@ class _LeaderboardSheet extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              'Цель: ${challenge.targetValue} ${challenge.goalLabel}',
+              AppLocalizations.tlp('challengeGoalValue', {
+                'value': '${challenge.targetValue} ${challenge.goalLabel}',
+              }),
               style: TextStyle(fontSize: 12, color: colors.textMuted),
             ),
           ),
@@ -1414,7 +1473,12 @@ class _LeaderboardSheet extends StatelessWidget {
                               ),
                               Expanded(
                                 child: Text(
-                                  p.name + (isMe ? ' (Вы)' : ''),
+                                  p.name +
+                                      (isMe
+                                          ? AppLocalizations.tl(
+                                              'challengeYouSuffix',
+                                            )
+                                          : ''),
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,

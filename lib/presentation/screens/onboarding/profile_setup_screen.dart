@@ -39,16 +39,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   final List<String> _restrictions = [];
   String _city = '';
 
-  final List<String> _commonRestrictions = const [
-    'Аллергия на орехи',
-    'Непереносимость лактозы',
-    'Без глютена',
-    'Вегетарианец',
-    'Без красного мяса',
-    'Диабетическая диета',
-    'Низкое содержание соли',
-    'Веган',
-    'Кето',
+  List<String> _commonRestrictions(AppLocalizations l10n) => [
+    l10n.dietNutsAllergy,
+    l10n.dietLactose,
+    l10n.dietGlutenFree,
+    l10n.dietVegetarian,
+    l10n.dietNoRedMeat,
+    l10n.dietDiabetic,
+    l10n.dietLowSalt,
+    l10n.dietVegan,
+    l10n.dietKeto,
   ];
 
   @override
@@ -111,6 +111,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
+    final l10n = context.l10n;
     return BlocListener<OnboardingBloc, OnboardingState>(
       listener: (context, state) {
         if (state is OnboardingComplete) {
@@ -170,7 +171,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                             ),
                             _PageRestrictions(
                               restrictions: _restrictions,
-                              commonRestrictions: _commonRestrictions,
+                              commonRestrictions: _commonRestrictions(l10n),
                               onToggle: (r) => setState(() {
                                 if (_restrictions.contains(r)) {
                                   _restrictions.remove(r);
@@ -994,7 +995,42 @@ class _PageCityState extends State<_PageCity> {
     super.dispose();
   }
 
+  Future<bool> _confirmLocationDisclosure() async {
+    final l10n = context.l10n;
+    final colors = AppTheme.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: colors.surfaceCard,
+        title: Text(
+          l10n.detectAutoBtn,
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: Text(
+          l10n.geoAutoDetectPrivacyNotice,
+          style: TextStyle(color: colors.textSecondary, height: 1.45),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.continueLabel),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
+  }
+
   Future<void> _detectCity() async {
+    final confirmed = await _confirmLocationDisclosure();
+    if (!confirmed || !mounted) {
+      return;
+    }
+
     setState(() {
       _detecting = true;
       _errorMsg = null;
@@ -1011,14 +1047,6 @@ class _PageCityState extends State<_PageCity> {
       }
       var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(context.l10n.locationNote),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
         permission = await Geolocator.requestPermission();
       }
       if (permission == LocationPermission.denied ||
@@ -1036,11 +1064,25 @@ class _PageCityState extends State<_PageCity> {
           timeLimit: Duration(seconds: 10),
         ),
       );
-      final uri = Uri.parse(
-        'https://nominatim.openstreetmap.org/reverse?lat=${pos.latitude}&lon=${pos.longitude}&format=json&accept-language=ru',
-      );
+      if (!mounted) {
+        return;
+      }
+      final uri = Uri.https('nominatim.openstreetmap.org', '/reverse', {
+        'lat': pos.latitude.toString(),
+        'lon': pos.longitude.toString(),
+        'format': 'jsonv2',
+        'accept-language': Localizations.localeOf(context).languageCode,
+        'zoom': '10',
+        'addressdetails': '1',
+      });
       final resp = await http
-          .get(uri, headers: {'User-Agent': 'FitnesBuster/1.0'})
+          .get(
+            uri,
+            headers: {
+              'User-Agent':
+                  'FitnesBuster/1.0 (city auto-detect; contact: maksim.yugov.89@gmail.com)',
+            },
+          )
           .timeout(const Duration(seconds: 8));
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body) as Map<String, dynamic>;
@@ -1125,6 +1167,16 @@ class _PageCityState extends State<_PageCity> {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+          Text(
+            l10n.geoAttribution,
+            style: TextStyle(
+              color: colors.textMuted,
+              fontSize: 11,
+              height: 1.4,
             ),
           ),
 

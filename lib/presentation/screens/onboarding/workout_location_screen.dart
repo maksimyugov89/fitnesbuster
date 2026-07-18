@@ -6,6 +6,7 @@ import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 enum WorkoutLocation { gym, outdoor, home }
 
@@ -23,33 +24,33 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
   RunningPreference? _selectedRunning;
   late AnimationController _ctrl;
 
-  final List<_LocationOption> _locations = const [
+  List<_LocationOption> get _locations => [
     _LocationOption(
       value: WorkoutLocation.gym,
-      title: 'Фитнес\nклуб',
-      subtitle: 'Полный доступ к тренажёрам\nстанки, веса, кардио',
+      title: AppLocalizations.tl('gymLocation'),
+      subtitle: AppLocalizations.tl('onbGymSubtitle'),
       iconAsset: AppImages.workoutsTab,
-      tags: ['Всё включено', 'Тренажёры', 'Веса', 'Кардио'],
+      tags: AppLocalizations.tl('onbGymTags').split('|'),
       gradientIndex: 0,
-      features: ['Максимум оборудования', 'Без погоды', 'Профессионально'],
+      features: AppLocalizations.tl('onbGymFeatures').split('|'),
     ),
     _LocationOption(
       value: WorkoutLocation.outdoor,
-      title: 'Уличный\nворкаут',
-      subtitle: 'Брусья, бег, свежий воздух\nполная свобода',
+      title: AppLocalizations.tl('stadiumLocation'),
+      subtitle: AppLocalizations.tl('onbOutdoorSubtitle'),
       iconAsset: AppImages.outdoorActivity,
-      tags: ['Брусья', 'Бег', 'Воздух', 'Калистеника'],
+      tags: AppLocalizations.tl('onbOutdoorTags').split('|'),
       gradientIndex: 1,
-      features: ['Свежий воздух', 'Функционально', 'Бесплатно'],
+      features: AppLocalizations.tl('onbOutdoorFeatures').split('|'),
     ),
     _LocationOption(
       value: WorkoutLocation.home,
-      title: 'Дом',
-      subtitle: 'Тренировки с комфортом\nковрик, гантели, HIIT',
+      title: AppLocalizations.tl('homeLocation'),
+      subtitle: AppLocalizations.tl('onbHomeSubtitle'),
       iconAsset: AppImages.home,
-      tags: ['Без зала', 'Коврик', 'Гантели', 'HIIT'],
+      tags: AppLocalizations.tl('onbHomeTags').split('|'),
       gradientIndex: 2,
-      features: ['Без дороги', 'В любое время', 'Приватность'],
+      features: AppLocalizations.tl('onbHomeFeatures').split('|'),
     ),
   ];
 
@@ -115,13 +116,13 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Где будете\nтренироваться?',
+                    Text(
+                      AppLocalizations.tl('onbWorkoutLocationTitle'),
                       style: AppTextStyles.displayM,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Выберите место\nдля тренировок',
+                    Text(
+                      AppLocalizations.tl('onbWorkoutLocationSubtitle'),
                       style: AppTextStyles.bodyL,
                     ),
                     const SizedBox(height: 28),
@@ -372,10 +373,13 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Предпочтения по бегу', style: AppTextStyles.titleM),
+        Text(
+          AppLocalizations.tl('onbRunningTitle'),
+          style: AppTextStyles.titleM,
+        ),
         const SizedBox(height: 6),
-        const Text(
-          'Будете бегать или только\nсиловые тренировки',
+        Text(
+          AppLocalizations.tl('onbRunningSubtitle'),
           style: AppTextStyles.bodyM,
         ),
         const SizedBox(height: 16),
@@ -385,8 +389,8 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
               child: _RunningCard(
                 value: RunningPreference.withRunning,
                 selected: _selectedRunning,
-                title: 'С бегом',
-                subtitle: 'Уличный + дорожка\nвключены',
+                title: AppLocalizations.tl('withRunningLabel'),
+                subtitle: AppLocalizations.tl('onbWithRunningSubtitle'),
                 onTap: () {
                   HapticFeedback.selectionClick();
                   setState(
@@ -400,8 +404,8 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
               child: _RunningCard(
                 value: RunningPreference.noRunning,
                 selected: _selectedRunning,
-                title: 'Без бега',
-                subtitle: 'Только силовые\nбез бега',
+                title: AppLocalizations.tl('withoutRunningLabel'),
+                subtitle: AppLocalizations.tl('onbWithoutRunningSubtitle'),
                 onTap: () {
                   HapticFeedback.selectionClick();
                   setState(
@@ -427,7 +431,7 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Only strength will be added: bars, mats, kettlebells and functional exercises',
+                    AppLocalizations.tl('onbNoRunningInfo'),
                     style: TextStyle(
                       fontSize: 12,
                       color: colors.info,
@@ -452,18 +456,15 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
 
     switch (_selectedLocation!) {
       case WorkoutLocation.gym:
-        note =
-            'Выберите оборудование в зале. Если нужного тренажёра нет — замените аналогом.';
+        note = AppLocalizations.tl('onbGymEquipmentNote');
         noteColor = colors.accentPurple;
         break;
       case WorkoutLocation.outdoor:
-        note =
-            'Только брусья и открытая площадка. Защита опциональна — просто выходите.';
+        note = AppLocalizations.tl('onbOutdoorEquipmentNote');
         noteColor = colors.success;
         break;
       case WorkoutLocation.home:
-        note =
-            'Выберите оборудование. Если есть веса или HIIT — используйте свой набор.';
+        note = AppLocalizations.tl('onbHomeEquipmentNote');
         noteColor = colors.accentOrange;
         break;
     }
@@ -501,7 +502,9 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Text(
-                _selectedLocation == null ? 'Выберите место' : 'Укажите бег',
+                _selectedLocation == null
+                    ? AppLocalizations.tl('onbSelectLocationHint')
+                    : AppLocalizations.tl('onbSelectRunningHint'),
                 style: TextStyle(fontSize: 13, color: colors.textMuted),
                 textAlign: TextAlign.center,
               ),
@@ -532,19 +535,19 @@ class _WorkoutLocationScreenState extends State<WorkoutLocationScreen>
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Продолжить',
-                    style: TextStyle(
+                    AppLocalizations.tl('continueLabel'),
+                    style: const TextStyle(
                       fontFamily: 'Syne',
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward_rounded, size: 20),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_forward_rounded, size: 20),
                 ],
               ),
             ),

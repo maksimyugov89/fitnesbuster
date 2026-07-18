@@ -1,4 +1,5 @@
 import 'package:fitnesbuster/bloc/health/health_sync_bloc.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/domain/entities/synced_health_data.dart';
 import 'package:fitnesbuster/presentation/screens/profile/health_sync_screen.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +58,15 @@ void main() {
     expect(find.text('420'), findsOne);
     expect(find.text('68'), findsOne);
     expect(find.text('78.5'), findsOne);
-    expect(find.text('7ч 30м'), findsOne);
+    expect(
+      find.text(
+        AppLocalizations.tlp('healthSleepDuration', {
+          'hours': '7',
+          'minutes': '30',
+        }),
+      ),
+      findsOne,
+    );
     expect(find.text('5.2'), findsOne);
   });
 
@@ -95,8 +104,10 @@ void main() {
       ),
     );
 
-    expect(find.text('Нет доступа к данным здоровья'), findsOne);
-    await tester.tap(find.text('Открыть настройки Health Connect'));
+    expect(find.text(AppLocalizations.tl('healthNoAccess')), findsOne);
+    await tester.tap(
+      find.text(AppLocalizations.tl('healthOpenConnectSettings')),
+    );
     expect(openedSettings, isTrue);
   });
 

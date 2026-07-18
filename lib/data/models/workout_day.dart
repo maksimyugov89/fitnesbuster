@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+
 String? _safeString(dynamic v) {
   if (v == null) return null;
   if (v is String) return v;
@@ -60,7 +62,7 @@ class WorkoutExercise {
   }
 
   factory WorkoutExercise.fromJson(Map<String, dynamic> j) => WorkoutExercise(
-    name: j['name'] as String? ?? 'Упражнение',
+    name: j['name'] as String? ?? AppLocalizations.tl('exerciseDefault'),
     sets: (j['sets'] as num?)?.toInt() ?? 3,
     reps: j['reps']?.toString() ?? '10',
     restSeconds: (j['rest_seconds'] as num?)?.toInt() ?? 60,

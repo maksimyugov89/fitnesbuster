@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 
 class NutritionFoodItemRow extends StatefulWidget {
@@ -34,6 +35,18 @@ class _NutritionFoodItemRowState extends State<NutritionFoodItemRow> {
       'рис с',
       'гречка с',
       'салат',
+      'soup',
+      'stew',
+      'casserole',
+      'cutlet',
+      'braised',
+      'fried',
+      'boiled',
+      'puree',
+      'porridge',
+      'rice with',
+      'buckwheat with',
+      'salad',
     ];
     return complexKeywords.any(lower.contains) &&
         widget.food.split(' ').length > 2;
@@ -41,30 +54,36 @@ class _NutritionFoodItemRowState extends State<NutritionFoodItemRow> {
 
   String _getCookingHint() {
     final lower = widget.food.toLowerCase();
-    if (lower.contains('суп')) {
-      return 'Отварите овощи и мясо в подсоленной воде, добавьте специи по вкусу. Варить 30–40 мин.';
+    if (lower.contains('суп') || lower.contains('soup')) {
+      return AppLocalizations.tl('cookingHintSoup');
     }
-    if (lower.contains('рагу') || lower.contains('тушен')) {
-      return 'Обжарьте ингредиенты, добавьте воду или бульон, тушите на медленном огне 25–35 мин.';
+    if (lower.contains('рагу') ||
+        lower.contains('тушен') ||
+        lower.contains('stew') ||
+        lower.contains('braised')) {
+      return AppLocalizations.tl('cookingHintStew');
     }
-    if (lower.contains('запеканка')) {
-      return 'Смешайте ингредиенты, выложите в форму, запекайте при 180°C 35–45 мин до золотистой корочки.';
+    if (lower.contains('запеканка') || lower.contains('casserole')) {
+      return AppLocalizations.tl('cookingHintCasserole');
     }
-    if (lower.contains('котлет')) {
-      return 'Сформируйте котлеты, обваляйте в панировке, жарьте по 4–5 мин с каждой стороны.';
+    if (lower.contains('котлет') || lower.contains('cutlet')) {
+      return AppLocalizations.tl('cookingHintCutlets');
     }
     if (lower.contains('каша') ||
         lower.contains('гречка') ||
-        lower.contains('рис')) {
-      return 'Промойте крупу, залейте водой 1:2, варите на медленном огне 15–20 мин. Посолите по вкусу.';
+        lower.contains('рис') ||
+        lower.contains('porridge') ||
+        lower.contains('buckwheat') ||
+        lower.contains('rice')) {
+      return AppLocalizations.tl('cookingHintGrains');
     }
-    if (lower.contains('салат')) {
-      return 'Нарежьте ингредиенты, смешайте, заправьте маслом или соусом. Подавать свежим.';
+    if (lower.contains('салат') || lower.contains('salad')) {
+      return AppLocalizations.tl('cookingHintSalad');
     }
-    if (lower.contains('пюре')) {
-      return 'Отварите картофель/овощи, разомните с маслом или молоком до однородной консистенции.';
+    if (lower.contains('пюре') || lower.contains('puree')) {
+      return AppLocalizations.tl('cookingHintPuree');
     }
-    return 'Приготовьте согласно рецепту. Следите за температурой и временем готовки для сохранения питательных веществ.';
+    return AppLocalizations.tl('cookingHintGeneric');
   }
 
   @override
@@ -73,10 +92,10 @@ class _NutritionFoodItemRowState extends State<NutritionFoodItemRow> {
     final m = widget.mealColor;
 
     final gramMatch = RegExp(
-      r'(\d+)\s*(г|гр|мл|ml|г\.?)(?:\s|$)',
+      r'(\d+)\s*(г|гр|мл|g|ml|г\.?)(?:\s|$)',
       caseSensitive: false,
     ).firstMatch(widget.food);
-    final qty = gramMatch?.group(0)?.trim().replaceAll('ml', 'мл') ?? '';
+    final qty = gramMatch?.group(0)?.trim() ?? '';
     final foodName = gramMatch != null
         ? widget.food
               .substring(0, gramMatch.start)
@@ -136,7 +155,7 @@ class _NutritionFoodItemRowState extends State<NutritionFoodItemRow> {
               ),
               if (_isComplex)
                 Semantics(
-                  label: 'Способ приготовления',
+                  label: AppLocalizations.tl('cookingMethod'),
                   button: true,
                   child: GestureDetector(
                     onTap: () => setState(() => _expanded = !_expanded),
@@ -172,7 +191,7 @@ class _NutritionFoodItemRowState extends State<NutritionFoodItemRow> {
                     Icon(Icons.restaurant_rounded, size: 12, color: m),
                     const SizedBox(width: 4),
                     Text(
-                      'Способ приготовления',
+                      AppLocalizations.tl('cookingMethod'),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,

@@ -138,7 +138,7 @@ class WorkoutExerciseCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 3),
                       Text(
-                        '$rest с',
+                        AppLocalizations.tlp('secSuffix', {'n': '$rest'}),
                         style: TextStyle(fontSize: 11, color: colors.textMuted),
                       ),
                     ],
@@ -204,7 +204,7 @@ class WorkoutExerciseCard extends StatelessWidget {
               children: [
                 if (primaryZones.isNotEmpty)
                   Semantics(
-                    label: '3D мышцы',
+                    label: AppLocalizations.tl('workout3dMuscles'),
                     button: true,
                     child: GestureDetector(
                       onTap: onShow3D,
@@ -230,7 +230,7 @@ class WorkoutExerciseCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              '3D мышцы',
+                              AppLocalizations.tl('workout3dMuscles'),
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
@@ -245,7 +245,7 @@ class WorkoutExerciseCard extends StatelessWidget {
                 const Spacer(),
                 if (techniqueCue.isNotEmpty || progression.isNotEmpty)
                   Semantics(
-                    label: 'Техника',
+                    label: AppLocalizations.tl('technique'),
                     button: true,
                     child: GestureDetector(
                       onTap: onShowTechnique,
@@ -265,18 +265,18 @@ class WorkoutExerciseCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.format_list_bulleted_rounded,
                               color: SemanticColors.technique,
                               size: 14,
                             ),
-                            SizedBox(width: 6),
+                            const SizedBox(width: 6),
                             Text(
-                              'Техника',
-                              style: TextStyle(
+                              AppLocalizations.tl('technique'),
+                              style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: SemanticColors.technique,

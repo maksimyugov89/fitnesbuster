@@ -9,6 +9,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/data/repositories/user_repository.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/data/models/ai_meal_plan.dart';
 import 'package:fitnesbuster/presentation/screens/nutrition/barcode_scanner_screen.dart';
 import 'package:fitnesbuster/presentation/widgets/nutrition/meal_card.dart';
@@ -62,15 +63,15 @@ class _NutritionScreenState extends State<NutritionScreen>
     'evening_snack': AppImages.dinner,
     'morning_snack': AppImages.snack,
   };
-  static const _mealLabels = {
-    'breakfast': 'Завтрак',
-    'lunch': 'Обед',
-    'dinner': 'Ужин',
-    'snack': 'Перекус',
-    'pre_workout': 'Предтрен',
-    'post_workout': 'Послетрен',
-    'evening_snack': 'Веч. перекус',
-    'morning_snack': 'Утр. перекус',
+  Map<String, String> get _mealLabels => {
+    'breakfast': AppLocalizations.tl('breakfast'),
+    'lunch': AppLocalizations.tl('lunch'),
+    'dinner': AppLocalizations.tl('dinner'),
+    'snack': AppLocalizations.tl('snack'),
+    'pre_workout': AppLocalizations.tl('mealPreWorkout'),
+    'post_workout': AppLocalizations.tl('mealPostWorkout'),
+    'evening_snack': AppLocalizations.tl('mealEveningSnack'),
+    'morning_snack': AppLocalizations.tl('mealMorningSnack'),
   };
   static const _mealColors = {
     'breakfast': Color(0xFFFFAB40),
@@ -283,7 +284,11 @@ class _NutritionScreenState extends State<NutritionScreen>
             ),
             SegmentedTabBar(
               controller: _tabCtrl,
-              labels: const ['На сегодня', 'На неделю', 'Добавить еду'],
+              labels: [
+                AppLocalizations.tl('todayTabLabel'),
+                AppLocalizations.tl('weeklyTabLabel'),
+                AppLocalizations.tl('addFoodTabLabel'),
+              ],
             ),
             Expanded(
               child: TabBarView(
@@ -327,7 +332,7 @@ class _NutritionScreenState extends State<NutritionScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                'ИИ-план питания не сгенерирован.\nПройдите онбординг и создайте план питания.',
+                AppLocalizations.tl('noPlanError'),
                 style: TextStyle(
                   fontSize: 14,
                   color: colors.textMuted,
@@ -380,7 +385,10 @@ class _NutritionScreenState extends State<NutritionScreen>
         // Supplements
         if (_supplements.isNotEmpty) ...[
           const SizedBox(height: 16),
-          const Text('Спортивное питание', style: AppTextStyles.titleM),
+          Text(
+            AppLocalizations.tl('supplementsSportLabel'),
+            style: AppTextStyles.titleM,
+          ),
           const SizedBox(height: 10),
           ..._supplements.map(
             (s) => Container(
@@ -470,7 +478,10 @@ class _NutritionScreenState extends State<NutritionScreen>
 
         // Recommendations
         if (_mealRecs.isNotEmpty) ...[
-          const Text('Советы по питанию', style: AppTextStyles.titleM),
+          Text(
+            AppLocalizations.tl('nutritionTipsLabel'),
+            style: AppTextStyles.titleM,
+          ),
           const SizedBox(height: 10),
           ..._mealRecs.map(
             (rec) => Padding(
@@ -530,10 +541,15 @@ class _NutritionScreenState extends State<NutritionScreen>
         if (_addedFoods.isNotEmpty) ...[
           Row(
             children: [
-              const Text('Добавленная еда', style: AppTextStyles.titleM),
+              Text(
+                AppLocalizations.tl('addedFood'),
+                style: AppTextStyles.titleM,
+              ),
               const Spacer(),
               Text(
-                '$_manualCaloriesEaten ккал',
+                AppLocalizations.tlp('foodDiaryCalories', {
+                  'calories': '$_manualCaloriesEaten',
+                }),
                 style: TextStyle(
                   fontSize: 13,
                   color: colors.accentOrange,
@@ -629,7 +645,7 @@ class _WaterCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Вода',
+                      AppLocalizations.tl('waterTitle'),
                       style: TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 15,
@@ -641,8 +657,11 @@ class _WaterCard extends StatelessWidget {
                       duration: const Duration(milliseconds: 200),
                       child: Text(
                         done
-                            ? 'Цель достигнута!'
-                            : 'Выпито $intakeLiters л из $targetLiters л',
+                            ? AppLocalizations.tl('goalReachedMsg')
+                            : AppLocalizations.tlp('waterDrunkOf', {
+                                'drunk': intakeLiters,
+                                'total': targetLiters,
+                              }),
                         key: ValueKey('$intakeMl/$targetMl'),
                         style: TextStyle(
                           fontSize: 12,
@@ -656,7 +675,9 @@ class _WaterCard extends StatelessWidget {
               // Undo last 200 ml
               if (intakeMl > 0)
                 Semantics(
-                  label: '−200 мл',
+                  label: AppLocalizations.tlp('waterAdjustment', {
+                    'amount': '−200',
+                  }),
                   button: true,
                   child: GestureDetector(
                     onTap: () {
@@ -714,7 +735,9 @@ class _WaterCard extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: Text(
-                        'ещё $remaining мл',
+                        AppLocalizations.tlp('waterRemaining', {
+                          'ml': '$remaining',
+                        }),
                         style: TextStyle(
                           fontSize: 9,
                           color: c.textMuted,
@@ -737,7 +760,9 @@ class _WaterCard extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 3),
                     child: Semantics(
-                      label: '+$ml мл',
+                      label: AppLocalizations.tlp('waterAdjustment', {
+                        'amount': '+$ml',
+                      }),
                       button: true,
                       child: GestureDetector(
                         onTap: () {
@@ -766,7 +791,7 @@ class _WaterCard extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                'мл',
+                                AppLocalizations.tl('mlUnit'),
                                 style: TextStyle(
                                   fontSize: 9,
                                   color: c.info.withValues(alpha: 0.7),
@@ -803,9 +828,9 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
   final _nameCtrl = TextEditingController();
   final _gramsCtrl = TextEditingController();
   final _kcalCtrl = TextEditingController();
-  String _mealType = 'Завтрак';
+  String _mealType = 'breakfast';
 
-  static const _mealTypes = ['Завтрак', 'Обед', 'Перекус', 'Ужин'];
+  static const _mealTypes = ['breakfast', 'lunch', 'snack', 'dinner'];
 
   @override
   void dispose() {
@@ -844,7 +869,7 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ввести вручную',
+            AppLocalizations.tl('enterManually'),
             style: TextStyle(
               fontFamily: 'Syne',
               fontSize: 15,
@@ -862,7 +887,7 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
               children: _mealTypes
                   .map(
                     (t) => Semantics(
-                      label: t,
+                      label: AppLocalizations.tl(t),
                       button: true,
                       child: GestureDetector(
                         onTap: () => setState(() => _mealType = t),
@@ -878,7 +903,7 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            t,
+                            AppLocalizations.tl(t),
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -899,7 +924,7 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
           // Food name
           _FormField(
             ctrl: _nameCtrl,
-            hint: 'Название продукта или блюда',
+            hint: AppLocalizations.tl('productNameHint'),
             icon: Icons.fastfood_rounded,
             colors: c,
             textInput: TextInputType.text,
@@ -912,7 +937,7 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
               Expanded(
                 child: _FormField(
                   ctrl: _gramsCtrl,
-                  hint: 'Граммы (г)',
+                  hint: AppLocalizations.tl('gramsHint'),
                   icon: Icons.scale_rounded,
                   iconAsset: AppImages.foodScale,
                   colors: c,
@@ -923,7 +948,7 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
               Expanded(
                 child: _FormField(
                   ctrl: _kcalCtrl,
-                  hint: 'Калории (ккал)',
+                  hint: AppLocalizations.tl('caloriesHint'),
                   icon: Icons.local_fire_department_rounded,
                   iconAsset: AppImages.calorieCounter,
                   colors: c,
@@ -937,14 +962,17 @@ class _ManualFoodFormState extends State<_ManualFoodForm> {
           SizedBox(
             width: double.infinity,
             child: Semantics(
-              label: 'Добавить',
+              label: AppLocalizations.tl('add'),
               button: true,
               child: FilledButton.icon(
                 onPressed: _submit,
                 icon: const Icon(Icons.add_rounded, size: 18),
-                label: const Text(
-                  'Добавить',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                label: Text(
+                  AppLocalizations.tl('add'),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 style: FilledButton.styleFrom(
                   backgroundColor: c.primary,

@@ -229,9 +229,10 @@ class _AvatarPickerSheetState extends State<AvatarPickerSheet> {
             itemCount: kAvatarPresets.length,
             itemBuilder: (_, i) {
               final p = kAvatarPresets[i];
+              final label = AppLocalizations.tl(p.labelKey);
               final isSelected = _selected == i;
               return Semantics(
-                label: '${AppLocalizations.tl('chooseAvatar')} ${p.label}',
+                label: '${AppLocalizations.tl('chooseAvatar')} $label',
                 button: true,
                 child: GestureDetector(
                   onTap: () {
@@ -280,7 +281,7 @@ class _AvatarPickerSheetState extends State<AvatarPickerSheet> {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        p.label,
+                        label,
                         style: TextStyle(
                           fontSize: 9,
                           color: isSelected ? colors.primary : colors.textMuted,

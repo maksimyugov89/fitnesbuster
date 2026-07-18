@@ -34,6 +34,7 @@ class AppImages {
   static const String water = 'assets/icons/water_drop_rounded.png';
   static const String respiratoryRate = 'assets/icons/air_rounded.png';
   static const String route = 'assets/icons/map_rounded.png';
+  static const String bcp = 'assets/icons/BCP.png';
   static const String trend = 'assets/icons/trending_up_rounded.png';
 
   // ─── Feature sections ───────────────────────────────────────────

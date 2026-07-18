@@ -13,6 +13,7 @@ import 'package:fitnesbuster/core/utils/age_calculator.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/localization/language_service.dart';
+import 'package:fitnesbuster/core/legal/legal_consent.dart';
 import 'package:fitnesbuster/core/constants/firestore_collections.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 
@@ -44,6 +45,13 @@ class AuthRepository implements IAuthRepository {
 
   @override
   bool get isEmailVerified => _auth.currentUser?.emailVerified ?? false;
+
+  @override
+  Future<bool> hasCurrentLegalConsent() async {
+    final fbUser = _auth.currentUser;
+    if (fbUser == null) return false;
+    return _hasCurrentLegalConsent(fbUser.uid);
+  }
 
   @override
   Future<UserEntity?> getCurrentUserWithProfile() async {
@@ -83,6 +91,9 @@ class AuthRepository implements IAuthRepository {
         password: password,
       );
       final fbUser = result.user!;
+      if (!await _hasCurrentLegalConsent(fbUser.uid)) {
+        throw const UnknownAuthException('terms-required');
+      }
       await _ensureFirestoreDoc(fbUser);
       // The router guards private routes by profile presence. Return the
       // hydrated Firestore entity so an existing user never transiently looks
@@ -93,35 +104,53 @@ class AuthRepository implements IAuthRepository {
     }
   }
 
-  Future<void> _ensureFirestoreDoc(fb.User fbUser) async {
+  Future<void> _ensureFirestoreDoc(
+    fb.User fbUser, {
+    bool failOnProfileWriteError = false,
+  }) async {
+    final docRef = _firestore
+        .collection(FirestoreCollections.users)
+        .doc(fbUser.uid);
     try {
-      final doc = await _firestore
-          .collection(FirestoreCollections.users)
-          .doc(fbUser.uid)
-          .get();
+      final doc = await docRef.get();
       final data = doc.data();
-      if (!doc.exists || data == null || data['nameLower'] == null) {
+      if (!doc.exists) {
+        if (!await _hasCurrentLegalConsent(fbUser.uid)) {
+          throw const UnknownAuthException('terms-required');
+        }
         final name =
             (fbUser.displayName?.isNotEmpty == true
                     ? fbUser.displayName!
                     : (fbUser.email ?? '').split('@').first)
                 .trim();
-        await _firestore
-            .collection(FirestoreCollections.users)
-            .doc(fbUser.uid)
-            .set({
-              'name': name,
-              'nameLower': name.toLowerCase(),
-              'email': fbUser.email ?? '',
-              'createdAt': FieldValue.serverTimestamp(),
-            }, SetOptions(merge: true));
+        await docRef.set({
+          'name': name,
+          'nameLower': name.toLowerCase(),
+          'email': fbUser.email ?? '',
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      } else if (data == null || data['nameLower'] == null) {
+        final name =
+            (fbUser.displayName?.isNotEmpty == true
+                    ? fbUser.displayName!
+                    : (fbUser.email ?? '').split('@').first)
+                .trim();
+        await docRef.set({
+          'name': name,
+          'nameLower': name.toLowerCase(),
+          'email': fbUser.email ?? '',
+          'createdAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
       }
+    } on AuthException {
+      rethrow;
     } catch (e, st) {
       appLogger.w(
         'AuthRepository: ensureFirestoreDoc failed',
         error: e,
         stackTrace: st,
       );
+      if (failOnProfileWriteError) rethrow;
     }
   }
 
@@ -130,6 +159,7 @@ class AuthRepository implements IAuthRepository {
     required String name,
     required String email,
     required String password,
+    required LegalConsentAcceptance consent,
   }) async {
     try {
       final result = await _auth.createUserWithEmailAndPassword(
@@ -138,15 +168,26 @@ class AuthRepository implements IAuthRepository {
       );
       final fbUser = result.user!;
       await fbUser.updateDisplayName(name.trim());
-      await _firestore
-          .collection(FirestoreCollections.users)
-          .doc(fbUser.uid)
-          .set({
-            'name': name.trim(),
-            'nameLower': name.trim().toLowerCase(),
-            'email': email.trim(),
-            'createdAt': FieldValue.serverTimestamp(),
-          });
+      try {
+        await _recordLegalConsent(fbUser.uid, consent);
+        await _firestore
+            .collection(FirestoreCollections.users)
+            .doc(fbUser.uid)
+            .set({
+              'name': name.trim(),
+              'nameLower': name.trim().toLowerCase(),
+              'email': email.trim(),
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+      } catch (e, st) {
+        await _discardIncompleteRegistration(fbUser);
+        appLogger.w(
+          'AuthRepository: register consent/profile creation failed',
+          error: e,
+          stackTrace: st,
+        );
+        rethrow;
+      }
       try {
         await _auth.setLanguageCode(LanguageService.current.code);
         await fbUser.sendEmailVerification();
@@ -187,7 +228,9 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future<UserEntity> signInWithGoogle() async {
+  Future<UserEntity> signInWithGoogle({
+    LegalConsentAcceptance? newAccountConsent,
+  }) async {
     // Sign out of the Google Sign-In SDK first so the account picker always
     // appears, allowing users to switch between multiple Google accounts on
     // the same device. This does NOT sign out of Firebase Auth.
@@ -204,10 +247,113 @@ class AuthRepository implements IAuthRepository {
     );
     final result = await _auth.signInWithCredential(credential);
     final fbUser = result.user!;
+    final isNewUser = result.additionalUserInfo?.isNewUser ?? false;
+    final hasConsent = await _hasCurrentLegalConsent(fbUser.uid);
+
+    if (!hasConsent) {
+      if (newAccountConsent == null) {
+        if (isNewUser) {
+          await _discardIncompleteRegistration(fbUser);
+          await _auth.signOut();
+        }
+        throw const UnknownAuthException('terms-required');
+      }
+      try {
+        await _recordLegalConsent(fbUser.uid, newAccountConsent);
+      } catch (e, st) {
+        if (isNewUser) await _discardIncompleteRegistration(fbUser);
+        await _auth.signOut();
+        appLogger.w(
+          'AuthRepository: Google legal consent creation failed',
+          error: e,
+          stackTrace: st,
+        );
+        rethrow;
+      }
+    }
     // Use the same idempotent helper as email login so existing Firestore
     // data (profile, aiPlans, etc.) is never overwritten.
-    await _ensureFirestoreDoc(fbUser);
+    try {
+      await _ensureFirestoreDoc(
+        fbUser,
+        failOnProfileWriteError: isNewUser || newAccountConsent != null,
+      );
+    } catch (e) {
+      if (isNewUser) await _discardIncompleteRegistration(fbUser);
+      rethrow;
+    }
     return _fetchFullEntity(fbUser);
+  }
+
+  @override
+  Future<UserEntity> acceptCurrentLegalConsent({
+    required LegalConsentAcceptance consent,
+  }) async {
+    final fbUser = _auth.currentUser;
+    if (fbUser == null) {
+      throw const UnknownAuthException('user-not-found');
+    }
+
+    await _recordLegalConsent(fbUser.uid, consent);
+    await _ensureFirestoreDoc(fbUser, failOnProfileWriteError: true);
+    return _fetchFullEntity(fbUser);
+  }
+
+  DocumentReference<Map<String, dynamic>> _legalConsentDoc(String uid) {
+    return _firestore
+        .collection(FirestoreCollections.users)
+        .doc(uid)
+        .collection('legal_consents')
+        .doc(LegalConsentAcceptance.recordId);
+  }
+
+  Future<bool> _hasCurrentLegalConsent(String uid) async {
+    try {
+      final doc = await _legalConsentDoc(uid).get();
+      return doc.exists;
+    } catch (e, st) {
+      appLogger.w(
+        'AuthRepository: current legal consent check failed',
+        error: e,
+        stackTrace: st,
+      );
+      return false;
+    }
+  }
+
+  Future<void> _recordLegalConsent(
+    String uid,
+    LegalConsentAcceptance consent,
+  ) async {
+    final doc = _legalConsentDoc(uid);
+    if ((await doc.get()).exists) return;
+    await doc.set({
+      'termsVersion': LegalConsentAcceptance.termsVersion,
+      'privacyPolicyVersion': LegalConsentAcceptance.privacyPolicyVersion,
+      'acceptedAt': FieldValue.serverTimestamp(),
+      'source': consent.source.value,
+      'locale': consent.localeCode,
+    });
+  }
+
+  Future<void> _discardIncompleteRegistration(fb.User fbUser) async {
+    try {
+      await _legalConsentDoc(fbUser.uid).delete();
+    } catch (e, st) {
+      appLogger.w(
+        'AuthRepository: cleanup legal consent after failed registration',
+        error: e,
+        stackTrace: st,
+      );
+    }
+    try {
+      await fbUser.delete();
+    } on fb.FirebaseAuthException catch (e) {
+      appLogger.w(
+        'AuthRepository: delete incomplete Firebase user failed',
+        error: e,
+      );
+    }
   }
 
   @override

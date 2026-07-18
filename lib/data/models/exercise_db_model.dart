@@ -166,6 +166,12 @@ class ExerciseDbModel {
   String get nameRu =>
       _nameRu ?? ExerciseLocalization.instance.translate(name) ?? name;
 
+  /// Keeps the Russian catalog used by AI prompts separate from the name shown
+  /// in the UI.  Until a locale-specific exercise catalog is available, every
+  /// non-Russian locale receives the canonical English exercise name.
+  String displayNameForLocale(String localeCode) =>
+      localeCode == 'ru' ? nameRu : name;
+
   ExerciseInfo toExerciseInfo() => ExerciseInfo(
     id: id,
     name: name,
@@ -345,5 +351,37 @@ extension ExMuscleZone on ExMuscle {
     ExMuscle.serratusAnterior: 'Передняя зубчатая',
     ExMuscle.levatorScapulae: 'Шея / лопатка',
     ExMuscle.gluteusMedius: 'Ягодичная средняя',
+  }[this]!;
+
+  String displayNameForLocale(String localeCode) =>
+      localeCode == 'ru' ? displayNameRu : displayNameEn;
+
+  String get displayNameEn => const <ExMuscle, String>{
+    ExMuscle.pectoralisMajor: 'Pectoralis major',
+    ExMuscle.pectoralisMinor: 'Pectoralis minor',
+    ExMuscle.latissimusDorsi: 'Latissimus dorsi',
+    ExMuscle.rhomboids: 'Rhomboids',
+    ExMuscle.trapezius: 'Trapezius',
+    ExMuscle.anteriorDeltoid: 'Anterior deltoid',
+    ExMuscle.lateralDeltoid: 'Lateral deltoid',
+    ExMuscle.posteriorDeltoid: 'Posterior deltoid',
+    ExMuscle.biceps: 'Biceps',
+    ExMuscle.triceps: 'Triceps',
+    ExMuscle.quadriceps: 'Quadriceps',
+    ExMuscle.hamstrings: 'Hamstrings',
+    ExMuscle.gluteusMaximus: 'Gluteus maximus',
+    ExMuscle.calves: 'Calves',
+    ExMuscle.rectusAbdominis: 'Rectus abdominis',
+    ExMuscle.obliques: 'Obliques',
+    ExMuscle.erectorSpinae: 'Erector spinae',
+    ExMuscle.transverseAbdominis: 'Transverse abdominis',
+    ExMuscle.brachialis: 'Brachialis',
+    ExMuscle.hipFlexors: 'Hip flexors',
+    ExMuscle.forearmFlexors: 'Forearm flexors',
+    ExMuscle.adductors: 'Adductors',
+    ExMuscle.rotatorCuff: 'Rotator cuff',
+    ExMuscle.serratusAnterior: 'Serratus anterior',
+    ExMuscle.levatorScapulae: 'Levator scapulae',
+    ExMuscle.gluteusMedius: 'Gluteus medius',
   }[this]!;
 }

@@ -256,12 +256,13 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
   _i4.Future<String> parseWorkoutFromContent(
     String? content, {
     String? sourceHint,
+    _i2.UserProfile? profile,
   }) =>
       (super.noSuchMethod(
             Invocation.method(
               #parseWorkoutFromContent,
               [content],
-              {#sourceHint: sourceHint},
+              {#sourceHint: sourceHint, #profile: profile},
             ),
             returnValue: _i4.Future<String>.value(
               _i5.dummyValue<String>(
@@ -269,7 +270,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
                 Invocation.method(
                   #parseWorkoutFromContent,
                   [content],
-                  {#sourceHint: sourceHint},
+                  {#sourceHint: sourceHint, #profile: profile},
                 ),
               ),
             ),
@@ -282,6 +283,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
     required String? userInput,
     String? correctionType,
     String? sourceHint,
+    _i2.UserProfile? profile,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#correctWorkoutPlan, [], {
@@ -289,6 +291,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
               #userInput: userInput,
               #correctionType: correctionType,
               #sourceHint: sourceHint,
+              #profile: profile,
             }),
             returnValue: _i4.Future<String>.value(
               _i5.dummyValue<String>(
@@ -298,6 +301,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i3.IDeepSeekService {
                   #userInput: userInput,
                   #correctionType: correctionType,
                   #sourceHint: sourceHint,
+                  #profile: profile,
                 }),
               ),
             ),

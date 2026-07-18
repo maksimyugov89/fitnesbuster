@@ -125,6 +125,6 @@ class RecoveryScoreService {
             'h': h.toString(),
             'm': m.toString(),
           })
-        : '$hч';
+        : AppLocalizations.tlp('recoveryTime', {'h': h.toString(), 'm': '0'});
   }
 }

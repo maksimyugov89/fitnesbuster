@@ -324,21 +324,21 @@ class _BodyParamsSheetState extends State<BodyParamsSheet> {
           const SizedBox(height: 20),
           MeasurementField(
             label: AppLocalizations.tl('chest'),
-            unit: 'см',
+            unit: l10n.cmUnit,
             controller: _chestCtrl,
             icon: Icons.circle_outlined,
           ),
           const SizedBox(height: 12),
           MeasurementField(
             label: AppLocalizations.tl('waist'),
-            unit: 'см',
+            unit: l10n.cmUnit,
             controller: _waistCtrl,
             icon: Icons.circle_outlined,
           ),
           const SizedBox(height: 12),
           MeasurementField(
             label: AppLocalizations.tl('hips'),
-            unit: 'см',
+            unit: l10n.cmUnit,
             controller: _hipsCtrl,
             icon: Icons.circle_outlined,
           ),
@@ -422,11 +422,38 @@ class _GoalEditSheetState extends State<GoalEditSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = AppTheme.of(context);
+    final goalsData = [
+      {
+        'label': AppLocalizations.tl('goalWeightLoss'),
+        'emoji': AppImages.energy,
+        'desc': AppLocalizations.tl('goalLoseWeightDescription'),
+      },
+      {
+        'label': AppLocalizations.tl('goalMuscleMass'),
+        'emoji': AppImages.workoutsTab,
+        'desc': AppLocalizations.tl('goalGainMuscleDescription'),
+      },
+      {
+        'label': AppLocalizations.tl('goalMaintainWeight'),
+        'emoji': AppImages.balance,
+        'desc': AppLocalizations.tl('goalMaintainDescription'),
+      },
+      {
+        'label': AppLocalizations.tl('goalBeachSeason'),
+        'emoji': AppImages.relax,
+        'desc': AppLocalizations.tl('goalBeachSeasonDescription'),
+      },
+      {
+        'label': AppLocalizations.tl('goalSportsRecords'),
+        'emoji': AppImages.achievements,
+        'desc': AppLocalizations.tl('goalSportsRecordsDescription'),
+      },
+    ];
     return SheetWrapper(
       title: l10n.fitnessGoalLabel,
       child: Column(
         children: [
-          ..._goalsData.asMap().entries.map((e) {
+          ...goalsData.asMap().entries.map((e) {
             final label = e.value['label'] as String;
             final emoji = e.value['emoji'] as String;
             final desc = e.value['desc'] as String;
@@ -534,34 +561,6 @@ class _GoalEditSheetState extends State<GoalEditSheet> {
       ),
     );
   }
-
-  static const _goalsData = [
-    {
-      'label': 'Похудение веса',
-      'emoji': AppImages.energy,
-      'desc': 'Сжечь жир, сухое тело',
-    },
-    {
-      'label': 'Набор массы',
-      'emoji': AppImages.workoutsTab,
-      'desc': 'Сила и мышечная масса',
-    },
-    {
-      'label': 'Поддержание веса',
-      'emoji': AppImages.balance,
-      'desc': 'Держать форму и здоровье',
-    },
-    {
-      'label': 'К пляжному сезону',
-      'emoji': AppImages.relax,
-      'desc': 'Подготовка к лету',
-    },
-    {
-      'label': 'Спортивные рекорды',
-      'emoji': AppImages.achievements,
-      'desc': 'Максимальная производительность',
-    },
-  ];
 }
 
 // ── Training Experience Edit Sheet ───────────────────────────────────────────

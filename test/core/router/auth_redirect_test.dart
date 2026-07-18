@@ -41,6 +41,31 @@ void main() {
     );
   });
 
+  test('redirects legal-consent-required users to login gate', () {
+    expect(
+      resolveAuthRedirect(
+        loc: AppRouter.dashboard,
+        isAuthenticated: true,
+        isAuthStateAuthenticated: false,
+        requiresLegalConsent: true,
+        emailVerified: false,
+        hasProfile: false,
+      ),
+      AppRouter.login,
+    );
+    expect(
+      resolveAuthRedirect(
+        loc: AppRouter.login,
+        isAuthenticated: true,
+        isAuthStateAuthenticated: false,
+        requiresLegalConsent: true,
+        emailVerified: false,
+        hasProfile: false,
+      ),
+      isNull,
+    );
+  });
+
   test('forces unverified users to verify-email route', () {
     expect(
       resolveAuthRedirect(

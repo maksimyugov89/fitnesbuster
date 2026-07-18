@@ -1,0 +1,4 @@
+"NSHealthShareUsageDescription" = "FitnesBuster использует данные здоровья для анализа восстановления и отслеживания прогресса.";
+"NSHealthUpdateUsageDescription" = "FitnesBuster записывает данные тренировок в Apple Health.";
+"NSCameraUsageDescription" = "Камера используется для сканирования штрихкодов и QR-кодов, а также для фото профиля и прогресса.";
+"NSPhotoLibraryUsageDescription" = "Доступ нужен, чтобы выбрать фото профиля или прогресса.";

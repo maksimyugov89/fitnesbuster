@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:fitnesbuster/core/legal/legal_consent.dart';
 import 'package:fitnesbuster/data/repositories/auth_repository.dart';
 import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
 import 'auth_repository_test.mocks.dart';
@@ -47,6 +48,10 @@ void main() {
   const tName = 'Test User';
   const tEmail = 'test@example.com';
   final tCreationTime = DateTime(2024, 1, 1);
+  const tConsent = LegalConsentAcceptance(
+    source: LegalConsentSource.emailRegistration,
+    localeCode: 'ru',
+  );
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
@@ -102,9 +107,18 @@ void main() {
       when(mockAuth.currentUser).thenReturn(mockFbUser);
       final collection = MockCollectionReference();
       final docRef = MockDocumentReference();
+      final consentCollection = MockCollectionReference();
+      final consentDocRef = MockDocumentReference();
+      final consentSnapshot = MockDocumentSnapshot();
       final snapshot = MockDocumentSnapshot();
       when(mockFirestore.collection('users')).thenReturn(collection);
       when(collection.doc(tUid)).thenReturn(docRef);
+      when(docRef.collection('legal_consents')).thenReturn(consentCollection);
+      when(
+        consentCollection.doc(LegalConsentAcceptance.recordId),
+      ).thenReturn(consentDocRef);
+      when(consentSnapshot.exists).thenReturn(true);
+      when(consentDocRef.get()).thenAnswer((_) async => consentSnapshot);
       when(snapshot.exists).thenReturn(true);
       when(snapshot.data()).thenReturn({
         'name': 'Firestore Name',
@@ -154,9 +168,18 @@ void main() {
       ).thenAnswer((_) async => _FakeUserCredential(mockFbUser));
       final collection = MockCollectionReference();
       final docRef = MockDocumentReference();
+      final consentCollection = MockCollectionReference();
+      final consentDocRef = MockDocumentReference();
+      final consentSnapshot = MockDocumentSnapshot();
       final snapshot = MockDocumentSnapshot();
       when(mockFirestore.collection('users')).thenReturn(collection);
       when(collection.doc(tUid)).thenReturn(docRef);
+      when(docRef.collection('legal_consents')).thenReturn(consentCollection);
+      when(
+        consentCollection.doc(LegalConsentAcceptance.recordId),
+      ).thenReturn(consentDocRef);
+      when(consentSnapshot.exists).thenReturn(true);
+      when(consentDocRef.get()).thenAnswer((_) async => consentSnapshot);
       when(snapshot.exists).thenReturn(true);
       when(snapshot.data()).thenReturn({
         'name': tName,
@@ -207,21 +230,101 @@ void main() {
       when(mockFbUser.updateDisplayName(any)).thenAnswer((_) async {});
 
       final mockDocRef = MockDocumentReference();
+      final mockConsentDocRef = MockDocumentReference();
       final mockUserCollection = MockCollectionReference();
+      final mockConsentCollection = MockCollectionReference();
+      final mockMissingConsentSnapshot = MockDocumentSnapshot();
       when(mockFirestore.collection('users')).thenReturn(mockUserCollection);
       when(mockUserCollection.doc(tUid)).thenReturn(mockDocRef);
+      when(
+        mockDocRef.collection('legal_consents'),
+      ).thenReturn(mockConsentCollection);
+      when(
+        mockConsentCollection.doc(LegalConsentAcceptance.recordId),
+      ).thenReturn(mockConsentDocRef);
+      when(mockMissingConsentSnapshot.exists).thenReturn(false);
+      when(
+        mockConsentDocRef.get(),
+      ).thenAnswer((_) async => mockMissingConsentSnapshot);
+      when(mockConsentDocRef.set(any)).thenAnswer((_) async {});
       when(mockDocRef.set(any)).thenAnswer((_) async {});
 
       final user = await repo.register(
         name: tName,
         email: tEmail,
         password: 'password',
+        consent: tConsent,
       );
 
       expect(user.id, tUid);
       expect(user.name, tName);
       expect(user.email, tEmail);
+      verify(
+        mockConsentDocRef.set(
+          argThat(
+            allOf(
+              containsPair('termsVersion', '2026-07-07'),
+              containsPair('privacyPolicyVersion', '2026-07-17'),
+              containsPair('source', 'email_registration'),
+              containsPair('locale', 'ru'),
+            ),
+          ),
+        ),
+      ).called(1);
       verify(mockDocRef.set(argThat(contains('name')))).called(1);
+    });
+  });
+
+  group('acceptCurrentLegalConsent', () {
+    test('records google-login consent for existing current user', () async {
+      when(mockAuth.currentUser).thenReturn(mockFbUser);
+
+      final mockDocRef = MockDocumentReference();
+      final mockConsentDocRef = MockDocumentReference();
+      final mockUserCollection = MockCollectionReference();
+      final mockConsentCollection = MockCollectionReference();
+      final mockMissingConsentSnapshot = MockDocumentSnapshot();
+      final mockProfileSnapshot = MockDocumentSnapshot();
+
+      when(mockFirestore.collection('users')).thenReturn(mockUserCollection);
+      when(mockUserCollection.doc(tUid)).thenReturn(mockDocRef);
+      when(
+        mockDocRef.collection('legal_consents'),
+      ).thenReturn(mockConsentCollection);
+      when(
+        mockConsentCollection.doc(LegalConsentAcceptance.recordId),
+      ).thenReturn(mockConsentDocRef);
+      when(mockMissingConsentSnapshot.exists).thenReturn(false);
+      when(
+        mockConsentDocRef.get(),
+      ).thenAnswer((_) async => mockMissingConsentSnapshot);
+      when(mockConsentDocRef.set(any)).thenAnswer((_) async {});
+      when(mockProfileSnapshot.exists).thenReturn(true);
+      when(
+        mockProfileSnapshot.data(),
+      ).thenReturn({'name': tName, 'nameLower': 'test user', 'email': tEmail});
+      when(mockDocRef.get()).thenAnswer((_) async => mockProfileSnapshot);
+
+      final user = await repo.acceptCurrentLegalConsent(
+        consent: const LegalConsentAcceptance(
+          source: LegalConsentSource.googleLogin,
+          localeCode: 'ru',
+        ),
+      );
+
+      expect(user.id, tUid);
+      verify(
+        mockConsentDocRef.set(
+          argThat(
+            allOf(
+              containsPair('termsVersion', '2026-07-07'),
+              containsPair('privacyPolicyVersion', '2026-07-17'),
+              containsPair('source', 'google_login'),
+              containsPair('locale', 'ru'),
+            ),
+          ),
+        ),
+      ).called(1);
     });
   });
 

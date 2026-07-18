@@ -120,6 +120,109 @@ class GamificationService implements IGamificationService {
     ),
   ];
 
+  static const List<String> _levelNameKeys = [
+    'levelNewbie',
+    'levelEnthusiast',
+    'levelAthlete',
+    'levelWarrior',
+    'levelChampion',
+    'levelLegend',
+    'levelElite',
+    'levelMaster',
+    'levelTitan',
+  ];
+
+  static const Map<String, String> _achievementNameKeys = {
+    'first_workout': 'achFirstStep',
+    'workout_10': 'achOnRise',
+    'workout_50': 'achFifty',
+    'workout_100': 'achCenturion',
+    'workout_200': 'achMachine',
+    'streak_3': 'achStreak3',
+    'streak_7': 'achStreak7',
+    'streak_14': 'achStreak14',
+    'streak_30': 'achStreak30',
+    'streak_100': 'achStreak100',
+    'first_pr': 'achFirstPr',
+    'pr_5': 'achPrStreak',
+    'pr_10': 'achRecordman',
+    'pr_25': 'achProgressMachine',
+    'first_meal': 'achFirstMeal',
+    'full_day_meals': 'achCleanDay',
+    'week_nutrition': 'achCleanWeek',
+    'water_goal': 'achWaterBalance',
+    'water_3l': 'achOcean',
+    'water_7days': 'achHydrate7',
+    'steps_10k': 'ach10kSteps',
+    'steps_10k_7': 'achMarathoner',
+    'profile_complete': 'achProfileFilled',
+    'test_week_done': 'achTestDone',
+    'ai_plan_created': 'achAiPlan',
+    'first_debrief': 'achWeekAnalysis',
+    'level_3': 'achLevelAthlete',
+    'level_5': 'achLevelChampion',
+    'level_7': 'achLevelElite',
+    'early_bird': 'achEarlyBird',
+    'night_owl': 'achNightOwl',
+  };
+
+  static const Map<String, String> _achievementDescriptionKeys = {
+    'first_workout': 'achFirstStepDesc',
+    'workout_10': 'achOnRiseDesc',
+    'workout_50': 'achFiftyDesc',
+    'workout_100': 'achCenturionDesc',
+    'workout_200': 'achMachineDesc',
+    'streak_3': 'achStreak3Desc',
+    'streak_7': 'achStreak7Desc',
+    'streak_14': 'achStreak14Desc',
+    'streak_30': 'achStreak30Desc',
+    'streak_100': 'achStreak100Desc',
+    'first_pr': 'achFirstPrDesc',
+    'pr_5': 'achPrStreakDesc',
+    'pr_10': 'achRecordmanDesc',
+    'pr_25': 'achProgressMachineDesc',
+    'first_meal': 'achFirstMealDesc',
+    'full_day_meals': 'achCleanDayDesc',
+    'week_nutrition': 'achCleanWeekDesc',
+    'water_goal': 'achWaterBalanceDesc',
+    'water_3l': 'achOceanDesc',
+    'water_7days': 'achHydrate7Desc',
+    'steps_10k': 'ach10kStepsDesc',
+    'steps_10k_7': 'achMarathonerDesc',
+    'profile_complete': 'achProfileFilledDesc',
+    'test_week_done': 'achTestDoneDesc',
+    'ai_plan_created': 'achAiPlanDesc',
+    'first_debrief': 'achWeekAnalysisDesc',
+    'level_3': 'achLevelAthleteDesc',
+    'level_5': 'achLevelChampionDesc',
+    'level_7': 'achLevelEliteDesc',
+    'early_bird': 'achEarlyBirdDesc',
+    'night_owl': 'achNightOwlDesc',
+  };
+
+  static String _translatedOrFallback(String? key, String fallback) {
+    if (key == null) return fallback;
+    final value = AppLocalizations.tl(key);
+    return value == key ? fallback : value;
+  }
+
+  static String localizedLevelName(int level) {
+    final index = (level - 1).clamp(0, _levelNameKeys.length - 1).toInt();
+    return AppLocalizations.tl(_levelNameKeys[index]);
+  }
+
+  static String localizedAchievementName(Achievement achievement) =>
+      _translatedOrFallback(
+        _achievementNameKeys[achievement.id],
+        achievement.name,
+      );
+
+  static String localizedAchievementDescription(Achievement achievement) =>
+      _translatedOrFallback(
+        _achievementDescriptionKeys[achievement.id],
+        achievement.desc,
+      );
+
   // ── Achievement catalogue (static const — pure data) ────────────────────────
 
   static final List<Achievement> allAchievements = [
@@ -403,7 +506,7 @@ class GamificationService implements IGamificationService {
     return UserLevel(
       level: idx + 1,
       totalXp: totalXp,
-      name: _levels[idx].name,
+      name: localizedLevelName(idx + 1),
       emoji: _levels[idx].emoji,
       icon: _levels[idx].icon,
       xpForCurrent: xpCurrent,
@@ -417,7 +520,12 @@ class GamificationService implements IGamificationService {
   static List<({int level, String name, String icon, int xpRequired})>
   levelRoadmap() => List.generate(_levels.length, (i) {
     final l = _levels[i];
-    return (level: i + 1, name: l.name, icon: l.icon, xpRequired: l.xp);
+    return (
+      level: i + 1,
+      name: localizedLevelName(i + 1),
+      icon: l.icon,
+      xpRequired: l.xp,
+    );
   });
 
   // ── Achievements ─────────────────────────────────────────────────────────────

@@ -4,6 +4,7 @@ import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/core/ai/network/retry_handler.dart';
 import 'package:fitnesbuster/core/ai/validators/json_validator.dart';
 import 'package:fitnesbuster/core/localization/language_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 String _languageInstruction() {
   return switch (LanguageService.current) {
@@ -82,6 +83,27 @@ class BaseClient {
     );
   }
 
+  Future<String> sendMessageWithValidation(
+    String prompt, {
+    int maxTokens = 8192,
+    double temperature = 0.7,
+    required String Function(String raw) validator,
+  }) {
+    return callWithValidation(
+      messages: [
+        {
+          'role': 'system',
+          'content':
+              'Ты — профессиональный персональный тренер и диетолог. ${_languageInstruction()}',
+        },
+        {'role': 'user', 'content': prompt},
+      ],
+      maxTokens: maxTokens,
+      temperature: temperature,
+      validator: validator,
+    );
+  }
+
   Future<String> sendMessagesList(
     List<Map<String, String>> messages, {
     int maxTokens = 4096,
@@ -134,7 +156,7 @@ class BaseClient {
       });
       final content = result.data['content'] as String?;
       if (content == null || content.isEmpty) {
-        throw const AiException('Пустой ответ от AI. Попробуйте ещё раз.');
+        throw AiException(AppLocalizations.tl('aiEmptyResponse'));
       }
       return content;
     } on FirebaseFunctionsException catch (e) {
@@ -169,15 +191,14 @@ AiException mapFirebaseFunctionsException(
     _ => null,
   };
   final message = switch (code) {
-    'unauthenticated' => 'Войдите в аккаунт, чтобы использовать AI.',
-    'resource-exhausted' =>
-      'Слишком много AI-запросов. Попробуйте немного позже.',
-    'invalid-argument' => 'AI-запрос некорректен. Попробуйте изменить ввод.',
-    'permission-denied' => 'Недостаточно прав для AI-запроса.',
+    'unauthenticated' => AppLocalizations.tl('aiLoginRequired'),
+    'resource-exhausted' => AppLocalizations.tl('aiRateLimited'),
+    'invalid-argument' => AppLocalizations.tl('aiInvalidRequest'),
+    'permission-denied' => AppLocalizations.tl('aiPermissionDenied'),
     'deadline-exceeded' ||
     'unavailable' ||
-    'internal' => 'AI временно недоступен. Пробуем ещё раз.',
-    _ => fallbackMessage ?? 'Не удалось получить ответ от AI.',
+    'internal' => AppLocalizations.tl('aiUnavailableRetry'),
+    _ => fallbackMessage ?? AppLocalizations.tl('aiResponseFailed'),
   };
   return AiException(message, statusCode: statusCode);
 }

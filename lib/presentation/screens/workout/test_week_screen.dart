@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/bloc/training/test_week_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/domain/services/i_adaptive_training_service.dart';
 
 /// Full screen flow for the test week.
@@ -19,8 +20,7 @@ class _TestWeekScreenState extends State<TestWeekScreen> {
   @override
   void initState() {
     super.initState();
-    // Start with day 0
-    context.read<TestWeekBloc>().add(const TestWeekStartDay(dayIndex: 0));
+    context.read<TestWeekBloc>().add(const TestWeekInitialize());
   }
 
   @override
@@ -31,13 +31,17 @@ class _TestWeekScreenState extends State<TestWeekScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Тестовая неделя', style: AppTextStyles.titleL),
+        title: Text(
+          AppLocalizations.tl('testWeek'),
+          style: AppTextStyles.titleL,
+        ),
       ),
       body: BlocBuilder<TestWeekBloc, TestWeekState>(
         builder: (context, state) {
           return switch (state) {
             TestWeekStateDayInProgress s => _TestDayView(dayState: s),
             TestWeekStateDayCompleted s => _DayCompletedView(state: s),
+            TestWeekStateDayScheduled s => _DayScheduledView(state: s),
             TestWeekStateCalculating _ => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -45,7 +49,7 @@ class _TestWeekScreenState extends State<TestWeekScreen> {
                   CircularProgressIndicator(color: colors.primary),
                   const SizedBox(height: 20),
                   Text(
-                    'Анализируем твои показатели...',
+                    AppLocalizations.tl('analyzingPerformance'),
                     style: TextStyle(color: colors.textMuted),
                   ),
                 ],
@@ -56,7 +60,7 @@ class _TestWeekScreenState extends State<TestWeekScreen> {
             TestWeekStateNeedsAdjustment s => _AdjustmentNeededView(state: s),
             _ => Center(
               child: Text(
-                'Готовим тестовую неделю...',
+                AppLocalizations.tl('preparingTestWeek'),
                 style: TextStyle(color: colors.textMuted),
               ),
             ),
@@ -92,10 +96,16 @@ class _TestDayViewState extends State<_TestDayView> {
     _notesCtrls = {};
     for (int i = 0; i < widget.dayState.dayExercises.length; i++) {
       final ex = widget.dayState.dayExercises[i];
-      _weights[i] = ex.baseWeight;
-      _sets[i] = 4;
-      _reps[i] = 10;
-      _notesCtrls[i] = TextEditingController();
+      final savedIndex = widget.dayState.completedExercises.indexWhere(
+        (item) => item.exerciseName == ex.name,
+      );
+      final saved = savedIndex >= 0
+          ? widget.dayState.completedExercises[savedIndex]
+          : null;
+      _weights[i] = saved?.comfortableWeightKg ?? ex.baseWeight;
+      _sets[i] = saved?.comfortableSets ?? 4;
+      _reps[i] = saved?.comfortableReps ?? 10;
+      _notesCtrls[i] = TextEditingController(text: saved?.notes ?? '');
     }
   }
 
@@ -107,20 +117,24 @@ class _TestDayViewState extends State<_TestDayView> {
     super.dispose();
   }
 
-  bool get _allRecorded => _sets.values.every((s) => s >= 4);
+  bool get _allRecorded =>
+      widget.dayState.completedExercises.length ==
+      widget.dayState.dayExercises.length;
 
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
     final dayLabels = [
-      'День 1: Грудь + Трицепс',
-      'День 2: Спина + Бицепс',
-      'День 3: Плечи + Ноги',
-      'День 4: Пресс + Кардио',
+      AppLocalizations.tl('testWeekDay1'),
+      AppLocalizations.tl('testWeekDay2'),
+      AppLocalizations.tl('testWeekDay3'),
+      AppLocalizations.tl('testWeekDay4'),
     ];
     final dayLabel = widget.dayState.dayIndex < dayLabels.length
         ? dayLabels[widget.dayState.dayIndex]
-        : 'День ${widget.dayState.dayIndex + 1}';
+        : AppLocalizations.tlp('dayLabel', {
+            'n': '${widget.dayState.dayIndex + 1}',
+          });
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -150,7 +164,10 @@ class _TestDayViewState extends State<_TestDayView> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'ДЕНЬ ${widget.dayState.dayIndex + 1}/4',
+                      AppLocalizations.tlp('testWeekDayProgress', {
+                        'day': '${widget.dayState.dayIndex + 1}',
+                        'total': '4',
+                      }),
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.primary,
@@ -172,7 +189,7 @@ class _TestDayViewState extends State<_TestDayView> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Выполни упражнения и запиши комфортный вес, с которым сделаешь минимум 4 подхода',
+                AppLocalizations.tl('testWeekInstruction'),
                 style: TextStyle(fontSize: 13, color: colors.textMuted),
               ),
             ],
@@ -208,7 +225,9 @@ class _TestDayViewState extends State<_TestDayView> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      '${ex.name} — записано!',
+                      AppLocalizations.tlp('testWeekExerciseRecorded', {
+                        'exercise': ex.name,
+                      }),
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     backgroundColor: colors.success,
@@ -239,7 +258,7 @@ class _TestDayViewState extends State<_TestDayView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Общая сложность тренировки (RPE 1-10)',
+                AppLocalizations.tl('testWeekRpeTitle'),
                 style: TextStyle(fontSize: 14, color: colors.textPrimary),
               ),
               const SizedBox(height: 8),
@@ -285,7 +304,7 @@ class _TestDayViewState extends State<_TestDayView> {
           child: ElevatedButton(
             onPressed: _allRecorded
                 ? () => context.read<TestWeekBloc>().add(
-                    const TestWeekFinishDay(),
+                    TestWeekFinishDay(perceivedDifficulty: _rpe),
                   )
                 : null,
             style: ElevatedButton.styleFrom(
@@ -301,8 +320,8 @@ class _TestDayViewState extends State<_TestDayView> {
             ),
             child: Text(
               _allRecorded
-                  ? 'Завершить день тренировки'
-                  : 'Запиши все упражнения',
+                  ? AppLocalizations.tl('testWeekFinishDay')
+                  : AppLocalizations.tl('testWeekRecordAll'),
               style: const TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 16,
@@ -367,7 +386,7 @@ class _ExerciseCard extends StatelessWidget {
             children: [
               Flexible(
                 child: _Counter(
-                  label: 'Подходы',
+                  label: AppLocalizations.tl('setsLabel'),
                   value: sets,
                   min: 3,
                   max: 8,
@@ -377,7 +396,7 @@ class _ExerciseCard extends StatelessWidget {
               const SizedBox(width: 12),
               Flexible(
                 child: _Counter(
-                  label: 'Повторения',
+                  label: AppLocalizations.tl('repsLabel'),
                   value: reps,
                   min: 6,
                   max: 20,
@@ -390,14 +409,14 @@ class _ExerciseCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Вес (кг)',
+                      AppLocalizations.tl('weightKgHeader'),
                       style: TextStyle(fontSize: 11, color: colors.textMuted),
                     ),
                     const SizedBox(height: 4),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        '${weight.toInt()} кг',
+                        '${weight.toInt()} ${AppLocalizations.tl('kgUnit')}',
                         style: TextStyle(
                           fontFamily: 'Syne',
                           fontSize: 22,
@@ -466,7 +485,7 @@ class _ExerciseCard extends StatelessWidget {
                     Icon(Icons.check_rounded, size: 16, color: colors.primary),
                     const SizedBox(width: 6),
                     Text(
-                      'Записать показатель',
+                      AppLocalizations.tl('recordMetric'),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -584,7 +603,10 @@ class _DayCompletedView extends StatelessWidget {
             Icon(Icons.check_circle_rounded, color: colors.success, size: 64),
             const SizedBox(height: 20),
             Text(
-              'День $done/$total завершён!',
+              AppLocalizations.tlp('testWeekDayCompleted', {
+                'day': '$done',
+                'total': '$total',
+              }),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 28,
@@ -594,7 +616,9 @@ class _DayCompletedView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Записано ${state.exercisesCompleted.length} упражнений',
+              AppLocalizations.tlp('testWeekExercisesRecorded', {
+                'count': '${state.exercisesCompleted.length}',
+              }),
               style: TextStyle(fontSize: 16, color: colors.textSecondary),
             ),
             const SizedBox(height: 32),
@@ -617,9 +641,11 @@ class _DayCompletedView extends StatelessWidget {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () => context.read<TestWeekBloc>().add(
-                    TestWeekStartDay(dayIndex: state.nextDayIndex),
-                  ),
+                  onPressed: state.nextDayAvailable
+                      ? () => context.read<TestWeekBloc>().add(
+                          TestWeekStartDay(dayIndex: state.nextDayIndex),
+                        )
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colors.primary,
                     foregroundColor: colors.textOnPrimary,
@@ -628,7 +654,14 @@ class _DayCompletedView extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Начать день ${state.nextDayIndex + 1}',
+                    state.nextDayAvailable
+                        ? AppLocalizations.tlp('testWeekStartDay', {
+                            'day': '${state.nextDayIndex + 1}',
+                          })
+                        : AppLocalizations.tlp('testWeekNextDayAvailable', {
+                            'day': '${state.nextDayIndex + 1}',
+                            'date': _shortDate(context, state.nextAvailableAt),
+                          }),
                     style: const TextStyle(
                       fontFamily: 'Syne',
                       fontSize: 16,
@@ -643,6 +676,49 @@ class _DayCompletedView extends StatelessWidget {
     );
   }
 }
+
+class _DayScheduledView extends StatelessWidget {
+  final TestWeekStateDayScheduled state;
+  const _DayScheduledView({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppTheme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.bedtime_rounded, color: colors.primary, size: 64),
+            const SizedBox(height: 20),
+            Text(
+              AppLocalizations.tl('testWeekRecoveryDay'),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Syne',
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: colors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              AppLocalizations.tlp('testWeekRecoveryBody', {
+                'date': _shortDate(context, state.availableAt),
+              }),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: colors.textSecondary),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+String _shortDate(BuildContext context, DateTime value) =>
+    MaterialLocalizations.of(context).formatShortDate(value);
 
 // ─── Plan results view ────────────────────────────────────────────────────────
 class _PlanResultsView extends StatelessWidget {
@@ -688,8 +764,8 @@ class _PlanResultsView extends StatelessWidget {
                   children: [
                     Text(
                       f.isFeasible
-                          ? 'Цель достижима'
-                          : 'Требуется корректировка',
+                          ? AppLocalizations.tl('testWeekGoalFeasible')
+                          : AppLocalizations.tl('testWeekAdjustmentRequired'),
                       style: TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 16,
@@ -745,10 +821,18 @@ class _PlanResultsView extends StatelessWidget {
         const SizedBox(height: 20),
 
         // Adapted plan preview
-        const Text('Твоя программа', style: AppTextStyles.titleL),
+        Text(
+          AppLocalizations.tl('testWeekYourProgram'),
+          style: AppTextStyles.titleL,
+        ),
         const SizedBox(height: 4),
         Text(
-          'Уровень: ${state.adjustment.adaptedIntensityLabel} · ${state.adjustment.userLevel == UserLevel.beginner ? 'Начинающий' : 'Средний'}',
+          AppLocalizations.tlp('testWeekLevel', {
+            'intensity': state.adjustment.adaptedIntensityLabel,
+            'level': state.adjustment.userLevel == UserLevel.beginner
+                ? AppLocalizations.tl('exerciseDifficultyBeginner')
+                : AppLocalizations.tl('exerciseDifficultyIntermediate'),
+          }),
           style: TextStyle(fontSize: 13, color: colors.textMuted),
         ),
         const SizedBox(height: 12),
@@ -785,7 +869,10 @@ class _PlanResultsView extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '${week.plannedSessions} тренировок · ~${week.estimatedCalorieBurn.toInt()} ккал',
+                      AppLocalizations.tlp('testWeekSessionsCalories', {
+                        'sessions': '${week.plannedSessions}',
+                        'calories': '${week.estimatedCalorieBurn.toInt()}',
+                      }),
                       style: TextStyle(fontSize: 12, color: colors.textMuted),
                     ),
                   ],
@@ -794,7 +881,9 @@ class _PlanResultsView extends StatelessWidget {
             ),
         if (state.adaptedPlan.length > 4)
           Text(
-            '...и ещё ${state.adaptedPlan.length - 4} недель',
+            AppLocalizations.tlp('testWeekMoreWeeks', {
+              'count': '${state.adaptedPlan.length - 4}',
+            }),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13, color: colors.textMuted),
           ),
@@ -815,7 +904,7 @@ class _PlanResultsView extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Начать программу!',
+                AppLocalizations.tl('startProgram'),
                 style: TextStyle(
                   fontFamily: 'Syne',
                   fontSize: 18,
@@ -845,7 +934,7 @@ class _PlanResultsView extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'Скорректировать',
+                      AppLocalizations.tl('adjust'),
                       style: TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 15,
@@ -879,7 +968,7 @@ class _PlanAcceptedView extends StatelessWidget {
             Icon(Icons.celebration_rounded, color: colors.primary, size: 80),
             const SizedBox(height: 20),
             Text(
-              'Программа запущена!',
+              AppLocalizations.tl('programStarted'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 28,
@@ -889,7 +978,7 @@ class _PlanAcceptedView extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Твой персональный план адаптирован под твои показатели. Первая неделя — адаптация. Следи за прогрессом!',
+              AppLocalizations.tl('testWeekPlanStartedBody'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
@@ -910,7 +999,7 @@ class _PlanAcceptedView extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'На главную',
+                  AppLocalizations.tl('toHome'),
                   style: TextStyle(
                     fontFamily: 'Syne',
                     fontSize: 16,
@@ -944,7 +1033,7 @@ class _AdjustmentNeededView extends StatelessWidget {
             Icon(Icons.tune_rounded, color: colors.warning, size: 64),
             const SizedBox(height: 20),
             Text(
-              'Скорректируем цель',
+              AppLocalizations.tl('testWeekAdjustGoalTitle'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 24,
@@ -970,7 +1059,9 @@ class _AdjustmentNeededView extends StatelessWidget {
                   onTap: () => ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        'Выбрано: $s',
+                        AppLocalizations.tlp('testWeekSelectedOption', {
+                          'option': s,
+                        }),
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       backgroundColor: colors.primary,

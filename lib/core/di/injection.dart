@@ -50,6 +50,8 @@ import 'package:fitnesbuster/data/repositories/pr_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_pr_repository.dart';
 import 'package:fitnesbuster/data/repositories/settings_repository.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
+import 'package:fitnesbuster/data/repositories/test_week_progress_repository.dart';
+import 'package:fitnesbuster/domain/repositories/i_test_week_progress_repository.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/core/services/exercise_gif_service.dart';
@@ -189,6 +191,16 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<ISettingsRepository>(() => settingsRepo);
   sl.registerLazySingleton<SettingsRepository>(() => settingsRepo);
 
+  final testWeekProgressRemote = FirestoreTestWeekProgressRemoteStore(
+    firestore: sl(),
+  );
+  final testWeekProgressRepo = TestWeekProgressRepository(
+    remote: testWeekProgressRemote,
+  );
+  sl.registerLazySingleton<ITestWeekProgressRepository>(
+    () => testWeekProgressRepo,
+  );
+
   final gamification = GamificationService(settings: settingsRepo);
   sl.registerLazySingleton<IGamificationService>(() => gamification);
   sl.registerLazySingleton<GamificationService>(() => gamification);
@@ -251,7 +263,13 @@ Future<void> initDependencies() async {
     ),
   );
   sl.registerFactory(
-    () => TestWeekBloc(workflowService: sl(), completeTestWeekUseCase: sl()),
+    () => TestWeekBloc(
+      workflowService: sl(),
+      completeTestWeekUseCase: sl(),
+      authRepo: sl(),
+      userRepo: sl(),
+      progressRepo: sl(),
+    ),
   );
 }
 

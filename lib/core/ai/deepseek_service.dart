@@ -121,7 +121,12 @@ class DeepSeekService implements IDeepSeekService {
   Future<String> parseWorkoutFromContent(
     String content, {
     String sourceHint = '',
-  }) => _chat.parseWorkoutFromContent(content, sourceHint: sourceHint);
+    UserProfile? profile,
+  }) => _chat.parseWorkoutFromContent(
+    content,
+    sourceHint: sourceHint,
+    profile: profile,
+  );
 
   @override
   Future<String> correctWorkoutPlan({
@@ -129,11 +134,13 @@ class DeepSeekService implements IDeepSeekService {
     required String userInput,
     String correctionType = 'merge',
     String sourceHint = '',
+    UserProfile? profile,
   }) => _refinement.correctWorkoutPlan(
     currentPlanJson: currentPlanJson,
     userInput: userInput,
     correctionType: correctionType,
     sourceHint: sourceHint,
+    profile: profile,
   );
 
   @override

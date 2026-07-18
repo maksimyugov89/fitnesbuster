@@ -5,9 +5,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
 
+import 'package:fitnesbuster/core/legal/legal_consent.dart' as _i8;
 import 'package:fitnesbuster/core/services/test_week_workflow_service.dart'
     as _i4;
+import 'package:fitnesbuster/domain/entities/body_measurement.dart' as _i10;
 import 'package:fitnesbuster/domain/entities/entities.dart' as _i3;
+import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart' as _i7;
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart' as _i9;
 import 'package:fitnesbuster/domain/services/i_adaptive_training_service.dart'
     as _i2;
 import 'package:fitnesbuster/domain/usecases/complete_test_week_use_case.dart'
@@ -42,6 +46,11 @@ class _FakeFeasibilityResult_1 extends _i1.SmartFake
 class _FakeTestWeekResult_2 extends _i1.SmartFake
     implements _i3.TestWeekResult {
   _FakeTestWeekResult_2(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeUserEntity_3 extends _i1.SmartFake implements _i3.UserEntity {
+  _FakeUserEntity_3(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
@@ -137,4 +146,426 @@ class MockCompleteTestWeekUseCase extends _i1.Mock
             returnValueForMissingStub: _i5.Future<void>.value(),
           )
           as _i5.Future<void>);
+}
+
+/// A class which mocks [IAuthRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockIAuthRepository extends _i1.Mock implements _i7.IAuthRepository {
+  MockIAuthRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i5.Stream<_i3.UserEntity?> get userChanges =>
+      (super.noSuchMethod(
+            Invocation.getter(#userChanges),
+            returnValue: _i5.Stream<_i3.UserEntity?>.empty(),
+          )
+          as _i5.Stream<_i3.UserEntity?>);
+
+  @override
+  bool get isEmailVerified =>
+      (super.noSuchMethod(
+            Invocation.getter(#isEmailVerified),
+            returnValue: false,
+          )
+          as bool);
+
+  @override
+  _i5.Future<_i3.UserEntity?> getCurrentUserWithProfile() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentUserWithProfile, []),
+            returnValue: _i5.Future<_i3.UserEntity?>.value(),
+          )
+          as _i5.Future<_i3.UserEntity?>);
+
+  @override
+  _i5.Future<bool> hasCurrentLegalConsent() =>
+      (super.noSuchMethod(
+            Invocation.method(#hasCurrentLegalConsent, []),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+
+  @override
+  _i5.Future<_i3.UserEntity> login({
+    required String? email,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#login, [], {#email: email, #password: password}),
+            returnValue: _i5.Future<_i3.UserEntity>.value(
+              _FakeUserEntity_3(
+                this,
+                Invocation.method(#login, [], {
+                  #email: email,
+                  #password: password,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i3.UserEntity>);
+
+  @override
+  _i5.Future<_i3.UserEntity> register({
+    required String? name,
+    required String? email,
+    required String? password,
+    required _i8.LegalConsentAcceptance? consent,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#register, [], {
+              #name: name,
+              #email: email,
+              #password: password,
+              #consent: consent,
+            }),
+            returnValue: _i5.Future<_i3.UserEntity>.value(
+              _FakeUserEntity_3(
+                this,
+                Invocation.method(#register, [], {
+                  #name: name,
+                  #email: email,
+                  #password: password,
+                  #consent: consent,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i3.UserEntity>);
+
+  @override
+  _i5.Future<_i3.UserEntity> signInWithGoogle({
+    _i8.LegalConsentAcceptance? newAccountConsent,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithGoogle, [], {
+              #newAccountConsent: newAccountConsent,
+            }),
+            returnValue: _i5.Future<_i3.UserEntity>.value(
+              _FakeUserEntity_3(
+                this,
+                Invocation.method(#signInWithGoogle, [], {
+                  #newAccountConsent: newAccountConsent,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i3.UserEntity>);
+
+  @override
+  _i5.Future<_i3.UserEntity> acceptCurrentLegalConsent({
+    required _i8.LegalConsentAcceptance? consent,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#acceptCurrentLegalConsent, [], {
+              #consent: consent,
+            }),
+            returnValue: _i5.Future<_i3.UserEntity>.value(
+              _FakeUserEntity_3(
+                this,
+                Invocation.method(#acceptCurrentLegalConsent, [], {
+                  #consent: consent,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i3.UserEntity>);
+
+  @override
+  _i5.Future<void> resetPassword(String? email) =>
+      (super.noSuchMethod(
+            Invocation.method(#resetPassword, [email]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> logout() =>
+      (super.noSuchMethod(
+            Invocation.method(#logout, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> updateProfile({String? name, String? photoUrl}) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [], {
+              #name: name,
+              #photoUrl: photoUrl,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> sendEmailVerification() =>
+      (super.noSuchMethod(
+            Invocation.method(#sendEmailVerification, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<bool> reloadAndCheckEmailVerified() =>
+      (super.noSuchMethod(
+            Invocation.method(#reloadAndCheckEmailVerified, []),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+
+  @override
+  _i5.Future<void> deleteAccount() =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteAccount, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> reloadUser() =>
+      (super.noSuchMethod(
+            Invocation.method(#reloadUser, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> signOut() =>
+      (super.noSuchMethod(
+            Invocation.method(#signOut, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+}
+
+/// A class which mocks [IUserRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockIUserRepository extends _i1.Mock implements _i9.IUserRepository {
+  MockIUserRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i5.Future<_i3.UserEntity> getUser(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getUser, [userId]),
+            returnValue: _i5.Future<_i3.UserEntity>.value(
+              _FakeUserEntity_3(this, Invocation.method(#getUser, [userId])),
+            ),
+          )
+          as _i5.Future<_i3.UserEntity>);
+
+  @override
+  _i5.Future<_i3.UserEntity> updateProfile(_i3.UserEntity? user) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [user]),
+            returnValue: _i5.Future<_i3.UserEntity>.value(
+              _FakeUserEntity_3(
+                this,
+                Invocation.method(#updateProfile, [user]),
+              ),
+            ),
+          )
+          as _i5.Future<_i3.UserEntity>);
+
+  @override
+  _i5.Future<_i3.UserEntity> saveOnboardingData({
+    required String? userId,
+    required _i3.FitnessGoal? goal,
+    required _i3.IntensityLevel? intensity,
+    String? location,
+    String? running,
+    String? city,
+    _i3.UserProfile? profile,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveOnboardingData, [], {
+              #userId: userId,
+              #goal: goal,
+              #intensity: intensity,
+              #location: location,
+              #running: running,
+              #city: city,
+              #profile: profile,
+            }),
+            returnValue: _i5.Future<_i3.UserEntity>.value(
+              _FakeUserEntity_3(
+                this,
+                Invocation.method(#saveOnboardingData, [], {
+                  #userId: userId,
+                  #goal: goal,
+                  #intensity: intensity,
+                  #location: location,
+                  #running: running,
+                  #city: city,
+                  #profile: profile,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i3.UserEntity>);
+
+  @override
+  _i5.Future<_i3.UserEntity> updateWorkoutSettings({
+    required String? userId,
+    required String? location,
+    required String? running,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateWorkoutSettings, [], {
+              #userId: userId,
+              #location: location,
+              #running: running,
+            }),
+            returnValue: _i5.Future<_i3.UserEntity>.value(
+              _FakeUserEntity_3(
+                this,
+                Invocation.method(#updateWorkoutSettings, [], {
+                  #userId: userId,
+                  #location: location,
+                  #running: running,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i3.UserEntity>);
+
+  @override
+  _i5.Future<void> saveAiPlans({
+    required String? userId,
+    required String? workoutPlanJson,
+    required String? mealPlanJson,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveAiPlans, [], {
+              #userId: userId,
+              #workoutPlanJson: workoutPlanJson,
+              #mealPlanJson: mealPlanJson,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> saveTestWeekCompleted({required String? userId}) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveTestWeekCompleted, [], {#userId: userId}),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<bool> isTestWeekCompleted(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#isTestWeekCompleted, [userId]),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+
+  @override
+  _i5.Future<void> bootstrapStreak({
+    required String? userId,
+    required int? streak,
+    required String? lastWorkoutDate,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#bootstrapStreak, [], {
+              #userId: userId,
+              #streak: streak,
+              #lastWorkoutDate: lastWorkoutDate,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> updateGoal({
+    required String? userId,
+    required _i3.FitnessGoal? goal,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateGoal, [], {#userId: userId, #goal: goal}),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> updateTrainingExperience({
+    required String? userId,
+    required _i3.TrainingExperience? trainingExperience,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateTrainingExperience, [], {
+              #userId: userId,
+              #trainingExperience: trainingExperience,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> saveMeasurement({
+    required String? userId,
+    required _i10.BodyMeasurement? measurement,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveMeasurement, [], {
+              #userId: userId,
+              #measurement: measurement,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<List<_i10.BodyMeasurement>> getMeasurements(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getMeasurements, [userId]),
+            returnValue: _i5.Future<List<_i10.BodyMeasurement>>.value(
+              <_i10.BodyMeasurement>[],
+            ),
+          )
+          as _i5.Future<List<_i10.BodyMeasurement>>);
+
+  @override
+  _i5.Future<void> updateWorkoutPlan({
+    required String? userId,
+    required String? workoutPlanJson,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateWorkoutPlan, [], {
+              #userId: userId,
+              #workoutPlanJson: workoutPlanJson,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<Map<String, String?>> getAiPlans(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getAiPlans, [userId]),
+            returnValue: _i5.Future<Map<String, String?>>.value(
+              <String, String?>{},
+            ),
+          )
+          as _i5.Future<Map<String, String?>>);
 }

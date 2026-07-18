@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/services/gamification_service.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class DashboardXpBar extends StatelessWidget {
@@ -40,7 +41,9 @@ class DashboardXpBar extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${context.l10n.levelLabel} ${lvl.level} · ${lvl.name}',
+                      '${context.l10n.levelLabel} '
+                      '${lvl.level} · '
+                      '${GamificationService.localizedLevelName(lvl.level)}',
                       style: TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 13,

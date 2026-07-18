@@ -118,8 +118,7 @@ class UserRepository implements IUserRepository {
   }) async {
     try {
       await _firestore.collection(FirestoreCollections.users).doc(userId).set({
-        'onboarding.location': location,
-        'onboarding.running': running,
+        'onboarding': {'location': location, 'running': running},
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e, st) {

@@ -100,6 +100,15 @@ void main() {
             .having((s) => s.running, 'running', 'treadmill'),
       ],
     );
+
+    test('location and running are copied into the AI profile', () {
+      final profile = const OnboardingCollecting(
+        location: 'outdoor',
+        running: 'withRunning',
+      ).toUserProfile();
+      expect(profile.workoutLocation, 'outdoor');
+      expect(profile.runningPreference, 'withRunning');
+    });
   });
 
   group('OnboardingFinalize', () {

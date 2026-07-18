@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart';
 import 'package:fitnesbuster/core/health/health_providers.dart';
 import 'package:fitnesbuster/core/health/health_connect_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 /// Screen shown after registration asking to sync with health apps.
 class HealthSyncScreen extends StatefulWidget {
@@ -47,7 +48,9 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Ошибка подключения: $e'),
+            content: Text(
+              AppLocalizations.tlp('genericErrorMsg', {'error': '$e'}),
+            ),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -90,9 +93,9 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                   const Spacer(),
                   TextButton(
                     onPressed: () => context.go('/dashboard'),
-                    child: const Text(
-                      'Пропустить',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.tl('skip'),
+                      style: const TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 14,
                       ),
@@ -127,13 +130,13 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Синхронизация\nданных',
+                    Text(
+                      AppLocalizations.tl('onbHealthSyncTitle'),
                       style: AppTextStyles.displayM,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Подключи фитнес-приложения, чтобы\nтренировки строились на твоих данных',
+                    Text(
+                      AppLocalizations.tl('onbHealthSyncSubtitle'),
                       style: AppTextStyles.bodyL,
                     ),
 
@@ -141,8 +144,10 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
 
                     // Native Health Connect providers
                     _buildSection(
-                      title: '🔄 Поддержка через Health Connect',
-                      subtitle: 'Эти приложения синхронизируются автоматически',
+                      title: AppLocalizations.tl('onbHealthConnectProviders'),
+                      subtitle: AppLocalizations.tl(
+                        'onbHealthConnectProvidersSub',
+                      ),
                       providers: HealthProvider.androidHealthConnect,
                       selected: _selectedProviders,
                       selectable: true,
@@ -152,9 +157,10 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
 
                     // Bridge providers
                     _buildSection(
-                      title: '🔗 Через приложения-мосты',
-                      subtitle:
-                          'Для них нужен установленный Health Sync из Google Play',
+                      title: AppLocalizations.tl('onbHealthBridgeProviders'),
+                      subtitle: AppLocalizations.tl(
+                        'onbHealthBridgeProvidersSub',
+                      ),
                       providers: HealthProvider.requiresBridge,
                       selected: _selectedProviders,
                       selectable: false,
@@ -175,17 +181,17 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                         ),
                         child: Column(
                           children: [
-                            const Row(
+                            Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.check_circle_rounded,
                                   color: AppColors.success,
                                   size: 20,
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Text(
-                                  'Данные синхронизированы!',
-                                  style: TextStyle(
+                                  AppLocalizations.tl('onbHealthSyncComplete'),
+                                  style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
                                     color: AppColors.textPrimary,
@@ -195,14 +201,17 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                             ),
                             const SizedBox(height: 12),
                             _SyncRow(
-                              'Шаги',
+                              AppLocalizations.tl('stepsLabel'),
                               '${_syncResult!.steps}',
                               Icons.directions_walk_rounded,
                             ),
                             const SizedBox(height: 4),
                             _SyncRow(
-                              'Калории',
-                              '${_syncResult!.caloriesBurned.toStringAsFixed(0)} ккал',
+                              AppLocalizations.tl('healthCalories'),
+                              AppLocalizations.tlp('foodDiaryCalories', {
+                                'calories': _syncResult!.caloriesBurned
+                                    .toStringAsFixed(0),
+                              }),
                               Icons.local_fire_department_rounded,
                             ),
                           ],
@@ -229,9 +238,9 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: const Text(
-                          'Начать тренировки!',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.tl('onbHealthStartWorkouts'),
+                          style: const TextStyle(
                             fontFamily: 'Syne',
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -252,10 +261,10 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                           ),
                         ),
                         child: _isConnecting
-                            ? const Row(
+                            ? Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 20,
                                     height: 20,
                                     child: CircularProgressIndicator(
@@ -263,21 +272,23 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                                       color: AppColors.primary,
                                     ),
                                   ),
-                                  SizedBox(width: 12),
+                                  const SizedBox(width: 12),
                                   Text(
-                                    'Подключение...',
-                                    style: TextStyle(fontSize: 15),
+                                    AppLocalizations.tl('healthSyncing'),
+                                    style: const TextStyle(fontSize: 15),
                                   ),
                                 ],
                               )
-                            : const Row(
+                            : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.sync_rounded, size: 20),
-                                  SizedBox(width: 8),
+                                  const Icon(Icons.sync_rounded, size: 20),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    'Подключить Health Connect',
-                                    style: TextStyle(
+                                    AppLocalizations.tl(
+                                      'onbHealthConnectAction',
+                                    ),
+                                    style: const TextStyle(
                                       fontFamily: 'Syne',
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,

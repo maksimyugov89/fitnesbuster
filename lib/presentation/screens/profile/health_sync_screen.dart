@@ -10,6 +10,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/health/health_connect_service.dart';
 import 'package:fitnesbuster/bloc/health/health_sync_bloc.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 /// Health Connect sync screen — data from all fitness apps via Google Health Connect.
 class HealthSyncScreen extends StatefulWidget {
@@ -72,7 +73,10 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Синхронизировано! Шаги: ${state.data.steps}, Калории: ${state.data.caloriesBurned.toStringAsFixed(0)}',
+                  AppLocalizations.tlp('healthSyncSuccess', {
+                    'steps': '${state.data.steps}',
+                    'calories': state.data.caloriesBurned.toStringAsFixed(0),
+                  }),
                 ),
                 backgroundColor: colors.success,
                 behavior: SnackBarBehavior.floating,
@@ -101,7 +105,10 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
           return Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
-              title: const Text('Синхронизация', style: AppTextStyles.titleM),
+              title: Text(
+                AppLocalizations.tl('healthSyncTitle'),
+                style: AppTextStyles.titleM,
+              ),
               centerTitle: true,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_rounded),
@@ -117,7 +124,10 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                 if (state is HealthSyncStateLoading)
                   const Center(child: CircularProgressIndicator())
                 else ...[
-                  const Text('Данные за сегодня', style: AppTextStyles.titleL),
+                  Text(
+                    AppLocalizations.tl('healthTodayData'),
+                    style: AppTextStyles.titleL,
+                  ),
                   const SizedBox(height: 12),
 
                   if (state is HealthSyncStateLoaded) ...[
@@ -141,7 +151,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Нажмите «Синхронизировать» для загрузки данных',
+                            AppLocalizations.tl('healthSyncEmpty'),
                             style: TextStyle(
                               fontSize: 13,
                               color: colors.textMuted,
@@ -172,8 +182,8 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                           : const Icon(Icons.sync_rounded, size: 20),
                       label: Text(
                         state is HealthSyncStateLoading
-                            ? 'Синхронизация...'
-                            : 'Синхронизировать с Health Connect',
+                            ? AppLocalizations.tl('healthSyncing')
+                            : AppLocalizations.tl('healthSyncAction'),
                         style: const TextStyle(
                           fontFamily: 'Syne',
                           fontWeight: FontWeight.w700,
@@ -193,7 +203,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                   const SizedBox(height: 12),
                   Center(
                     child: Text(
-                      'Данные загружаются из Health Connect (Здоровье и спорт)',
+                      AppLocalizations.tl('healthSyncSource'),
                       style: TextStyle(fontSize: 11, color: colors.textMuted),
                       textAlign: TextAlign.center,
                     ),
@@ -201,7 +211,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                   const SizedBox(height: 8),
                   Center(
                     child: Text(
-                      'При первом запуске Android покажет системный запрос доступа только к выбранным данным здоровья.',
+                      AppLocalizations.tl('healthPermissionInfo'),
                       style: TextStyle(fontSize: 11, color: colors.textMuted),
                       textAlign: TextAlign.center,
                     ),
@@ -219,7 +229,10 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Синхронизация', style: AppTextStyles.titleM),
+        title: Text(
+          AppLocalizations.tl('healthSyncTitle'),
+          style: AppTextStyles.titleM,
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -236,14 +249,14 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             size: 72,
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Health Connect не установлен',
+          Text(
+            AppLocalizations.tl('healthNotInstalled'),
             style: AppTextStyles.titleL,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
-            'Для синхронизации данных о здоровье необходимо установить приложение «Health Connect (Здоровье и спорт)» из Google Play.',
+            AppLocalizations.tl('healthNotInstalledBody'),
             style: TextStyle(
               fontSize: 13,
               color: colors.textMuted,
@@ -264,9 +277,9 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
                 );
               },
               icon: const Icon(Icons.download_rounded, size: 20),
-              label: const Text(
-                'Установить Health Connect',
-                style: TextStyle(
+              label: Text(
+                AppLocalizations.tl('healthInstallConnect'),
+                style: const TextStyle(
                   fontFamily: 'Syne',
                   fontWeight: FontWeight.w700,
                   fontSize: 15,
@@ -290,7 +303,10 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Синхронизация', style: AppTextStyles.titleM),
+        title: Text(
+          AppLocalizations.tl('healthSyncTitle'),
+          style: AppTextStyles.titleM,
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -307,8 +323,8 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             color: colors.primary,
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Нет доступа к данным здоровья',
+          Text(
+            AppLocalizations.tl('healthNoAccess'),
             style: AppTextStyles.titleL,
             textAlign: TextAlign.center,
           ),
@@ -322,10 +338,13 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
           ElevatedButton.icon(
             onPressed: _openHealthConnectSettings,
             icon: const Icon(Icons.settings_rounded),
-            label: const Text('Открыть настройки Health Connect'),
+            label: Text(AppLocalizations.tl('healthOpenConnectSettings')),
           ),
           const SizedBox(height: 12),
-          TextButton(onPressed: _sync, child: const Text('Проверить снова')),
+          TextButton(
+            onPressed: _sync,
+            child: Text(AppLocalizations.tl('healthCheckAgain')),
+          ),
         ],
       ),
     );
@@ -362,24 +381,24 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Синхронизация с фитнес-приложениями через Google Health Connect',
+            AppLocalizations.tl('healthConnectSubtitle'),
             style: TextStyle(
               fontSize: 13,
               color: Colors.white.withValues(alpha: 0.85),
             ),
           ),
           const SizedBox(height: 12),
-          const Wrap(
+          Wrap(
             spacing: 8,
             runSpacing: 6,
             children: [
-              _ProviderBadge('Google Fit'),
-              SizedBox(width: 8),
-              _ProviderBadge('Samsung Health'),
-              SizedBox(width: 8),
-              _ProviderBadge('Mi Fitness'),
-              SizedBox(width: 8),
-              _ProviderBadge('и другие'),
+              const _ProviderBadge('Google Fit'),
+              const SizedBox(width: 8),
+              const _ProviderBadge('Samsung Health'),
+              const SizedBox(width: 8),
+              const _ProviderBadge('Mi Fitness'),
+              const SizedBox(width: 8),
+              _ProviderBadge(AppLocalizations.tl('healthOtherProviders')),
             ],
           ),
         ],
@@ -399,7 +418,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             Expanded(
               child: _DataTile(
                 icon: AppImages.steps,
-                label: 'Шаги',
+                label: AppLocalizations.tl('stepsTodayLabel'),
                 value: '${data.steps}',
                 color: colors.primary,
               ),
@@ -408,9 +427,9 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             Expanded(
               child: _DataTile(
                 icon: AppImages.calorieCounter,
-                label: 'Калории',
+                label: AppLocalizations.tl('healthCalories'),
                 value: '${data.caloriesBurned.toInt()}',
-                unit: 'ккал',
+                unit: AppLocalizations.tl('socialKcal'),
                 color: colors.accentOrange,
               ),
             ),
@@ -422,9 +441,9 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             Expanded(
               child: _DataTile(
                 icon: AppImages.heartRate,
-                label: 'Пульс',
+                label: AppLocalizations.tl('healthHeartRate'),
                 value: data.heartRateAvg?.toString() ?? '—',
-                unit: 'уд/мин',
+                unit: AppLocalizations.tl('bpmUnit'),
                 color: colors.error,
               ),
             ),
@@ -432,9 +451,9 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             Expanded(
               child: _DataTile(
                 icon: AppImages.weightTracker,
-                label: 'Вес',
+                label: AppLocalizations.tl('weightLabel'),
                 value: data.weight?.toStringAsFixed(1) ?? '—',
-                unit: 'кг',
+                unit: AppLocalizations.tl('dashboardKg'),
                 color: colors.accentPurple,
               ),
             ),
@@ -446,7 +465,7 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             Expanded(
               child: _DataTile(
                 icon: AppImages.sleep,
-                label: 'Сон',
+                label: AppLocalizations.tl('healthSleep'),
                 value: _sleepText(data.sleepMinutes),
                 color: colors.info,
               ),
@@ -455,9 +474,9 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             Expanded(
               child: _DataTile(
                 icon: AppImages.water,
-                label: 'Вода',
+                label: AppLocalizations.tl('waterHealthLabel'),
                 value: data.waterIntakeMl?.toStringAsFixed(0) ?? '—',
-                unit: 'мл',
+                unit: AppLocalizations.tl('mlHealthUnit'),
                 color: colors.primaryLight,
               ),
             ),
@@ -469,9 +488,9 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
             Expanded(
               child: _DataTile(
                 icon: AppImages.route,
-                label: 'Дистанция',
+                label: AppLocalizations.tl('healthDistance'),
                 value: (data.distanceKm ?? 0).toStringAsFixed(1),
-                unit: 'км',
+                unit: AppLocalizations.tl('kmUnit'),
                 color: colors.success,
               ),
             ),
@@ -481,7 +500,9 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Последняя синхронизация: ${_formatTime(lastSync)}',
+          AppLocalizations.tlp('healthLastSync', {
+            'time': _formatTime(lastSync),
+          }),
           style: TextStyle(fontSize: 11, color: colors.textMuted),
           textAlign: TextAlign.center,
         ),
@@ -493,16 +514,26 @@ class _HealthSyncScreenState extends State<HealthSyncScreen> {
     if (minutes == null || minutes == 0) return '—';
     final h = minutes ~/ 60;
     final m = minutes % 60;
-    // ignore: unnecessary_brace_in_string_interps — Cyrillic suffix requires braces
-    return '${h}ч ${m}м';
+    return AppLocalizations.tlp('healthSleepDuration', {
+      'hours': '$h',
+      'minutes': '$m',
+    });
   }
 
   String _formatTime(DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
-    if (diff.inMinutes < 1) return 'только что';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} мин. назад';
-    if (diff.inHours < 24) return '${diff.inHours} ч. назад';
+    if (diff.inMinutes < 1) return AppLocalizations.tl('healthJustNow');
+    if (diff.inMinutes < 60) {
+      return AppLocalizations.tlp('healthMinutesAgo', {
+        'minutes': '${diff.inMinutes}',
+      });
+    }
+    if (diff.inHours < 24) {
+      return AppLocalizations.tlp('healthHoursAgo', {
+        'hours': '${diff.inHours}',
+      });
+    }
     return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
 }

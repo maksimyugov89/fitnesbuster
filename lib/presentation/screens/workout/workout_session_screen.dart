@@ -368,7 +368,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
     ),
     body: Center(
       child: Text(
-        'На этот день запланирован отдых\nили нет упражнений.',
+        AppLocalizations.tl('workoutRestOrEmpty'),
         style: TextStyle(color: colors.textMuted, fontSize: 14),
         textAlign: TextAlign.center,
       ),
@@ -416,7 +416,9 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
-                '${_day!.exercises.length} упражнений',
+                AppLocalizations.tlp('exercisesCount', {
+                  'n': '${_day!.exercises.length}',
+                }),
                 style: TextStyle(fontSize: 12, color: colors.textMuted),
               ),
             ],
@@ -471,7 +473,10 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '$_completedCount / $_totalSets подходов',
+              AppLocalizations.tlp('setsOf', {
+                'done': '$_completedCount',
+                'total': '$_totalSets',
+              }),
               style: TextStyle(fontSize: 12, color: colors.textMuted),
             ),
             Text(
@@ -582,14 +587,14 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
                 children: [
                   _ExStat(
                     colors: colors,
-                    label: 'Подходы',
+                    label: AppLocalizations.tl('setsLabel'),
                     value: '${ex.sets}',
                     icon: Icons.repeat_rounded,
                   ),
                   const SizedBox(width: 24),
                   _ExStat(
                     colors: colors,
-                    label: 'Повторения',
+                    label: AppLocalizations.tl('repsLabel'),
                     value: ex.reps,
                     icon: Icons.fitness_center_rounded,
                   ),
@@ -597,7 +602,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
                     const SizedBox(width: 24),
                     _ExStat(
                       colors: colors,
-                      label: 'Вес',
+                      label: AppLocalizations.tl('weightLabel'),
                       value: ex.weightGuideline,
                       icon: Icons.scale_rounded,
                     ),
@@ -702,7 +707,9 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Подход ${i + 1}',
+                          AppLocalizations.tlp('workoutSetNumber', {
+                            'number': '${i + 1}',
+                          }),
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -710,7 +717,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen>
                           ),
                         ),
                         Text(
-                          '${ex.reps} повт.${ex.weightGuideline.isNotEmpty ? "  •  ${ex.weightGuideline}" : ""}',
+                          '${ex.reps} ${AppLocalizations.tl('repsShort')}${ex.weightGuideline.isNotEmpty ? "  •  ${ex.weightGuideline}" : ""}',
                           style: TextStyle(
                             fontSize: 12,
                             color: colors.textMuted,
