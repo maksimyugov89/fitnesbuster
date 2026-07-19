@@ -3,24 +3,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/presentation/widgets/common/permission_rationale_dialog.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
-  const BarcodeScannerScreen({super.key});
+  const BarcodeScannerScreen({
+    super.key,
+    this.requestCameraPermission,
+    this.checkCameraPermission,
+    this.openPermissionSettings,
+  });
+
+  final Future<PermissionStatus> Function()? requestCameraPermission;
+  final Future<PermissionStatus> Function()? checkCameraPermission;
+  final Future<bool> Function()? openPermissionSettings;
   @override
   State<BarcodeScannerScreen> createState() => _BarcodeScannerScreenState();
 }
 
-class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
+class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
+    with WidgetsBindingObserver {
   final MobileScannerController _ctrl = MobileScannerController();
   bool _scanned = false;
   bool _loading = false;
-  String _status = 'Наведите камеру на штрихкод продукта';
+  bool _cameraAccepted = false;
+  bool _requestingCamera = false;
+  PermissionStatus? _cameraStatus;
+  String _status = AppLocalizations.tl('barcodePointCamera');
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     OpenFoodAPIConfiguration.userAgent = UserAgent(
       name: 'FitnesBuster',
       version: '1.0',
@@ -30,10 +47,60 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       OpenFoodFactsLanguage.RUSSIAN,
       OpenFoodFactsLanguage.ENGLISH,
     ];
+    WidgetsBinding.instance.addPostFrameCallback((_) => _askForCameraUse());
+  }
+
+  Future<void> _askForCameraUse() async {
+    final accepted = await showPermissionRationaleDialog(
+      context,
+      PermissionRationaleKind.camera,
+    );
+    if (!mounted) return;
+    if (!accepted) {
+      Navigator.of(context).maybePop();
+      return;
+    }
+    await _requestCamera();
+  }
+
+  Future<void> _requestCamera() async {
+    if (_requestingCamera) return;
+    setState(() => _requestingCamera = true);
+    final status =
+        await (widget.requestCameraPermission?.call() ??
+            Permission.camera.request());
+    if (!mounted) return;
+    setState(() {
+      _requestingCamera = false;
+      _cameraStatus = status;
+      _cameraAccepted = status.isGranted;
+    });
+  }
+
+  Future<void> _openSettings() async {
+    await (widget.openPermissionSettings?.call() ?? openAppSettings());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed || _cameraAccepted) return;
+    _refreshCameraStatus();
+  }
+
+  Future<void> _refreshCameraStatus() async {
+    final status =
+        await (widget.checkCameraPermission?.call() ??
+            Permission.camera.status);
+    if (!mounted) return;
+    setState(() {
+      _cameraStatus = status;
+      _cameraAccepted = status.isGranted;
+    });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _ctrl.dispose();
     super.dispose();
   }
@@ -47,7 +114,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
     setState(() {
       _scanned = true;
       _loading = true;
-      _status = 'Поиск продукта...';
+      _status = AppLocalizations.tl('barcodeSearchingProduct');
     });
 
     try {
@@ -82,7 +149,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
         final rawName = ruName ?? enName ?? product.productName ?? '';
         final name = rawName.isNotEmpty
             ? rawName.trim()
-            : (brand.isNotEmpty ? brand : 'Продукт $code');
+            : (brand.isNotEmpty
+                  ? brand
+                  : AppLocalizations.tlp('barcodeUnknownProduct', {
+                      'code': code,
+                    }));
         final kcalPer100 =
             product.nutriments?.getValue(
               Nutrient.energyKCal,
@@ -96,7 +167,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       } else {
         if (!mounted) return;
         setState(() {
-          _status = 'Продукт не найден в базе.\nПопробуйте другой штрихкод.';
+          _status = AppLocalizations.tl('barcodeProductNotFound');
           _scanned = false;
           _loading = false;
         });
@@ -104,7 +175,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
     } on TimeoutException {
       if (!mounted) return;
       setState(() {
-        _status = 'Сервер не отвечает. Проверьте интернет.';
+        _status = AppLocalizations.tl('barcodeServerUnavailable');
         _scanned = false;
         _loading = false;
       });
@@ -116,7 +187,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
           .replaceAll('Exception: ', '')
           .replaceAll('ClientException: ', '');
       setState(() {
-        _status = 'Ошибка: ${msg.length > 80 ? msg.substring(0, 80) : msg}';
+        _status = AppLocalizations.tlp('genericErrorMsg', {
+          'error': msg.length > 80 ? msg.substring(0, 80) : msg,
+        });
         _scanned = false;
         _loading = false;
       });
@@ -130,8 +203,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   ) async {
     final c = AppTheme.of(context);
     final gramsCtrl = TextEditingController(text: '100');
-    String mealType = 'Перекус';
-    const types = ['Завтрак', 'Обед', 'Перекус', 'Ужин'];
+    String mealType = 'snack';
+    const types = ['breakfast', 'lunch', 'snack', 'dinner'];
 
     await showModalBottomSheet(
       context: context,
@@ -179,12 +252,14 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Баркод: $barcode',
+                    AppLocalizations.tlp('barcodeValue', {'barcode': barcode}),
                     style: TextStyle(fontSize: 11, color: c.textMuted),
                   ),
                   if (kcalPer100 > 0)
                     Text(
-                      '${kcalPer100.toInt()} ккал / 100г',
+                      AppLocalizations.tlp('barcodeCaloriesPer100g', {
+                        'calories': '${kcalPer100.toInt()}',
+                      }),
                       style: TextStyle(
                         fontSize: 12,
                         color: c.primary,
@@ -214,7 +289,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
-                                  t,
+                                  AppLocalizations.tl(t),
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
@@ -241,7 +316,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                           onChanged: (_) => localSet(() {}),
                           style: TextStyle(color: c.textPrimary, fontSize: 14),
                           decoration: InputDecoration(
-                            hintText: 'Количество (г)',
+                            hintText: AppLocalizations.tl('gramsHint'),
                             hintStyle: TextStyle(color: c.textMuted),
                             prefixIcon: const AppIcon(
                               asset: AppImages.foodScale,
@@ -268,7 +343,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          '$kcal\nккал',
+                          '$kcal\n${AppLocalizations.tl('kcalShort')}',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Syne',
@@ -298,9 +373,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                               });
                             },
                       icon: const Icon(Icons.add_rounded, size: 18),
-                      label: const Text(
-                        'Добавить в дневник',
-                        style: TextStyle(
+                      label: Text(
+                        AppLocalizations.tl('barcodeAddToDiary'),
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -322,11 +397,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                         Navigator.pop(ctx2);
                         setState(() {
                           _scanned = false;
-                          _status = 'Наведите камеру на штрихкод продукта';
+                          _status = AppLocalizations.tl('barcodePointCamera');
                         });
                       },
                       child: Text(
-                        'Сканировать снова',
+                        AppLocalizations.tl('barcodeScanAgain'),
                         style: TextStyle(color: c.textMuted),
                       ),
                     ),
@@ -342,7 +417,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
     if (mounted && _scanned) {
       setState(() {
         _scanned = false;
-        _status = 'Наведите камеру на штрихкод продукта';
+        _status = AppLocalizations.tl('barcodePointCamera');
       });
     }
   }
@@ -350,6 +425,63 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     final c = AppTheme.of(context);
+    if (!_cameraAccepted && _cameraStatus != null) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.no_photography_outlined,
+                    color: Colors.white70,
+                    size: 56,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    AppLocalizations.tl('permissionCameraTitle'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    AppLocalizations.tl('permissionCameraBody'),
+                    style: const TextStyle(color: Colors.white70, height: 1.4),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    onPressed: _openSettings,
+                    child: Text(AppLocalizations.tl('settingsLabel')),
+                  ),
+                  TextButton(
+                    onPressed: _requestingCamera ? null : _requestCamera,
+                    child: Text(AppLocalizations.tl('retry')),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).maybePop(),
+                    child: Text(AppLocalizations.tl('cancel')),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    if (!_cameraAccepted) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -420,7 +552,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    _loading ? 'Поиск...' : _status,
+                    _loading
+                        ? AppLocalizations.tl('barcodeSearching')
+                        : _status,
                     style: const TextStyle(color: Colors.white, fontSize: 13),
                     textAlign: TextAlign.center,
                   ),

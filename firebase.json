@@ -23,10 +23,26 @@
     }
   ],
   "firestore": {
+    "database": "fitnesbuster",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
   "database": {
     "rules": "database.rules.json"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": false
+    },
+    "singleProjectMode": true
   }
 }

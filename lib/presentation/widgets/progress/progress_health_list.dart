@@ -71,7 +71,7 @@ class ProgressHealthList extends StatelessWidget {
               ? heartRateVariability!.toStringAsFixed(1)
               : '\u2014',
           unit: context.l10n.msUnit,
-          icon: AppImages.trend,
+          icon: AppImages.bcp,
           color: colors.accent,
           trend: heartRateVariability != null
               ? (heartRateVariability! >= 40

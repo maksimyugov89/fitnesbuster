@@ -3,6 +3,7 @@ import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/services/recovery_score_service.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class RecoveryCard extends StatelessWidget {
   final RecoveryScore recoveryScore;
@@ -118,7 +119,7 @@ class RecoveryCard extends StatelessWidget {
                       children: [
                         Flexible(
                           child: _RecoveryStat(
-                            icon: '😴',
+                            icon: AppImages.sleep,
                             label: l10n.sleepLabel,
                             value: RecoveryScoreService.formatSleep(
                               r.sleepMinutes,
@@ -128,7 +129,7 @@ class RecoveryCard extends StatelessWidget {
                         const SizedBox(width: 10),
                         Flexible(
                           child: _RecoveryStat(
-                            icon: '💓',
+                            icon: AppImages.hrv,
                             label: 'HRV',
                             value: r.hrv != null
                                 ? '${r.hrv!.toStringAsFixed(0)} ms'
@@ -138,7 +139,7 @@ class RecoveryCard extends StatelessWidget {
                         const SizedBox(width: 10),
                         Flexible(
                           child: _RecoveryStat(
-                            icon: '❤️',
+                            icon: AppImages.heartRate,
                             label: l10n.heartRateLabel,
                             value: r.restingHr != null
                                 ? '${r.restingHr} ${l10n.dashboardBpm}'
@@ -188,9 +189,10 @@ class AdaptationBanner extends StatelessWidget {
               borderRadius: BorderRadius.circular(11),
             ),
             child: Center(
-              child: Text(
-                isLow ? '😴' : '⚡',
-                style: const TextStyle(fontSize: 20),
+              child: Image.asset(
+                isLow ? AppImages.sleep : AppImages.energy,
+                width: 24,
+                height: 24,
               ),
             ),
           ),
@@ -317,7 +319,20 @@ class _RecoveryStat extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('$icon $label', style: TextStyle(fontSize: 9, color: p.textMuted)),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(icon, width: 10, height: 10),
+            const SizedBox(width: 3),
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(fontSize: 9, color: p.textMuted),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 2),
         Text(
           value,

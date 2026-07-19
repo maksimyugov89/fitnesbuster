@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class BarcodeScanCard extends StatelessWidget {
   final VoidCallback onTap;
@@ -11,7 +12,7 @@ class BarcodeScanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
     return Semantics(
-      label: 'Сканировать штрих-код',
+      label: AppLocalizations.tl('scanBarcodeBtn'),
       button: true,
       child: GestureDetector(
         onTap: onTap,
@@ -54,9 +55,9 @@ class BarcodeScanCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Сканировать штрих-код',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.tl('scanBarcodeBtn'),
+                      style: const TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -64,7 +65,7 @@ class BarcodeScanCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Автоматически определим состав и КБЖУ',
+                      AppLocalizations.tl('barcodeScanSubtitle'),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.white.withValues(alpha: 0.8),

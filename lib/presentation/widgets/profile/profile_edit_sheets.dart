@@ -8,6 +8,7 @@ import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/widgets/profile/profile_sheet_widgets.dart';
 import 'package:fitnesbuster/domain/entities/body_measurement.dart';
 import 'package:fitnesbuster/domain/entities/user_entities.dart';
+import 'package:fitnesbuster/presentation/widgets/common/permission_rationale_dialog.dart';
 
 void showProfileSuccess(BuildContext context, String msg) {
   final colors = AppTheme.of(context);
@@ -103,9 +104,7 @@ class _ProfileEditSheetState extends State<ProfileEditSheet> {
           ),
           shape: BoxShape.circle,
         ),
-        child: Center(
-          child: Text(p.emoji, style: const TextStyle(fontSize: 34)),
-        ),
+        child: Center(child: Image.asset(p.iconAsset, width: 44, height: 44)),
       );
     } else {
       circle = _fallbackCircle(size, colors);
@@ -325,21 +324,21 @@ class _BodyParamsSheetState extends State<BodyParamsSheet> {
           const SizedBox(height: 20),
           MeasurementField(
             label: AppLocalizations.tl('chest'),
-            unit: 'см',
+            unit: l10n.cmUnit,
             controller: _chestCtrl,
             icon: Icons.circle_outlined,
           ),
           const SizedBox(height: 12),
           MeasurementField(
             label: AppLocalizations.tl('waist'),
-            unit: 'см',
+            unit: l10n.cmUnit,
             controller: _waistCtrl,
             icon: Icons.circle_outlined,
           ),
           const SizedBox(height: 12),
           MeasurementField(
             label: AppLocalizations.tl('hips'),
-            unit: 'см',
+            unit: l10n.cmUnit,
             controller: _hipsCtrl,
             icon: Icons.circle_outlined,
           ),
@@ -423,11 +422,38 @@ class _GoalEditSheetState extends State<GoalEditSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = AppTheme.of(context);
+    final goalsData = [
+      {
+        'label': AppLocalizations.tl('goalWeightLoss'),
+        'emoji': AppImages.energy,
+        'desc': AppLocalizations.tl('goalLoseWeightDescription'),
+      },
+      {
+        'label': AppLocalizations.tl('goalMuscleMass'),
+        'emoji': AppImages.workoutsTab,
+        'desc': AppLocalizations.tl('goalGainMuscleDescription'),
+      },
+      {
+        'label': AppLocalizations.tl('goalMaintainWeight'),
+        'emoji': AppImages.balance,
+        'desc': AppLocalizations.tl('goalMaintainDescription'),
+      },
+      {
+        'label': AppLocalizations.tl('goalBeachSeason'),
+        'emoji': AppImages.relax,
+        'desc': AppLocalizations.tl('goalBeachSeasonDescription'),
+      },
+      {
+        'label': AppLocalizations.tl('goalSportsRecords'),
+        'emoji': AppImages.achievements,
+        'desc': AppLocalizations.tl('goalSportsRecordsDescription'),
+      },
+    ];
     return SheetWrapper(
       title: l10n.fitnessGoalLabel,
       child: Column(
         children: [
-          ..._goalsData.asMap().entries.map((e) {
+          ...goalsData.asMap().entries.map((e) {
             final label = e.value['label'] as String;
             final emoji = e.value['emoji'] as String;
             final desc = e.value['desc'] as String;
@@ -465,7 +491,7 @@ class _GoalEditSheetState extends State<GoalEditSheet> {
                   ),
                   child: Row(
                     children: [
-                      Text(emoji, style: const TextStyle(fontSize: 32)),
+                      Image.asset(emoji, width: 38, height: 38),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Column(
@@ -535,22 +561,6 @@ class _GoalEditSheetState extends State<GoalEditSheet> {
       ),
     );
   }
-
-  static const _goalsData = [
-    {'label': 'Похудение веса', 'emoji': '🔥', 'desc': 'Сжечь жир, сухое тело'},
-    {'label': 'Набор массы', 'emoji': '💪', 'desc': 'Сила и мышечная масса'},
-    {
-      'label': 'Поддержание веса',
-      'emoji': '⚖️',
-      'desc': 'Держать форму и здоровье',
-    },
-    {'label': 'К пляжному сезону', 'emoji': '🏖️', 'desc': 'Подготовка к лету'},
-    {
-      'label': 'Спортивные рекорды',
-      'emoji': '🏆',
-      'desc': 'Максимальная производительность',
-    },
-  ];
 }
 
 // ── Training Experience Edit Sheet ───────────────────────────────────────────
@@ -587,19 +597,19 @@ class _TrainingExperienceEditSheetState
     final options = [
       (
         TrainingExperience.novice,
-        '🌱',
+        AppImages.beginner,
         l10n.experienceNovice,
         l10n.experienceNoviceDesc,
       ),
       (
         TrainingExperience.intermediate,
-        '💪',
+        AppImages.workoutsTab,
         l10n.experienceIntermediate,
         l10n.experienceIntermediateDesc,
       ),
       (
         TrainingExperience.experienced,
-        '🏆',
+        AppImages.achievements,
         l10n.experienceExperienced,
         l10n.experienceExperiencedDesc,
       ),
@@ -632,7 +642,7 @@ class _TrainingExperienceEditSheetState
                   ),
                   child: Row(
                     children: [
-                      Text(emoji, style: const TextStyle(fontSize: 28)),
+                      Image.asset(emoji, width: 32, height: 32),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -750,7 +760,14 @@ class NumSlider extends StatelessWidget {
 // ── Notifications Sheet ────────────────────────────────────────────────────
 
 class NotificationsSheet extends StatefulWidget {
-  const NotificationsSheet({super.key});
+  const NotificationsSheet({
+    super.key,
+    this.onRequestPermission,
+    this.onOpenSettings,
+  });
+
+  final Future<bool> Function()? onRequestPermission;
+  final Future<bool> Function()? onOpenSettings;
   @override
   State<NotificationsSheet> createState() => _NotificationsSheetState();
 }
@@ -760,6 +777,50 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
   bool _eveningSync = true;
   bool _mealReminder = false;
   bool _progressWeekly = true;
+  bool _saving = false;
+
+  Future<void> _save() async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    final needsNotifications =
+        _workoutReminder || _eveningSync || _mealReminder || _progressWeekly;
+    if (needsNotifications && widget.onRequestPermission != null) {
+      final accepted = await showPermissionRationaleDialog(
+        context,
+        PermissionRationaleKind.notifications,
+      );
+      if (!accepted) {
+        if (mounted) setState(() => _saving = false);
+        return;
+      }
+      final allowed = await widget.onRequestPermission!();
+      if (!allowed && mounted) {
+        setState(() => _saving = false);
+        final openSettings = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(AppLocalizations.tl('permissionNotificationsTitle')),
+            content: Text(AppLocalizations.tl('permissionNotificationsBody')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(AppLocalizations.tl('cancel')),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(AppLocalizations.tl('settingsLabel')),
+              ),
+            ],
+          ),
+        );
+        if (openSettings == true) await widget.onOpenSettings?.call();
+        return;
+      }
+    }
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    showProfileSuccess(context, AppLocalizations.tl('settingsSaved'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -797,12 +858,7 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
             onChanged: (v) => setState(() => _progressWeekly = v),
           ),
           const SizedBox(height: 24),
-          SaveButton(
-            onTap: () {
-              Navigator.of(context).pop();
-              showProfileSuccess(context, AppLocalizations.tl('settingsSaved'));
-            },
-          ),
+          SaveButton(onTap: _saving ? () {} : _save),
         ],
       ),
     );

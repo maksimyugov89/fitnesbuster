@@ -14,8 +14,8 @@ admin.initializeApp();
 // Friends — friend request lifecycle and user search
 export {sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend, searchUsers} from "./friends";
 
-// Feed — cross-user activity fan-out
-export {fanoutActivityEvent} from "./feed";
+// Feed — validated activity publishing and cross-user fan-out
+export {publishActivity, fanoutActivityEvent} from "./feed";
 
 // Challenges — creation, participation, progress tracking, seeding
 export {createChallenge, joinChallenge, leaveChallenge, deleteChallenge, updateChallengeProgress, recordWorkout, seedChallenges} from "./challenges";

@@ -6,6 +6,8 @@ import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/bloc/onboarding/onboarding_bloc.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class GoalSelectionScreen extends StatefulWidget {
   const GoalSelectionScreen({super.key});
@@ -17,40 +19,40 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
     with SingleTickerProviderStateMixin {
   FitnessGoal? _selectedGoal;
   late AnimationController _controller;
-  final List<_GoalOption> _goals = const [
+  List<_GoalOption> get _goals => [
     _GoalOption(
       goal: FitnessGoal.loseWeight,
-      title: 'Похудеть',
-      emoji: '🔥',
-      description: 'Сжечь жир, сухое тело',
+      title: AppLocalizations.tl('goalLoseWeight'),
+      iconAsset: AppImages.energy,
+      description: AppLocalizations.tl('goalLoseWeightDescription'),
       gradientIndex: 0,
     ),
     _GoalOption(
       goal: FitnessGoal.gainWeight,
-      title: 'Набрать\nмассу',
-      emoji: '💪',
-      description: 'Сила и мышечная масса',
+      title: AppLocalizations.tl('goalGainMuscle'),
+      iconAsset: AppImages.workoutsTab,
+      description: AppLocalizations.tl('goalGainMuscleDescription'),
       gradientIndex: 1,
     ),
     _GoalOption(
       goal: FitnessGoal.maintain,
-      title: 'Держать\nформу',
-      emoji: '⚖️',
-      description: 'Быть в форме и здоровым',
+      title: AppLocalizations.tl('goalMaintain'),
+      iconAsset: AppImages.balance,
+      description: AppLocalizations.tl('goalMaintainDescription'),
       gradientIndex: 2,
     ),
     _GoalOption(
       goal: FitnessGoal.beachBody,
-      title: 'Пляжный\nсезон',
-      emoji: '🏖️',
-      description: 'Подготовка к лету',
+      title: AppLocalizations.tl('goalBeachSeason'),
+      iconAsset: AppImages.relax,
+      description: AppLocalizations.tl('goalBeachSeasonDescription'),
       gradientIndex: 3,
     ),
     _GoalOption(
       goal: FitnessGoal.sportPerformance,
-      title: 'Спортивная\nформа',
-      emoji: '🏆',
-      description: 'Максимальная производительность',
+      title: AppLocalizations.tl('goalSportsRecords'),
+      iconAsset: AppImages.achievements,
+      description: AppLocalizations.tl('goalSportsRecordsDescription'),
       gradientIndex: 4,
     ),
   ];
@@ -126,13 +128,13 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Выберите\nсвою цель',
+                    Text(
+                      AppLocalizations.tl('onbGoalTitle'),
                       style: AppTextStyles.displayM,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Выберите основное направление —\nпод него строится программа',
+                    Text(
+                      AppLocalizations.tl('onbGoalSubtitle'),
                       style: AppTextStyles.bodyL,
                     ),
                     const SizedBox(height: 32),
@@ -245,7 +247,7 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
             ),
             child: Row(
               children: [
-                Text(option.emoji, style: const TextStyle(fontSize: 40)),
+                Image.asset(option.iconAsset, width: 48, height: 48),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -338,19 +340,19 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Продолжить',
-                      style: TextStyle(
+                      AppLocalizations.tl('continueLabel'),
+                      style: const TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Icon(Icons.arrow_forward_rounded, size: 20),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward_rounded, size: 20),
                   ],
                 ),
               ),
@@ -365,14 +367,14 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
 class _GoalOption {
   final FitnessGoal goal;
   final String title;
-  final String emoji;
+  final String iconAsset;
   final String description;
   final int gradientIndex;
 
   const _GoalOption({
     required this.goal,
     required this.title,
-    required this.emoji,
+    required this.iconAsset,
     required this.description,
     required this.gradientIndex,
   });

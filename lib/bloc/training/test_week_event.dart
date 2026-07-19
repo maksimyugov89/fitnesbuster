@@ -14,6 +14,11 @@ class TestWeekStartDay extends TestWeekEvent {
   List<Object?> get props => [dayIndex, profile ?? ''];
 }
 
+/// Restores the persisted assessment and the current user's profile.
+class TestWeekInitialize extends TestWeekEvent {
+  const TestWeekInitialize();
+}
+
 class TestWeekRecordExercise extends TestWeekEvent {
   final String exerciseName;
   final MuscleGroup muscle;
@@ -42,9 +47,10 @@ class TestWeekRecordExercise extends TestWeekEvent {
 }
 
 class TestWeekFinishDay extends TestWeekEvent {
-  const TestWeekFinishDay();
+  final int perceivedDifficulty;
+  const TestWeekFinishDay({this.perceivedDifficulty = 5});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [perceivedDifficulty];
 }
 
 class TestWeekComplete extends TestWeekEvent {

@@ -27,6 +27,13 @@ class AuthStateUnauthenticated extends AuthState {
   const AuthStateUnauthenticated();
 }
 
+class AuthStateLegalConsentRequired extends AuthState {
+  final LegalConsentSource source;
+  const AuthStateLegalConsentRequired({this.source = LegalConsentSource.login});
+  @override
+  List<Object?> get props => [source];
+}
+
 class AuthStateError extends AuthState {
   final String message;
   const AuthStateError({required this.message});

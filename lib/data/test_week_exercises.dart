@@ -183,9 +183,8 @@ List<List<TestDayExercise>> _daysFrom(List<TestDayExercise> exercises) => [
   exercises.sublist(11, 13), // Day 4: Abs + Cardio
 ];
 
-/// Backward-compatible default (gym) — kept for callers that don't yet pass
-/// a location.
-List<List<TestDayExercise>> get kTestWeekDays => _daysFrom(_kGymExercises);
+/// Safe backward-compatible default: never assume access to gym equipment.
+List<List<TestDayExercise>> get kTestWeekDays => _daysFrom(_kHomeExercises);
 
 /// Тестовая неделя должна использовать только то оборудование, которое
 /// реально доступно пользователю — иначе он не сможет протестировать вес,
@@ -196,7 +195,9 @@ List<List<TestDayExercise>> testWeekDaysForLocation(String? location) {
       return _daysFrom(_kOutdoorExercises);
     case 'home':
       return _daysFrom(_kHomeExercises);
-    default:
+    case 'gym':
       return _daysFrom(_kGymExercises);
+    default:
+      return _daysFrom(_kHomeExercises);
   }
 }

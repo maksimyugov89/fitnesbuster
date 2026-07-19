@@ -10,9 +10,16 @@ import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/onboarding_workflow_service.dart';
 
 class MockIAuthRepository extends Mock implements IAuthRepository {}
+
 class MockIUserRepository extends Mock implements IUserRepository {}
+
 class MockISettingsRepository extends Mock implements ISettingsRepository {}
+
 class MockIHealthConnectService extends Mock implements IHealthConnectService {}
+
 class MockISocialService extends Mock implements ISocialService {}
+
 class MockIGamificationService extends Mock implements IGamificationService {}
-class MockOnboardingWorkflowService extends Mock implements OnboardingWorkflowService {}
+
+class MockOnboardingWorkflowService extends Mock
+    implements OnboardingWorkflowService {}

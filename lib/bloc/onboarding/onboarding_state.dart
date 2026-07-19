@@ -48,6 +48,8 @@ class OnboardingCollecting extends OnboardingState {
     trainingExperience: trainingExperience,
     activityLevel: activity ?? ActivityLevel.moderatelyActive,
     medicalRestrictions: restrictions,
+    workoutLocation: location,
+    runningPreference: running,
     city: city.isNotEmpty ? city : null,
   );
 

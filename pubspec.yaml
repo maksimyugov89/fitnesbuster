@@ -79,6 +79,7 @@ dependencies:
   # AI
   http: ^1.2.1
   url_launcher: ^6.3.2
+  android_intent_plus: ^6.0.0
 
   # Import / file picking
   file_picker: ^8.1.6

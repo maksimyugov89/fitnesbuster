@@ -1,4 +1,4 @@
-import * as admin from "firebase-admin";
+import {Timestamp} from "firebase-admin/firestore";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {db, logInfo} from "./shared";
 import {
@@ -19,7 +19,7 @@ import {
 export const cleanOldFeedEvents = onSchedule(
   {schedule: "0 3 * * *", region: "europe-west1"},
   async () => {
-    const cutoff = admin.firestore.Timestamp.fromDate(
+    const cutoff = Timestamp.fromDate(
       new Date(Date.now() - FEED_RETENTION_DAYS * ONE_DAY_MS)
     );
     logInfo("cleanOldFeedEvents started", {cutoff: cutoff.toDate().toISOString()});
@@ -54,7 +54,7 @@ export const cleanOldFeedEvents = onSchedule(
 export const cleanExpiredChallenges = onSchedule(
   {schedule: "0 4 * * *", region: "europe-west1"},
   async () => {
-    const cutoff = admin.firestore.Timestamp.fromDate(
+    const cutoff = Timestamp.fromDate(
       new Date(Date.now() - CHALLENGE_DELETE_GRACE_DAYS * ONE_DAY_MS)
     );
     logInfo("cleanExpiredChallenges started", {cutoff: cutoff.toDate().toISOString()});

@@ -1,19 +1,25 @@
-import * as admin from "firebase-admin";
+import {FieldValue, Timestamp} from "firebase-admin/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {db, logInfo, logWarn, sendPush, checkRateLimit} from "./shared";
 import {
   ONE_DAY_MS,
-  CHALLENGE_MAX_DURATION_DAYS,
-  WORKOUT_MAX_CALORIES,
-  WORKOUT_MAX_CARDIO_MINUTES,
   WORKOUT_MAX_STREAK,
-  CHALLENGE_MAX_PROGRESS,
   PREDEFINED_CHALLENGE_DURATION_DAYS,
   CREATE_CHALLENGE_RATE_LIMIT,
   CHALLENGE_ACTION_RATE_LIMIT,
   RATE_LIMIT_WINDOW_MS,
 } from "./constants";
 import type {CreateChallengeData, JoinChallengeData, UpdateChallengeProgressData, RecordWorkoutData} from "./types";
+import {
+  crossesTarget,
+  nextWorkoutStreak,
+  progressForWorkout,
+  utcDateKey,
+  validateChallengeId,
+  validateCreateChallengeData,
+  validateProgressValue,
+  validateRecordWorkoutData,
+} from "./challengesValidation";
 
 /**
  * Creates a new challenge document and registers the creator as the first
@@ -27,17 +33,14 @@ export const createChallenge = onCall(
   async (request: {auth?: {uid: string}; data: CreateChallengeData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
-    const {title, description, goalType, targetValue, durationDays, isPublic} = request.data;
+    const {title, description, goalType, targetValue, durationDays, isPublic} =
+      validateCreateChallengeData(request.data);
 
     const allowed = await checkRateLimit(uid, "createChallenge", CREATE_CHALLENGE_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    if (!title?.trim()) throw new HttpsError("invalid-argument", "Title required");
-    if (targetValue <= 0) throw new HttpsError("invalid-argument", "Target must be > 0");
-    if (durationDays < 1 || durationDays > CHALLENGE_MAX_DURATION_DAYS) throw new HttpsError("invalid-argument", `Duration 1–${CHALLENGE_MAX_DURATION_DAYS} days`);
-
-    const now = admin.firestore.Timestamp.now();
-    const endDate = admin.firestore.Timestamp.fromDate(
+    const now = Timestamp.now();
+    const endDate = Timestamp.fromDate(
       new Date(Date.now() + durationDays * ONE_DAY_MS)
     );
 
@@ -45,8 +48,8 @@ export const createChallenge = onCall(
     const creatorName = (userSnap.data()?.name as string) ?? "Пользователь";
 
     const ref = await db.collection("challenges").add({
-      title: title.trim(),
-      description: description?.trim() ?? "",
+      title,
+      description,
       goalType,
       targetValue,
       durationDays,
@@ -65,6 +68,18 @@ export const createChallenge = onCall(
       currentValue: 0,
       lastUpdated: now,
     });
+
+    if (!isPublic) {
+      await db.collection(`activity_events/${uid}/items`).add({
+        type: "challenge_created",
+        data: {
+          challengeId: ref.id,
+          challengeTitle: title,
+          isPublic: false,
+        },
+        timestamp: FieldValue.serverTimestamp(),
+      });
+    }
 
     return {challengeId: ref.id};
   }
@@ -86,11 +101,9 @@ export const joinChallenge = onCall(
     const allowed = await checkRateLimit(uid, "joinChallenge", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    if (typeof challengeId !== "string" || challengeId.trim().length === 0) {
-      throw new HttpsError("invalid-argument", "challengeId must be a non-empty string");
-    }
+    const normalizedChallengeId = validateChallengeId(challengeId);
 
-    const chalRef = db.doc(`challenges/${challengeId}`);
+    const chalRef = db.doc(`challenges/${normalizedChallengeId}`);
 
     // maxAttempts raised from the SDK default (5): a popular public challenge
     // can draw many simultaneous joiners, all contending on this single
@@ -102,7 +115,7 @@ export const joinChallenge = onCall(
       if (!chalSnap.exists) throw new HttpsError("not-found", "Challenge not found");
 
       const chal = chalSnap.data()!;
-      const now = admin.firestore.Timestamp.now();
+      const now = Timestamp.now();
       if (chal.endDate.toMillis() < now.toMillis()) {
         throw new HttpsError("failed-precondition", "Challenge already ended");
       }
@@ -110,10 +123,18 @@ export const joinChallenge = onCall(
         throw new HttpsError("already-exists", "Already joined");
       }
 
+      const createdBy = chal.createdBy as string;
+      if (chal.isPublic !== true && createdBy !== uid) {
+        const friendSnap = await tx.get(db.doc(`friends/${createdBy}/list/${uid}`));
+        if (!friendSnap.exists) {
+          throw new HttpsError("permission-denied", "Only the creator's friends can join this challenge");
+        }
+      }
+
       tx.update(chalRef, {
-        participants: admin.firestore.FieldValue.arrayUnion(uid),
+        participants: FieldValue.arrayUnion(uid),
       });
-      tx.set(db.doc(`challenge_progress/${challengeId}/participants/${uid}`), {
+      tx.set(db.doc(`challenge_progress/${normalizedChallengeId}/participants/${uid}`), {
         uid,
         name: "",
         currentValue: 0,
@@ -123,9 +144,9 @@ export const joinChallenge = onCall(
 
     const userSnap = await db.doc(`users/${uid}`).get();
     const name = (userSnap.data()?.name as string) ?? "Пользователь";
-    await db.doc(`challenge_progress/${challengeId}/participants/${uid}`).update({name});
+    await db.doc(`challenge_progress/${normalizedChallengeId}/participants/${uid}`).update({name});
 
-    logInfo("User joined challenge", {uid, challengeId});
+    logInfo("User joined challenge", {uid, challengeId: normalizedChallengeId});
     return {success: true};
   }
 );
@@ -145,12 +166,10 @@ export const leaveChallenge = onCall(
     const allowed = await checkRateLimit(uid, "leaveChallenge", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    if (typeof challengeId !== "string" || challengeId.trim().length === 0) {
-      throw new HttpsError("invalid-argument", "challengeId must be a non-empty string");
-    }
+    const normalizedChallengeId = validateChallengeId(challengeId);
 
-    const chalRef = db.doc(`challenges/${challengeId}`);
-    const progressRef = db.doc(`challenge_progress/${challengeId}/participants/${uid}`);
+    const chalRef = db.doc(`challenges/${normalizedChallengeId}`);
+    const progressRef = db.doc(`challenge_progress/${normalizedChallengeId}/participants/${uid}`);
 
     await db.runTransaction(async (tx) => {
       const chalSnap = await tx.get(chalRef);
@@ -165,12 +184,12 @@ export const leaveChallenge = onCall(
       }
 
       tx.update(chalRef, {
-        participants: admin.firestore.FieldValue.arrayRemove(uid),
+        participants: FieldValue.arrayRemove(uid),
       });
       tx.delete(progressRef);
     }, {maxAttempts: 15});
 
-    logInfo("User left challenge", {uid, challengeId});
+    logInfo("User left challenge", {uid, challengeId: normalizedChallengeId});
     return {success: true};
   }
 );
@@ -189,11 +208,9 @@ export const deleteChallenge = onCall(
     const allowed = await checkRateLimit(uid, "deleteChallenge", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    if (typeof challengeId !== "string" || challengeId.trim().length === 0) {
-      throw new HttpsError("invalid-argument", "challengeId must be a non-empty string");
-    }
+    const normalizedChallengeId = validateChallengeId(challengeId);
 
-    const chalRef = db.doc(`challenges/${challengeId}`);
+    const chalRef = db.doc(`challenges/${normalizedChallengeId}`);
     const chalSnap = await chalRef.get();
     if (!chalSnap.exists) throw new HttpsError("not-found", "Challenge not found");
 
@@ -202,13 +219,13 @@ export const deleteChallenge = onCall(
       throw new HttpsError("permission-denied", "Only the creator can delete this challenge");
     }
 
-    const progressSnap = await db.collection(`challenge_progress/${challengeId}/participants`).get();
+    const progressSnap = await db.collection(`challenge_progress/${normalizedChallengeId}/participants`).get();
     const batch = db.batch();
     for (const doc of progressSnap.docs) batch.delete(doc.ref);
     batch.delete(chalRef);
     await batch.commit();
 
-    logInfo("Challenge deleted", {uid, challengeId, participantsRemoved: progressSnap.size});
+    logInfo("Challenge deleted", {uid, challengeId: normalizedChallengeId, participantsRemoved: progressSnap.size});
     return {success: true};
   }
 );
@@ -231,15 +248,11 @@ export const updateChallengeProgress = onCall(
     const allowed = await checkRateLimit(uid, "updateChallengeProgress", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    if (typeof value !== "number" || value < 0 || value > CHALLENGE_MAX_PROGRESS || !Number.isFinite(value)) {
-      throw new HttpsError("invalid-argument", `value must be a finite number between 0 and ${CHALLENGE_MAX_PROGRESS}`);
-    }
-    if (typeof challengeId !== "string" || challengeId.trim().length === 0) {
-      throw new HttpsError("invalid-argument", "challengeId must be a non-empty string");
-    }
+    const normalizedValue = validateProgressValue(value);
+    const normalizedChallengeId = validateChallengeId(challengeId);
 
-    const chalRef = db.doc(`challenges/${challengeId}`);
-    const progressRef = db.doc(`challenge_progress/${challengeId}/participants/${uid}`);
+    const chalRef = db.doc(`challenges/${normalizedChallengeId}`);
+    const progressRef = db.doc(`challenge_progress/${normalizedChallengeId}/participants/${uid}`);
 
     const crossed = await db.runTransaction(async (tx) => {
       const chalSnap = await tx.get(chalRef);
@@ -252,14 +265,14 @@ export const updateChallengeProgress = onCall(
 
       const prevSnap = await tx.get(progressRef);
       const prev = (prevSnap.data()?.currentValue as number) ?? 0;
-      const newValue = Math.max(prev, value);
+      const newValue = Math.max(prev, normalizedValue);
 
       tx.update(progressRef, {
         currentValue: newValue,
-        lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+        lastUpdated: FieldValue.serverTimestamp(),
       });
 
-      return newValue >= (chal.targetValue as number) && prev < (chal.targetValue as number);
+      return crossesTarget(prev, newValue, chal.targetValue as number);
     });
 
     if (crossed) {
@@ -273,25 +286,20 @@ export const updateChallengeProgress = onCall(
           chal.createdBy as string,
           "Челлендж выполнен!",
           `${name} достиг(ла) цели в челлендже «${chal.title}»`,
-          {type: "challenge_completed", challengeId}
+          {type: "challenge_completed", challengeId: normalizedChallengeId}
         );
       }
 
       await db.collection(`activity_events/${uid}/items`).add({
         type: "challenge_won",
-        data: {challengeTitle: chal.title, challengeId},
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        data: {challengeTitle: chal.title, challengeId: normalizedChallengeId},
+        timestamp: FieldValue.serverTimestamp(),
       });
     }
 
-    return {newValue: value};
+    return {newValue: normalizedValue};
   }
 );
-
-/** Formats a Date as a UTC calendar-day key ("YYYY-MM-DD") for streak tracking. */
-function utcDateKey(d: Date): string {
-  return d.toISOString().slice(0, 10);
-}
 
 /**
  * Records workout data against all active challenges the user participates in,
@@ -320,19 +328,12 @@ export const recordWorkout = onCall(
   async (request: {auth?: {uid: string}; data: RecordWorkoutData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
-    const {caloriesBurned, cardioMinutes} = request.data;
+    const {caloriesBurned, cardioMinutes} = validateRecordWorkoutData(request.data);
 
     const allowed = await checkRateLimit(uid, "recordWorkout", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
 
-    if (typeof caloriesBurned !== "number" || caloriesBurned < 0 || caloriesBurned > WORKOUT_MAX_CALORIES) {
-      throw new HttpsError("invalid-argument", `caloriesBurned must be 0-${WORKOUT_MAX_CALORIES}`);
-    }
-    if (typeof cardioMinutes !== "number" || cardioMinutes < 0 || cardioMinutes > WORKOUT_MAX_CARDIO_MINUTES) {
-      throw new HttpsError("invalid-argument", `cardioMinutes must be 0-${WORKOUT_MAX_CARDIO_MINUTES}`);
-    }
-
-    const now = admin.firestore.Timestamp.now();
+    const now = Timestamp.now();
     const [challengesSnap, userSnap] = await Promise.all([
       db.collection("challenges")
         .where("participants", "array-contains", uid)
@@ -342,19 +343,10 @@ export const recordWorkout = onCall(
     ]);
 
     const todayKey = utcDateKey(now.toDate());
-    const yesterdayKey = utcDateKey(new Date(now.toMillis() - ONE_DAY_MS));
     const userData = userSnap.data() ?? {};
     const lastWorkoutDate = userData.lastWorkoutDate as string | undefined;
     const prevStreak = Math.min((userData.currentStreak as number | undefined) ?? 0, WORKOUT_MAX_STREAK);
-
-    let streak: number;
-    if (lastWorkoutDate === todayKey) {
-      streak = prevStreak; // already recorded today — don't double-count
-    } else if (lastWorkoutDate === yesterdayKey) {
-      streak = Math.min(prevStreak + 1, WORKOUT_MAX_STREAK);
-    } else {
-      streak = 1; // gap since last workout (or first ever) — restart
-    }
+    const streak = nextWorkoutStreak(lastWorkoutDate, prevStreak, now.toDate());
 
     if (lastWorkoutDate !== todayKey) {
       await db.doc(`users/${uid}`).set(
@@ -382,32 +374,16 @@ export const recordWorkout = onCall(
         const prevSnap = await tx.get(progressRef);
         const prev = (prevSnap.data()?.currentValue as number) ?? 0;
 
-        let newValue: number;
-        switch (chal.goalType) {
-          case "workout_count":
-            newValue = prev + 1;
-            break;
-          case "calories_burned":
-            newValue = prev + Math.max(0, caloriesBurned);
-            break;
-          case "cardio_minutes":
-            newValue = prev + Math.max(0, cardioMinutes);
-            break;
-          case "workout_streak":
-            newValue = Math.max(prev, streak);
-            break;
-          default:
-            newValue = prev + 1;
-        }
+        const newValue = progressForWorkout(chal.goalType as string, prev, caloriesBurned, cardioMinutes, streak);
 
         tx.set(progressRef, {
           uid,
           name: userName,
           currentValue: newValue,
-          lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+          lastUpdated: FieldValue.serverTimestamp(),
         }, {merge: true});
 
-        return newValue >= (chal.targetValue as number) && prev < (chal.targetValue as number);
+        return crossesTarget(prev, newValue, chal.targetValue as number);
       });
 
       if (crossed) {
@@ -415,7 +391,7 @@ export const recordWorkout = onCall(
         await db.collection(`activity_events/${uid}/items`).add({
           type: "challenge_won",
           data: {challengeTitle: chal.title, challengeId},
-          timestamp: admin.firestore.FieldValue.serverTimestamp(),
+          timestamp: FieldValue.serverTimestamp(),
         });
         if ((chal.createdBy as string) !== "system" && (chal.createdBy as string) !== uid) {
           await sendPush(
@@ -457,8 +433,8 @@ export const seedChallenges = onCall(
       .get();
     if (!existing.empty) return {skipped: true, reason: "Already seeded"};
 
-    const farFuture = admin.firestore.Timestamp.fromDate(new Date("2030-01-01"));
-    const now = admin.firestore.Timestamp.now();
+    const farFuture = Timestamp.fromDate(new Date("2030-01-01"));
+    const now = Timestamp.now();
 
     const predefined = [
       {title: "Первые шаги", description: "Выполни 3 тренировки и начни свой путь к здоровью", goalType: "workout_count", targetValue: 3, emoji: "👟"},

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' as app_theme;
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 /// Available app themes.
@@ -21,13 +22,13 @@ enum AppThemeMode {
     AppThemeMode.cyberPunk => AppLocalizations.tl('themeCyberName'),
   };
 
-  String get emoji => switch (this) {
-    AppThemeMode.neonDark => '⚡',
-    AppThemeMode.oceanBlue => '🌊',
-    AppThemeMode.sunsetWarm => '🌅',
-    AppThemeMode.forestGreen => '🌿',
-    AppThemeMode.midnightPurple => '🌙',
-    AppThemeMode.cyberPunk => '🤖',
+  String get iconAsset => switch (this) {
+    AppThemeMode.neonDark => AppImages.energy,
+    AppThemeMode.oceanBlue => AppImages.wave,
+    AppThemeMode.sunsetWarm => AppImages.breakfast,
+    AppThemeMode.forestGreen => AppImages.leaf,
+    AppThemeMode.midnightPurple => AppImages.dinner,
+    AppThemeMode.cyberPunk => AppImages.robot,
   };
 
   String get description => switch (this) {

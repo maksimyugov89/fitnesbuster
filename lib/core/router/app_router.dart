@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/router/auth_router_notifier.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
 import 'package:fitnesbuster/presentation/widgets/router/main_shell.dart';
 import 'package:fitnesbuster/presentation/screens/workout/workout_execution_screen.dart';
@@ -187,33 +188,68 @@ class AppRouter {
   static String? _redirect(BuildContext context, GoRouterState state) {
     final isAuthenticated = FirebaseAuth.instance.currentUser != null;
     final loc = state.matchedLocation;
+    final authState = context.read<AuthBloc>().state;
+    final isAuthStateAuthenticated = authState is AuthStateAuthenticated;
+    final requiresLegalConsent = authState is AuthStateLegalConsentRequired;
+    final hasProfile = isAuthStateAuthenticated
+        ? authState.user.profile != null
+        : false;
 
-    if (loc == splash) return null;
+    appLogger.i(
+      '[Router] _redirect loc=$loc isAuth=$isAuthenticated '
+      'blocReady=$isAuthStateAuthenticated emailVerified=${isAuthStateAuthenticated ? authState.emailVerified : false} '
+      'hasProfile=$hasProfile',
+    );
 
-    final isOnboarding = loc.startsWith(onboarding);
-    final isVerifyEmail = loc == verifyEmail;
-    final isPublic = loc == login || loc == register || isOnboarding;
+    return resolveAuthRedirect(
+      loc: loc,
+      isAuthenticated: isAuthenticated,
+      isAuthStateAuthenticated: isAuthStateAuthenticated,
+      requiresLegalConsent: requiresLegalConsent,
+      emailVerified: isAuthStateAuthenticated ? authState.emailVerified : false,
+      hasProfile: hasProfile,
+    );
+  }
+}
 
-    if (!isAuthenticated && !isPublic) return login;
+String? resolveAuthRedirect({
+  required String loc,
+  required bool isAuthenticated,
+  required bool isAuthStateAuthenticated,
+  bool requiresLegalConsent = false,
+  required bool emailVerified,
+  required bool hasProfile,
+}) {
+  if (loc == AppRouter.splash) return null;
 
-    if (isAuthenticated) {
-      final authState = context.read<AuthBloc>().state;
+  final isOnboarding = loc.startsWith(AppRouter.onboarding);
+  final isVerifyEmail = loc == AppRouter.verifyEmail;
+  final isPublic =
+      loc == AppRouter.login || loc == AppRouter.register || isOnboarding;
 
-      // AuthBloc ещё не подтвердил аутентификацию — ждём, не редиректим
-      if (authState is! AuthStateAuthenticated) return null;
+  if (!isAuthenticated && !isPublic) return AppRouter.login;
 
-      // Email не подтверждён — блокируем доступ ко всему, кроме экрана верификации
-      if (!authState.emailVerified) {
-        return isVerifyEmail ? null : verifyEmail;
-      }
+  if (requiresLegalConsent) {
+    return loc == AppRouter.login ? null : AppRouter.login;
+  }
 
-      if (isPublic || isVerifyEmail) {
-        final hasProfile = authState.user.profile != null;
-        if (isOnboarding) return hasProfile ? dashboard : null;
-        return hasProfile ? dashboard : onboarding;
-      }
+  if (isAuthenticated) {
+    if (!isAuthStateAuthenticated) return null;
+
+    if (!emailVerified) {
+      return isVerifyEmail ? null : AppRouter.verifyEmail;
     }
 
-    return null;
+    if (isPublic || isVerifyEmail) {
+      if (isOnboarding) return hasProfile ? AppRouter.dashboard : null;
+      return hasProfile ? AppRouter.dashboard : AppRouter.onboarding;
+    }
+
+    // Guard authenticated routes: if the user has no profile yet, force
+    // onboarding regardless of which route the screen tried to navigate to
+    // (e.g. Login screen and Splash screen both navigate to /dashboard).
+    if (!hasProfile) return AppRouter.onboarding;
   }
+
+  return null;
 }

@@ -36,10 +36,11 @@ void main() {
       expect(all.any((e) => e.name.contains('эспандер')), isTrue);
     });
 
-    test('unknown/null location defaults to gym', () {
+    test('unknown/null location defaults to safe home exercises', () {
       final unknown = testWeekDaysForLocation('spaceship');
-      final gym = testWeekDaysForLocation('gym');
-      expect(unknown, equals(gym));
+      final home = testWeekDaysForLocation('home');
+      expect(unknown, equals(home));
+      expect(testWeekDaysForLocation(null), equals(home));
     });
   });
 }

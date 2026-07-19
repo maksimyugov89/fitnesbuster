@@ -7,6 +7,7 @@ import 'package:fitnesbuster/data/models/exercise_db_model.dart';
 import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class ExerciseBrowserScreen extends StatefulWidget {
   const ExerciseBrowserScreen({super.key});
@@ -134,7 +135,7 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
           Image.asset(AppImages.exercises, width: 28, height: 28),
           const SizedBox(width: 8),
           Text(
-            'Упражнения',
+            AppLocalizations.tl('exercisesTitle'),
             style: TextStyle(
               fontFamily: 'Syne',
               fontSize: 20,
@@ -187,7 +188,7 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
                     }),
                   )
                 : Text(
-                    'Выберите мышцу или упражнение для подсветки',
+                    AppLocalizations.tl('exerciseSelectionHint'),
                     key: const ValueKey('hint'),
                     style: TextStyle(fontSize: 12, color: c.textMuted),
                     textAlign: TextAlign.center,
@@ -207,11 +208,18 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
         children: [
           // Muscle filter
           _FilterRow<ExMuscle>(
-            label: 'Мышца',
+            label: AppLocalizations.tl('filterMuscle'),
             selected: _selectedMuscle,
             items: ExMuscle.values
                 .where((m) => m != ExMuscle.pectoralisMinor)
-                .map((m) => (m, m.displayNameRu))
+                .map(
+                  (m) => (
+                    m,
+                    m.displayNameForLocale(
+                      Localizations.localeOf(context).languageCode,
+                    ),
+                  ),
+                )
                 .toList(),
             onSelected: (v) => setState(() {
               _focusedExercise = null;
@@ -222,15 +230,33 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
           const SizedBox(height: 8),
           // Equipment filter
           _FilterRow<ExEquipment>(
-            label: 'Инвентарь',
+            label: AppLocalizations.tl('filterEquipment'),
             selected: _equipFilter,
-            items: const [
-              (ExEquipment.barbell, 'Штанга'),
-              (ExEquipment.dumbbell, 'Гантели'),
-              (ExEquipment.machine, 'Тренажёр'),
-              (ExEquipment.bodyweight, 'Без веса'),
-              (ExEquipment.cables, 'Блок'),
-              (ExEquipment.kettlebell, 'Гиря'),
+            items: [
+              (
+                ExEquipment.barbell,
+                AppLocalizations.tl('exerciseEquipmentBarbell'),
+              ),
+              (
+                ExEquipment.dumbbell,
+                AppLocalizations.tl('exerciseEquipmentDumbbell'),
+              ),
+              (
+                ExEquipment.machine,
+                AppLocalizations.tl('exerciseEquipmentMachine'),
+              ),
+              (
+                ExEquipment.bodyweight,
+                AppLocalizations.tl('exerciseEquipmentBodyweight'),
+              ),
+              (
+                ExEquipment.cables,
+                AppLocalizations.tl('exerciseEquipmentCables'),
+              ),
+              (
+                ExEquipment.kettlebell,
+                AppLocalizations.tl('exerciseEquipmentKettlebell'),
+              ),
             ],
             onSelected: (v) =>
                 setState(() => _equipFilter = _equipFilter == v ? null : v),
@@ -239,12 +265,21 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
           const SizedBox(height: 8),
           // Difficulty filter
           _FilterRow<ExDifficulty>(
-            label: 'Сложность',
+            label: AppLocalizations.tl('filterDifficulty'),
             selected: _diffFilter,
-            items: const [
-              (ExDifficulty.beginner, 'Начинающий'),
-              (ExDifficulty.intermediate, 'Средний'),
-              (ExDifficulty.advanced, 'Продвинутый'),
+            items: [
+              (
+                ExDifficulty.beginner,
+                AppLocalizations.tl('exerciseDifficultyBeginner'),
+              ),
+              (
+                ExDifficulty.intermediate,
+                AppLocalizations.tl('exerciseDifficultyIntermediate'),
+              ),
+              (
+                ExDifficulty.advanced,
+                AppLocalizations.tl('exerciseDifficultyAdvanced'),
+              ),
             ],
             onSelected: (v) =>
                 setState(() => _diffFilter = _diffFilter == v ? null : v),
@@ -252,7 +287,9 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            '${_filtered.length} упражнений',
+            AppLocalizations.tlp('exercisesCount', {
+              'n': '${_filtered.length}',
+            }),
             style: TextStyle(
               fontFamily: 'Syne',
               fontSize: 13,
@@ -277,7 +314,7 @@ class _ExerciseBrowserScreenState extends State<ExerciseBrowserScreen> {
               Icon(Icons.fitness_center_rounded, size: 48, color: c.textMuted),
               const SizedBox(height: 12),
               Text(
-                'Упражнений не найдено',
+                AppLocalizations.tl('exerciseNotFound'),
                 style: TextStyle(color: c.textMuted, fontSize: 14),
               ),
             ],
@@ -331,7 +368,9 @@ class _MusclePill extends StatelessWidget {
           Icon(Icons.place_rounded, size: 14, color: c.primary),
           const SizedBox(width: 6),
           Text(
-            muscle.displayNameRu,
+            muscle.displayNameForLocale(
+              Localizations.localeOf(context).languageCode,
+            ),
             style: TextStyle(
               fontFamily: 'Syne',
               fontSize: 13,
@@ -383,7 +422,9 @@ class _ExercisePill extends StatelessWidget {
           const SizedBox(width: 6),
           Flexible(
             child: Text(
-              exercise.nameRu,
+              exercise.displayNameForLocale(
+                Localizations.localeOf(context).languageCode,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -481,18 +522,24 @@ class _ExerciseCard extends StatelessWidget {
   };
 
   String _diffLabel() => switch (exercise.difficulty) {
-    ExDifficulty.beginner => 'Начинающий',
-    ExDifficulty.intermediate => 'Средний',
-    ExDifficulty.advanced => 'Продвинутый',
+    ExDifficulty.beginner => AppLocalizations.tl('exerciseDifficultyBeginner'),
+    ExDifficulty.intermediate => AppLocalizations.tl(
+      'exerciseDifficultyIntermediate',
+    ),
+    ExDifficulty.advanced => AppLocalizations.tl('exerciseDifficultyAdvanced'),
   };
 
   String _equipLabel(ExEquipment e) => switch (e) {
-    ExEquipment.barbell => 'Штанга',
-    ExEquipment.dumbbell => 'Гантели',
-    ExEquipment.machine => 'Тренажёр',
-    ExEquipment.bodyweight => 'Без веса',
-    ExEquipment.cables => 'Блок',
-    ExEquipment.kettlebell => 'Гиря',
+    ExEquipment.barbell => AppLocalizations.tl('exerciseEquipmentBarbell'),
+    ExEquipment.dumbbell => AppLocalizations.tl('exerciseEquipmentDumbbell'),
+    ExEquipment.machine => AppLocalizations.tl('exerciseEquipmentMachine'),
+    ExEquipment.bodyweight => AppLocalizations.tl(
+      'exerciseEquipmentBodyweight',
+    ),
+    ExEquipment.cables => AppLocalizations.tl('exerciseEquipmentCables'),
+    ExEquipment.kettlebell => AppLocalizations.tl(
+      'exerciseEquipmentKettlebell',
+    ),
     ExEquipment.none => '',
   };
 
@@ -501,7 +548,11 @@ class _ExerciseCard extends StatelessWidget {
     final diffColor = _diffColor();
     final primMuscles = exercise.primaryMuscles
         .take(2)
-        .map((m) => m.displayNameRu)
+        .map(
+          (m) => m.displayNameForLocale(
+            Localizations.localeOf(context).languageCode,
+          ),
+        )
         .join(' · ');
     final equipLabels = exercise.equipment
         .where((e) => e != ExEquipment.none)
@@ -588,7 +639,9 @@ class _ExerciseCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          exercise.nameRu,
+                          exercise.displayNameForLocale(
+                            Localizations.localeOf(context).languageCode,
+                          ),
                           style: TextStyle(
                             fontFamily: 'Syne',
                             fontSize: 14,

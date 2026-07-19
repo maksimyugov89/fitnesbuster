@@ -1,7 +1,11 @@
 import * as admin from "firebase-admin";
+import {FieldValue, getFirestore} from "firebase-admin/firestore";
+import {HttpsError} from "firebase-functions/v2/https";
+import {FIRESTORE_DATABASE_ID} from "./firebaseConfig";
 import {RETRY_BASE_DELAY_MS, RETRY_MAX_ATTEMPTS} from "./constants";
+import {evaluateRateLimit, rateLimitFailureAction} from "./rateLimitLogic";
 
-const db = admin.firestore();
+const db = getFirestore(FIRESTORE_DATABASE_ID);
 const messaging = admin.messaging();
 
 // ─── Logging ──────────────────────────────────────────────────────────────────
@@ -30,40 +34,43 @@ function logError(msg: string, error: unknown, data?: Record<string, unknown>): 
  * @param action     Name of the rate-limited action (e.g. "deepseekProxy").
  * @param maxRequests Maximum allowed requests within the sliding window.
  * @param windowMs   Sliding window duration in milliseconds.
+ * @param failClosed When `true`, a genuine infrastructure error (Firestore
+ *                   transaction failure that is NOT contention) throws
+ *                   `HttpsError("unavailable", …)` instead of silently
+ *                   permitting the request.  Use for paid/costly endpoints
+ *                   where a blind permit could burn budget.
  * @returns `true` if the request is allowed, `false` if the limit has been exceeded.
+ * @throws `HttpsError("unavailable", …)` — only when `failClosed` is true and the
+ *         rate-limiter infrastructure itself is unreachable.
  */
 async function checkRateLimit(
   uid: string,
   action: string,
   maxRequests: number,
-  windowMs: number
+  windowMs: number,
+  {failClosed = false}: {failClosed?: boolean} = {}
 ): Promise<boolean> {
   const ref = db.collection("rate_limits").doc(`${uid}_${action}`);
   try {
     return await db.runTransaction(async (tx) => {
       const snap = await tx.get(ref);
       const now = Date.now();
-      if (!snap.exists) {
-        tx.set(ref, {count: 1, windowStart: now});
-        return true;
-      }
-      const data = snap.data()!;
-      const windowStart = data.windowStart as number;
-      if (now - windowStart > windowMs) {
-        tx.set(ref, {count: 1, windowStart: now});
-        return true;
-      }
-      const count = data.count as number;
-      if (count >= maxRequests) {
-        logWarn("Rate limit exceeded", {uid, action, count, maxRequests});
+      const decision = evaluateRateLimit(
+        snap.exists ? snap.data()! : undefined,
+        now,
+        maxRequests,
+        windowMs
+      );
+      if (!decision.allowed) {
+        logWarn("Rate limit exceeded", {uid, action, maxRequests});
         return false;
       }
-      tx.set(ref, {count: count + 1, windowStart}, {merge: true});
+      tx.set(ref, decision.nextState!, {merge: snap.exists});
       return true;
     }, {maxAttempts: 15});
   } catch (e) {
-    const code = (e as {code?: number}).code;
-    if (code === 10) {
+    const failureAction = rateLimitFailureAction(e, failClosed);
+    if (failureAction === "deny") {
       // ABORTED: Firestore's own concurrency control gave up retrying after
       // exhausting maxAttempts under heavy contention on this exact document
       // (many requests racing for the same rate-limit slot at once). Fail
@@ -74,6 +81,12 @@ async function checkRateLimit(
       return false;
     }
     logError("Rate limiter check failed", e, {uid, action});
+    if (failureAction === "throw") {
+      throw new HttpsError(
+        "unavailable",
+        "Rate limiter is temporarily unavailable. Please try again later."
+      );
+    }
     return true; // fail-open: permit on genuine infrastructure error
   }
 }
@@ -109,7 +122,7 @@ async function sendPush(
       apns: {payload: {aps: {sound: "default"}}},
     });
   } catch (e) {
-    await db.doc(`users/${toUid}`).update({fcmToken: admin.firestore.FieldValue.delete()});
+    await db.doc(`users/${toUid}`).update({fcmToken: FieldValue.delete()});
   }
 }
 
@@ -142,7 +155,7 @@ async function createNotification(
     fromName,
     data: extraData,
     read: false,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
   });
 }
 

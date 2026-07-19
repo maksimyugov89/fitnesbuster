@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/data/models/workout_day.dart';
@@ -193,30 +194,30 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
   }
 
   String _dayIcon(Map<String, dynamic> day) {
-    if (_isRest(day)) return '😴';
+    if (_isRest(day)) return AppImages.sleep;
     final focus = (day['focus'] as String? ?? day['name'] as String? ?? '')
         .toLowerCase();
     if (focus.contains(AppLocalizations.tl('cardioKeyword')) ||
         focus.contains(AppLocalizations.tl('intervalKeyword'))) {
-      return '🏃';
+      return AppImages.running;
     }
     if (focus.contains(AppLocalizations.tl('legDayKeyword')) ||
         focus.contains(AppLocalizations.tl('glutesKeyword'))) {
-      return '🦵';
+      return AppImages.legDay;
     }
     if (focus.contains(AppLocalizations.tl('chestKeyword')) ||
         focus.contains(AppLocalizations.tl('tricepsKeyword'))) {
-      return '💪';
+      return AppImages.workoutsTab;
     }
     if (focus.contains(AppLocalizations.tl('backKeyword')) ||
         focus.contains(AppLocalizations.tl('bicepsKeyword'))) {
-      return '🏋️';
+      return AppImages.workoutsTab;
     }
     if (focus.contains(AppLocalizations.tl('shouldersKeyword')) ||
         focus.contains(AppLocalizations.tl('absKeyword'))) {
-      return '⚡';
+      return AppImages.energy;
     }
-    return '🏋️';
+    return AppImages.workoutsTab;
   }
 
   Color _rpeColor(int rpe, dynamic colors) {
@@ -369,7 +370,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
         ),
         child: Row(
           children: [
-            const Text('🎯', style: TextStyle(fontSize: 20)),
+            Image.asset(AppImages.target, width: 22, height: 22),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -504,7 +505,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('🔮', style: TextStyle(fontSize: 18)),
+                Image.asset(AppImages.crystalBall, width: 20, height: 20),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -581,10 +582,7 @@ class _WorkoutPlanScreenState extends State<WorkoutPlanScreen>
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
-                child: Text(
-                  _dayIcon(day),
-                  style: const TextStyle(fontSize: 20),
-                ),
+                child: Image.asset(_dayIcon(day), width: 24, height: 24),
               ),
             ),
             title: Text(

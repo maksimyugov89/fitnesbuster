@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
 import 'package:fitnesbuster/domain/entities/synced_health_data.dart';
+import 'package:fitnesbuster/domain/exceptions/health_exception.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 
@@ -36,12 +37,14 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
           emit(
             HealthSyncStateError(
               message: AppLocalizations.tl('healthConnectNotInstalled'),
+              kind: HealthSyncErrorKind.notInstalled,
             ),
           );
         } else {
           emit(
             HealthSyncStateError(
               message: AppLocalizations.tl('healthConnectAccessDenied'),
+              kind: HealthSyncErrorKind.accessDenied,
             ),
           );
         }
@@ -51,6 +54,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       emit(
         HealthSyncStateError(
           message: AppLocalizations.tl('healthConnectInitError'),
+          kind: HealthSyncErrorKind.initialization,
         ),
       );
     }
@@ -64,6 +68,18 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     try {
       final data = await _hcService.readAllToday();
       emit(HealthSyncStateLoaded(data: data, lastSyncAt: DateTime.now()));
+    } on HealthConnectPermissionDeniedException catch (e, st) {
+      appLogger.w(
+        '[HealthSyncBloc] read today denied',
+        error: e,
+        stackTrace: st,
+      );
+      emit(
+        HealthSyncStateError(
+          message: AppLocalizations.tl('healthConnectAccessDenied'),
+          kind: HealthSyncErrorKind.accessDenied,
+        ),
+      );
     } catch (e, st) {
       appLogger.w(
         '[HealthSyncBloc] read today failed',
@@ -73,6 +89,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       emit(
         HealthSyncStateError(
           message: AppLocalizations.tl('healthSyncReadError'),
+          kind: HealthSyncErrorKind.read,
         ),
       );
     }
@@ -89,6 +106,18 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         end: event.end,
       );
       emit(HealthSyncStateLoaded(data: data, lastSyncAt: DateTime.now()));
+    } on HealthConnectPermissionDeniedException catch (e, st) {
+      appLogger.w(
+        '[HealthSyncBloc] read range denied',
+        error: e,
+        stackTrace: st,
+      );
+      emit(
+        HealthSyncStateError(
+          message: AppLocalizations.tl('healthConnectAccessDenied'),
+          kind: HealthSyncErrorKind.accessDenied,
+        ),
+      );
     } catch (e, st) {
       appLogger.w(
         '[HealthSyncBloc] read range failed',
@@ -98,6 +127,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       emit(
         HealthSyncStateError(
           message: AppLocalizations.tl('healthSyncRangeError'),
+          kind: HealthSyncErrorKind.read,
         ),
       );
     }

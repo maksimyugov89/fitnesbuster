@@ -1,5 +1,6 @@
 import 'package:fitnesbuster/core/ai/base_client.dart';
 import 'package:fitnesbuster/core/ai/validators/json_validator.dart';
+import 'package:fitnesbuster/core/ai/exercise_catalog_prompt.dart';
 import 'package:fitnesbuster/core/ai/knowledge/training_knowledge.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 
@@ -93,10 +94,14 @@ $question
   Future<String> parseWorkoutFromContent(
     String content, {
     String sourceHint = 'текст',
+    UserProfile? profile,
   }) async {
     final truncated = content.length > 8000
         ? content.substring(0, 8000)
         : content;
+    final exerciseCatalog = await ExerciseCatalogPrompt().build(
+      profile?.workoutLocation,
+    );
 
     final prompt =
         '''
@@ -106,6 +111,9 @@ $question
 
 СОДЕРЖИМОЕ:
 $truncated
+
+КАТАЛОГ УПРАЖНЕНИЙ И ОГРАНИЧЕНИЯ ПО МЕСТУ:
+${exerciseCatalog.promptBlock}
 
 Задача: извлечь все тренировки и преобразовать их в JSON-формат приложения.
 
@@ -117,6 +125,7 @@ $truncated
 5. Если тип тренировки неизвестен — ставь "strength".
 6. muscle_primary на русском: "грудь", "спина", "ноги", "плечи", "бицепс" и т.д.
 7. Если данных недостаточно — сгенерируй разумный план на основе того, что есть.
+8. Сопоставляй импортированные названия с точными названиями каталога; новое упражнение оставляй только при отсутствии безопасного аналога.
 
 Ответь СТРОГО в формате JSON без markdown и пояснений:
 {
@@ -134,6 +143,7 @@ $truncated
       "exercises": [
         {
           "name": "Название упражнения",
+          "catalog_status": "existing",
           "muscle_primary": "группа мышц",
           "muscle_secondary": [],
           "sets": 3,
@@ -171,7 +181,10 @@ $truncated
       messages: messages,
       maxTokens: 4096,
       temperature: 0.3,
-      validator: validateWorkoutJson,
+      validator: (raw) => validateWorkoutCatalogPreference(
+        validateWorkoutJson(raw),
+        exerciseCatalog.exactNames,
+      ),
     );
   }
 

@@ -6,19 +6,31 @@ import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/utils/enum_parser.dart';
 import 'package:fitnesbuster/core/utils/age_calculator.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
+import 'package:fitnesbuster/core/cache/offline_queue.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/constants/firestore_collections.dart';
 
 class UserRepository implements IUserRepository {
+  static const syncAiPlansOperation = 'user.aiPlans.sync';
+
   final fb.FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
+  final OfflineQueue? _offlineQueue;
 
   UserRepository({
     required fb.FirebaseAuth auth,
     required FirebaseFirestore firestore,
+    OfflineQueue? offlineQueue,
   }) : _auth = auth,
-       _firestore = firestore;
+       _firestore = firestore,
+       _offlineQueue = offlineQueue {
+    _offlineQueue?.registerHandler(syncAiPlansOperation, (data) async {
+      final userId = data['userId'] as String?;
+      if (userId == null || userId.isEmpty) return;
+      await _pushCachedPlansToFirestore(userId);
+    });
+  }
 
   @override
   Future<UserEntity> getUser(String userId) async {
@@ -79,11 +91,23 @@ class UserRepository implements IUserRepository {
     if (profile != null) {
       data['profile'] = _profileToMap(profile);
     }
+    appLogger.i(
+      '[UserRepo] saveOnboardingData — userId=$userId hasProfile=${profile != null} '
+      'goal=${goal.name} intensity=${intensity.name}',
+    );
     await _firestore
         .collection(FirestoreCollections.users)
         .doc(userId)
         .set(data, SetOptions(merge: true));
-    return getUser(userId);
+    appLogger.i(
+      '[UserRepo] saveOnboardingData — Firestore write DONE for userId=$userId',
+    );
+    final result = await getUser(userId);
+    appLogger.i(
+      '[UserRepo] saveOnboardingData — read back: profile=${result.profile != null} '
+      'name=${result.name}',
+    );
+    return result;
   }
 
   @override
@@ -94,8 +118,7 @@ class UserRepository implements IUserRepository {
   }) async {
     try {
       await _firestore.collection(FirestoreCollections.users).doc(userId).set({
-        'onboarding.location': location,
-        'onboarding.running': running,
+        'onboarding': {'location': location, 'running': running},
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e, st) {
@@ -136,6 +159,7 @@ class UserRepository implements IUserRepository {
         stackTrace: st,
       );
       await HiveCache.setNeedsSync(userId);
+      await _offlineQueue?.enqueue(syncAiPlansOperation, {'userId': userId});
     }
   }
 
@@ -261,6 +285,7 @@ class UserRepository implements IUserRepository {
         stackTrace: st,
       );
       await HiveCache.setNeedsSync(userId);
+      await _offlineQueue?.enqueue(syncAiPlansOperation, {'userId': userId});
     }
   }
 
@@ -268,7 +293,9 @@ class UserRepository implements IUserRepository {
   Future<Map<String, String?>> getAiPlans(String userId) async {
     if (HiveCache.hasAiPlans(userId)) {
       if (HiveCache.isSyncNeeded(userId)) {
-        _pushCachedPlansToFirestore(userId).ignore();
+        _offlineQueue?.enqueue(syncAiPlansOperation, {
+          'userId': userId,
+        }).ignore();
       } else {
         _fetchAndCacheAiPlans(userId).ignore();
       }

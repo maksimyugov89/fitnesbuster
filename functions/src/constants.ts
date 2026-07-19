@@ -13,7 +13,7 @@ export const DEEPSEEK_RATE_LIMIT = 20;
 export const RATE_LIMIT_WINDOW_MS = ONE_MINUTE_MS;
 
 /** Default max tokens for DeepSeek chat completion */
-export const DEEPSEEK_DEFAULT_MAX_TOKENS = 4096;
+export const DEEPSEEK_DEFAULT_MAX_TOKENS = 8192;
 
 /** Hard upper bound for client-requested maxTokens (cost-abuse guard) */
 export const DEEPSEEK_MAX_TOKENS_CAP = 8192;
@@ -25,7 +25,7 @@ export const DEEPSEEK_DEFAULT_TEMPERATURE = 0.7;
 export const DEEPSEEK_MAX_MESSAGES = 40;
 
 /** Maximum character length per individual message content (cost-abuse guard) */
-export const DEEPSEEK_MAX_MESSAGE_LENGTH = 20_000;
+export const DEEPSEEK_MAX_MESSAGE_LENGTH = 40_000;
 
 // ─── Friends / Search ─────────────────────────────────────────────────────────
 

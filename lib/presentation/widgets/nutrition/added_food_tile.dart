@@ -18,6 +18,21 @@ class AddedFoodTile extends StatelessWidget {
     required this.onDelete,
   });
 
+  String get _mealTypeLabel {
+    const keys = {
+      'breakfast': 'breakfast',
+      'lunch': 'lunch',
+      'dinner': 'dinner',
+      'snack': 'snack',
+      'pre_workout': 'mealPreWorkout',
+      'post_workout': 'mealPostWorkout',
+      'evening_snack': 'mealEveningSnack',
+      'morning_snack': 'mealMorningSnack',
+    };
+    final key = keys[mealType];
+    return key == null ? mealType : AppLocalizations.tl(key);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
@@ -59,7 +74,7 @@ class AddedFoodTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  '$mealType · $grams ${AppLocalizations.tl('gUnit')}${kcal > 0 ? ' · $kcal ${AppLocalizations.tl('kcalShort')}' : ''}',
+                  '$_mealTypeLabel · $grams ${AppLocalizations.tl('gUnit')}${kcal > 0 ? ' · $kcal ${AppLocalizations.tl('kcalShort')}' : ''}',
                   style: TextStyle(fontSize: 11, color: colors.textMuted),
                 ),
               ],
@@ -76,7 +91,7 @@ class AddedFoodTile extends StatelessWidget {
               ),
             ),
           Semantics(
-            label: 'Удалить',
+            label: AppLocalizations.tl('delete'),
             button: true,
             child: IconButton(
               onPressed: onDelete,

@@ -555,6 +555,8 @@ class AppLocalizations {
   String get geoPermissionDeniedMsg => _t('geoPermissionDeniedMsg');
   String get geoCityNotFoundMsg => _t('geoCityNotFoundMsg');
   String get geoErrorMsg => _t('geoErrorMsg');
+  String get geoAutoDetectPrivacyNotice => _t('geoAutoDetectPrivacyNotice');
+  String get geoAttribution => _t('geoAttribution');
   String get generatingAnalyzing => _t('generatingAnalyzing');
   String get generatingWorkout => _t('generatingWorkout');
   String get generatingMeal => _t('generatingMeal');

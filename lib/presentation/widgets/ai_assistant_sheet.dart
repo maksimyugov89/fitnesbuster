@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitnesbuster/bloc/ai/ai_bloc.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 /// AI Assistant chat bottom sheet.
 class AiAssistantSheet extends StatefulWidget {
@@ -89,10 +91,13 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('AI Ассистент', style: AppTextStyles.titleL),
+              Text(
+                AppLocalizations.tl('aiAssistantTitle'),
+                style: AppTextStyles.titleL,
+              ),
               const SizedBox(height: 4),
               Text(
-                'Ваш AI помощник по фитнесу',
+                AppLocalizations.tl('aiAssistantSubtitle'),
                 style: TextStyle(fontSize: 13, color: colors.textMuted),
               ),
               const SizedBox(height: 16),
@@ -139,7 +144,7 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            'Думаю...',
+                            AppLocalizations.tl('thinkingLabel'),
                             style: TextStyle(
                               color: colors.textMuted,
                               fontSize: 13,
@@ -171,7 +176,7 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                           fontSize: 14,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'Задай вопрос...',
+                          hintText: AppLocalizations.tl('aiQuestionHint'),
                           hintStyle: TextStyle(color: colors.textMuted),
                           filled: true,
                           fillColor: colors.surfaceLight,
@@ -191,7 +196,7 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                       builder: (context, state) {
                         final isLoading = state is AiStateLoading;
                         return Semantics(
-                          label: 'Отправить',
+                          label: AppLocalizations.tl('send'),
                           button: true,
                           child: GestureDetector(
                             onTap: isLoading
@@ -236,10 +241,13 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
   Widget _buildQuickActions() {
     final colors = AppTheme.of(context);
     final suggestions = [
-      ('💪', 'Как часто тренироваться новичку?'),
-      ('🥗', 'Что съесть после тренировки?'),
-      ('😴', 'Сколько нужно спать?'),
-      ('🔥', 'Как ускорить метаболизм?'),
+      (
+        AppImages.workoutsTab,
+        AppLocalizations.tl('aiQuestionBeginnerFrequency'),
+      ),
+      (AppImages.vegetables, AppLocalizations.tl('aiQuestionPostWorkoutMeal')),
+      (AppImages.sleep, AppLocalizations.tl('aiQuestionSleep')),
+      (AppImages.energy, AppLocalizations.tl('aiQuestionMetabolism')),
     ];
 
     return Padding(
@@ -247,7 +255,7 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
       child: Column(
         children: [
           Text(
-            'Быстрые вопросы',
+            AppLocalizations.tl('aiQuickQuestions'),
             style: TextStyle(
               fontSize: 13,
               color: colors.textMuted,
@@ -277,7 +285,7 @@ class _AiAssistantSheetState extends State<AiAssistantSheet> {
                     ),
                     child: Row(
                       children: [
-                        Text(s.$1, style: const TextStyle(fontSize: 20)),
+                        Image.asset(s.$1, width: 24, height: 24),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(

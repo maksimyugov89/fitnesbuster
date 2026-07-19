@@ -59,10 +59,13 @@ jobs:
       - run: flutter pub get
 
       # Гейт качества — релиз не собирается, если анализ/тесты красные
-      - name: Analyze
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/ test/
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed lib/ test/ integration_test/
 
-      - name: Test (335 unit/widget/golden + 16 E2E из test/integration)
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/ test/ integration_test/
+
+      - name: Test (unit/widget/golden + test/integration)
         run: flutter test --reporter=expanded
 
       - name: Restore release keystore

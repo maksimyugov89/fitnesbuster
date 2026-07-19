@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 import 'package:fitnesbuster/core/cache/hive_encryption.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
@@ -64,7 +63,6 @@ class AppInitializer {
     try {
       onProgress?.call('Locale');
       await LanguageService.load();
-      await initializeDateFormatting(LanguageService.current.code, null);
       await ThemeService.load();
       ShareIntentService.init();
     } catch (e) {

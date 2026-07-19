@@ -20,6 +20,8 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     steps:
       - uses: actions/checkout@v7
@@ -35,8 +37,6 @@ jobs:
         with:
           path: |
             ${{ env.FLUTTER_ROOT }}/.pub-cache
-            **/.dart_tool
-            **/.packages
             pubspec.lock
           key: pub-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
           restore-keys: pub-${{ runner.os }}-
@@ -44,12 +44,12 @@ jobs:
       - run: flutter pub get
 
       - name: Format check
-        run: dart format --output=none --set-exit-if-changed lib/ test/
+        run: dart format --output=none --set-exit-if-changed lib/ test/ integration_test/
 
       - name: Analyze
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/ test/
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib/ test/ integration_test/
 
-      - name: Test (335 unit/widget/golden + 16 E2E из test/integration)
+      - name: Test (unit, widget, golden, test/integration)
         run: flutter test --coverage --reporter=expanded
 
       - name: Strip generated code from coverage
@@ -61,23 +61,25 @@ jobs:
           echo '## Test coverage summary' >> "$GITHUB_STEP_SUMMARY"
           lcov --summary coverage/lcov.info 2>&1 | tail -n +2 >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Upload coverage to Codecov
+        if: env.CODECOV_TOKEN != ''
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ env.CODECOV_TOKEN }}
+          files: coverage/lcov.info
+          flags: flutter
+          name: flutter-tests
+          disable_search: true
+          fail_ci_if_error: true
+
       - name: Report coverage in PR comment
         if: github.event_name == 'pull_request'
         continue-on-error: true
         uses: zgosalvez/github-actions-report-lcov@v7
         with:
           coverage-files: coverage/lcov.info
-          artifact-name: coverage-html-report
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-comment: true
-
-      - name: Upload coverage artifact
-        continue-on-error: true
-        uses: actions/upload-artifact@v7
-        with:
-          name: coverage-report
-          path: coverage/lcov.info
-          retention-days: 3
 
       - name: Notify Telegram on failure
         if: failure() && github.event_name == 'push'
@@ -90,7 +92,7 @@ jobs:
           message: 'Job: Flutter — analyze, format, test, coverage'
 
   functions:
-    name: Cloud Functions — build
+    name: Cloud Functions — build, unit, emulator
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -101,12 +103,24 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: functions/package-lock.json
 
       - run: npm ci
-      - run: npm run build
+      - name: Unit/spec tests (38)
+        run: npm test
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools@15.22.0
+
+      - name: Callable integration tests (6 — Auth/Firestore/Functions emulators)
+        run: npm run test:emulator:exec
 
       - name: Notify Telegram on failure
         if: failure() && github.event_name == 'push'
@@ -116,4 +130,4 @@ jobs:
           chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
           status: failure
           title: 'CI упал на master'
-          message: 'Job: Cloud Functions — build'
+          message: 'Job: Cloud Functions — build, unit, emulator'

@@ -22,13 +22,15 @@ class AuthRegisterRequested extends AuthEvent {
   final String name;
   final String email;
   final String password;
+  final LegalConsentAcceptance consent;
   const AuthRegisterRequested({
     required this.name,
     required this.email,
     required this.password,
+    required this.consent,
   });
   @override
-  List<Object?> get props => [name, email]; // password excluded — never expose in logs
+  List<Object?> get props => [name, email, consent.source, consent.localeCode]; // password excluded — never expose in logs
 }
 
 class AuthLogoutRequested extends AuthEvent {
@@ -38,9 +40,20 @@ class AuthLogoutRequested extends AuthEvent {
 }
 
 class AuthGoogleLoginRequested extends AuthEvent {
-  const AuthGoogleLoginRequested();
+  final LegalConsentAcceptance? newAccountConsent;
+  const AuthGoogleLoginRequested({this.newAccountConsent});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [
+    newAccountConsent?.source,
+    newAccountConsent?.localeCode,
+  ];
+}
+
+class AuthLegalConsentAccepted extends AuthEvent {
+  final LegalConsentAcceptance consent;
+  const AuthLegalConsentAccepted({required this.consent});
+  @override
+  List<Object?> get props => [consent.source, consent.localeCode];
 }
 
 class AuthUserChanged extends AuthEvent {

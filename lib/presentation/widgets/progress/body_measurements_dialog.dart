@@ -117,21 +117,21 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
               const SizedBox(height: 16),
               MeasurementField(
                 label: AppLocalizations.tl('chest'),
-                unit: 'см',
+                unit: AppLocalizations.tl('cmUnit'),
                 controller: _chest,
                 icon: Icons.circle_outlined,
               ),
               const SizedBox(height: 12),
               MeasurementField(
                 label: AppLocalizations.tl('waist'),
-                unit: 'см',
+                unit: AppLocalizations.tl('cmUnit'),
                 controller: _waist,
                 icon: Icons.circle_outlined,
               ),
               const SizedBox(height: 12),
               MeasurementField(
                 label: AppLocalizations.tl('hips'),
-                unit: 'см',
+                unit: AppLocalizations.tl('cmUnit'),
                 controller: _hips,
                 icon: Icons.circle_outlined,
               ),
@@ -191,14 +191,27 @@ class _BodyMeasurementsDialogState extends State<BodyMeasurementsDialog> {
                   style: TextStyle(fontSize: 10, color: colors.textMuted),
                 ),
               const SizedBox(height: 8),
-              Text(
-                '💡 Измеряйте сантиметровой лентой утром натощак в одних и тех же условиях',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: colors.textMuted,
-                  height: 1.5,
-                ),
-                textAlign: TextAlign.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Image.asset(AppImages.tip, width: 13, height: 13),
+                  ),
+                  const SizedBox(width: 5),
+                  Flexible(
+                    child: Text(
+                      AppLocalizations.tl('measurementsTapeTip'),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colors.textMuted,
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

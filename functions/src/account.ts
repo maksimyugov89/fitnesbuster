@@ -1,9 +1,14 @@
 import * as admin from "firebase-admin";
+import {FieldValue} from "firebase-admin/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {db, logInfo} from "./shared";
 import {FRIEND_LIST_LIMIT} from "./constants";
-
-const BATCH_LIMIT = 450;
+import {
+  DELETE_ACCOUNT_BATCH_LIMIT,
+  challengeProgressPath,
+  ownDeleteAccountCollectionPaths,
+  reciprocalFriendPath,
+} from "./accountCleanupPlan";
 
 /**
  * Permanently deletes the authenticated user's account and all associated
@@ -29,7 +34,7 @@ export const deleteAccount = onCall(
     let batch = db.batch();
     let opCount = 0;
     const flushIfNeeded = async () => {
-      if (opCount >= BATCH_LIMIT) {
+      if (opCount >= DELETE_ACCOUNT_BATCH_LIMIT) {
         await batch.commit();
         batch = db.batch();
         opCount = 0;
@@ -45,7 +50,7 @@ export const deleteAccount = onCall(
     const friendsSnap = await db.collection(`friends/${uid}/list`).limit(FRIEND_LIST_LIMIT).get();
     for (const doc of friendsSnap.docs) {
       await queueDelete(doc.ref);
-      await queueDelete(db.doc(`friends/${doc.id}/list/${uid}`));
+      await queueDelete(db.doc(reciprocalFriendPath(uid, doc.id)));
     }
 
     // Friend requests where the user is sender or recipient
@@ -58,7 +63,7 @@ export const deleteAccount = onCall(
     }
 
     // Own activity events, feed inbox, notifications
-    for (const path of [`activity_events/${uid}/items`, `feed/${uid}/events`, `notifications/${uid}/items`]) {
+    for (const path of ownDeleteAccountCollectionPaths(uid)) {
       const snap = await db.collection(path).get();
       for (const doc of snap.docs) {
         await queueDelete(doc.ref);
@@ -68,10 +73,10 @@ export const deleteAccount = onCall(
     // Challenge participation: leave the challenge + drop progress doc
     const challengesSnap = await db.collection("challenges").where("participants", "array-contains", uid).get();
     for (const chalDoc of challengesSnap.docs) {
-      batch.update(chalDoc.ref, {participants: admin.firestore.FieldValue.arrayRemove(uid)});
+      batch.update(chalDoc.ref, {participants: FieldValue.arrayRemove(uid)});
       opCount++;
       await flushIfNeeded();
-      await queueDelete(db.doc(`challenge_progress/${chalDoc.id}/participants/${uid}`));
+      await queueDelete(db.doc(challengeProgressPath(chalDoc.id, uid)));
     }
 
     // Profile document itself

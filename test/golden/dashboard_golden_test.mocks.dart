@@ -15,13 +15,13 @@ import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart' as _i4;
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart'
     as _i8;
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart' as _i6;
-import 'package:fitnesbuster/domain/services/i_deepseek_service.dart' as _i14;
+import 'package:fitnesbuster/domain/services/i_deepseek_service.dart' as _i15;
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart'
-    as _i13;
+    as _i14;
 import 'package:fitnesbuster/domain/services/i_health_connect_service.dart'
     as _i9;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i15;
+import 'package:mockito/src/dummies.dart' as _i13;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -72,6 +72,14 @@ class MockIAuthRepository extends _i1.Mock implements _i4.IAuthRepository {
           as bool);
 
   @override
+  _i5.Future<bool> hasCurrentLegalConsent() =>
+      (super.noSuchMethod(
+            Invocation.method(#hasCurrentLegalConsent, []),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+
+  @override
   _i5.Future<_i2.UserEntity?> getCurrentUserWithProfile() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentUserWithProfile, []),
@@ -103,12 +111,14 @@ class MockIAuthRepository extends _i1.Mock implements _i4.IAuthRepository {
     required String? name,
     required String? email,
     required String? password,
+    required Object? consent,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#register, [], {
               #name: name,
               #email: email,
               #password: password,
+              #consent: consent,
             }),
             returnValue: _i5.Future<_i2.UserEntity>.value(
               _FakeUserEntity_0(
@@ -117,6 +127,23 @@ class MockIAuthRepository extends _i1.Mock implements _i4.IAuthRepository {
                   #name: name,
                   #email: email,
                   #password: password,
+                  #consent: consent,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i2.UserEntity>);
+  @override
+  _i5.Future<_i2.UserEntity> signInWithGoogle({Object? newAccountConsent}) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithGoogle, [], {
+              #newAccountConsent: newAccountConsent,
+            }),
+            returnValue: _i5.Future<_i2.UserEntity>.value(
+              _FakeUserEntity_0(
+                this,
+                Invocation.method(#signInWithGoogle, [], {
+                  #newAccountConsent: newAccountConsent,
                 }),
               ),
             ),
@@ -124,11 +151,20 @@ class MockIAuthRepository extends _i1.Mock implements _i4.IAuthRepository {
           as _i5.Future<_i2.UserEntity>);
 
   @override
-  _i5.Future<_i2.UserEntity> signInWithGoogle() =>
+  _i5.Future<_i2.UserEntity> acceptCurrentLegalConsent({
+    required Object? consent,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#signInWithGoogle, []),
+            Invocation.method(#acceptCurrentLegalConsent, [], {
+              #consent: consent,
+            }),
             returnValue: _i5.Future<_i2.UserEntity>.value(
-              _FakeUserEntity_0(this, Invocation.method(#signInWithGoogle, [])),
+              _FakeUserEntity_0(
+                this,
+                Invocation.method(#acceptCurrentLegalConsent, [], {
+                  #consent: consent,
+                }),
+              ),
             ),
           )
           as _i5.Future<_i2.UserEntity>);
@@ -184,6 +220,24 @@ class MockIAuthRepository extends _i1.Mock implements _i4.IAuthRepository {
   _i5.Future<void> deleteAccount() =>
       (super.noSuchMethod(
             Invocation.method(#deleteAccount, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> reloadUser() =>
+      (super.noSuchMethod(
+            Invocation.method(#reloadUser, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> signOut() =>
+      (super.noSuchMethod(
+            Invocation.method(#signOut, []),
             returnValue: _i5.Future<void>.value(),
             returnValueForMissingStub: _i5.Future<void>.value(),
           )
@@ -1065,6 +1119,40 @@ class MockISocialService extends _i1.Mock implements _i10.ISocialService {
           as _i5.Stream<List<_i12.FeedEvent>>);
 
   @override
+  _i5.Future<String> createChallenge({
+    required String? title,
+    required String? description,
+    required String? goalType,
+    required int? targetValue,
+    required int? durationDays,
+    required bool? isPublic,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createChallenge, [], {
+              #title: title,
+              #description: description,
+              #goalType: goalType,
+              #targetValue: targetValue,
+              #durationDays: durationDays,
+              #isPublic: isPublic,
+            }),
+            returnValue: _i5.Future<String>.value(
+              _i13.dummyValue<String>(
+                this,
+                Invocation.method(#createChallenge, [], {
+                  #title: title,
+                  #description: description,
+                  #goalType: goalType,
+                  #targetValue: targetValue,
+                  #durationDays: durationDays,
+                  #isPublic: isPublic,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<String>);
+
+  @override
   _i5.Future<void> joinChallenge(String? challengeId) =>
       (super.noSuchMethod(
             Invocation.method(#joinChallenge, [challengeId]),
@@ -1086,15 +1174,6 @@ class MockISocialService extends _i1.Mock implements _i10.ISocialService {
   _i5.Future<void> deleteChallenge(String? challengeId) =>
       (super.noSuchMethod(
             Invocation.method(#deleteChallenge, [challengeId]),
-            returnValue: _i5.Future<void>.value(),
-            returnValueForMissingStub: _i5.Future<void>.value(),
-          )
-          as _i5.Future<void>);
-
-  @override
-  _i5.Future<void> seedChallenges() =>
-      (super.noSuchMethod(
-            Invocation.method(#seedChallenges, []),
             returnValue: _i5.Future<void>.value(),
             returnValueForMissingStub: _i5.Future<void>.value(),
           )
@@ -1149,7 +1228,7 @@ class MockISocialService extends _i1.Mock implements _i10.ISocialService {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIGamificationService extends _i1.Mock
-    implements _i13.IGamificationService {
+    implements _i14.IGamificationService {
   MockIGamificationService() {
     _i1.throwOnMissingStub(this);
   }
@@ -1287,7 +1366,7 @@ class MockIGamificationService extends _i1.Mock
 /// A class which mocks [IDeepSeekService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
+class MockIDeepSeekService extends _i1.Mock implements _i15.IDeepSeekService {
   MockIDeepSeekService() {
     _i1.throwOnMissingStub(this);
   }
@@ -1314,7 +1393,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               },
             ),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(
                   #generateWorkoutPlan,
@@ -1354,7 +1433,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               },
             ),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(
                   #generateMealPlan,
@@ -1380,7 +1459,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
       (super.noSuchMethod(
             Invocation.method(#refineWorkoutPlan, [profile, exercises]),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(#refineWorkoutPlan, [profile, exercises]),
               ),
@@ -1403,7 +1482,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               #hasPhotos: hasPhotos,
             }),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(#analyzeProgress, [], {
                   #profile: profile,
@@ -1439,7 +1518,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               #weekPrNames: weekPrNames,
             }),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(#generateWeeklyDebrief, [], {
                   #profile: profile,
@@ -1469,7 +1548,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               {#profile: profile},
             ),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(
                   #askWithHistory,
@@ -1494,7 +1573,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               {#profile: profile, #recentTopics: recentTopics},
             ),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(
                   #askQuestion,
@@ -1510,20 +1589,21 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
   _i5.Future<String> parseWorkoutFromContent(
     String? content, {
     String? sourceHint,
+    _i2.UserProfile? profile,
   }) =>
       (super.noSuchMethod(
             Invocation.method(
               #parseWorkoutFromContent,
               [content],
-              {#sourceHint: sourceHint},
+              {#sourceHint: sourceHint, #profile: profile},
             ),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(
                   #parseWorkoutFromContent,
                   [content],
-                  {#sourceHint: sourceHint},
+                  {#sourceHint: sourceHint, #profile: profile},
                 ),
               ),
             ),
@@ -1536,6 +1616,7 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
     required String? userInput,
     String? correctionType,
     String? sourceHint,
+    _i2.UserProfile? profile,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#correctWorkoutPlan, [], {
@@ -1543,15 +1624,17 @@ class MockIDeepSeekService extends _i1.Mock implements _i14.IDeepSeekService {
               #userInput: userInput,
               #correctionType: correctionType,
               #sourceHint: sourceHint,
+              #profile: profile,
             }),
             returnValue: _i5.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i13.dummyValue<String>(
                 this,
                 Invocation.method(#correctWorkoutPlan, [], {
                   #currentPlanJson: currentPlanJson,
                   #userInput: userInput,
                   #correctionType: correctionType,
                   #sourceHint: sourceHint,
+                  #profile: profile,
                 }),
               ),
             ),

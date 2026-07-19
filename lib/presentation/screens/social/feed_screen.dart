@@ -6,6 +6,8 @@ import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({super.key});
@@ -33,7 +35,10 @@ class FeedScreen extends StatelessWidget {
             ),
           ),
         ),
-        title: const Text('Лента друзей', style: AppTextStyles.titleL),
+        title: Text(
+          AppLocalizations.tl('friendsFeedTitle'),
+          style: AppTextStyles.titleL,
+        ),
       ),
       body: StreamBuilder<List<FeedEvent>>(
         stream: sl<ISocialService>().feedStream(),
@@ -63,10 +68,10 @@ class FeedScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('👥', style: TextStyle(fontSize: 56)),
+            Image.asset(AppImages.friends, width: 64, height: 64),
             const SizedBox(height: 16),
             Text(
-              'Лента пуста',
+              AppLocalizations.tl('feedEmptyTitle'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 18,
@@ -76,7 +81,7 @@ class FeedScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Добавь друзей, чтобы видеть\nих тренировки и достижения',
+              AppLocalizations.tl('feedEmptyBody'),
               style: TextStyle(fontSize: 13, color: colors.textMuted),
               textAlign: TextAlign.center,
             ),
@@ -92,13 +97,29 @@ class _FeedCard extends StatelessWidget {
   final ThemePalette colors;
   const _FeedCard({required this.event, required this.colors});
 
-  String _timeAgo(DateTime dt) {
+  String get _challengeId {
+    final value = event.data['challengeId'];
+    return value is String ? value : '';
+  }
+
+  String _timeAgo(BuildContext context, DateTime dt) {
     final diff = DateTime.now().difference(dt);
-    if (diff.inMinutes < 1) return 'только что';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} мин. назад';
-    if (diff.inHours < 24) return '${diff.inHours} ч. назад';
-    if (diff.inDays < 7) return '${diff.inDays} дн. назад';
-    return DateFormat('d MMM', 'ru').format(dt);
+    if (diff.inMinutes < 1) return AppLocalizations.tl('feedJustNow');
+    if (diff.inMinutes < 60) {
+      return AppLocalizations.tlp('feedMinutesAgo', {
+        'count': '${diff.inMinutes}',
+      });
+    }
+    if (diff.inHours < 24) {
+      return AppLocalizations.tlp('feedHoursAgo', {'count': '${diff.inHours}'});
+    }
+    if (diff.inDays < 7) {
+      return AppLocalizations.tlp('feedDaysAgo', {'count': '${diff.inDays}'});
+    }
+    return DateFormat(
+      'd MMM',
+      Localizations.localeOf(context).languageCode,
+    ).format(dt);
   }
 
   @override
@@ -153,16 +174,131 @@ class _FeedCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _timeAgo(event.timestamp),
+                  _timeAgo(context, event.timestamp),
                   style: TextStyle(fontSize: 11, color: colors.textMuted),
                 ),
+                if (event.type == 'challenge_created' &&
+                    _challengeId.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  _JoinChallengeFromFeedButton(
+                    challengeId: _challengeId,
+                    colors: colors,
+                  ),
+                ],
               ],
             ),
           ),
           const SizedBox(width: 8),
-          Text(event.emoji, style: const TextStyle(fontSize: 24)),
+          Image.asset(event.iconAsset, width: 28, height: 28),
         ],
       ),
     );
+  }
+}
+
+class _JoinChallengeFromFeedButton extends StatefulWidget {
+  final String challengeId;
+  final ThemePalette colors;
+
+  const _JoinChallengeFromFeedButton({
+    required this.challengeId,
+    required this.colors,
+  });
+
+  @override
+  State<_JoinChallengeFromFeedButton> createState() =>
+      _JoinChallengeFromFeedButtonState();
+}
+
+class _JoinChallengeFromFeedButtonState
+    extends State<_JoinChallengeFromFeedButton> {
+  var _loading = false;
+  var _joined = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = AppLocalizations.tl(
+      _joined ? 'feedChallengeJoined' : 'feedChallengeJoin',
+    );
+    return GestureDetector(
+      onTap: _loading || _joined ? null : _join,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        decoration: BoxDecoration(
+          color: _joined
+              ? widget.colors.success.withValues(alpha: 0.12)
+              : widget.colors.primary,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: _loading
+              ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: widget.colors.textOnPrimary,
+                  ),
+                )
+              : Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: _joined
+                        ? widget.colors.success
+                        : widget.colors.textOnPrimary,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _join() async {
+    setState(() => _loading = true);
+    try {
+      await sl<ISocialService>().joinChallenge(widget.challengeId);
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _joined = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.tl('feedChallengeJoinSuccess')),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      final message = e.toString().toLowerCase();
+      if (message.contains('already-exists') ||
+          message.contains('already joined')) {
+        setState(() {
+          _loading = false;
+          _joined = true;
+        });
+        return;
+      }
+
+      setState(() => _loading = false);
+      final isPermissionError =
+          message.contains('permission-denied') ||
+          message.contains('permission denied');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isPermissionError
+                ? AppLocalizations.tl('feedPrivateChallengeOnlyFriends')
+                : AppLocalizations.tlp('feedChallengeJoinFailed', {
+                    'error': e.toString(),
+                  }),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      );
+    }
   }
 }

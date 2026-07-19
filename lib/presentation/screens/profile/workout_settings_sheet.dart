@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/presentation/screens/onboarding/workout_location_screen.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class WorkoutSettingsSheet extends StatefulWidget {
   final WorkoutLocation currentLocation;
@@ -94,7 +95,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
                 Expanded(
                   child: _buildRunOption(
                     RunningPreference.withRunning,
-                    '🏃‍♂️',
+                    AppImages.running,
                     l10n.withRunningLabel,
                     AppColors.success,
                   ),
@@ -103,7 +104,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
                 Expanded(
                   child: _buildRunOption(
                     RunningPreference.noRunning,
-                    '🚫',
+                    null,
                     l10n.withoutRunningLabel,
                     AppColors.accentOrange,
                   ),
@@ -122,18 +123,18 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
                     color: AppColors.info.withValues(alpha: 0.2),
                   ),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.info_outline_rounded,
                       color: AppColors.info,
                       size: 16,
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Кардио через берпи, прыжки и функциональные комплексы',
-                        style: TextStyle(
+                        AppLocalizations.tl('workoutSettingsNoRunningInfo'),
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.info,
                           height: 1.4,
@@ -157,18 +158,20 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
                       color: AppColors.warning.withValues(alpha: 0.25),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.warning_amber_rounded,
                         color: AppColors.warning,
                         size: 18,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Смена места тренировок пересоздаст программу под новое оборудование. Текущий прогресс сохранится.',
-                          style: TextStyle(
+                          AppLocalizations.tl(
+                            'workoutSettingsLocationChangeInfo',
+                          ),
+                          style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.warning,
                             height: 1.4,
@@ -237,7 +240,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
           ),
           child: Row(
             children: [
-              Text(opt.emoji, style: const TextStyle(fontSize: 24)),
+              Image.asset(opt.iconAsset, width: 28, height: 28),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -272,7 +275,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
 
   Widget _buildRunOption(
     RunningPreference val,
-    String emoji,
+    String? iconAsset,
     String label,
     Color color,
   ) {
@@ -296,7 +299,9 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 20)),
+            iconAsset != null
+                ? Image.asset(iconAsset, width: 24, height: 24)
+                : Icon(Icons.block_rounded, color: color, size: 20),
             const SizedBox(width: 8),
             Text(
               label,
@@ -317,13 +322,17 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Row(
+        content: Row(
           children: [
-            Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
-            SizedBox(width: 10),
+            const Icon(
+              Icons.check_circle_rounded,
+              color: Colors.white,
+              size: 18,
+            ),
+            const SizedBox(width: 10),
             Text(
-              'Программа будет обновлена',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              AppLocalizations.tl('workoutProgramUpdated'),
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -339,21 +348,21 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
     return [
       _LocOpt(
         WorkoutLocation.gym,
-        '🏋️',
+        AppImages.workoutsTab,
         l10n.gymLocation,
         l10n.gymLocationSub,
         AppColors.accentPurple,
       ),
       _LocOpt(
         WorkoutLocation.outdoor,
-        '🏃',
+        AppImages.running,
         l10n.stadiumLocation,
         l10n.stadiumLocationSub,
         AppColors.success,
       ),
       _LocOpt(
         WorkoutLocation.home,
-        '🏠',
+        AppImages.home,
         l10n.homeLocation,
         l10n.homeLocationSub,
         AppColors.accentOrange,
@@ -364,7 +373,7 @@ class _WorkoutSettingsSheetState extends State<WorkoutSettingsSheet> {
 
 class _LocOpt {
   final WorkoutLocation value;
-  final String emoji, title, sub;
+  final String iconAsset, title, sub;
   final Color color;
-  const _LocOpt(this.value, this.emoji, this.title, this.sub, this.color);
+  const _LocOpt(this.value, this.iconAsset, this.title, this.sub, this.color);
 }

@@ -5,6 +5,8 @@ import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/presentation/widgets/segmented_tab_bar.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class AchievementsScreen extends StatefulWidget {
   const AchievementsScreen({super.key});
@@ -20,17 +22,17 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   int _totalXp = 0;
   String _selectedCategory = 'all';
 
-  static const _categories = [
-    ('all', 'Все'),
-    ('workout', 'Тренировки'),
-    ('streak', 'Серии'),
-    ('pr', 'Рекорды'),
-    ('nutrition', 'Питание'),
-    ('water', 'Вода'),
-    ('health', 'Здоровье'),
-    ('app', 'Приложение'),
-    ('level', 'Уровни'),
-    ('special', 'Особые'),
+  List<(String, String)> get _categories => [
+    ('all', AppLocalizations.tl('achCategoryAll')),
+    ('workout', AppLocalizations.tl('workoutsTitle')),
+    ('streak', AppLocalizations.tl('achCategoryStreaks')),
+    ('pr', AppLocalizations.tl('achCategoryRecords')),
+    ('nutrition', AppLocalizations.tl('nutritionTitle')),
+    ('water', AppLocalizations.tl('waterTitle')),
+    ('health', AppLocalizations.tl('achCategoryHealth')),
+    ('app', AppLocalizations.tl('achCategoryApp')),
+    ('level', AppLocalizations.tl('achievementsLevels')),
+    ('special', AppLocalizations.tl('achCategorySpecial')),
   ];
 
   @override
@@ -74,7 +76,10 @@ class _AchievementsScreenState extends State<AchievementsScreen>
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Достижения', style: AppTextStyles.titleL),
+        title: Text(
+          AppLocalizations.tl('achievementsTitle'),
+          style: AppTextStyles.titleL,
+        ),
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
@@ -94,7 +99,10 @@ class _AchievementsScreenState extends State<AchievementsScreen>
           preferredSize: const Size.fromHeight(52),
           child: SegmentedTabBar(
             controller: _tabs,
-            labels: const ['Достижения', 'Уровни'],
+            labels: [
+              AppLocalizations.tl('achievementsTitle'),
+              AppLocalizations.tl('achievementsLevels'),
+            ],
           ),
         ),
       ),
@@ -147,7 +155,12 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Ур. ${lvl.level} · ${lvl.name}',
+                        AppLocalizations.tlp('gamificationLevelShort', {
+                          'level': '${lvl.level}',
+                          'name': GamificationService.localizedLevelName(
+                            lvl.level,
+                          ),
+                        }),
                         style: TextStyle(
                           fontFamily: 'Syne',
                           fontSize: 16,
@@ -157,7 +170,11 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '$_totalXp XP · $unlockedCount / $totalCount значков',
+                        AppLocalizations.tlp('achievementsBadgesProgress', {
+                          'xp': '$_totalXp',
+                          'unlocked': '$unlockedCount',
+                          'total': '$totalCount',
+                        }),
                         style: TextStyle(fontSize: 12, color: colors.textMuted),
                       ),
                       const SizedBox(height: 8),
@@ -280,7 +297,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             ),
             const SizedBox(height: 12),
             Text(
-              a.name,
+              GamificationService.localizedAchievementName(a),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 20,
@@ -290,7 +307,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             ),
             const SizedBox(height: 6),
             Text(
-              a.desc,
+              GamificationService.localizedAchievementDescription(a),
               style: TextStyle(fontSize: 14, color: colors.textSecondary),
               textAlign: TextAlign.center,
             ),
@@ -328,13 +345,24 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                         : colors.elevated,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
-                    earned ? '✓ Получено' : '🔒 Не получено',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: earned ? colors.primary : colors.textMuted,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!earned) ...[
+                        Image.asset(AppImages.lock, width: 14, height: 14),
+                        const SizedBox(width: 4),
+                      ],
+                      Text(
+                        earned
+                            ? AppLocalizations.tl('achievementEarned')
+                            : AppLocalizations.tl('achievementNotEarned'),
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: earned ? colors.primary : colors.textMuted,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -393,7 +421,7 @@ class _AchievementTile extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: Text(
-                  achievement.name,
+                  GamificationService.localizedAchievementName(achievement),
                   style: TextStyle(
                     fontFamily: 'Syne',
                     fontSize: 10,
@@ -454,7 +482,10 @@ class _LevelsTab extends StatelessWidget {
               Image.asset(lvl.icon, width: 88, height: 88, fit: BoxFit.contain),
               const SizedBox(height: 10),
               Text(
-                'Уровень ${lvl.level} · ${lvl.name}',
+                AppLocalizations.tlp('gamificationLevelTitle', {
+                  'level': '${lvl.level}',
+                  'name': GamificationService.localizedLevelName(lvl.level),
+                }),
                 style: TextStyle(
                   fontFamily: 'Syne',
                   fontSize: 18,
@@ -464,7 +495,7 @@ class _LevelsTab extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '$totalXp XP всего',
+                AppLocalizations.tlp('gamificationXpTotal', {'xp': '$totalXp'}),
                 style: TextStyle(fontSize: 12, color: colors.textMuted),
               ),
               const SizedBox(height: 14),
@@ -480,8 +511,12 @@ class _LevelsTab extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 lvl.isMaxLevel
-                    ? 'Достигнут максимальный уровень'
-                    : '${lvl.xpInCurrentLevel} / ${lvl.xpNeededForNext} XP · осталось ${lvl.xpForNext - totalXp} XP до след. уровня',
+                    ? AppLocalizations.tl('gamificationMaxLevel')
+                    : AppLocalizations.tlp('gamificationNextLevelProgress', {
+                        'current': '${lvl.xpInCurrentLevel}',
+                        'needed': '${lvl.xpNeededForNext}',
+                        'remaining': '${lvl.xpForNext - totalXp}',
+                      }),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -495,7 +530,7 @@ class _LevelsTab extends StatelessWidget {
 
         const SizedBox(height: 20),
         Text(
-          'Все уровни',
+          AppLocalizations.tl('gamificationAllLevels'),
           style: TextStyle(
             fontFamily: 'Syne',
             fontSize: 15,
@@ -542,7 +577,12 @@ class _LevelsTab extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Ур. ${entry.level} · ${entry.name}',
+                          AppLocalizations.tlp('gamificationLevelShort', {
+                            'level': '${entry.level}',
+                            'name': GamificationService.localizedLevelName(
+                              entry.level,
+                            ),
+                          }),
                           style: TextStyle(
                             fontFamily: 'Syne',
                             fontSize: 14,
@@ -554,7 +594,9 @@ class _LevelsTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'от ${entry.xpRequired} XP',
+                          AppLocalizations.tlp('gamificationFromXp', {
+                            'xp': '${entry.xpRequired}',
+                          }),
                           style: TextStyle(
                             fontSize: 11,
                             color: colors.textMuted,
@@ -574,7 +616,7 @@ class _LevelsTab extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'Сейчас',
+                        AppLocalizations.tl('gamificationCurrent'),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,

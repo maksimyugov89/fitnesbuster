@@ -7,6 +7,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/constants/avatar_presets.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/presentation/widgets/common/permission_rationale_dialog.dart';
 
 class AvatarPickerSheet extends StatefulWidget {
   final int currentPresetIndex;
@@ -38,6 +39,13 @@ class _AvatarPickerSheetState extends State<AvatarPickerSheet> {
 
   Future<void> _pickImage(ImageSource source) async {
     if (_picking) return;
+    final accepted = await showPermissionRationaleDialog(
+      context,
+      source == ImageSource.camera
+          ? PermissionRationaleKind.camera
+          : PermissionRationaleKind.photos,
+    );
+    if (!accepted || !mounted) return;
     setState(() => _picking = true);
     try {
       final picker = ImagePicker();
@@ -221,9 +229,10 @@ class _AvatarPickerSheetState extends State<AvatarPickerSheet> {
             itemCount: kAvatarPresets.length,
             itemBuilder: (_, i) {
               final p = kAvatarPresets[i];
+              final label = AppLocalizations.tl(p.labelKey);
               final isSelected = _selected == i;
               return Semantics(
-                label: '${AppLocalizations.tl('chooseAvatar')} ${p.label}',
+                label: '${AppLocalizations.tl('chooseAvatar')} $label',
                 button: true,
                 child: GestureDetector(
                   onTap: () {
@@ -263,15 +272,16 @@ class _AvatarPickerSheetState extends State<AvatarPickerSheet> {
                               : [],
                         ),
                         child: Center(
-                          child: Text(
-                            p.emoji,
-                            style: const TextStyle(fontSize: 22),
+                          child: Image.asset(
+                            p.iconAsset,
+                            width: 30,
+                            height: 30,
                           ),
                         ),
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        p.label,
+                        label,
                         style: TextStyle(
                           fontSize: 9,
                           color: isSelected ? colors.primary : colors.textMuted,
@@ -326,12 +336,18 @@ class _SourceButton extends StatelessWidget {
             children: [
               Icon(icon, color: color, size: 28),
               const SizedBox(height: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: color,
-                  fontWeight: FontWeight.w600,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],

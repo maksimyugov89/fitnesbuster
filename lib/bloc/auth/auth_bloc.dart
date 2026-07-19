@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
 import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/legal/legal_consent.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 part 'auth_event.dart';
@@ -23,6 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthRegisterRequested>(_onRegisterRequested);
     on<AuthGoogleLoginRequested>(_onGoogleLoginRequested);
+    on<AuthLegalConsentAccepted>(_onLegalConsentAccepted);
     on<AuthLogoutRequested>(_onLogoutRequested);
     on<AuthUserChanged>(_onUserChanged);
     on<AuthEmailVerificationChecked>(_onEmailVerificationChecked);
@@ -47,26 +50,46 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(const AuthStateUnauthenticated());
       return;
     }
-    // Emit the cached user immediately so the UI has something to show, then
-    // correct with the full Firestore profile (weight, height, ...) as soon
-    // as it resolves — awaited here rather than left to the separate
-    // userChanges stream, whose timing competes with unrelated startup work
-    // and previously left screens reading a profile-less state indefinitely.
+
+    // Verify the user still exists on the server. If the account was deleted
+    // but the local Firebase Auth cache was not cleared (e.g. network error
+    // during the Cloud Function call), force a sign-out so the user cannot
+    // re-enter a deleted account.
+    try {
+      await _authRepository.reloadUser();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found' ||
+          e.code == 'user-token-expired' ||
+          e.code == 'user-disabled') {
+        await _authRepository.signOut();
+        emit(const AuthStateUnauthenticated());
+        return;
+      }
+      // Network / transient errors: continue with cached user so offline
+      // mode still works.
+    } catch (_) {
+      // Non-FirebaseAuth exceptions: continue with cached user.
+    }
+
+    if (!await _authRepository.hasCurrentLegalConsent()) {
+      emit(const AuthStateLegalConsentRequired());
+      return;
+    }
+
+    // Fetch the full Firestore profile BEFORE emitting any AuthState.
+    // Previously the intermediate emit (without profile) could cause the
+    // splash screen to navigate to /dashboard with hasProfile=false,
+    // which the router would then redirect to /onboarding — trapping the
+    // user in an infinite onboarding loop even though Firestore has a
+    // complete profile.
+    final fullUser = await _authRepository.getCurrentUserWithProfile();
+
     emit(
       AuthStateAuthenticated(
-        user: fastUser,
+        user: fullUser ?? fastUser,
         emailVerified: _authRepository.isEmailVerified,
       ),
     );
-    final fullUser = await _authRepository.getCurrentUserWithProfile();
-    if (fullUser != null) {
-      emit(
-        AuthStateAuthenticated(
-          user: fullUser,
-          emailVerified: _authRepository.isEmailVerified,
-        ),
-      );
-    }
   }
 
   Future<void> _onLoginRequested(
@@ -88,7 +111,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     } on AuthException catch (e) {
       appLogger.w('[AuthBloc] login error', error: e);
-      emit(AuthStateError(message: _mapFirebaseError(e.code)));
+      if (e.code == 'terms-required' && _authRepository.currentUser != null) {
+        emit(const AuthStateLegalConsentRequired());
+      } else {
+        emit(AuthStateError(message: _mapFirebaseError(e.code)));
+      }
     } catch (e, st) {
       appLogger.w('[AuthBloc] login failed', error: e, stackTrace: st);
       emit(AuthStateError(message: AppLocalizations.tl('genericError')));
@@ -105,6 +132,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
         name: event.name,
+        consent: event.consent,
       );
       _track(() => sl<IAnalyticsService>().logSignUp(method: 'email'));
       emit(
@@ -128,8 +156,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthStateLoading());
     try {
-      final user = await _authRepository.signInWithGoogle();
-      _track(() => sl<IAnalyticsService>().logLogin(method: 'google'));
+      final user = await _authRepository.signInWithGoogle(
+        newAccountConsent: event.newAccountConsent,
+      );
+      _track(
+        () => event.newAccountConsent == null
+            ? sl<IAnalyticsService>().logLogin(method: 'google')
+            : sl<IAnalyticsService>().logSignUp(method: 'google'),
+      );
       emit(
         AuthStateAuthenticated(
           user: user,
@@ -138,7 +172,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     } on AuthException catch (e) {
       appLogger.w('[AuthBloc] googleLogin error', error: e);
-      emit(AuthStateError(message: _mapFirebaseError(e.code)));
+      if (e.code == 'terms-required' && _authRepository.currentUser != null) {
+        emit(
+          const AuthStateLegalConsentRequired(
+            source: LegalConsentSource.googleLogin,
+          ),
+        );
+      } else {
+        emit(AuthStateError(message: _mapFirebaseError(e.code)));
+      }
     } catch (e, st) {
       appLogger.w('[AuthBloc] googleLogin failed', error: e, stackTrace: st);
       if (e.toString().contains('cancelled')) {
@@ -146,6 +188,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } else {
         emit(AuthStateError(message: AppLocalizations.tl('googleLoginError')));
       }
+    }
+  }
+
+  Future<void> _onLegalConsentAccepted(
+    AuthLegalConsentAccepted event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthStateLoading());
+    try {
+      final user = await _authRepository.acceptCurrentLegalConsent(
+        consent: event.consent,
+      );
+      _track(() => sl<IAnalyticsService>().logLogin(method: 'google'));
+      emit(
+        AuthStateAuthenticated(
+          user: user,
+          emailVerified: _authRepository.isEmailVerified,
+        ),
+      );
+    } on AuthException catch (e) {
+      appLogger.w('[AuthBloc] legal consent accept error', error: e);
+      emit(AuthStateError(message: _mapFirebaseError(e.code)));
+    } catch (e, st) {
+      appLogger.w(
+        '[AuthBloc] legal consent accept failed',
+        error: e,
+        stackTrace: st,
+      );
+      emit(AuthStateError(message: AppLocalizations.tl('genericError')));
     }
   }
 
@@ -162,6 +233,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onUserChanged(AuthUserChanged event, Emitter<AuthState> emit) {
+    if (state is AuthStateLoading || state is AuthStateLegalConsentRequired) {
+      return;
+    }
     if (event.user != null) {
       emit(
         AuthStateAuthenticated(
@@ -210,6 +284,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return AppLocalizations.tl('operationNotAllowed');
       case 'too-many-requests':
         return AppLocalizations.tl('tooManyRequests');
+      case 'terms-required':
+        return AppLocalizations.tl('authTermsRequired');
       default:
         return AppLocalizations.tl('loginError');
     }

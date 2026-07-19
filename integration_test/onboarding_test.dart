@@ -80,17 +80,27 @@ void main() {
 
     GetIt.instance.registerLazySingleton<IAuthRepository>(() => mockAuthRepo);
     GetIt.instance.registerLazySingleton<IUserRepository>(() => mockUserRepo);
-    GetIt.instance.registerLazySingleton<ISettingsRepository>(() => mockSettingsRepo);
-    GetIt.instance.registerLazySingleton<IHealthConnectService>(() => mockHealthConnect);
+    GetIt.instance.registerLazySingleton<ISettingsRepository>(
+      () => mockSettingsRepo,
+    );
+    GetIt.instance.registerLazySingleton<IHealthConnectService>(
+      () => mockHealthConnect,
+    );
     GetIt.instance.registerLazySingleton<ISocialService>(() => mockSocial);
-    GetIt.instance.registerLazySingleton<IGamificationService>(() => mockGamification);
-    GetIt.instance.registerLazySingleton<OnboardingWorkflowService>(() => mockWorkflowService);
+    GetIt.instance.registerLazySingleton<IGamificationService>(
+      () => mockGamification,
+    );
+    GetIt.instance.registerLazySingleton<OnboardingWorkflowService>(
+      () => mockWorkflowService,
+    );
 
     when(mockAuthRepo.currentUser).thenReturn(testUser);
 
     when(mockSettingsRepo.getAvatarMode()).thenAnswer((_) async => 'initials');
     when(mockSettingsRepo.getAvatarPresetIndex()).thenAnswer((_) async => -1);
-    when(mockSettingsRepo.getAvatarCustomPath()).thenAnswer((_) async => null as String?);
+    when(
+      mockSettingsRepo.getAvatarCustomPath(),
+    ).thenAnswer((_) async => null as String?);
     when(mockSettingsRepo.getEatenCal(any)).thenAnswer((_) async => 0);
     when(mockSettingsRepo.getTargetCal(any)).thenAnswer((_) async => 2000);
     when(mockSettingsRepo.getWaterMl(any)).thenAnswer((_) async => 0);
@@ -100,9 +110,13 @@ void main() {
     when(mockSettingsRepo.getManualSteps(any)).thenAnswer((_) async => 0);
 
     when(mockHealthConnect.initialize()).thenAnswer((_) async => true);
-    when(mockHealthConnect.readAllToday()).thenThrow(Exception('Not available'));
+    when(
+      mockHealthConnect.readAllToday(),
+    ).thenThrow(Exception('Not available'));
 
-    when(mockSocial.incomingRequestsStream()).thenAnswer((_) => const Stream.empty());
+    when(
+      mockSocial.incomingRequestsStream(),
+    ).thenAnswer((_) => const Stream.empty());
 
     when(mockGamification.getTotalXp()).thenAnswer((_) async => 0);
   });
@@ -112,8 +126,9 @@ void main() {
   });
 
   group('P2-04: Full Onboarding Flow', () {
-    testWidgets('Step 1: Goal selection screen renders and allows selection',
-        (tester) async {
+    testWidgets('Step 1: Goal selection screen renders and allows selection', (
+      tester,
+    ) async {
       final onboardingBloc = OnboardingBloc(
         userRepo: sl(),
         workflowService: sl(),
@@ -138,13 +153,15 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(onboardingBloc.state, isA<OnboardingCollecting>());
-      expect((onboardingBloc.state as OnboardingCollecting).goal, FitnessGoal.loseWeight);
+      expect(
+        (onboardingBloc.state as OnboardingCollecting).goal,
+        FitnessGoal.loseWeight,
+      );
 
       await onboardingBloc.close();
     });
 
-    testWidgets('Step 2: Intensity selection screen renders',
-        (tester) async {
+    testWidgets('Step 2: Intensity selection screen renders', (tester) async {
       final onboardingBloc = OnboardingBloc(
         userRepo: sl(),
         workflowService: sl(),
@@ -169,8 +186,7 @@ void main() {
       await onboardingBloc.close();
     });
 
-    testWidgets('Step 3: Workout location screen renders',
-        (tester) async {
+    testWidgets('Step 3: Workout location screen renders', (tester) async {
       final onboardingBloc = OnboardingBloc(
         userRepo: sl(),
         workflowService: sl(),
@@ -198,8 +214,9 @@ void main() {
       await onboardingBloc.close();
     });
 
-    testWidgets('Full flow: all onboarding screens render without crashing',
-        (tester) async {
+    testWidgets('Full flow: all onboarding screens render without crashing', (
+      tester,
+    ) async {
       final onboardingBloc = OnboardingBloc(
         userRepo: sl(),
         workflowService: sl(),
@@ -208,7 +225,9 @@ void main() {
       onboardingBloc
         ..add(const OnboardingSetGoal(FitnessGoal.loseWeight))
         ..add(const OnboardingSetIntensity(IntensityLevel.balanced))
-        ..add(const OnboardingSetLocation(location: 'gym', running: 'treadmill'));
+        ..add(
+          const OnboardingSetLocation(location: 'gym', running: 'treadmill'),
+        );
 
       await tester.pumpWidget(
         AppTheme(
@@ -249,20 +268,18 @@ void main() {
       await onboardingBloc.close();
     });
 
-    testWidgets('Navigate to dashboard after onboarding — screen renders',
-        (tester) async {
+    testWidgets('Navigate to dashboard after onboarding — screen renders', (
+      tester,
+    ) async {
       final authBloc = AuthBloc(authRepository: mockAuthRepo);
-      when(mockAuthRepo.userChanges)
-          .thenAnswer((_) => Stream.value(testUser));
+      when(mockAuthRepo.userChanges).thenAnswer((_) => Stream.value(testUser));
       when(mockAuthRepo.currentUser).thenReturn(testUser);
 
       await tester.pumpWidget(
         AppTheme(
           palette: ThemePalette.neon,
           child: MultiBlocProvider(
-            providers: [
-              BlocProvider<AuthBloc>.value(value: authBloc),
-            ],
+            providers: [BlocProvider<AuthBloc>.value(value: authBloc)],
             child: const MaterialApp(home: DashboardScreen()),
           ),
         ),

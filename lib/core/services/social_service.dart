@@ -11,13 +11,28 @@ import 'package:fitnesbuster/data/models/user_search_result.dart';
 
 export 'package:fitnesbuster/core/services/social_models.dart';
 
+typedef CurrentUidProvider = String? Function();
+typedef SocialCallableInvoker =
+    Future<Object?> Function(String name, Map<String, dynamic> data);
+
 class SocialService implements ISocialService {
-  SocialService();
+  SocialService({
+    required FirebaseFirestore firestore,
+    FirebaseFunctions? functions,
+    CurrentUidProvider? currentUidProvider,
+    SocialCallableInvoker? callableInvoker,
+  }) : _db = firestore,
+       _functions = functions,
+       _currentUidProvider =
+           currentUidProvider ?? (() => FirebaseAuth.instance.currentUser?.uid),
+       _callableInvoker = callableInvoker;
 
-  final _db = FirebaseFirestore.instance;
-  final _functions = FirebaseFunctions.instanceFor(region: 'europe-west1');
+  final FirebaseFirestore _db;
+  final FirebaseFunctions? _functions;
+  final CurrentUidProvider _currentUidProvider;
+  final SocialCallableInvoker? _callableInvoker;
 
-  String? get _uid => FirebaseAuth.instance.currentUser?.uid;
+  String? get _uid => _currentUidProvider();
 
   // ── FCM token registration ─────────────────────────────────────────────────
 
@@ -27,7 +42,8 @@ class SocialService implements ISocialService {
     if (uid == null) return;
     try {
       final messaging = FirebaseMessaging.instance;
-      await messaging.requestPermission(alert: true, badge: true, sound: true);
+      final settings = await messaging.getNotificationSettings();
+      if (!_notificationsAllowed(settings.authorizationStatus)) return;
       final token = await messaging.getToken();
       if (token != null) {
         await _db.doc('${FirestoreCollections.users}/$uid').set({
@@ -44,6 +60,30 @@ class SocialService implements ISocialService {
       appLogger.w('SocialService: FCM init failed', error: e, stackTrace: st);
     }
   }
+
+  Future<bool> requestFcmPermission() async {
+    try {
+      final settings = await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      final allowed = _notificationsAllowed(settings.authorizationStatus);
+      if (allowed) await initFcm();
+      return allowed;
+    } catch (e, st) {
+      appLogger.w(
+        'SocialService: notification permission failed',
+        error: e,
+        stackTrace: st,
+      );
+      return false;
+    }
+  }
+
+  bool _notificationsAllowed(AuthorizationStatus status) =>
+      status == AuthorizationStatus.authorized ||
+      status == AuthorizationStatus.provisional;
 
   // ── Save username (called once from profile setup) ─────────────────────────
 
@@ -74,11 +114,7 @@ class SocialService implements ISocialService {
     final uid = _uid;
     if (uid == null) return;
     try {
-      await _db.collection(FirestoreCollections.activityEvents(uid)).add({
-        'type': type,
-        'data': data,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      await _call('publishActivity', {'type': type, 'data': data});
     } catch (e, st) {
       appLogger.w(
         'SocialService: publish activity failed',
@@ -149,8 +185,8 @@ class SocialService implements ISocialService {
   @override
   Future<List<UserSearchResult>> searchUsers(String query) async {
     try {
-      final result = await _call('searchUsers', {'query': query});
-      return (result.data as List? ?? [])
+      final data = await _call('searchUsers', {'query': query});
+      return (data as List? ?? [])
           .map(
             (e) =>
                 UserSearchResult.fromJson(Map<String, dynamic>.from(e as Map)),
@@ -207,6 +243,36 @@ class SocialService implements ISocialService {
   // ── CHALLENGES ─────────────────────────────────────────────────────────────
 
   @override
+  Future<String> createChallenge({
+    required String title,
+    required String description,
+    required String goalType,
+    required int targetValue,
+    required int durationDays,
+    required bool isPublic,
+  }) async {
+    try {
+      final data = await _call('createChallenge', {
+        'title': title,
+        'description': description,
+        'goalType': goalType,
+        'targetValue': targetValue,
+        'durationDays': durationDays,
+        'isPublic': isPublic,
+      });
+      final response = data as Map<String, dynamic>?;
+      return response?['challengeId'] as String? ?? '';
+    } catch (e, st) {
+      appLogger.w(
+        'SocialService: createChallenge failed',
+        error: e,
+        stackTrace: st,
+      );
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> joinChallenge(String challengeId) async {
     try {
       await _call('joinChallenge', {'challengeId': challengeId});
@@ -249,20 +315,6 @@ class SocialService implements ISocialService {
   }
 
   @override
-  Future<void> seedChallenges() async {
-    try {
-      await _call('seedChallenges', {});
-    } catch (e, st) {
-      appLogger.w(
-        'SocialService: seedChallenges failed',
-        error: e,
-        stackTrace: st,
-      );
-      rethrow;
-    }
-  }
-
-  @override
   Future<List<String>> recordWorkout({
     required int durationMinutes,
     required int caloriesBurned,
@@ -270,14 +322,14 @@ class SocialService implements ISocialService {
     required int streak,
   }) async {
     try {
-      final result = await _call('recordWorkout', {
+      final data = await _call('recordWorkout', {
         'durationMinutes': durationMinutes,
         'caloriesBurned': caloriesBurned,
         'cardioMinutes': cardioMinutes,
         'streak': streak,
       });
-      final data = result.data as Map<String, dynamic>?;
-      return ((data?['completed'] as List?) ?? []).cast<String>();
+      final response = data as Map<String, dynamic>?;
+      return ((response?['completed'] as List?) ?? []).cast<String>();
     } catch (e, st) {
       appLogger.w(
         'SocialService: recordWorkout failed',
@@ -296,7 +348,10 @@ class SocialService implements ISocialService {
         .orderBy('endDate', descending: true)
         .limit(30)
         .snapshots()
-        .map((s) => s.docs.map(Challenge.fromDoc).toList());
+        .map((s) {
+          appLogger.i('publicChallengesStream snapshot count=${s.docs.length}');
+          return s.docs.map(Challenge.fromDoc).toList();
+        });
   }
 
   @override
@@ -308,7 +363,12 @@ class SocialService implements ISocialService {
         .where('participants', arrayContains: uid)
         .orderBy('endDate', descending: true)
         .snapshots()
-        .map((s) => s.docs.map(Challenge.fromDoc).toList());
+        .map((s) {
+          appLogger.i(
+            'myChallengesStream snapshot count=${s.docs.length} uid=$uid',
+          );
+          return s.docs.map(Challenge.fromDoc).toList();
+        });
   }
 
   @override
@@ -324,11 +384,13 @@ class SocialService implements ISocialService {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  Future<HttpsCallableResult<dynamic>> _call(
-    String name,
-    Map<String, dynamic> data,
-  ) async {
-    final fn = _functions.httpsCallable(name);
-    return fn.call(data);
+  Future<Object?> _call(String name, Map<String, dynamic> data) async {
+    final invoker = _callableInvoker;
+    if (invoker != null) return invoker(name, data);
+    final functions =
+        _functions ?? FirebaseFunctions.instanceFor(region: 'europe-west1');
+    final fn = functions.httpsCallable(name);
+    final result = await fn.call(data);
+    return result.data;
   }
 }

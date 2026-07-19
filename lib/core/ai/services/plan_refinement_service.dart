@@ -4,6 +4,7 @@ import 'package:fitnesbuster/core/ai/validators/json_validator.dart';
 import 'package:fitnesbuster/core/ai/services/workout_plan_service.dart';
 import 'package:fitnesbuster/core/ai/knowledge/training_knowledge.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/core/ai/exercise_catalog_prompt.dart';
 
 class PlanRefinementService {
   final BaseClient _client;
@@ -45,6 +46,9 @@ class PlanRefinementService {
     final targetBlock = _workoutPlanService.targetBlock(profile);
 
     final emphasisBlock = methodologyEmphasisBlock(profile);
+    final exerciseCatalog = await ExerciseCatalogPrompt().build(
+      profile.workoutLocation,
+    );
 
     final prompt =
         '''
@@ -72,6 +76,9 @@ $volumeBlock
 $progressionBlock
 
 ${locationBlock.isNotEmpty ? '═══ МЕСТО ТРЕНИРОВКИ ═══\n$locationBlock\n' : ''}${runningBlock.isNotEmpty ? '═══ КАРДИО-ПРОТОКОЛ ═══\n$runningBlock\n' : ''}${healthBlock.isNotEmpty ? '═══ МЕДИЦИНСКИЕ ОГРАНИЧЕНИЯ (СТРОГО СОБЛЮДАТЬ) ═══\n$healthBlock\n' : ''}
+═══ КАТАЛОГ УПРАЖНЕНИЙ ПРИЛОЖЕНИЯ ═══
+${exerciseCatalog.promptBlock}
+
 Ответь СТРОГО в формате JSON без markdown-обёртки:
 {
   "week_number": 1,
@@ -87,6 +94,7 @@ ${locationBlock.isNotEmpty ? '═══ МЕСТО ТРЕНИРОВКИ ══�
       "exercises": [
         {
           "name": "Упражнение",
+          "catalog_status": "existing",
           "muscle_primary": "группа мышц",
           "muscle_secondary": [],
           "sets": 3,
@@ -116,7 +124,13 @@ ${locationBlock.isNotEmpty ? '═══ МЕСТО ТРЕНИРОВКИ ══�
 }
 ''';
 
-    return validateWorkoutJson(extractJson(await _client.sendMessage(prompt)));
+    return _client.sendMessageWithValidation(
+      prompt,
+      validator: (raw) => validateWorkoutCatalogPreference(
+        validateWorkoutJson(raw),
+        exerciseCatalog.exactNames,
+      ),
+    );
   }
 
   Future<String> correctWorkoutPlan({
@@ -124,12 +138,19 @@ ${locationBlock.isNotEmpty ? '═══ МЕСТО ТРЕНИРОВКИ ══�
     required String userInput,
     String correctionType = 'merge',
     String sourceHint = '',
+    UserProfile? profile,
   }) async {
     final truncatedInput = userInput.length > 6000
         ? userInput.substring(0, 6000)
         : userInput;
 
     final planSummary = _buildPlanSummary(currentPlanJson);
+    final exerciseCatalog = await ExerciseCatalogPrompt().build(
+      profile?.workoutLocation,
+    );
+    final location = _workoutPlanService.locationBlock(
+      profile?.workoutLocation,
+    );
 
     final taskBlock = switch (correctionType) {
       'post_workout' =>
@@ -160,6 +181,12 @@ ${locationBlock.isNotEmpty ? '═══ МЕСТО ТРЕНИРОВКИ ══�
 Ты — персональный AI-тренер FitnesBuster. Твоя задача — скорректировать тренировочный план пользователя.
 
 $trainingPrinciplesCore
+═══ МЕСТО ТРЕНИРОВКИ — НЕИЗМЕНЯЕМЫЙ КОНТРАКТ ═══
+$location
+
+═══ КАТАЛОГ УПРАЖНЕНИЙ ПРИЛОЖЕНИЯ ═══
+${exerciseCatalog.promptBlock}
+
 ═══ ТЕКУЩИЙ ПЛАН (структура) ═══
 $planSummary
 
@@ -177,6 +204,7 @@ $taskBlock
 — В поле "changes" перечисли ВСЕ изменения (каждое изменение = отдельная строка)
 — В "correction_reasoning" — 1-2 предложения об общей логике коррекции
 — Сохрани формат плана точно как в текущем
+— Новые/заменённые упражнения выбирай прежде всего из каталога и не добавляй недоступное для выбранного места оборудование
 
 Ответь СТРОГО в JSON без markdown:
 {
@@ -194,6 +222,7 @@ $taskBlock
       "exercises": [
         {
           "name": "Название упражнения",
+          "catalog_status": "existing",
           "muscle_primary": "группа мышц",
           "muscle_secondary": [],
           "sets": 3,
@@ -235,9 +264,12 @@ $taskBlock
 
     return _client.callWithValidation(
       messages: messages,
-      maxTokens: 5000,
+      maxTokens: 8192,
       temperature: 0.4,
-      validator: validateWorkoutJson,
+      validator: (raw) => validateWorkoutCatalogPreference(
+        validateWorkoutJson(raw),
+        exerciseCatalog.exactNames,
+      ),
     );
   }
 

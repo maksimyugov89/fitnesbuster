@@ -49,9 +49,11 @@
 	<string>FitnesBuster использует данные здоровья для анализа восстановления и отслеживания прогресса</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>FitnesBuster записывает данные тренировок в Apple Health</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Камера используется для сканирования штрихкодов и QR-кодов, а также для фото профиля и прогресса</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Доступ нужен, чтобы выбрать фото профиля или прогресса</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Для определения вашего города и подбора доступных продуктов питания</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Для определения вашего города и подбора доступных продуктов питания</string>
 </dict>
 </plist>

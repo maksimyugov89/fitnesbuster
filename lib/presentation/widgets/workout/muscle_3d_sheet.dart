@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/presentation/widgets/workout/muscle_map_3d_widget.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class WorkoutMuscle3DSheet extends StatelessWidget {
   final String title;
@@ -57,7 +58,7 @@ class WorkoutMuscle3DSheet extends StatelessWidget {
                   ),
                 ),
                 Semantics(
-                  label: 'Закрыть',
+                  label: AppLocalizations.tl('close'),
                   button: true,
                   child: IconButton(
                     onPressed: () => Navigator.pop(context),
@@ -75,15 +76,15 @@ class WorkoutMuscle3DSheet extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                const WorkoutLegendDot(
+                WorkoutLegendDot(
                   color: SemanticColors.primaryMuscle,
-                  label: 'Основные',
+                  label: AppLocalizations.tl('exercisePrimaryMuscles'),
                 ),
                 const SizedBox(width: 16),
                 if (secondaryMuscles.isNotEmpty)
-                  const WorkoutLegendDot(
+                  WorkoutLegendDot(
                     color: SemanticColors.secondaryMuscle,
-                    label: 'Вспомогательные',
+                    label: AppLocalizations.tl('exerciseSecondaryMuscles'),
                   ),
               ],
             ),

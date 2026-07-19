@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/utils/date_key.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class FoodDiaryScreen extends StatefulWidget {
   const FoodDiaryScreen({super.key});
@@ -122,7 +124,10 @@ class _FoodDiaryScreenState extends State<FoodDiaryScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Дневник питания', style: AppTextStyles.titleL),
+        title: Text(
+          AppLocalizations.tl('foodDiaryTitle'),
+          style: AppTextStyles.titleL,
+        ),
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
@@ -168,9 +173,9 @@ class _FoodDiaryScreenState extends State<FoodDiaryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'За 7 дней',
-                style: TextStyle(
+              Text(
+                AppLocalizations.tl('foodDiaryLastSevenDays'),
+                style: const TextStyle(
                   fontFamily: 'Syne',
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
@@ -182,15 +187,19 @@ class _FoodDiaryScreenState extends State<FoodDiaryScreen> {
                 children: [
                   Expanded(
                     child: _SummaryCell(
-                      label: 'Ккал съедено',
+                      label: AppLocalizations.tl('foodDiaryCaloriesEaten'),
                       value: '$_weekEaten',
-                      sub: _weekTarget > 0 ? 'цель ${_weekTarget ~/ 7}/д' : '',
+                      sub: _weekTarget > 0
+                          ? AppLocalizations.tlp('foodDiaryDailyGoal', {
+                              'calories': '${_weekTarget ~/ 7}',
+                            })
+                          : '',
                       colors: colors,
                     ),
                   ),
                   Expanded(
                     child: _SummaryCell(
-                      label: 'Дней в норме',
+                      label: AppLocalizations.tl('foodDiaryDaysOnTarget'),
                       value: '$_weekOnTargetDays / 7',
                       sub: '',
                       colors: colors,
@@ -198,7 +207,7 @@ class _FoodDiaryScreenState extends State<FoodDiaryScreen> {
                   ),
                   Expanded(
                     child: _SummaryCell(
-                      label: 'Стаканов воды',
+                      label: AppLocalizations.tl('foodDiaryWaterGlasses'),
                       value: '$_weekWater',
                       sub: '',
                       colors: colors,
@@ -216,15 +225,15 @@ class _FoodDiaryScreenState extends State<FoodDiaryScreen> {
         Row(
           children: [
             _StripStat(
-              icon: '📅',
-              label: 'Дней с данными',
+              icon: AppImages.calendar,
+              label: AppLocalizations.tl('foodDiaryDaysWithData'),
               value: '$activeDays / 30',
               colors: colors,
             ),
             const SizedBox(width: 10),
             _StripStat(
-              icon: '🔥',
-              label: 'Ср. калории/день',
+              icon: AppImages.energy,
+              label: AppLocalizations.tl('foodDiaryAverageCalories'),
               value: activeDays > 0 ? '${(_weekEaten / 7).round()}' : '—',
               colors: colors,
             ),
@@ -234,7 +243,10 @@ class _FoodDiaryScreenState extends State<FoodDiaryScreen> {
         const SizedBox(height: 20),
 
         // ── Day list ─────────────────────────────────────────────────────────
-        const Text('История питания', style: AppTextStyles.titleM),
+        Text(
+          AppLocalizations.tl('foodDiaryHistory'),
+          style: AppTextStyles.titleM,
+        ),
         const SizedBox(height: 12),
 
         ..._days.map((day) => _DayTile(record: day, colors: colors)),
@@ -250,29 +262,14 @@ class _DayTile extends StatelessWidget {
   final ThemePalette colors;
   const _DayTile({required this.record, required this.colors});
 
-  String get _dateLabel {
+  String _dateLabel(BuildContext context) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
     final d = DateTime(record.date.year, record.date.month, record.date.day);
-    if (d == today) return 'Сегодня';
-    if (d == yesterday) return 'Вчера';
-    const months = [
-      '',
-      'янв',
-      'фев',
-      'мар',
-      'апр',
-      'май',
-      'июн',
-      'июл',
-      'авг',
-      'сен',
-      'окт',
-      'ноя',
-      'дек',
-    ];
-    return '${record.date.day} ${months[record.date.month]}';
+    if (d == today) return AppLocalizations.tl('today');
+    if (d == yesterday) return AppLocalizations.tl('yesterday');
+    return MaterialLocalizations.of(context).formatMediumDate(record.date);
   }
 
   Color _statusColor(ThemePalette c) {
@@ -282,13 +279,15 @@ class _DayTile extends StatelessWidget {
     return c.textMuted;
   }
 
-  String get _statusLabel {
+  String _statusLabel() {
     if (!record.hasData) return '—';
     if (record.target > 0 && record.eaten > record.target * 1.1) {
-      return 'Превышение';
+      return AppLocalizations.tl('foodDiaryExceeded');
     }
-    if (record.eaten > 0 && record.target > 0) return 'В норме';
-    if (record.eaten > 0) return 'Ок';
+    if (record.eaten > 0 && record.target > 0) {
+      return AppLocalizations.tl('foodDiaryOnTarget');
+    }
+    if (record.eaten > 0) return AppLocalizations.tl('foodDiaryOkay');
     return '—';
   }
 
@@ -309,7 +308,7 @@ class _DayTile extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                _dateLabel,
+                _dateLabel(context),
                 style: TextStyle(
                   fontSize: 13,
                   color: colors.textMuted,
@@ -318,7 +317,7 @@ class _DayTile extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                'Нет данных',
+                AppLocalizations.tl('noData'),
                 style: TextStyle(
                   fontSize: 12,
                   color: colors.textMuted.withValues(alpha: 0.5),
@@ -351,7 +350,7 @@ class _DayTile extends StatelessWidget {
                   vertical: 4,
                 ),
                 childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                title: _tileHeader(statusColor, progress),
+                title: _tileHeader(context, statusColor, progress),
                 iconColor: colors.textMuted,
                 collapsedIconColor: colors.textMuted,
                 children: [
@@ -362,20 +361,20 @@ class _DayTile extends StatelessWidget {
               )
             : Padding(
                 padding: const EdgeInsets.all(16),
-                child: _tileHeader(statusColor, progress),
+                child: _tileHeader(context, statusColor, progress),
               ),
       ),
     );
   }
 
-  Widget _tileHeader(Color statusColor, double progress) {
+  Widget _tileHeader(BuildContext context, Color statusColor, double progress) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              _dateLabel,
+              _dateLabel(context),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 14,
@@ -391,7 +390,7 @@ class _DayTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                _statusLabel,
+                _statusLabel(),
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
@@ -404,14 +403,19 @@ class _DayTile extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            const Text('🍽️', style: TextStyle(fontSize: 13)),
+            Image.asset(AppImages.snack, width: 15, height: 15),
             const SizedBox(width: 6),
             Text(
               record.eaten > 0
                   ? record.target > 0
-                        ? '${record.eaten} / ${record.target} ккал'
-                        : '${record.eaten} ккал'
-                  : 'нет данных',
+                        ? AppLocalizations.tlp('foodDiaryCaloriesOfTarget', {
+                            'eaten': '${record.eaten}',
+                            'target': '${record.target}',
+                          })
+                        : AppLocalizations.tlp('foodDiaryCalories', {
+                            'calories': '${record.eaten}',
+                          })
+                  : AppLocalizations.tl('noData'),
               style: TextStyle(
                 fontSize: 12,
                 color: colors.textSecondary,
@@ -419,16 +423,20 @@ class _DayTile extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            const Text('💧', style: TextStyle(fontSize: 13)),
+            Image.asset(AppImages.water, width: 15, height: 15),
             const SizedBox(width: 4),
             Text(
-              '${record.waterGlasses} ст.',
+              AppLocalizations.tlp('foodDiaryGlasses', {
+                'count': '${record.waterGlasses}',
+              }),
               style: TextStyle(fontSize: 12, color: colors.info),
             ),
             if (record.mealsDone > 0) ...[
               const SizedBox(width: 10),
               Text(
-                '✓ ${record.mealsDone} приёма',
+                AppLocalizations.tlp('foodDiaryMealsCompleted', {
+                  'count': '${record.mealsDone}',
+                }),
                 style: TextStyle(fontSize: 11, color: colors.success),
               ),
             ],
@@ -458,6 +466,21 @@ class _FoodRow extends StatelessWidget {
   final ThemePalette colors;
   const _FoodRow({required this.item, required this.colors});
 
+  String get _mealTypeLabel {
+    const keys = {
+      'breakfast': 'breakfast',
+      'lunch': 'lunch',
+      'dinner': 'dinner',
+      'snack': 'snack',
+      'pre_workout': 'mealPreWorkout',
+      'post_workout': 'mealPostWorkout',
+      'evening_snack': 'mealEveningSnack',
+      'morning_snack': 'mealMorningSnack',
+    };
+    final key = keys[item.mealType];
+    return key == null ? item.mealType : AppLocalizations.tl(key);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -481,7 +504,7 @@ class _FoodRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  '${item.mealType} · ${item.grams}г',
+                  '$_mealTypeLabel · ${item.grams} ${AppLocalizations.tl('gramUnit')}',
                   style: TextStyle(fontSize: 10, color: colors.textMuted),
                 ),
               ],
@@ -489,7 +512,9 @@ class _FoodRow extends StatelessWidget {
           ),
           if (item.kcal > 0)
             Text(
-              '${item.kcal} ккал',
+              AppLocalizations.tlp('foodDiaryCalories', {
+                'calories': '${item.kcal}',
+              }),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -562,7 +587,7 @@ class _StripStat extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Text(icon, style: const TextStyle(fontSize: 20)),
+            Image.asset(icon, width: 24, height: 24),
             const SizedBox(width: 10),
             Expanded(
               child: Column(

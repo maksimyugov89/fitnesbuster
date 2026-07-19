@@ -20,7 +20,7 @@ if (hasReleaseKeystore) {
 }
 
 android {
-    namespace = "com.example.fitnesbuster"
+    namespace = "com.fitnesbuster.app"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -35,7 +35,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.fitnesbuster"
+        applicationId = "com.fitnesbuster.app"
         minSdk = 26
         targetSdk = 34
         versionCode = flutter.versionCode
@@ -79,4 +79,44 @@ dependencies {
 
 flutter {
     source = "../.."
+}
+
+// Flutter 3.38.5 can generate Android GeneratedPluginRegistrant with the
+// dev-only integration_test plugin even though the release classpath correctly
+// excludes dev dependencies. Keep the test plugin out of production builds and
+// patch only the generated registrant before release Java compilation.
+val stripIntegrationTestFromReleaseRegistrant by tasks.registering {
+    val registrant = layout.projectDirectory.file(
+        "src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java",
+    )
+    inputs.file(registrant).optional()
+    outputs.upToDateWhen { false }
+    mustRunAfter("compileFlutterBuildRelease")
+
+    doLast {
+        val file = registrant.asFile
+        if (!file.exists()) return@doLast
+
+        val text = file.readText()
+        val integrationTestBlock = Regex(
+            """
+
+\s*try \{
+\s*flutterEngine\.getPlugins\(\)\.add\(new dev\.flutter\.plugins\.integration_test\.IntegrationTestPlugin\(\)\);
+\s*\} catch \(Exception e\) \{
+\s*Log\.e\(TAG, "Error registering plugin integration_test, dev\.flutter\.plugins\.integration_test\.IntegrationTestPlugin", e\);
+\s*\}
+            """.trimIndent(),
+        )
+        val updated = text.replace(integrationTestBlock, "")
+        if (updated != text) {
+            file.writeText(updated)
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name == "compileReleaseJavaWithJavac" || name == "compileReleaseKotlin") {
+        dependsOn(stripIntegrationTestFromReleaseRegistrant)
+    }
 }

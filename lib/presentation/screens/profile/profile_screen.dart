@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
@@ -30,6 +31,7 @@ import 'package:fitnesbuster/presentation/widgets/profile/profile_misc_widgets.d
 import 'package:fitnesbuster/core/localization/language_service.dart';
 import 'package:fitnesbuster/core/theme/theme_service.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
+import 'package:fitnesbuster/core/services/social_service.dart';
 import 'package:fitnesbuster/core/router/app_router.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 
@@ -163,8 +165,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _height = user.profile?.height ?? 0;
         _age = user.profile?.age ?? 0;
         _gender = user.profile?.gender == Gender.male
-            ? 'Мужской'
-            : (user.profile?.gender == Gender.female ? 'Женский' : '');
+            ? 'male'
+            : (user.profile?.gender == Gender.female ? 'female' : '');
         _goal = user.profile?.goal != null
             ? _fitnessGoalLabel(user.profile!.goal)
             : '';
@@ -189,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _weight = user.profile!.weight;
           _height = user.profile!.height;
           _age = user.profile!.age;
-          _gender = user.profile!.gender == Gender.male ? 'Мужской' : 'Женский';
+          _gender = user.profile!.gender == Gender.male ? 'male' : 'female';
           _goal = _fitnessGoalLabel(user.profile!.goal);
           if (user.profile!.workoutLocation != null) {
             _workoutLocation = _parseLocation(user.profile!.workoutLocation!);
@@ -221,7 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final authRepo = sl<IAuthRepository>();
       final authState = context.read<AuthBloc>().state;
       if (authState is AuthStateAuthenticated) {
-        final genderEnum = _gender == 'Мужской' ? Gender.male : Gender.female;
+        final genderEnum = _gender == 'male' ? Gender.male : Gender.female;
         final goalEnum = _fitnessGoalFromLabel(_goal);
         final profile = UserProfile(
           weight: _weight,
@@ -312,9 +314,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             _buildHeader(),
             const SizedBox(height: 20),
-            _StatsRowWidget(weight: _weight, height: _height, age: _age),
+            ProfileStatsRow(weight: _weight, height: _height, age: _age),
             const SizedBox(height: 20),
-            _CurrentProgramWidget(
+            ProfileCurrentProgram(
               goal: _localizeGoal(l10n, _goal),
               dataLoaded: _dataLoaded,
             ),
@@ -502,7 +504,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
         child: Center(
-          child: Text(preset.emoji, style: TextStyle(fontSize: fontSize * 1.1)),
+          child: Image.asset(
+            preset.iconAsset,
+            width: size * 0.62,
+            height: size * 0.62,
+          ),
         ),
       );
     }
@@ -934,7 +940,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const NotificationsSheet(),
+      builder: (_) => NotificationsSheet(
+        onRequestPermission: () => sl<SocialService>().requestFcmPermission(),
+        onOpenSettings: openAppSettings,
+      ),
     );
   }
 
@@ -990,22 +999,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 24),
               _LicenseBlock(
                 title: 'Z-Anatomy',
-                body:
-                    'Анатомические 3D-модели в приложении созданы на основе проекта Z-Anatomy и адаптированы для использования в FitnesBuster.\n\n'
-                    '© Z-Anatomy Project\n'
-                    'Лицензия: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)\n'
-                    'https://www.z-anatomy.com/\n\n'
-                    'Внесённые изменения: модели экспортированы в формат GLB, применено Draco-сжатие, '
-                    'добавлена двусторонняя подсветка мышц и X-ray эффект для нужд приложения.\n\n'
-                    'Производные материалы распространяются на условиях CC BY-SA 4.0.',
+                body: AppLocalizations.tl('profileZAnatomyLicenseBody'),
                 colors: colors,
               ),
               const SizedBox(height: 20),
               _LicenseBlock(
-                title: 'Прочие компоненты',
-                body:
-                    'Приложение использует пакеты с открытым исходным кодом. '
-                    'Полный список лицензий доступен в исходном коде проекта (pubspec.yaml).',
+                title: AppLocalizations.tl('profileOtherComponentsTitle'),
+                body: AppLocalizations.tl('profileOtherComponentsBody'),
                 colors: colors,
               ),
             ],
@@ -1054,20 +1054,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'FitnesBuster — твой персональный AI-тренер и диетолог в смартфоне. '
-                'Приложение генерирует персонализированные тренировочные программы '
-                'на основе твоего профиля, целей, уровня подготовки, доступного '
-                'оборудования и медицинских ограничений.\n\n'
-                'Встроенный AI-нутрициолог составляет детальные планы питания '
-                'с точной граммовкой, таймингом приёмов пищи и расчётом макронутриентов. '
-                'Приложение учитывает данные о сне, сердечном ритме и дневной активности '
-                'через интеграцию с Health Connect.\n\n'
-                'Поддерживаются все популярные форматы тренировок: зал, улица, дом. '
-                'Встроенный таймер с голосовым сопровождением, отслеживание подходов, '
-                'весов и личных рекордов. Система испытательных недель калибрует '
-                'нагрузку под реальные возможности пользователя.\n\n'
-                'Челленджи, еженедельные дебрифы и анализ прогресса по замерам тела '
-                'помогают сохранять мотивацию и видеть результаты.',
+                AppLocalizations.tl('profileAboutBody'),
                 style: TextStyle(
                   color: colors.textSecondary,
                   height: 1.55,
@@ -1082,7 +1069,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Разработчик: Югов Максим',
+                AppLocalizations.tl('profileDeveloperName'),
                 style: TextStyle(
                   color: colors.primary,
                   fontWeight: FontWeight.w600,
@@ -1284,11 +1271,12 @@ class _LicenseBlock extends StatelessWidget {
   }
 }
 
-class _StatsRowWidget extends StatelessWidget {
+class ProfileStatsRow extends StatelessWidget {
   final double weight;
   final double height;
   final int age;
-  const _StatsRowWidget({
+  const ProfileStatsRow({
+    super.key,
     required this.weight,
     required this.height,
     required this.age,
@@ -1311,7 +1299,7 @@ class _StatsRowWidget extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: StatBox(
-            label: 'Рост',
+            label: l10n.onbHeightTitle,
             number: '${height.toInt()}',
             unit: l10n.cmUnit,
             color: colors.accent,
@@ -1344,10 +1332,14 @@ class _StatsRowWidget extends StatelessWidget {
   }
 }
 
-class _CurrentProgramWidget extends StatelessWidget {
+class ProfileCurrentProgram extends StatelessWidget {
   final String goal;
   final bool dataLoaded;
-  const _CurrentProgramWidget({required this.goal, required this.dataLoaded});
+  const ProfileCurrentProgram({
+    super.key,
+    required this.goal,
+    required this.dataLoaded,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1491,8 +1483,13 @@ class _AchievementsSectionWidget extends StatelessWidget {
                     children: [
                       Text(
                         lvl != null
-                            ? 'Ур. ${lvl.level} · ${lvl.name}'
-                            : 'Загрузка...',
+                            ? AppLocalizations.tlp('gamificationLevelShort', {
+                                'level': '${lvl.level}',
+                                'name': GamificationService.localizedLevelName(
+                                  lvl.level,
+                                ),
+                              })
+                            : AppLocalizations.tl('loading'),
                         style: TextStyle(
                           fontFamily: 'Syne',
                           fontSize: 14,
@@ -1502,7 +1499,12 @@ class _AchievementsSectionWidget extends StatelessWidget {
                       ),
                       if (lvl != null)
                         Text(
-                          '${lvl.totalXp} XP · ${unlocked.length} / ${GamificationService.allAchievements.length} значков',
+                          AppLocalizations.tlp('achievementsBadgesProgress', {
+                            'xp': '${lvl.totalXp}',
+                            'unlocked': '${unlocked.length}',
+                            'total':
+                                '${GamificationService.allAchievements.length}',
+                          }),
                           style: TextStyle(
                             fontSize: 11,
                             color: colors.textMuted,

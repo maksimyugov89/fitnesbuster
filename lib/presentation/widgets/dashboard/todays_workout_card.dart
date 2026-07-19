@@ -5,6 +5,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/services/gamification_service.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class StreakCard extends StatelessWidget {
   final UserLevel level;
@@ -42,7 +43,9 @@ class StreakCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${AppLocalizations.of(context).levelLabel} ${lvl.level} · ${lvl.name}',
+                      '${AppLocalizations.of(context).levelLabel} '
+                      '${lvl.level} · '
+                      '${GamificationService.localizedLevelName(lvl.level)}',
                       style: TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 13,
@@ -87,7 +90,11 @@ class StreakCard extends StatelessWidget {
                   color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text('🏅', style: TextStyle(fontSize: 16)),
+                child: Image.asset(
+                  AppImages.achievements,
+                  width: 18,
+                  height: 18,
+                ),
               ),
             ),
           ),
@@ -334,8 +341,8 @@ class _TestWeekBanner extends StatelessWidget {
                   color: p.info.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Center(
-                  child: Text('🎯', style: TextStyle(fontSize: 26)),
+                child: Center(
+                  child: Image.asset(AppImages.target, width: 30, height: 30),
                 ),
               ),
               const SizedBox(width: 14),
@@ -385,25 +392,25 @@ class _TestWeekBanner extends StatelessWidget {
                       style: TextStyle(fontSize: 12, color: p.textSecondary),
                     ),
                     const SizedBox(height: 8),
-                    const Row(
+                    Row(
                       children: [
                         Flexible(
                           child: _InfoPill(
-                            'Индивидуально',
+                            l10n.dashboardIndividualLabel,
                             SemanticColors.featurePill,
                           ),
                         ),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Flexible(
                           child: _InfoPill(
-                            'Ваш график',
+                            l10n.dashboardYourSchedule,
                             SemanticColors.featurePill,
                           ),
                         ),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Flexible(
                           child: _InfoPill(
-                            'Без спешки',
+                            AppLocalizations.tl('dashboardAtYourPace'),
                             SemanticColors.featurePill,
                           ),
                         ),

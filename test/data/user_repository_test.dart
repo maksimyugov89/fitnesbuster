@@ -189,7 +189,13 @@ void main() {
       final result = await repo.updateProfile(user);
       expect(result.name, 'Updated Name');
 
-      verify(docRef.set(any, any)).called(1);
+      final captured = Map<String, dynamic>.from(
+        verify(docRef.set(captureAny, any)).captured.single as Map,
+      );
+      expect(captured['name'], 'Updated Name');
+      expect(captured['nameLower'], 'updated name');
+      expect(captured['photoUrl'], 'https://example.com/avatar.png');
+      expect(captured['profile']['trainingExperience'], 'novice');
     });
   });
 
@@ -256,7 +262,14 @@ void main() {
       );
 
       expect(result.id, tUid);
-      verify(docRef.set(any, any)).called(1);
+      final captured = Map<String, dynamic>.from(
+        verify(docRef.set(captureAny, any)).captured.single as Map,
+      );
+      expect(captured['onboarding'], {
+        'location': 'outdoor',
+        'running': 'noRunning',
+      });
+      expect(captured, isNot(contains('onboarding.location')));
     });
   });
 
@@ -270,6 +283,44 @@ void main() {
       await repo.updateGoal(userId: tUid, goal: FitnessGoal.gainWeight);
 
       verify(docRef.update(any)).called(1);
+    });
+
+    test('updates training experience without replacing the profile', () async {
+      final docRef = stubUserDocRef();
+      when(docRef.update(any)).thenAnswer((_) => Future.value());
+
+      await repo.updateTrainingExperience(
+        userId: tUid,
+        trainingExperience: TrainingExperience.experienced,
+      );
+
+      final captured = Map<String, dynamic>.from(
+        verify(docRef.update(captureAny)).captured.single as Map,
+      );
+      expect(captured['profile.trainingExperience'], 'experienced');
+      expect(captured, contains('updatedAt'));
+    });
+  });
+
+  group('streak persistence', () {
+    test('writes current streak and last workout date with merge', () async {
+      final docRef = stubUserDocRef();
+      when(
+        docRef.set(any, SetOptions(merge: true)),
+      ).thenAnswer((_) => Future.value());
+
+      await repo.bootstrapStreak(
+        userId: tUid,
+        streak: 7,
+        lastWorkoutDate: '2026-07-10',
+      );
+
+      final captured = Map<String, dynamic>.from(
+        verify(docRef.set(captureAny, any)).captured.single as Map,
+      );
+      expect(captured['currentStreak'], 7);
+      expect(captured['lastWorkoutDate'], '2026-07-10');
+      expect(captured, contains('updatedAt'));
     });
   });
 

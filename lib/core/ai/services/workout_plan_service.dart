@@ -3,6 +3,7 @@ import 'package:fitnesbuster/core/ai/validators/json_validator.dart';
 import 'package:fitnesbuster/core/ai/knowledge/training_knowledge.dart';
 import 'package:fitnesbuster/core/services/recovery_score_service.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/core/ai/exercise_catalog_prompt.dart';
 
 class WorkoutPlanService {
   final BaseClient _client;
@@ -34,6 +35,9 @@ class WorkoutPlanService {
       recentAvgRpe: recentAvgRpe,
       domsLevel: domsLevel,
     );
+    final exerciseCatalog = await ExerciseCatalogPrompt().build(
+      profile.workoutLocation,
+    );
 
     final prompt =
         '''
@@ -57,6 +61,9 @@ $volumeBlock
 $progressionBlock2
 
 ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕНИИ ═══\n$recoveryBlock2\n' : ''}${locationBlock2.isNotEmpty ? '═══ МЕСТО ТРЕНИРОВКИ И ОБОРУДОВАНИЕ ═══\n$locationBlock2\n' : ''}${runningBlock2.isNotEmpty ? '═══ КАРДИО-ПРОТОКОЛ ═══\n$runningBlock2\n' : ''}${healthBlock2.isNotEmpty ? '═══ МЕДИЦИНСКИЕ ОГРАНИЧЕНИЯ (СТРОГО СОБЛЮДАТЬ) ═══\n$healthBlock2\n' : ''}${previousPlanFeedback != null ? '═══ ОБРАТНАЯ СВЯЗЬ ОТ ПОЛЬЗОВАТЕЛЯ ═══\n$previousPlanFeedback\n' : ''}
+═══ КАТАЛОГ УПРАЖНЕНИЙ ПРИЛОЖЕНИЯ ═══
+${exerciseCatalog.promptBlock}
+
 ═══ ТРЕБОВАНИЯ К ПРОГРАММЕ ═══
 1. Применяй принцип прогрессивной перегрузки — укажи конкретные диапазоны веса и % от 1ПМ где возможно
 2. Обеспечь баланс объёма: каждая мышечная группа получает 10-20 рабочих подходов в неделю
@@ -81,6 +88,7 @@ ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕ�
       "exercises": [
         {
           "name": "Жим штанги лёжа",
+          "catalog_status": "existing",
           "muscle_primary": "грудь",
           "muscle_secondary": ["передние дельты", "трицепс"],
           "sets": 4,
@@ -110,7 +118,13 @@ ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕ�
 }
 ''';
 
-    return validateWorkoutJson(extractJson(await _client.sendMessage(prompt)));
+    return _client.sendMessageWithValidation(
+      prompt,
+      validator: (raw) => validateWorkoutCatalogPreference(
+        validateWorkoutJson(raw),
+        exerciseCatalog.exactNames,
+      ),
+    );
   }
 
   String weeklyVolumeBlock(IntensityLevel intensity, int weekNumber) {
@@ -237,7 +251,8 @@ ${recoveryBlock2.isNotEmpty ? '═══ ДАННЫЕ О ВОССТАНОВЛЕ�
 Доступное оборудование: только собственный вес тела, возможно резиновые эспандеры и лёгкие разборные гантели (не более 20 кг).
 ОБЯЗАТЕЛЬНО: используй ИСКЛЮЧИТЕЛЬНО упражнения с весом тела (отжимания, приседания, выпады, планка, берпи, скалолаз) и эспандеры. Никаких штанг, силовых тренажёров или тяжёлого оборудования.''';
       default:
-        return '';
+        return '''Место тренировки не указано.
+НЕ предполагай наличие тренажёрного зала или инвентаря. До уточнения места используй только безопасные упражнения с собственным весом без оборудования.''';
     }
   }
 

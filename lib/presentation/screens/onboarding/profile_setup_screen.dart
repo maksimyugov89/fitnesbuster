@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
@@ -38,16 +39,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   final List<String> _restrictions = [];
   String _city = '';
 
-  final List<String> _commonRestrictions = const [
-    'Аллергия на орехи',
-    'Непереносимость лактозы',
-    'Без глютена',
-    'Вегетарианец',
-    'Без красного мяса',
-    'Диабетическая диета',
-    'Низкое содержание соли',
-    'Веган',
-    'Кето',
+  List<String> _commonRestrictions(AppLocalizations l10n) => [
+    l10n.dietNutsAllergy,
+    l10n.dietLactose,
+    l10n.dietGlutenFree,
+    l10n.dietVegetarian,
+    l10n.dietNoRedMeat,
+    l10n.dietDiabetic,
+    l10n.dietLowSalt,
+    l10n.dietVegan,
+    l10n.dietKeto,
   ];
 
   @override
@@ -110,6 +111,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
+    final l10n = context.l10n;
     return BlocListener<OnboardingBloc, OnboardingState>(
       listener: (context, state) {
         if (state is OnboardingComplete) {
@@ -169,7 +171,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                             ),
                             _PageRestrictions(
                               restrictions: _restrictions,
-                              commonRestrictions: _commonRestrictions,
+                              commonRestrictions: _commonRestrictions(l10n),
                               onToggle: (r) => setState(() {
                                 if (_restrictions.contains(r)) {
                                   _restrictions.remove(r);
@@ -404,7 +406,7 @@ class _GenderSelector extends StatelessWidget {
           children: [
             _GenderCard(
               label: context.l10n.genderMale,
-              emoji: '♂',
+              iconAsset: AppImages.genderMale,
               gender: Gender.male,
               selected: selected,
               onTap: onChanged,
@@ -412,7 +414,7 @@ class _GenderSelector extends StatelessWidget {
             const SizedBox(width: 12),
             _GenderCard(
               label: context.l10n.genderFemale,
-              emoji: '♀',
+              iconAsset: AppImages.genderFemale,
               gender: Gender.female,
               selected: selected,
               onTap: onChanged,
@@ -425,12 +427,12 @@ class _GenderSelector extends StatelessWidget {
 }
 
 class _GenderCard extends StatelessWidget {
-  final String label, emoji;
+  final String label, iconAsset;
   final Gender gender, selected;
   final ValueChanged<Gender> onTap;
   const _GenderCard({
     required this.label,
-    required this.emoji,
+    required this.iconAsset,
     required this.gender,
     required this.selected,
     required this.onTap,
@@ -464,7 +466,7 @@ class _GenderCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 24)),
+              Image.asset(iconAsset, width: 28, height: 28),
               const SizedBox(height: 4),
               Text(
                 label,
@@ -800,9 +802,10 @@ class _PageActivity extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                        child: Text(
-                          _emoji(lvl),
-                          style: const TextStyle(fontSize: 20),
+                        child: Image.asset(
+                          _iconAsset(lvl),
+                          width: 24,
+                          height: 24,
                         ),
                       ),
                     ),
@@ -833,18 +836,18 @@ class _PageActivity extends StatelessWidget {
     );
   }
 
-  String _emoji(ActivityLevel l) {
+  String _iconAsset(ActivityLevel l) {
     switch (l) {
       case ActivityLevel.sedentary:
-        return '🪑';
+        return AppImages.sedentary;
       case ActivityLevel.lightlyActive:
-        return '🚶';
+        return AppImages.steps;
       case ActivityLevel.moderatelyActive:
-        return '🏃';
+        return AppImages.running;
       case ActivityLevel.veryActive:
-        return '🔥';
+        return AppImages.energy;
       case ActivityLevel.extraActive:
-        return '⚡';
+        return AppImages.hardcore;
     }
   }
 }
@@ -862,19 +865,19 @@ class _PageExperience extends StatelessWidget {
     final options = [
       (
         TrainingExperience.novice,
-        '🌱',
+        AppImages.beginner,
         l10n.experienceNovice,
         l10n.experienceNoviceDesc,
       ),
       (
         TrainingExperience.intermediate,
-        '💪',
+        AppImages.workoutsTab,
         l10n.experienceIntermediate,
         l10n.experienceIntermediateDesc,
       ),
       (
         TrainingExperience.experienced,
-        '🏆',
+        AppImages.achievements,
         l10n.experienceExperienced,
         l10n.experienceExperiencedDesc,
       ),
@@ -883,7 +886,7 @@ class _PageExperience extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: options.map((o) {
-          final (value, emoji, label, desc) = o;
+          final (value, iconAsset, label, desc) = o;
           final isSel = experience == value;
           return Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -917,10 +920,7 @@ class _PageExperience extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                        child: Text(
-                          emoji,
-                          style: const TextStyle(fontSize: 20),
-                        ),
+                        child: Image.asset(iconAsset, width: 24, height: 24),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -980,6 +980,7 @@ class _PageCityState extends State<_PageCity> {
   late final TextEditingController _ctrl;
   bool _detecting = false;
   String? _errorMsg;
+  bool _showLocationSettingsAction = false;
 
   @override
   void initState() {
@@ -994,10 +995,46 @@ class _PageCityState extends State<_PageCity> {
     super.dispose();
   }
 
+  Future<bool> _confirmLocationDisclosure() async {
+    final l10n = context.l10n;
+    final colors = AppTheme.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: colors.surfaceCard,
+        title: Text(
+          l10n.detectAutoBtn,
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: Text(
+          l10n.geoAutoDetectPrivacyNotice,
+          style: TextStyle(color: colors.textSecondary, height: 1.45),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.continueLabel),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
+  }
+
   Future<void> _detectCity() async {
+    final confirmed = await _confirmLocationDisclosure();
+    if (!confirmed || !mounted) {
+      return;
+    }
+
     setState(() {
       _detecting = true;
       _errorMsg = null;
+      _showLocationSettingsAction = false;
     });
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -1016,6 +1053,7 @@ class _PageCityState extends State<_PageCity> {
           permission == LocationPermission.deniedForever) {
         setState(() {
           _errorMsg = context.l10n.geoPermissionDeniedMsg;
+          _showLocationSettingsAction = true;
           _detecting = false;
         });
         return;
@@ -1026,11 +1064,25 @@ class _PageCityState extends State<_PageCity> {
           timeLimit: Duration(seconds: 10),
         ),
       );
-      final uri = Uri.parse(
-        'https://nominatim.openstreetmap.org/reverse?lat=${pos.latitude}&lon=${pos.longitude}&format=json&accept-language=ru',
-      );
+      if (!mounted) {
+        return;
+      }
+      final uri = Uri.https('nominatim.openstreetmap.org', '/reverse', {
+        'lat': pos.latitude.toString(),
+        'lon': pos.longitude.toString(),
+        'format': 'jsonv2',
+        'accept-language': Localizations.localeOf(context).languageCode,
+        'zoom': '10',
+        'addressdetails': '1',
+      });
       final resp = await http
-          .get(uri, headers: {'User-Agent': 'FitnesBuster/1.0'})
+          .get(
+            uri,
+            headers: {
+              'User-Agent':
+                  'FitnesBuster/1.0 (city auto-detect; contact: maksim.yugov.89@gmail.com)',
+            },
+          )
           .timeout(const Duration(seconds: 8));
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body) as Map<String, dynamic>;
@@ -1118,6 +1170,16 @@ class _PageCityState extends State<_PageCity> {
             ),
           ),
 
+          const SizedBox(height: 8),
+          Text(
+            l10n.geoAttribution,
+            style: TextStyle(
+              color: colors.textMuted,
+              fontSize: 11,
+              height: 1.4,
+            ),
+          ),
+
           if (_errorMsg != null) ...[
             const SizedBox(height: 10),
             Container(
@@ -1145,6 +1207,11 @@ class _PageCityState extends State<_PageCity> {
                       ),
                     ),
                   ),
+                  if (_showLocationSettingsAction)
+                    TextButton(
+                      onPressed: openAppSettings,
+                      child: Text(l10n.settingsLabel),
+                    ),
                 ],
               ),
             ),
@@ -1616,88 +1683,94 @@ class _AiGeneratingOverlayState extends State<_AiGeneratingOverlay>
         );
       },
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(flex: 2),
-
-              // ── Pulsing AI plan illustration ──
-              ScaleTransition(
-                scale: _iconScale,
-                child: Image.asset(
-                  AppImages.aiPlanLoading,
-                  width: 180,
-                  fit: BoxFit.contain,
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // ── Title ──
-              Text(
-                l10n.aiPlanCreating,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Syne',
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                l10n.about30sec,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  fontSize: 13,
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // ── Progress steps ──
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
-                  ),
-                ),
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (int i = 0; i < _steps.length; i++)
-                      _buildStep(i, colors),
+                    const SizedBox(height: 32),
+
+                    // ── Pulsing AI plan illustration ──
+                    ScaleTransition(
+                      scale: _iconScale,
+                      child: Image.asset(
+                        AppImages.aiPlanLoading,
+                        width: 180,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // ── Title ──
+                    Text(
+                      l10n.aiPlanCreating,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Syne',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      l10n.about30sec,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 13,
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // ── Progress steps ──
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.08),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (int i = 0; i < _steps.length; i++)
+                            _buildStep(i, colors),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // ── Facts ticker ──
+                    if (_facts.isNotEmpty)
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        transitionBuilder: (child, animation) =>
+                            FadeTransition(opacity: animation, child: child),
+                        child: Text(
+                          _facts[_factIndex % _facts.length],
+                          key: ValueKey<int>(_factIndex),
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.55),
+                            fontSize: 12,
+                            height: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),
-
-              const Spacer(flex: 2),
-
-              // ── Facts ticker ──
-              if (_facts.isNotEmpty)
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  transitionBuilder: (child, animation) =>
-                      FadeTransition(opacity: animation, child: child),
-                  child: Text(
-                    _facts[_factIndex % _facts.length],
-                    key: ValueKey<int>(_factIndex),
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.55),
-                      fontSize: 12,
-                      height: 1.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
-              const SizedBox(height: 32),
-            ],
+            ),
           ),
         ),
       ),

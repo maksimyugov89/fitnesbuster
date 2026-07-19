@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/presentation/widgets/common/permission_rationale_dialog.dart';
 import 'package:fitnesbuster/domain/services/i_health_connect_service.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
@@ -520,6 +521,15 @@ class _ProgressScreenState extends State<ProgressScreen>
       },
     );
     if (source == null) return;
+    if (!mounted) return;
+
+    final accepted = await showPermissionRationaleDialog(
+      context,
+      source == ImageSource.camera
+          ? PermissionRationaleKind.camera
+          : PermissionRationaleKind.photos,
+    );
+    if (!accepted || !mounted) return;
 
     try {
       final picked = await _picker.pickImage(

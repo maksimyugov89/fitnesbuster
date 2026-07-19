@@ -5,6 +5,7 @@ import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/theme_service.dart';
 import 'package:fitnesbuster/core/initialization/init_state.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -218,7 +219,7 @@ class _SplashScreenState extends State<SplashScreen>
         const SizedBox(height: 12),
 
         Text(
-          'ТВОЙ ПЕРСОНАЛЬНЫЙ ТРЕНЕР',
+          AppLocalizations.tl('splashPersonalTrainer'),
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Inter',
@@ -238,7 +239,7 @@ class _SplashScreenState extends State<SplashScreen>
       child: Column(
         children: [
           Text(
-            'З А Г Р У З К А',
+            AppLocalizations.tl('splashLoading'),
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 9,

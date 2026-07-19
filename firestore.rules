@@ -1,6 +1,36 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedInAs(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function hasCurrentLegalConsent(uid) {
+      return exists(
+        /databases/$(database)/documents/users/$(uid)/legal_consents/terms-2026-07-07-privacy-2026-07-17
+      );
+    }
+
+    function validCurrentLegalConsent(consentId) {
+      return consentId == 'terms-2026-07-07-privacy-2026-07-17' &&
+        request.resource.data.keys().hasOnly([
+          'termsVersion',
+          'privacyPolicyVersion',
+          'acceptedAt',
+          'source',
+          'locale',
+        ]) &&
+        request.resource.data.termsVersion == '2026-07-07' &&
+        request.resource.data.privacyPolicyVersion == '2026-07-17' &&
+        request.resource.data.acceptedAt == request.time &&
+        request.resource.data.source in [
+          'email_registration',
+          'google_registration',
+          'google_login',
+          'login',
+        ] &&
+        request.resource.data.locale is string;
+    }
 
     // ── Users ──────────────────────────────────────────────────────────────────
     // Full profile documents contain email, fcmToken and medical restrictions —
@@ -8,8 +38,21 @@ service cloud.firestore {
     // denormalized name/username fields already stored on friends/feed/search
     // results, never a direct read of another user's document.
     match /users/{uid} {
-      allow read: if request.auth != null && request.auth.uid == uid;
-      allow write: if request.auth != null && request.auth.uid == uid;
+      allow read: if signedInAs(uid);
+      allow create: if signedInAs(uid) && hasCurrentLegalConsent(uid);
+      allow update, delete: if signedInAs(uid);
+    }
+
+    // ── Legal consent records ─────────────────────────────────────────────────
+    // Client may create exactly one current-version consent record for itself.
+    // It uses server time and cannot be edited afterwards. A delete is allowed
+    // only while rolling back a failed registration before the profile doc exists.
+    match /users/{uid}/legal_consents/{consentId} {
+      allow read: if signedInAs(uid);
+      allow create: if signedInAs(uid) &&
+        validCurrentLegalConsent(consentId);
+      allow delete: if signedInAs(uid) &&
+        !exists(/databases/$(database)/documents/users/$(uid));
     }
 
     // ── Friend requests ────────────────────────────────────────────────────────
@@ -30,9 +73,8 @@ service cloud.firestore {
     }
 
     // ── Activity events (written by Cloud Functions only) ─────────────────────
-    // Previously client-writable; nothing in the app writes here directly
-    // (publishActivity() is currently unused), so this is locked down to avoid
-    // unvalidated events being fanned out to friends' feeds.
+    // Clients publish via the validated publishActivity callable; direct writes
+    // stay locked down so unvalidated events cannot be fanned out to friends.
     match /activity_events/{uid}/items/{eventId} {
       allow read: if request.auth != null && request.auth.uid == uid;
       // Write only via Cloud Functions (Admin SDK bypasses rules)

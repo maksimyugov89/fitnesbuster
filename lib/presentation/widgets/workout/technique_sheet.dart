@@ -4,6 +4,7 @@ import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 class WorkoutTechniqueSheet extends StatefulWidget {
   final String title;
@@ -88,7 +89,7 @@ class _WorkoutTechniqueSheetState extends State<WorkoutTechniqueSheet> {
                   ),
                 ),
                 Semantics(
-                  label: 'Закрыть',
+                  label: AppLocalizations.tl('close'),
                   button: true,
                   child: IconButton(
                     onPressed: () => Navigator.pop(context),
@@ -144,7 +145,7 @@ class _WorkoutTechniqueSheetState extends State<WorkoutTechniqueSheet> {
                   if (widget.techniqueCue.isNotEmpty) ...[
                     _TechniqueSection(
                       icon: Icons.lightbulb_rounded,
-                      label: 'Техника',
+                      label: AppLocalizations.tl('technique'),
                       text: widget.techniqueCue,
                       color: SemanticColors.technique,
                     ),
@@ -154,7 +155,7 @@ class _WorkoutTechniqueSheetState extends State<WorkoutTechniqueSheet> {
                     _TechniqueSection(
                       icon: Icons.monitor_weight_outlined,
                       iconAsset: AppImages.weightTracker,
-                      label: 'Нагрузка',
+                      label: AppLocalizations.tl('exerciseLoad'),
                       text: widget.weightGuideline,
                       color: SemanticColors.weightGuideline,
                     ),
@@ -164,7 +165,7 @@ class _WorkoutTechniqueSheetState extends State<WorkoutTechniqueSheet> {
                     _TechniqueSection(
                       icon: Icons.trending_up_rounded,
                       iconAsset: AppImages.trend,
-                      label: 'Прогрессия',
+                      label: AppLocalizations.tl('exerciseProgression'),
                       text: widget.progression,
                       color: SemanticColors.progression,
                     ),

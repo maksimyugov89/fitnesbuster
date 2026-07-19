@@ -3,21 +3,59 @@ import 'package:fitnesbuster/data/models/chat_message.dart';
 import 'package:fitnesbuster/domain/entities/chat_message.dart';
 import 'package:fitnesbuster/data/models/weekly_debrief.dart';
 import 'package:fitnesbuster/core/cache/hive_encryption.dart';
+import 'package:fitnesbuster/core/utils/app_logger.dart';
 
 /// Single entry point for all Hive cache operations.
 /// Uses plain string storage — no code generation required.
 class HiveCache {
   static const _boxName = 'fitnesbuster_cache';
+  static const _encryptedBoxNames = [
+    _boxName,
+    'offline_queue',
+    'offline_queue_dead_letter',
+  ];
 
   // ── Box lifecycle ─────────────────────────────────────────────────────────
 
   static Future<void> init() async {
     if (!Hive.isBoxOpen(_boxName)) {
-      await Hive.openBox<String>(
-        _boxName,
-        encryptionCipher: HiveEncryption.cipher,
-      );
+      try {
+        await Hive.openBox<String>(
+          _boxName,
+          encryptionCipher: HiveEncryption.cipher,
+        );
+      } on HiveError catch (e) {
+        // If the encryption key changed between installations (e.g. debug →
+        // release signing key caused FlutterSecureStorage to generate a new
+        // key while the old Hive file still exists), Hive won't be able to
+        // decrypt the box. Delete the corrupted file and retry.
+        appLogger.w(
+          '[HiveCache] Failed to open encrypted box, resetting',
+          error: e,
+        );
+        await _resetEncryptedStorage(e);
+      } on FormatException catch (e) {
+        await _resetEncryptedStorage(e);
+      }
     }
+  }
+
+  static Future<void> _resetEncryptedStorage(Object error) async {
+    appLogger.w(
+      '[HiveCache] Encrypted storage is unreadable; resetting disposable '
+      'cache and queue boxes',
+      error: error,
+    );
+    for (final boxName in _encryptedBoxNames) {
+      if (Hive.isBoxOpen(boxName)) await Hive.box<String>(boxName).close();
+      await Hive.deleteBoxFromDisk(boxName);
+    }
+    await HiveEncryption.reset();
+    await Hive.openBox<String>(
+      _boxName,
+      encryptionCipher: HiveEncryption.cipher,
+    );
+    appLogger.i('[HiveCache] Encrypted boxes recreated with a fresh key');
   }
 
   static Box<String> get _box => Hive.box<String>(_boxName);

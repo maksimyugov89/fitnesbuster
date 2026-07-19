@@ -2,6 +2,9 @@
   "name": "functions",
   "scripts": {
     "build": "tsc",
+    "test": "npm run build && node --test \"test/*.test.js\"",
+    "test:emulator": "node --test --test-concurrency=1 \"test/emulator/*.test.js\"",
+    "test:emulator:exec": "npm run build && firebase emulators:exec --project demo-fitnesbuster --config ../firebase.json --only auth,firestore,functions \"npm run test:emulator\"",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",

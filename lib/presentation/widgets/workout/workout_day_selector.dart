@@ -60,6 +60,7 @@ class WorkoutDaySelector extends StatelessWidget {
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         labels[i],
@@ -70,9 +71,15 @@ class WorkoutDaySelector extends StatelessWidget {
                               : colors.textMuted,
                           fontWeight: FontWeight.w600,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 4),
-                      Text(dayIcon(day), style: const TextStyle(fontSize: 18)),
+                      SizedBox(
+                        height: 24,
+                        child: Image.asset(dayIcon(day), fit: BoxFit.contain),
+                      ),
                     ],
                   ),
                 ),

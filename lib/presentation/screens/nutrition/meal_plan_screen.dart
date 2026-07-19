@@ -36,7 +36,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       if (authState is! AuthStateAuthenticated) {
         setState(() {
           _loading = false;
-          _error = 'Не авторизован';
+          _error = AppLocalizations.tl('notAuthorized');
         });
         return;
       }
@@ -46,7 +46,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       if (jsonStr == null) {
         setState(() {
           _loading = false;
-          _error = 'План питания ещё не сгенерирован.\nПройдите онбординг.';
+          _error = AppLocalizations.tl('noPlanError');
         });
         return;
       }
@@ -118,9 +118,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Питание', style: AppTextStyles.displayM),
               Text(
-                'ИИ-план питания на день',
+                AppLocalizations.tl('nutritionTitle'),
+                style: AppTextStyles.displayM,
+              ),
+              Text(
+                AppLocalizations.tl('mealPlanDailySubtitle'),
                 style: TextStyle(fontSize: 13, color: colors.textMuted),
               ),
             ],
@@ -158,7 +161,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 _load();
               },
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Повторить'),
+              label: Text(AppLocalizations.tl('retry')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
                 foregroundColor: colors.textOnPrimary,
@@ -191,15 +194,18 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Суточные цели', style: AppTextStyles.titleM),
+              Text(
+                AppLocalizations.tl('dailyGoals'),
+                style: AppTextStyles.titleM,
+              ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _Target(
-                    label: 'Калории',
+                    label: AppLocalizations.tl('caloriesLabel'),
                     value: '${plan.totalCalories}',
-                    unit: 'ккал',
+                    unit: AppLocalizations.tl('kcalShort'),
                     color: colors.accentOrange,
                   ),
                   Container(
@@ -208,9 +214,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     color: colors.textPrimary.withValues(alpha: 0.08),
                   ),
                   _Target(
-                    label: 'Приёмов пищи',
+                    label: AppLocalizations.tl('mealsLabel'),
                     value: '${plan.meals.length}',
-                    unit: 'раз',
+                    unit: AppLocalizations.tl('timesUnit'),
                     color: colors.primary,
                   ),
                   Container(
@@ -219,9 +225,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     color: colors.textPrimary.withValues(alpha: 0.08),
                   ),
                   _Target(
-                    label: 'Вода',
+                    label: AppLocalizations.tl('waterTitle'),
                     value: waterLiters,
-                    unit: 'л',
+                    unit: AppLocalizations.tl('literUnit'),
                     color: colors.info,
                   ),
                 ],
@@ -235,17 +241,17 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _MacroTarget(
-                      label: 'Белки',
+                      label: AppLocalizations.tl('proteinLabel'),
                       grams: targets.protein,
                       color: colors.primary,
                     ),
                     _MacroTarget(
-                      label: 'Углеводы',
+                      label: AppLocalizations.tl('carbsLabel'),
                       grams: targets.carbs,
                       color: colors.accentOrange,
                     ),
                     _MacroTarget(
-                      label: 'Жиры',
+                      label: AppLocalizations.tl('fatLabel'),
                       grams: targets.fat,
                       color: colors.success,
                     ),
@@ -257,7 +263,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         ),
 
         const SizedBox(height: 20),
-        const Text('Рекомендуемый план', style: AppTextStyles.titleM),
+        Text(
+          AppLocalizations.tl('recommendedMealPlan'),
+          style: AppTextStyles.titleM,
+        ),
         const SizedBox(height: 12),
 
         ...plan.meals.map((meal) => _buildMealCard(colors, meal)),
@@ -274,14 +283,14 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           ),
           child: Row(
             children: [
-              const Text('💧', style: TextStyle(fontSize: 28)),
+              Image.asset(AppImages.water, width: 32, height: 32),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Вода',
+                      AppLocalizations.tl('waterTitle'),
                       style: TextStyle(
                         fontFamily: 'Syne',
                         fontSize: 15,
@@ -291,7 +300,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '$waterLiters л в день — пейте равномерно в течение дня',
+                      AppLocalizations.tlp('mealPlanWaterGuidance', {
+                        'liters': waterLiters,
+                      }),
                       style: TextStyle(
                         fontSize: 12,
                         color: colors.textSecondary,
@@ -308,7 +319,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         // ── Supplements ──
         if (plan.supplements.isNotEmpty) ...[
           const SizedBox(height: 20),
-          const Text('Спортивное питание', style: AppTextStyles.titleM),
+          Text(
+            AppLocalizations.tl('supplementsSportLabel'),
+            style: AppTextStyles.titleM,
+          ),
           const SizedBox(height: 12),
           ...plan.supplements.map((s) => _buildSupplementCard(colors, s)),
         ],
@@ -316,7 +330,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         // ── Recommendations ──
         if (plan.recommendations.isNotEmpty) ...[
           const SizedBox(height: 20),
-          const Text('Советы по питанию', style: AppTextStyles.titleM),
+          Text(
+            AppLocalizations.tl('nutritionTipsLabel'),
+            style: AppTextStyles.titleM,
+          ),
           const SizedBox(height: 12),
           ...plan.recommendations.map(
             (rec) => Padding(
@@ -354,8 +371,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   Widget _buildMealCard(ThemePalette colors, AiMeal meal) {
     final normalizedType = meal.type.replaceAll(' ', '').toLowerCase();
-    final icon = mealIcons[normalizedType] ?? '🍽️';
-    final label = mealLabels[normalizedType] ?? meal.type;
+    final icon = mealIcons[normalizedType] ?? AppImages.snack;
+    final label = localizedMealLabels()[normalizedType] ?? meal.type;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -370,7 +387,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         children: [
           Row(
             children: [
-              Text(icon, style: const TextStyle(fontSize: 26)),
+              Image.asset(icon, width: 30, height: 30),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -402,7 +419,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '${meal.calories} ккал',
+                  AppLocalizations.tlp('foodDiaryCalories', {
+                    'calories': '${meal.calories}',
+                  }),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -451,26 +470,26 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             Row(
               children: [
                 _InlineMacro(
-                  label: 'Б',
+                  label: AppLocalizations.tl('proteinShort'),
                   grams: meal.macros.protein,
                   color: colors.primary,
                 ),
                 const SizedBox(width: 10),
                 _InlineMacro(
-                  label: 'У',
+                  label: AppLocalizations.tl('carbsShort'),
                   grams: meal.macros.carbs,
                   color: colors.accentOrange,
                 ),
                 const SizedBox(width: 10),
                 _InlineMacro(
-                  label: 'Ж',
+                  label: AppLocalizations.tl('fatShort'),
                   grams: meal.macros.fat,
                   color: colors.success,
                 ),
                 if (meal.macros.fiber > 0) ...[
                   const SizedBox(width: 10),
                   _InlineMacro(
-                    label: 'Кл',
+                    label: AppLocalizations.tl('fiberShort'),
                     grams: meal.macros.fiber,
                     color: colors.textMuted,
                   ),
@@ -618,7 +637,7 @@ class _MacroTarget extends StatelessWidget {
         Text(label, style: TextStyle(fontSize: 10, color: colors.textMuted)),
         const SizedBox(height: 2),
         Text(
-          '$gramsг',
+          '$grams ${AppLocalizations.tl('gUnit')}',
           style: TextStyle(
             fontFamily: 'Syne',
             fontSize: 16,
@@ -651,7 +670,7 @@ class _InlineMacro extends StatelessWidget {
             style: TextStyle(fontSize: 11, color: color.withValues(alpha: 0.7)),
           ),
           TextSpan(
-            text: '$gramsг',
+            text: '$grams ${AppLocalizations.tl('gUnit')}',
             style: TextStyle(
               fontSize: 11,
               color: color,

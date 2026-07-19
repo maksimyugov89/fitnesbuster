@@ -4,6 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:fitnesbuster/bloc/health/health_sync_bloc.dart';
 import 'package:fitnesbuster/core/health/health_connect_service.dart';
+import 'package:fitnesbuster/domain/exceptions/health_exception.dart';
 
 import 'health_sync_bloc_test.mocks.dart';
 
@@ -114,6 +115,25 @@ void main() {
       expect: () => [
         const HealthSyncStateLoading(),
         isA<HealthSyncStateError>(),
+      ],
+    );
+
+    blocTest<HealthSyncBloc, HealthSyncState>(
+      'emits access-denied error when permissions were revoked',
+      build: () {
+        when(
+          mockHc.readAllToday(),
+        ).thenThrow(const HealthConnectPermissionDeniedException());
+        return HealthSyncBloc(hcService: mockHc);
+      },
+      act: (b) => b.add(const HealthSyncReadToday()),
+      expect: () => [
+        const HealthSyncStateLoading(),
+        isA<HealthSyncStateError>().having(
+          (state) => state.kind,
+          'kind',
+          HealthSyncErrorKind.accessDenied,
+        ),
       ],
     );
   });

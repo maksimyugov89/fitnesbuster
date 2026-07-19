@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/theme_service.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 /// Bottom sheet for selecting app theme from 5 gradient-based themes.
 class ThemeSelectionSheet extends StatefulWidget {
@@ -58,6 +59,7 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.of(context);
+    final l10n = context.l10n;
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -81,10 +83,10 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
             ),
           ),
           const SizedBox(height: 20),
-          const Text('Выбор темы', style: AppTextStyles.titleL),
+          Text(l10n.selectThemeTitle, style: AppTextStyles.titleL),
           const SizedBox(height: 4),
           Text(
-            '5 уникальных тем с градиентами',
+            AppLocalizations.tl('themeSelectionSubtitle'),
             style: TextStyle(fontSize: 13, color: colors.textMuted),
           ),
           const SizedBox(height: 20),
@@ -112,7 +114,9 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'Тема "${mode.displayName}" применена',
+                                AppLocalizations.tlp('themeApplied', {
+                                  'theme': mode.displayName,
+                                }),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -157,10 +161,7 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
                         ),
                         child: Row(
                           children: [
-                            Text(
-                              mode.emoji,
-                              style: const TextStyle(fontSize: 28),
-                            ),
+                            Image.asset(mode.iconAsset, width: 36, height: 36),
                             const SizedBox(width: 14),
                             Expanded(
                               child: Column(

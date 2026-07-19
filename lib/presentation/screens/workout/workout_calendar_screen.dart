@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
@@ -46,7 +47,15 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   // dateKey (yyyy-MM-dd) → planDayIndex override
   Map<String, int> _overrides = {};
 
-  static const _weekLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+  List<String> get _weekLabels => [
+    AppLocalizations.tl('monShort'),
+    AppLocalizations.tl('tueShort'),
+    AppLocalizations.tl('wedShort'),
+    AppLocalizations.tl('thuShort'),
+    AppLocalizations.tl('friShort'),
+    AppLocalizations.tl('satShort'),
+    AppLocalizations.tl('sunShort'),
+  ];
 
   @override
   void initState() {
@@ -119,20 +128,48 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     return exercises.isEmpty ||
         focus.contains('отдых') ||
         focus.contains('восстановлен') ||
+        focus.contains('rest') ||
+        focus.contains('recovery') ||
         type == 'rest' ||
         type == 'active_recovery';
   }
 
   String _dayIcon(Map<String, dynamic>? day) {
-    if (day == null || _isRest(day)) return '😴';
+    if (day == null || _isRest(day)) return AppImages.sleep;
     final focus = (day['focus'] as String? ?? day['name'] as String? ?? '')
         .toLowerCase();
-    if (focus.contains('кардио') || focus.contains('интервал')) return '🏃';
-    if (focus.contains('нога') || focus.contains('ягодиц')) return '🦵';
-    if (focus.contains('грудн') || focus.contains('трицепс')) return '💪';
-    if (focus.contains('спина') || focus.contains('бицепс')) return '🏋️';
-    if (focus.contains('плечи') || focus.contains('пресс')) return '⚡';
-    return '🏋️';
+    if (focus.contains('кардио') ||
+        focus.contains('интервал') ||
+        focus.contains('cardio') ||
+        focus.contains('interval')) {
+      return AppImages.running;
+    }
+    if (focus.contains('нога') ||
+        focus.contains('ягодиц') ||
+        focus.contains('leg') ||
+        focus.contains('glute')) {
+      return AppImages.legDay;
+    }
+    if (focus.contains('грудн') ||
+        focus.contains('трицепс') ||
+        focus.contains('chest') ||
+        focus.contains('triceps')) {
+      return AppImages.workoutsTab;
+    }
+    if (focus.contains('спина') ||
+        focus.contains('бицепс') ||
+        focus.contains('back') ||
+        focus.contains('biceps')) {
+      return AppImages.workoutsTab;
+    }
+    if (focus.contains('плечи') ||
+        focus.contains('пресс') ||
+        focus.contains('shoulder') ||
+        focus.contains('abs') ||
+        focus.contains('core')) {
+      return AppImages.energy;
+    }
+    return AppImages.workoutsTab;
   }
 
   List<_WorkoutEvent> _eventsFor(DateTime day) {
@@ -193,11 +230,14 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
-                      const Text('📅', style: TextStyle(fontSize: 22)),
+                      Image.asset(AppImages.calendar, width: 26, height: 26),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          '${date.day}.${date.month.toString().padLeft(2, '0')}.${date.year} — назначить тренировку',
+                          AppLocalizations.tlp('assignWorkoutForDate', {
+                            'date':
+                                '${date.day}.${date.month.toString().padLeft(2, '0')}.${date.year}',
+                          }),
                           style: TextStyle(
                             fontFamily: 'Syne',
                             fontSize: 14,
@@ -218,7 +258,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                       d['focus'] as String? ?? d['name'] as String? ?? '';
                   final label = i < _weekLabels.length
                       ? _weekLabels[i]
-                      : 'День ${i + 1}';
+                      : AppLocalizations.tlp('dayLabel', {'n': '${i + 1}'});
                   final isSelected = selected == i;
                   return GestureDetector(
                     onTap: () => setSheetState(() => selected = i),
@@ -232,10 +272,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                           : Colors.transparent,
                       child: Row(
                         children: [
-                          Text(
-                            _dayIcon(d),
-                            style: const TextStyle(fontSize: 20),
-                          ),
+                          Image.asset(_dayIcon(d), width: 24, height: 24),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -250,7 +287,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                                 ),
                                 Text(
                                   focus.isEmpty
-                                      ? 'Отдых / Восстановление'
+                                      ? AppLocalizations.tl('restRecoveryLabel')
                                       : focus,
                                   style: TextStyle(
                                     fontSize: 14,
@@ -359,7 +396,10 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             ),
           ),
         ),
-        title: const Text('Расписание тренировок', style: AppTextStyles.titleL),
+        title: Text(
+          AppLocalizations.tl('workoutSchedule'),
+          style: AppTextStyles.titleL,
+        ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -386,10 +426,10 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('📅', style: TextStyle(fontSize: 56)),
+            Image.asset(AppImages.calendar, width: 64, height: 64),
             const SizedBox(height: 16),
             Text(
-              'Нет плана тренировок',
+              AppLocalizations.tl('noWorkoutPlan'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 18,
@@ -399,7 +439,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Сгенерируй AI-план, чтобы управлять расписанием',
+              AppLocalizations.tl('generatePlanHint'),
               style: TextStyle(fontSize: 13, color: colors.textMuted),
               textAlign: TextAlign.center,
             ),
@@ -410,6 +450,8 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   }
 
   Widget _buildCalendar(ThemePalette colors, DateTime now) {
+    final localeTag = Localizations.localeOf(context).toLanguageTag();
+
     return Container(
       decoration: BoxDecoration(
         color: colors.surfaceCard,
@@ -417,11 +459,14 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: TableCalendar(
+        locale: localeTag,
         firstDay: now.subtract(const Duration(days: 7)),
         lastDay: now.add(const Duration(days: 90)),
         focusedDay: _focusedDay,
         calendarFormat: CalendarFormat.month,
-        availableCalendarFormats: const {CalendarFormat.month: 'Месяц'},
+        availableCalendarFormats: {
+          CalendarFormat.month: AppLocalizations.tl('month'),
+        },
         selectedDayPredicate: (d) => isSameDay(_selectedDay, d),
         onDaySelected: (selected, focused) {
           setState(() => _focusedDay = focused);
@@ -542,7 +587,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         Row(
           children: [
             Text(
-              '${date.day}.${date.month.toString().padLeft(2, '0')}${isToday ? ' — Сегодня' : ''}',
+              '${date.day}.${date.month.toString().padLeft(2, '0')}${isToday ? ' — ${AppLocalizations.tl('today')}' : ''}',
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 16,
@@ -559,7 +604,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'Перенесено',
+                  AppLocalizations.tl('moved'),
                   style: TextStyle(
                     fontSize: 10,
                     color: colors.accentOrange,
@@ -582,14 +627,16 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             children: [
               Row(
                 children: [
-                  Text(icon, style: const TextStyle(fontSize: 28)),
+                  Image.asset(icon, width: 32, height: 32),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isRest ? 'Отдых / Восстановление' : focus,
+                          isRest
+                              ? AppLocalizations.tl('restRecoveryLabel')
+                              : focus,
                           style: TextStyle(
                             fontFamily: 'Syne',
                             fontSize: 15,
@@ -599,7 +646,9 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                         ),
                         if (!isRest)
                           Text(
-                            '${exercises.length} упражнений',
+                            AppLocalizations.tlp('exercisesShortCount', {
+                              'n': '${exercises.length}',
+                            }),
                             style: TextStyle(
                               fontSize: 12,
                               color: colors.textMuted,
@@ -629,7 +678,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Изменить',
+                            AppLocalizations.tl('edit'),
                             style: TextStyle(
                               fontSize: 11,
                               color: colors.textMuted,
@@ -665,7 +714,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Начать тренировку',
+                          AppLocalizations.tl('startWorkoutBtn'),
                           style: TextStyle(
                             fontFamily: 'Syne',
                             fontSize: 14,
@@ -704,7 +753,10 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Ближайшие тренировки', style: AppTextStyles.titleM),
+        Text(
+          AppLocalizations.tl('nearestWorkouts'),
+          style: AppTextStyles.titleM,
+        ),
         const SizedBox(height: 12),
         ...workoutDays.map((date) {
           final planDay = _planDayFor(date);
@@ -732,7 +784,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(
-                    child: Text(icon, style: const TextStyle(fontSize: 20)),
+                    child: Image.asset(icon, width: 24, height: 24),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -752,7 +804,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                           if (isOverridden) ...[
                             const SizedBox(width: 6),
                             Text(
-                              'перенесено',
+                              AppLocalizations.tl('moved').toLowerCase(),
                               style: TextStyle(
                                 fontSize: 10,
                                 color: colors.accentOrange,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/legal/legal_documents.dart';
+import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
 /// Renders a [LegalDocument] (Terms of Use, Privacy Policy) as a plain,
 /// scrollable screen — used from the registration checkbox and from Profile.
@@ -39,7 +40,9 @@ class LegalDocumentScreen extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 40),
         children: [
           Text(
-            'Действует с ${document.lastUpdated}',
+            AppLocalizations.tlp('legalEffectiveFrom', {
+              'date': document.lastUpdated,
+            }),
             style: TextStyle(fontSize: 12, color: colors.textMuted),
           ),
           const SizedBox(height: 20),

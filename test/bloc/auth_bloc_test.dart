@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
+import 'package:fitnesbuster/core/legal/legal_consent.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
@@ -20,13 +21,23 @@ void main() {
     email: 'test@example.com',
     createdAt: DateTime(2024),
   );
+  const tConsent = LegalConsentAcceptance(
+    source: LegalConsentSource.emailRegistration,
+    localeCode: 'ru',
+  );
 
   setUp(() {
     repo = MockIAuthRepository();
     when(repo.userChanges).thenAnswer((_) => const Stream.empty());
     when(repo.currentUser).thenReturn(null);
     when(repo.isEmailVerified).thenReturn(true);
+    when(repo.hasCurrentLegalConsent()).thenAnswer((_) async => true);
     when(repo.getCurrentUserWithProfile()).thenAnswer((_) async => null);
+    when(repo.reloadUser()).thenAnswer((_) async {});
+    when(repo.signOut()).thenAnswer((_) async {});
+    when(
+      repo.acceptCurrentLegalConsent(consent: anyNamed('consent')),
+    ).thenAnswer((_) async => tUser);
     bloc = AuthBloc(authRepository: repo);
   });
 
@@ -42,11 +53,24 @@ void main() {
       build: () {
         when(repo.currentUser).thenReturn(tUser);
         when(repo.userChanges).thenAnswer((_) => const Stream.empty());
+        when(repo.hasCurrentLegalConsent()).thenAnswer((_) async => true);
         when(repo.getCurrentUserWithProfile()).thenAnswer((_) async => tUser);
         return AuthBloc(authRepository: repo);
       },
       act: (b) => b.add(const AuthCheckRequested()),
       expect: () => [AuthStateAuthenticated(user: tUser)],
+    );
+
+    blocTest<AuthBloc, AuthState>(
+      'emits LegalConsentRequired when cached user lacks current consent',
+      build: () {
+        when(repo.currentUser).thenReturn(tUser);
+        when(repo.userChanges).thenAnswer((_) => const Stream.empty());
+        when(repo.hasCurrentLegalConsent()).thenAnswer((_) async => false);
+        return AuthBloc(authRepository: repo);
+      },
+      act: (b) => b.add(const AuthCheckRequested()),
+      expect: () => [const AuthStateLegalConsentRequired()],
     );
 
     blocTest<AuthBloc, AuthState>(
@@ -122,6 +146,7 @@ void main() {
             name: anyNamed('name'),
             email: anyNamed('email'),
             password: anyNamed('password'),
+            consent: anyNamed('consent'),
           ),
         ).thenAnswer((_) async => tUser);
       },
@@ -130,12 +155,83 @@ void main() {
           name: 'Test',
           email: 'test@example.com',
           password: '123456',
+          consent: tConsent,
         ),
       ),
       expect: () => [
         const AuthStateLoading(),
         AuthStateAuthenticated(user: tUser),
       ],
+    );
+  });
+
+  group('AuthGoogleLoginRequested', () {
+    blocTest<AuthBloc, AuthState>(
+      'emits LegalConsentRequired for existing Google user without current consent',
+      build: () => AuthBloc(authRepository: repo),
+      setUp: () {
+        when(repo.currentUser).thenReturn(tUser);
+        when(
+          repo.signInWithGoogle(newAccountConsent: null),
+        ).thenThrow(const UnknownAuthException('terms-required'));
+      },
+      act: (b) => b.add(const AuthGoogleLoginRequested()),
+      expect: () => [
+        const AuthStateLoading(),
+        const AuthStateLegalConsentRequired(
+          source: LegalConsentSource.googleLogin,
+        ),
+      ],
+    );
+
+    blocTest<AuthBloc, AuthState>(
+      'emits LegalConsentRequired for existing email user without current consent',
+      build: () => AuthBloc(authRepository: repo),
+      setUp: () {
+        when(repo.currentUser).thenReturn(tUser);
+        when(
+          repo.login(email: anyNamed('email'), password: anyNamed('password')),
+        ).thenThrow(const UnknownAuthException('terms-required'));
+      },
+      act: (b) =>
+          b.add(const AuthLoginRequested(email: 'a@b.com', password: 'pass')),
+      expect: () => [
+        const AuthStateLoading(),
+        const AuthStateLegalConsentRequired(),
+      ],
+    );
+
+    blocTest<AuthBloc, AuthState>(
+      'records accepted legacy Google consent and authenticates',
+      build: () => AuthBloc(authRepository: repo),
+      setUp: () {
+        when(
+          repo.acceptCurrentLegalConsent(consent: anyNamed('consent')),
+        ).thenAnswer((_) async => tUser);
+      },
+      act: (b) => b.add(
+        const AuthLegalConsentAccepted(
+          consent: LegalConsentAcceptance(
+            source: LegalConsentSource.googleLogin,
+            localeCode: 'ru',
+          ),
+        ),
+      ),
+      expect: () => [
+        const AuthStateLoading(),
+        AuthStateAuthenticated(user: tUser),
+      ],
+      verify: (_) {
+        final captured =
+            verify(
+                  repo.acceptCurrentLegalConsent(
+                    consent: captureAnyNamed('consent'),
+                  ),
+                ).captured.single
+                as LegalConsentAcceptance;
+        expect(captured.source, LegalConsentSource.googleLogin);
+        expect(captured.localeCode, 'ru');
+      },
     );
   });
 

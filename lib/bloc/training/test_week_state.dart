@@ -44,12 +44,16 @@ class TestWeekStateDayCompleted extends TestWeekState {
   final List<TestExerciseResult> exercisesCompleted;
   final int nextDayIndex;
   final int totalDays;
+  final DateTime nextAvailableAt;
+  final bool nextDayAvailable;
 
   const TestWeekStateDayCompleted({
     required this.dayIndex,
     required this.exercisesCompleted,
     required this.nextDayIndex,
     required this.totalDays,
+    required this.nextAvailableAt,
+    required this.nextDayAvailable,
   });
   @override
   List<Object?> get props => [
@@ -57,7 +61,25 @@ class TestWeekStateDayCompleted extends TestWeekState {
     exercisesCompleted,
     nextDayIndex,
     totalDays,
+    nextAvailableAt,
+    nextDayAvailable,
   ];
+}
+
+/// The next assessment workout is intentionally separated by a recovery day.
+class TestWeekStateDayScheduled extends TestWeekState {
+  final int dayIndex;
+  final int totalDays;
+  final DateTime availableAt;
+
+  const TestWeekStateDayScheduled({
+    required this.dayIndex,
+    required this.totalDays,
+    required this.availableAt,
+  });
+
+  @override
+  List<Object?> get props => [dayIndex, totalDays, availableAt];
 }
 
 /// AI is calculating the adapted plan.

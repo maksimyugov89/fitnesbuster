@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Supported language with display name, native name and flag emoji.
@@ -54,14 +55,24 @@ class LanguageService {
     final prefs = await SharedPreferences.getInstance();
     final code = prefs.getString(_key) ?? AppLanguage.russian.code;
     _current = AppLanguage.fromCode(code);
+    await _ensureDateFormatting(_current.code);
     localeNotifier.value = _current.locale;
   }
 
   /// Save selected language and trigger UI rebuild across the app.
   static Future<void> setLanguage(AppLanguage language) async {
+    await _ensureDateFormatting(language.code);
     _current = language;
     localeNotifier.value = language.locale;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, language.code);
+  }
+
+  static Future<void> _ensureDateFormatting(String localeCode) async {
+    try {
+      await initializeDateFormatting(localeCode, null);
+    } catch (_) {
+      await initializeDateFormatting(AppLanguage.english.code, null);
+    }
   }
 }

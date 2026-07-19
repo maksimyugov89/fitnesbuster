@@ -5,6 +5,7 @@ import 'package:fitnesbuster/core/services/muscle_zone_matcher.dart';
 import 'package:fitnesbuster/domain/services/i_exercise_service.dart';
 import 'package:fitnesbuster/presentation/widgets/workout/workout_plan_widgets.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 
 class WorkoutExerciseCard extends StatelessWidget {
   final Map<String, dynamic> exercise;
@@ -127,9 +128,20 @@ class WorkoutExerciseCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    '⏱ $rest с',
-                    style: TextStyle(fontSize: 11, color: colors.textMuted),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        AppImages.workoutTimer,
+                        width: 12,
+                        height: 12,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        AppLocalizations.tlp('secSuffix', {'n': '$rest'}),
+                        style: TextStyle(fontSize: 11, color: colors.textMuted),
+                      ),
+                    ],
                   ),
                   if (rpe > 0) ...[
                     const SizedBox(height: 4),
@@ -192,7 +204,7 @@ class WorkoutExerciseCard extends StatelessWidget {
               children: [
                 if (primaryZones.isNotEmpty)
                   Semantics(
-                    label: '3D мышцы',
+                    label: AppLocalizations.tl('workout3dMuscles'),
                     button: true,
                     child: GestureDetector(
                       onTap: onShow3D,
@@ -218,7 +230,7 @@ class WorkoutExerciseCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              '3D мышцы',
+                              AppLocalizations.tl('workout3dMuscles'),
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
@@ -233,7 +245,7 @@ class WorkoutExerciseCard extends StatelessWidget {
                 const Spacer(),
                 if (techniqueCue.isNotEmpty || progression.isNotEmpty)
                   Semantics(
-                    label: 'Техника',
+                    label: AppLocalizations.tl('technique'),
                     button: true,
                     child: GestureDetector(
                       onTap: onShowTechnique,
@@ -253,18 +265,18 @@ class WorkoutExerciseCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.format_list_bulleted_rounded,
                               color: SemanticColors.technique,
                               size: 14,
                             ),
-                            SizedBox(width: 6),
+                            const SizedBox(width: 6),
                             Text(
-                              'Техника',
-                              style: TextStyle(
+                              AppLocalizations.tl('technique'),
+                              style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: SemanticColors.technique,

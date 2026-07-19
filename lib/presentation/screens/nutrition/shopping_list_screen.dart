@@ -45,8 +45,35 @@ String _categorize(String ingredient) {
     'кальмар',
     'треск',
     'мясо',
+    'chicken',
+    'beef',
+    'pork',
+    'turkey',
+    'fish',
+    'salmon',
+    'tuna',
+    'egg',
+    'protein',
+    'seafood',
+    'shrimp',
+    'squid',
+    'cod',
+    'meat',
   ];
-  const dairy = ['молоко', 'кефир', 'йогурт', 'творог', 'сыр', 'сметан'];
+  const dairy = [
+    'молоко',
+    'кефир',
+    'йогурт',
+    'творог',
+    'сыр',
+    'сметан',
+    'milk',
+    'kefir',
+    'yogurt',
+    'cottage cheese',
+    'cheese',
+    'sour cream',
+  ];
   const grains = [
     'рис',
     'гречк',
@@ -64,6 +91,16 @@ String _categorize(String ingredient) {
     'киноа',
     'булгур',
     'перловк',
+    'rice',
+    'buckwheat',
+    'oat',
+    'pasta',
+    'bread',
+    'potato',
+    'cereal',
+    'quinoa',
+    'bulgur',
+    'barley',
   ];
   const vegetables = [
     'огурец',
@@ -89,6 +126,26 @@ String _categorize(String ingredient) {
     'петрушк',
     'укроп',
     'шампин',
+    'cucumber',
+    'tomato',
+    'pepper',
+    'cabbage',
+    'broccoli',
+    'spinach',
+    'carrot',
+    'lettuce',
+    'greens',
+    'onion',
+    'garlic',
+    'zucchini',
+    'eggplant',
+    'beet',
+    'peas',
+    'corn',
+    'celery',
+    'parsley',
+    'dill',
+    'mushroom',
   ];
   const fruits = [
     'яблоко',
@@ -106,6 +163,20 @@ String _categorize(String ingredient) {
     'малина',
     'смородин',
     'арбуз',
+    'apple',
+    'banana',
+    'orange',
+    'berry',
+    'blueberry',
+    'strawberry',
+    'grape',
+    'pear',
+    'mango',
+    'kiwi',
+    'lemon',
+    'raspberry',
+    'currant',
+    'watermelon',
   ];
   const fats = [
     'масло',
@@ -119,6 +190,17 @@ String _categorize(String ingredient) {
     'фундук',
     'оливк',
     'льняно',
+    'oil',
+    'avocado',
+    'nut',
+    'seed',
+    'almond',
+    'cashew',
+    'peanut',
+    'walnut',
+    'hazelnut',
+    'olive',
+    'flax',
   ];
 
   for (final kw in proteins) {
@@ -143,13 +225,13 @@ String _categorize(String ingredient) {
 }
 
 const _categoryEmoji = {
-  'proteins': '🥩',
-  'dairy': '🥛',
-  'grains': '🌾',
-  'vegetables': '🥦',
-  'fruits': '🍎',
-  'fats': '🥑',
-  'other': '🧂',
+  'proteins': AppImages.meat,
+  'dairy': AppImages.dairy,
+  'grains': AppImages.grains,
+  'vegetables': AppImages.vegetables,
+  'fruits': AppImages.vegetables,
+  'fats': AppImages.healthyFats,
+  'other': AppImages.spices,
 };
 
 String _categoryLabel(BuildContext context, String key) {
@@ -240,7 +322,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
       // Parse alternatives from each meal
       final altRegex = RegExp(
-        r'[Вв]место\s+([а-яА-ЯёЁ ]+?)\s*(?:→|->|:)\s*(.+)',
+        r'(?:[Вв]место|[Ii]nstead of)\s+(.+?)\s*(?:→|->|:)\s*(.+)',
       );
 
       // Build a map: stem → list of swap options
@@ -257,7 +339,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                 : keyword.toLowerCase();
             final optionsText = match.group(2)!.trim();
             final options = optionsText
-                .split(RegExp(r'\s+или\s+'))
+                .split(RegExp(r'\s+(?:или|or)\s+'))
                 .map((s) => s.trim())
                 .where((s) => s.isNotEmpty)
                 .toList();
@@ -381,14 +463,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         final bought = _isGroupBought(group);
         lines.add('  ${bought ? '✓' : '○'} ${group.mainItem}');
         if (group.hasSwaps) {
-          lines.add('    или: ${group.swapOptions.join(' / ')}');
+          lines.add(
+            '    ${AppLocalizations.tl('shoppingAlternativePrefix')}${group.swapOptions.join(' / ')}',
+          );
         }
       }
       lines.add('');
     }
     Clipboard.setData(ClipboardData(text: lines.join('\n')));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Список скопирован в буфер обмена')),
+      SnackBar(content: Text(AppLocalizations.tl('shoppingCopied'))),
     );
   }
 
@@ -425,7 +509,10 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             Text(context.l10n.shoppingListTitle, style: AppTextStyles.titleL),
             if (!_loading && _totalItems > 0)
               Text(
-                '$_checkedCount / $_totalItems куплено',
+                AppLocalizations.tlp('shoppingItemsBought', {
+                  'done': '$_checkedCount',
+                  'total': '$_totalItems',
+                }),
                 style: TextStyle(fontSize: 11, color: colors.textMuted),
               ),
           ],
@@ -434,12 +521,12 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           if (!_loading && _checkedCount > 0)
             IconButton(
               icon: Icon(Icons.refresh_rounded, color: colors.textMuted),
-              tooltip: 'Сбросить',
+              tooltip: AppLocalizations.tl('reset'),
               onPressed: _resetAll,
             ),
           IconButton(
             icon: Icon(Icons.copy_rounded, color: colors.textMuted),
-            tooltip: 'Скопировать',
+            tooltip: AppLocalizations.tl('shoppingCopy'),
             onPressed: _copyToClipboard,
           ),
         ],
@@ -459,10 +546,10 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('🛒', style: TextStyle(fontSize: 56)),
+            Image.asset(AppImages.shoppingList, width: 64, height: 64),
             const SizedBox(height: 16),
             Text(
-              'Список пуст',
+              AppLocalizations.tl('shoppingEmptyTitle'),
               style: TextStyle(
                 fontFamily: 'Syne',
                 fontSize: 18,
@@ -472,7 +559,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Сгенерируй AI-план питания,\nи ингредиенты появятся здесь',
+              AppLocalizations.tl('shoppingEmptyBody'),
               style: TextStyle(fontSize: 13, color: colors.textMuted),
               textAlign: TextAlign.center,
             ),
@@ -552,7 +639,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
               Row(
                 children: [
                   Text(
-                    'Куплено',
+                    AppLocalizations.tl('shoppingBoughtLabel'),
                     style: TextStyle(fontSize: 12, color: colors.textMuted),
                   ),
                   const Spacer(),
@@ -590,7 +677,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
         for (final cat in orderedCats) ...[
           _CategoryHeader(
-            emoji: _categoryEmoji[cat] ?? '🍽️',
+            emoji: _categoryEmoji[cat] ?? AppImages.snack,
             label: _categoryLabel(context, cat),
             count: _grouped[cat]!.length,
             checkedCount: _grouped[cat]!.where(_isGroupBought).length,
@@ -666,10 +753,19 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
         // Hint
         Center(
-          child: Text(
-            '💡 Нажми ↔ чтобы выбрать замену · Долгое нажатие — спросить AI',
-            style: TextStyle(fontSize: 11, color: colors.textMuted),
-            textAlign: TextAlign.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(AppImages.tip, width: 13, height: 13),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  AppLocalizations.tl('shoppingSelectionHint'),
+                  style: TextStyle(fontSize: 11, color: colors.textMuted),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -708,7 +804,7 @@ class _CategoryHeader extends StatelessWidget {
     final allDone = checkedCount == count && count > 0;
     return Row(
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 16)),
+        Image.asset(emoji, width: 18, height: 18),
         const SizedBox(width: 8),
         Text(
           label,
@@ -887,7 +983,7 @@ class _SwapOptionItem extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                'или: ',
+                AppLocalizations.tl('shoppingAlternativePrefix'),
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -941,7 +1037,13 @@ class _SubstitutionSheetState extends State<_SubstitutionSheet> {
       final ai = sl<IDeepSeekService>();
       // Strip portion info (e.g. "Куриное филе 150г — Основной белок" → "Куриное филе")
       final cleanName = widget.ingredient
-          .replaceAll(RegExp(r'\s*\d+\s*(г|гр|мл|л|кг|шт)[^а-яА-Я]*'), '')
+          .replaceAll(
+            RegExp(
+              r'\s*\d+\s*(г|гр|мл|л|кг|шт|g|gr|ml|l|kg|pcs?|pieces?)[^a-zA-Zа-яА-ЯёЁ]*',
+              caseSensitive: false,
+            ),
+            '',
+          )
           .replaceAll(RegExp(r'\s*—.*'), '')
           .trim();
 
@@ -997,14 +1099,14 @@ class _SubstitutionSheetState extends State<_SubstitutionSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                const Text('🔄', style: TextStyle(fontSize: 22)),
+                Image.asset(AppImages.sync, width: 26, height: 26),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Замена ингредиента',
+                        AppLocalizations.tl('ingredientSubstitutionTitle'),
                         style: TextStyle(
                           fontFamily: 'Syne',
                           fontSize: 16,
