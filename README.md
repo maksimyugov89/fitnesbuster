@@ -37,12 +37,15 @@ FitnesBuster — мобильное Flutter-приложение, которое
 
 |![Screenshot 0](assets/skrin/Screenshot_0.jpg)|![Screenshot 1](assets/skrin/Screenshot_1.jpg)|![Screenshot 2](assets/skrin/Screenshot_2.jpg)|![Screenshot 3](assets/skrin/Screenshot_3.jpg)|
 |---|---|---|---|
+| Онбординг — цель и интенсивность | Онбординг — оборудование | Онбординг — параметры тела | Онбординг — ограничения |
 
 |![Screenshot 4](assets/skrin/Screenshot_4.jpg)|![Screenshot 5](assets/skrin/Screenshot_5.jpg)|![Screenshot 6](assets/skrin/Screenshot_6.jpg)|![Screenshot 7](assets/skrin/Screenshot_7.jpg)|
 |---|---|---|---|
+| Дашборд | Тренировка — активная фаза | Тренировка — результат | План тренировок на неделю |
 
 |![Screenshot 8](assets/skrin/Screenshot_8.jpg)|![Screenshot 9](assets/skrin/Screenshot_9.jpg)|![Screenshot 10](assets/skrin/Screenshot_10.jpg)|
 |---|---|---|
+| Каталог упражнений | Питание — дневник | AI-чат с тренером |
 
 ## Как работает приложение
 
