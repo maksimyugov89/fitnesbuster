@@ -80,22 +80,32 @@
 
 ---
 
-## ⛔ БЛОКЕР ДЕПЛОЯ RULES (критично, прочитать перед `firebase deploy`)
+## ✅ ФАЗА 2.4 ВЫПОЛНЕНА И ЗАДЕПЛОЕНА (30.07.2026, коммит `ec29546`)
 
-Клиент всё ещё содержит запись `currentStreak`/`lastWorkoutDate` через `bootstrapStreak`:
-- `lib/data/repositories/user_repository.dart:167-177` (без try/catch — бросит `permission-denied`)
-- вызов из `lib/presentation/screens/dashboard/dashboard_screen.dart:303`
+**Решение:** клиентский `bootstrapStreak` удалён (`IUserRepository`, `UserRepository`,
+`dashboard_screen`, тест, 8 файлов моков перегенерированы). Серверный `recordWorkout`
+теперь принимает клиентский streak как **одноразовый seed** — только для аккаунтов
+без `lastWorkoutDate`, целое 0–365 (`WORKOUT_MAX_STREAK`). Так локальные streak'и
+существующих пользователей мигрируют на сервер при первой тренировке после обновления,
+а сервер остаётся единственным писателем.
 
-После деплоя новых rules эта запись будет **отклонена**. Порядок обязателен:
-1. Сначала выполнить **Фазу 2.4 плана** (убрать клиентскую запись streak, источник — ответ `recordWorkout`).
-2. Потом `firebase deploy --only firestore:rules,firestore:indexes`.
-3. Потом деплой functions (`setEntitlement`).
+**Верификация 2.4:** unit 48/48 (+3 теста валидации seed), emulator 15/15 (+2 теста
+seed-логики: seed применяется / игнорируется после инициализации), Docker
+Linux/Flutter 3.38.5 — **506 passed, 13 skipped, 0 failed** (включая dashboard golden).
 
-До выполнения 2.4 новые rules в production **не деплоить**.
+**Деплой 30.07.2026 (пошагово, с бэкапом):**
+1. Бэкап pre-deploy состояния → `C:\Users\Despa\fitnesbuster-backups\2026-07-30-pre-beta-hardening\` (rules/indexes из master@`5c38970`, rollback-инструкция).
+2. `firebase deploy --only firestore:rules` — ✅ whitelist активен в prod.
+3. `firebase deploy --only functions` — ✅ 18 обновлений + создание `setEntitlement`.
+4. Post-deploy проверки — ✅: `setEntitlement`/`recordWorkout` без auth → UNAUTHENTICATED; PATCH `users/{uid}` без auth → PERMISSION_DENIED.
 
-## Ручные шаги владельца (после мержа и Фазы 2.4)
+Старые установки приложения деградируют безопасно: запись `bootstrapStreak`
+отклоняется rules, но перехватывается try/catch на дашборде — на экране остаётся
+локальный streak до миграции через следующую тренировку.
 
-1. Мерж `feature/beta-hardening` → master (CI: 4 workflow должны пройти).
-2. Выполнить Фазу 2.4 → деплой rules/indexes → смоук на реальном проекте (профиль, username, FCM).
-3. Деплой functions. Назначить себе `admin: true` custom claim (разовый скрипт через Admin SDK, ключ не коммитить) для `setEntitlement`.
-4. Firebase Console → App Check: зарегистрировать Play Integrity, добавить debug-токен тестового устройства, включить enforcement для Cloud Functions.
+## Ручные шаги владельца (остались)
+
+1. **Мерж** `feature/beta-hardening` → master. ⚠️ Ветка содержит также 10 коммитов illustrated-icons (master отстаёт на 17 коммитов) — решение о мерже всего объёма за владельцем. После push — CI (4 workflow).
+2. Назначить себе `admin: true` custom claim (разовый скрипт через Admin SDK, ключ не коммитить) для вызова `setEntitlement`.
+3. Firebase Console → App Check: зарегистрировать Play Integrity, добавить debug-токен тестового устройства, включить enforcement для Cloud Functions.
+4. Смоук с устройства на новой сборке: сохранение профиля, смена username, streak на дашборде и после тренировки.
