@@ -14,6 +14,7 @@ const {
   CHALLENGE_MAX_DURATION_DAYS,
   CHALLENGE_MAX_PROGRESS,
   WORKOUT_MAX_CALORIES,
+  WORKOUT_MAX_STREAK,
 } = require("../lib/constants");
 
 test("validateCreateChallengeData sanitizes valid challenge input", () => {
@@ -64,7 +65,7 @@ test("challenge id and progress validators reject bad values", () => {
 test("validateRecordWorkoutData enforces workout metric caps", () => {
   assert.deepEqual(
     validateRecordWorkoutData({caloriesBurned: 300, cardioMinutes: 20}),
-    {caloriesBurned: 300, cardioMinutes: 20}
+    {caloriesBurned: 300, cardioMinutes: 20, streak: undefined}
   );
   assert.throws(
     () => validateRecordWorkoutData({caloriesBurned: WORKOUT_MAX_CALORIES + 1, cardioMinutes: 0}),
@@ -90,4 +91,23 @@ test("crossesTarget only fires on first crossing", () => {
   assert.equal(crossesTarget(9, 10, 10), true);
   assert.equal(crossesTarget(10, 11, 10), false);
   assert.equal(crossesTarget(8, 9, 10), false);
+});
+
+test("validateRecordWorkoutData accepts a valid streak seed", () => {
+  const result = validateRecordWorkoutData({caloriesBurned: 100, cardioMinutes: 10, streak: 7});
+  assert.deepEqual(result, {caloriesBurned: 100, cardioMinutes: 10, streak: 7});
+});
+
+test("validateRecordWorkoutData treats a missing streak seed as undefined", () => {
+  const result = validateRecordWorkoutData({caloriesBurned: 100, cardioMinutes: 10});
+  assert.equal(result.streak, undefined);
+});
+
+test("validateRecordWorkoutData rejects malformed streak seeds", () => {
+  for (const streak of [-1, WORKOUT_MAX_STREAK + 1, 1.5, "7", NaN]) {
+    assert.throws(
+      () => validateRecordWorkoutData({caloriesBurned: 100, cardioMinutes: 10, streak}),
+      /streak must be an integer/
+    );
+  }
 });

@@ -328,7 +328,7 @@ export const recordWorkout = onCall(
   async (request: {auth?: {uid: string}; data: RecordWorkoutData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
-    const {caloriesBurned, cardioMinutes} = validateRecordWorkoutData(request.data);
+    const {caloriesBurned, cardioMinutes, streak: clientStreak} = validateRecordWorkoutData(request.data);
 
     const allowed = await checkRateLimit(uid, "recordWorkout", CHALLENGE_ACTION_RATE_LIMIT, RATE_LIMIT_WINDOW_MS);
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many requests. Try again later.");
@@ -346,7 +346,14 @@ export const recordWorkout = onCall(
     const userData = userSnap.data() ?? {};
     const lastWorkoutDate = userData.lastWorkoutDate as string | undefined;
     const prevStreak = Math.min((userData.currentStreak as number | undefined) ?? 0, WORKOUT_MAX_STREAK);
-    const streak = nextWorkoutStreak(lastWorkoutDate, prevStreak, now.toDate());
+    // One-time migration seed: while the account has no server-tracked
+    // lastWorkoutDate, accept the client's locally-computed streak (bounded).
+    // Once the server streak exists, the client value is ignored and the
+    // streak is computed server-side only.
+    const seeded = lastWorkoutDate === undefined && clientStreak !== undefined && clientStreak >= 1;
+    const streak = seeded
+      ? Math.min(clientStreak, WORKOUT_MAX_STREAK)
+      : nextWorkoutStreak(lastWorkoutDate, prevStreak, now.toDate());
 
     if (lastWorkoutDate !== todayKey) {
       await db.doc(`users/${uid}`).set(

@@ -5,14 +5,15 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
 
+import 'package:fitnesbuster/core/legal/legal_consent.dart' as _i7;
 import 'package:fitnesbuster/core/services/onboarding_workflow_service.dart'
-    as _i7;
+    as _i8;
 import 'package:fitnesbuster/domain/entities/body_measurement.dart' as _i5;
 import 'package:fitnesbuster/domain/entities/entities.dart' as _i2;
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart' as _i6;
 import 'package:fitnesbuster/domain/repositories/i_user_repository.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i8;
+import 'package:mockito/src/dummies.dart' as _i9;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -160,23 +161,6 @@ class MockIUserRepository extends _i1.Mock implements _i3.IUserRepository {
           as _i4.Future<bool>);
 
   @override
-  _i4.Future<void> bootstrapStreak({
-    required String? userId,
-    required int? streak,
-    required String? lastWorkoutDate,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#bootstrapStreak, [], {
-              #userId: userId,
-              #streak: streak,
-              #lastWorkoutDate: lastWorkoutDate,
-            }),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
-
-  @override
   _i4.Future<void> updateGoal({
     required String? userId,
     required _i2.FitnessGoal? goal,
@@ -279,20 +263,20 @@ class MockIAuthRepository extends _i1.Mock implements _i6.IAuthRepository {
           as bool);
 
   @override
-  _i4.Future<bool> hasCurrentLegalConsent() =>
-      (super.noSuchMethod(
-            Invocation.method(#hasCurrentLegalConsent, []),
-            returnValue: _i4.Future<bool>.value(false),
-          )
-          as _i4.Future<bool>);
-
-  @override
   _i4.Future<_i2.UserEntity?> getCurrentUserWithProfile() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentUserWithProfile, []),
             returnValue: _i4.Future<_i2.UserEntity?>.value(),
           )
           as _i4.Future<_i2.UserEntity?>);
+
+  @override
+  _i4.Future<bool> hasCurrentLegalConsent() =>
+      (super.noSuchMethod(
+            Invocation.method(#hasCurrentLegalConsent, []),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
 
   @override
   _i4.Future<_i2.UserEntity> login({
@@ -318,7 +302,7 @@ class MockIAuthRepository extends _i1.Mock implements _i6.IAuthRepository {
     required String? name,
     required String? email,
     required String? password,
-    required Object? consent,
+    required _i7.LegalConsentAcceptance? consent,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#register, [], {
@@ -340,8 +324,11 @@ class MockIAuthRepository extends _i1.Mock implements _i6.IAuthRepository {
             ),
           )
           as _i4.Future<_i2.UserEntity>);
+
   @override
-  _i4.Future<_i2.UserEntity> signInWithGoogle({Object? newAccountConsent}) =>
+  _i4.Future<_i2.UserEntity> signInWithGoogle({
+    _i7.LegalConsentAcceptance? newAccountConsent,
+  }) =>
       (super.noSuchMethod(
             Invocation.method(#signInWithGoogle, [], {
               #newAccountConsent: newAccountConsent,
@@ -359,7 +346,7 @@ class MockIAuthRepository extends _i1.Mock implements _i6.IAuthRepository {
 
   @override
   _i4.Future<_i2.UserEntity> acceptCurrentLegalConsent({
-    required Object? consent,
+    required _i7.LegalConsentAcceptance? consent,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#acceptCurrentLegalConsent, [], {
@@ -455,7 +442,7 @@ class MockIAuthRepository extends _i1.Mock implements _i6.IAuthRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockOnboardingWorkflowService extends _i1.Mock
-    implements _i7.OnboardingWorkflowService {
+    implements _i8.OnboardingWorkflowService {
   MockOnboardingWorkflowService() {
     _i1.throwOnMissingStub(this);
   }
@@ -476,7 +463,7 @@ class MockOnboardingWorkflowService extends _i1.Mock
                 _i4.Future<
                   ({String mealPlanJson, String workoutPlanJson})
                 >.value((
-                  mealPlanJson: _i8.dummyValue<String>(
+                  mealPlanJson: _i9.dummyValue<String>(
                     this,
                     Invocation.method(#generatePlans, [], {
                       #userId: userId,
@@ -484,7 +471,7 @@ class MockOnboardingWorkflowService extends _i1.Mock
                       #city: city,
                     }),
                   ),
-                  workoutPlanJson: _i8.dummyValue<String>(
+                  workoutPlanJson: _i9.dummyValue<String>(
                     this,
                     Invocation.method(#generatePlans, [], {
                       #userId: userId,

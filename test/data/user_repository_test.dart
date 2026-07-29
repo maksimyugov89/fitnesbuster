@@ -302,28 +302,6 @@ void main() {
     });
   });
 
-  group('streak persistence', () {
-    test('writes current streak and last workout date with merge', () async {
-      final docRef = stubUserDocRef();
-      when(
-        docRef.set(any, SetOptions(merge: true)),
-      ).thenAnswer((_) => Future.value());
-
-      await repo.bootstrapStreak(
-        userId: tUid,
-        streak: 7,
-        lastWorkoutDate: '2026-07-10',
-      );
-
-      final captured = Map<String, dynamic>.from(
-        verify(docRef.set(captureAny, any)).captured.single as Map,
-      );
-      expect(captured['currentStreak'], 7);
-      expect(captured['lastWorkoutDate'], '2026-07-10');
-      expect(captured, contains('updatedAt'));
-    });
-  });
-
   // ─── measurements ──────────────────────────────────────────────────────────
 
   group('measurements', () {

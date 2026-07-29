@@ -164,19 +164,6 @@ class UserRepository implements IUserRepository {
   }
 
   @override
-  Future<void> bootstrapStreak({
-    required String userId,
-    required int streak,
-    required String lastWorkoutDate,
-  }) async {
-    await _firestore.collection(FirestoreCollections.users).doc(userId).set({
-      'currentStreak': streak,
-      'lastWorkoutDate': lastWorkoutDate,
-      'updatedAt': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
-  }
-
-  @override
   Future<void> saveTestWeekCompleted({required String userId}) async {
     await _firestore.collection(FirestoreCollections.users).doc(userId).set({
       'testWeekCompleted': true,

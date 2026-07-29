@@ -26,17 +26,6 @@ abstract interface class IUserRepository {
   Future<void> saveTestWeekCompleted({required String userId});
   Future<bool> isTestWeekCompleted(String userId);
 
-  /// One-time migration write: seeds the server-tracked workout streak from
-  /// the locally-computed value the first time this account is seen without
-  /// a `lastWorkoutDate` field, so existing streaks aren't lost when the
-  /// streak becomes server-authoritative (updated via `recordWorkout`
-  /// from then on). Callers must only invoke this when the Firestore doc
-  /// has no `lastWorkoutDate` yet — it unconditionally overwrites.
-  Future<void> bootstrapStreak({
-    required String userId,
-    required int streak,
-    required String lastWorkoutDate,
-  });
   Future<void> updateGoal({required String userId, required FitnessGoal goal});
   Future<void> updateTrainingExperience({
     required String userId,

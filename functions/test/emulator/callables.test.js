@@ -319,3 +319,51 @@ test("deleteAccount removes owned data, reciprocal links, participation, and Aut
   );
   assert.equal(lookup.ok, false, await lookup.text());
 });
+
+test("recordWorkout seeds the client streak once for uninitialized accounts", async () => {
+  const user = await createUser("Seeder");
+
+  const seeded = await callCallable("recordWorkout", user.token, {
+    durationMinutes: 30,
+    caloriesBurned: 200,
+    cardioMinutes: 10,
+    streak: 7,
+  });
+  assert.equal(seeded.response.ok, true, JSON.stringify(seeded.json));
+  assert.equal(callableResult(seeded).streak, 7);
+
+  const doc = await db.doc(`users/${user.uid}`).get();
+  assert.equal(doc.data().currentStreak, 7);
+  assert.ok(doc.data().lastWorkoutDate, "lastWorkoutDate must be set on seed");
+
+  const malformed = await callCallable("recordWorkout", user.token, {
+    durationMinutes: 30,
+    caloriesBurned: 200,
+    cardioMinutes: 10,
+    streak: 99999,
+  });
+  assertCallableError(malformed, "INVALID_ARGUMENT");
+});
+
+test("recordWorkout ignores the client streak once the server streak exists", async () => {
+  const user = await createUser("Veteran");
+  // A streak that broke 5 days ago: the server must restart at 1,
+  // not trust the client-sent 99.
+  const fiveDaysAgo = new Date(Date.now() - 5 * 86_400_000).toISOString().slice(0, 10);
+  await db.doc(`users/${user.uid}`).set(
+    {currentStreak: 3, lastWorkoutDate: fiveDaysAgo},
+    {merge: true}
+  );
+
+  const res = await callCallable("recordWorkout", user.token, {
+    durationMinutes: 30,
+    caloriesBurned: 200,
+    cardioMinutes: 10,
+    streak: 99,
+  });
+  assert.equal(res.response.ok, true, JSON.stringify(res.json));
+  assert.equal(callableResult(res).streak, 1);
+
+  const doc = await db.doc(`users/${user.uid}`).get();
+  assert.equal(doc.data().currentStreak, 1);
+});
