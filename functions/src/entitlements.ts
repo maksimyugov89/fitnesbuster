@@ -1,6 +1,6 @@
 import {FieldValue, Timestamp} from "firebase-admin/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {db, logInfo, logWarn} from "./shared";
+import {db, logInfo, logWarn, enforceAppCheck} from "./shared";
 import {validateSetEntitlementData} from "./entitlementsValidation";
 
 /**
@@ -14,7 +14,7 @@ import {validateSetEntitlementData} from "./entitlementsValidation";
  * `source: "billing"`.
  */
 export const setEntitlement = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
 

@@ -8,6 +8,13 @@ import {evaluateRateLimit, rateLimitFailureAction} from "./rateLimitLogic";
 const db = getFirestore(FIRESTORE_DATABASE_ID);
 const messaging = admin.messaging();
 
+/**
+ * App Check enforcement for callable functions. Enabled in production; the
+ * Functions emulator does not validate App Check tokens, so enforcement is
+ * disabled there to keep emulator tests working without fake tokens.
+ */
+const enforceAppCheck = process.env.FUNCTIONS_EMULATOR !== "true";
+
 // ─── Logging ──────────────────────────────────────────────────────────────────
 
 /** Structured info-level log entry for Cloud Functions monitoring. */
@@ -194,4 +201,5 @@ export {
   sendPush,
   createNotification,
   withRetry,
+  enforceAppCheck,
 };

@@ -1,6 +1,6 @@
 import {FieldValue} from "firebase-admin/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {db, logInfo, createNotification, sendPush, checkRateLimit} from "./shared";
+import {db, logInfo, createNotification, sendPush, checkRateLimit, enforceAppCheck} from "./shared";
 import {
   SEARCH_USERS_LIMIT,
   FRIEND_LIST_LIMIT,
@@ -30,7 +30,7 @@ import {
  * to the recipient.
  */
 export const sendFriendRequest = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: FriendRequestData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const fromUid = request.auth.uid;
@@ -79,7 +79,7 @@ export const sendFriendRequest = onCall(
  * for both users. Notifies the original sender via in-app and push.
  */
 export const acceptFriendRequest = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: AcceptDeclineData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
@@ -132,7 +132,7 @@ export const acceptFriendRequest = onCall(
  * Declines a pending friend request without notifying the sender.
  */
 export const declineFriendRequest = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: AcceptDeclineData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
@@ -157,7 +157,7 @@ export const declineFriendRequest = onCall(
  * Removes a friend relationship bidirectionally using a batch delete.
  */
 export const removeFriend = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: RemoveFriendData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
@@ -187,7 +187,7 @@ export const removeFriend = onCall(
  * Returns up to {@link SEARCH_USERS_LIMIT} results per query direction.
  */
 export const searchUsers = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: SearchUsersData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const {query} = request.data;

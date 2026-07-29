@@ -1,7 +1,7 @@
 import {FieldValue} from "firebase-admin/firestore";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {db, logInfo, logError, withRetry, checkRateLimit} from "./shared";
+import {db, logInfo, logError, withRetry, checkRateLimit, enforceAppCheck} from "./shared";
 import {FRIEND_LIST_LIMIT, FEED_CHUNK_SIZE} from "./constants";
 import {FIRESTORE_DATABASE_ID} from "./firebaseConfig";
 import {validatePublishActivityRequest} from "./feedValidation";
@@ -18,7 +18,7 @@ const PUBLISH_ACTIVITY_WINDOW_MS = 60_000;
  * fanout trigger can safely distribute only validated events.
  */
 export const publishActivity = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: PublishActivityData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;

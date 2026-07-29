@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import {FieldValue} from "firebase-admin/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {db, logInfo} from "./shared";
+import {db, logInfo, enforceAppCheck} from "./shared";
 import {FRIEND_LIST_LIMIT} from "./constants";
 import {
   DELETE_ACCOUNT_BATCH_LIMIT,
@@ -26,7 +26,7 @@ import {
  * they expire automatically within 30 days via `cleanOldFeedEvents`.
  */
 export const deleteAccount = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;

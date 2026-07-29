@@ -1,6 +1,6 @@
 import {FieldValue, Timestamp} from "firebase-admin/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {db, logInfo, logWarn, sendPush, checkRateLimit} from "./shared";
+import {db, logInfo, logWarn, sendPush, checkRateLimit, enforceAppCheck} from "./shared";
 import {
   ONE_DAY_MS,
   WORKOUT_MAX_STREAK,
@@ -29,7 +29,7 @@ import {
  * The end date is calculated as `startDate + durationDays × ONE_DAY_MS`.
  */
 export const createChallenge = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: CreateChallengeData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
@@ -92,7 +92,7 @@ export const createChallenge = onCall(
  * already a participant. Runs inside a transaction for consistency.
  */
 export const joinChallenge = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: JoinChallengeData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
@@ -157,7 +157,7 @@ export const joinChallenge = onCall(
  * {@link deleteChallenge} instead, since the challenge has no owner otherwise.
  */
 export const leaveChallenge = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: JoinChallengeData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
@@ -199,7 +199,7 @@ export const leaveChallenge = onCall(
  * Only the challenge's creator may delete it.
  */
 export const deleteChallenge = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: JoinChallengeData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
@@ -239,7 +239,7 @@ export const deleteChallenge = onCall(
  * to the participant's feed.
  */
 export const updateChallengeProgress = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: UpdateChallengeProgressData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
@@ -324,7 +324,7 @@ export const updateChallengeProgress = onCall(
  * creator is notified via push (unless the creator is the participant).
  */
 export const recordWorkout = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request: {auth?: {uid: string}; data: RecordWorkoutData}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
     const uid = request.auth.uid;
@@ -423,7 +423,7 @@ export const recordWorkout = onCall(
  * challenge document already exists.
  */
 export const seedChallenges = onCall(
-  {region: "europe-west1"},
+  {region: "europe-west1", enforceAppCheck},
   async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
 

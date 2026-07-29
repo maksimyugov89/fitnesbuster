@@ -1,7 +1,7 @@
 import * as https from "https";
 import {defineSecret} from "firebase-functions/params";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {logInfo, logError, checkRateLimit} from "./shared";
+import {logInfo, logError, checkRateLimit, enforceAppCheck} from "./shared";
 import {
   DEEPSEEK_RATE_LIMIT,
   RATE_LIMIT_WINDOW_MS,
@@ -23,7 +23,7 @@ const deepseekApiKey = defineSecret("DEEPSEEK_API_KEY");
  * - `temperature` — defaults to {@link DEEPSEEK_DEFAULT_TEMPERATURE}
  */
 export const deepseekProxy = onCall(
-  {region: "europe-west1", secrets: [deepseekApiKey]},
+  {region: "europe-west1", enforceAppCheck, secrets: [deepseekApiKey]},
   async (request: {auth?: {uid: string}; data: DeepSeekRequest}) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Login required");
 
