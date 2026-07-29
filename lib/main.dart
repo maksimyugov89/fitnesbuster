@@ -1,8 +1,10 @@
 import 'dart:ui' as ui;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'core/router/app_router.dart';
@@ -22,6 +24,7 @@ import 'core/localization/app_localizations.dart';
 import 'core/theme/theme_service.dart';
 import 'core/theme/dynamic_theme.dart';
 import 'core/theme/animated_theme_background.dart';
+import 'core/utils/app_logger.dart';
 
 final _paletteNotifier = ValueNotifier<ThemePalette>(ThemePalette.neon);
 
@@ -51,6 +54,21 @@ void main() async {
   } catch (e) {
     runApp(_FirebaseErrorApp(error: e.toString()));
     return;
+  }
+
+  // App Check attests genuine app instances before callable/Functions requests.
+  // Debug builds use the debug provider (register the token printed to logs in
+  // Firebase Console → App Check); release builds use Play Integrity.
+  // Enforcement itself is toggled in Firebase Console, not in code.
+  try {
+    await FirebaseAppCheck.instance.activate(
+      providerAndroid: kDebugMode
+          ? const AndroidDebugProvider()
+          : const AndroidPlayIntegrityProvider(),
+    );
+  } catch (e) {
+    // Non-fatal: the app must stay usable while App Check enforcement is off.
+    appLogger.w('App Check activation failed', error: e);
   }
 
   String? initError;
