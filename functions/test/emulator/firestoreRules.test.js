@@ -351,3 +351,79 @@ test("social read scopes match ownership and authenticated challenge visibility"
   assertOk(await getDoc("challenge_progress/challenge-1/participants/owner", friend.token));
   assertDenied(await getDoc("challenge_progress/challenge-1/participants/owner", null));
 });
+
+test("owner can update every client-writable profile field", async () => {
+  const user = await createUser("Writable");
+
+  // Representative sample of the client-write inventory (BETA plan task 2.1):
+  // each field below is written by the Flutter client in a real flow.
+  const allowedUpdates = [
+    {name: "New Name"},
+    {nameLower: "new name"},
+    {username: "new_username"},
+    {usernameLower: "new_username"},
+    {photoUrl: "https://example.test/avatar.png"},
+    {fcmToken: "fcm-token-123"},
+    {profile: {goal: "muscle_gain", weight: 80, height: 180, age: 30}},
+    {onboarding: {goal: "muscle_gain", intensity: "medium", location: "gym"}},
+    {aiPlans: {workoutPlan: "{}", mealPlan: "{}"}},
+    {bodyMeasurements: [{date: "2026-07-30", weight: 80}]},
+    {testWeekCompleted: true},
+    {testWeekProgress: {completedDays: ["day1"]}},
+    {testWeekProgressUpdatedAt: new Date()},
+    {updatedAt: new Date()},
+  ];
+
+  for (const update of allowedUpdates) {
+    assertOk(
+      await patchDoc(`users/${user.uid}`, user.token, update),
+      `expected allow for fields: ${Object.keys(update).join(", ")}`
+    );
+  }
+});
+
+test("owner cannot write server-authoritative user fields", async () => {
+  const user = await createUser("ServerFields");
+
+  const serverOnlyUpdates = [
+    {currentStreak: 42},
+    {lastWorkoutDate: "2026-07-30"},
+    {totalXp: 999999},
+    {xp: 999999},
+    {level: 99},
+    {entitlement: {tier: "premium", source: "self"}},
+    {subscription: {status: "active"}},
+    {premium: true},
+    {role: "admin"},
+    {admin: true},
+  ];
+
+  for (const update of serverOnlyUpdates) {
+    assertDenied(
+      await patchDoc(`users/${user.uid}`, user.token, update),
+      `expected deny for fields: ${Object.keys(update).join(", ")}`
+    );
+  }
+
+  // A server-only field smuggled alongside a legitimate one poisons the whole write.
+  assertDenied(
+    await patchDoc(`users/${user.uid}`, user.token, {
+      name: "Legit",
+      currentStreak: 42,
+    })
+  );
+});
+
+test("owner cannot write fields outside the client-writable inventory", async () => {
+  const user = await createUser("UnknownFields");
+
+  assertDenied(
+    await patchDoc(`users/${user.uid}`, user.token, {unknownField: "x"})
+  );
+  assertDenied(
+    await patchDoc(`users/${user.uid}`, user.token, {
+      name: "Legit",
+      anotherUnknown: 1,
+    })
+  );
+});

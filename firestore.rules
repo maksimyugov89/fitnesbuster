@@ -37,10 +37,43 @@ service cloud.firestore {
     // readable only by the owner. Cross-user lookups (search, friends, feed) use
     // denormalized name/username fields already stored on friends/feed/search
     // results, never a direct read of another user's document.
+    //
+    // Updates are field-restricted: server-authoritative fields (workout streak
+    // via recordWorkout, entitlement/gamification/admin flags via Functions) are
+    // rejected even from the owner — Admin SDK bypasses these rules. The owner
+    // may write only the client-writable fields from the client-write inventory
+    // (docs/BETA_HARDENING_PLAN task 2.1). Dot-notation updates ('profile.goal')
+    // surface in affectedKeys() as their top-level segment ('profile').
+    function serverOnlyUserFields() {
+      return [
+        'currentStreak', 'lastWorkoutDate',
+        'totalXp', 'xp', 'level',
+        'entitlement', 'subscription', 'premium',
+        'role', 'admin',
+      ];
+    }
+
+    function clientWritableUserFields() {
+      return [
+        'name', 'nameLower', 'email', 'photoUrl',
+        'profile', 'onboarding',
+        'aiPlans', 'bodyMeasurements',
+        'testWeekCompleted', 'testWeekProgress', 'testWeekProgressUpdatedAt',
+        'username', 'usernameLower',
+        'fcmToken',
+        'updatedAt', 'createdAt',
+      ];
+    }
+
     match /users/{uid} {
       allow read: if signedInAs(uid);
       allow create: if signedInAs(uid) && hasCurrentLegalConsent(uid);
-      allow update, delete: if signedInAs(uid);
+      allow update: if signedInAs(uid) &&
+        !request.resource.data.diff(resource.data)
+          .affectedKeys().hasAny(serverOnlyUserFields()) &&
+        request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly(clientWritableUserFields());
+      allow delete: if signedInAs(uid);
     }
 
     // ── Legal consent records ─────────────────────────────────────────────────
