@@ -16,7 +16,6 @@ import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
-import 'package:fitnesbuster/domain/repositories/i_user_repository.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/presentation/widgets/dashboard/dashboard_app_bar.dart';
@@ -241,23 +240,18 @@ class _DashboardScreenState extends State<DashboardScreen>
       final settings = sl<ISettingsRepository>();
       final now = DateTime.now();
       int streak = 0;
-      DateTime? lastWorkoutDay;
       for (int i = 0; i < 30; i++) {
         final d = now.subtract(Duration(days: i));
         final k = dateKey(d);
         final done = await settings.getWorkoutDone(k);
         if (done) {
           streak++;
-          lastWorkoutDay ??= d;
         } else if (i > 0) {
           break;
         }
       }
       if (mounted) setState(() => _streak = streak);
-      await _syncStreakWithServer(
-        localStreak: streak,
-        lastWorkoutDay: lastWorkoutDay,
-      );
+      await _syncStreakWithServer(localStreak: streak);
     } catch (e, st) {
       appLogger.w('Dashboard: calculate streak', error: e, stackTrace: st);
     }
@@ -287,34 +281,16 @@ class _DashboardScreenState extends State<DashboardScreen>
     return (lastDate == today || lastDate == yesterday) ? streak : 0;
   }
 
-  Future<void> _syncStreakWithServer({
-    required int localStreak,
-    DateTime? lastWorkoutDay,
-  }) async {
+  Future<void> _syncStreakWithServer({required int localStreak}) async {
     final authState = sl<AuthBloc>().state;
     if (authState is! AuthStateAuthenticated) return;
     final user = authState.user;
 
-    if (user.lastWorkoutDate == null) {
-      // Feature never bootstrapped for this account — seed it from the
-      // locally-tracked history once so an existing streak isn't lost.
-      if (localStreak > 0 && lastWorkoutDay != null) {
-        try {
-          await sl<IUserRepository>().bootstrapStreak(
-            userId: user.id,
-            streak: localStreak,
-            lastWorkoutDate: _utcDateKey(lastWorkoutDay),
-          );
-        } catch (e, st) {
-          appLogger.w(
-            'Dashboard: bootstrap streak failed',
-            error: e,
-            stackTrace: st,
-          );
-        }
-      }
-      return;
-    }
+    // No server-tracked streak yet: keep the locally-computed value. The
+    // streak migrates to the server automatically on the next completed
+    // workout — recordWorkout accepts the client's locally-computed streak as
+    // a one-time seed for accounts without lastWorkoutDate.
+    if (user.lastWorkoutDate == null) return;
 
     final serverStreak = _effectiveServerStreak(user);
     if (serverStreak != null && mounted) setState(() => _streak = serverStreak);

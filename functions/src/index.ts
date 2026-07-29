@@ -28,3 +28,7 @@ export {deepseekProxy} from "./proxies";
 
 // Account — GDPR-compliant self-service account deletion
 export {deleteAccount} from "./account";
+
+// Entitlements — admin-only premium tier management (single write authority
+// for users/{uid}.entitlement, which Firestore rules mark server-only)
+export {setEntitlement} from "./entitlements";

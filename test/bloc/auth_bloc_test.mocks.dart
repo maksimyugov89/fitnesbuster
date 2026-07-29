@@ -5,6 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
 
+import 'package:fitnesbuster/core/legal/legal_consent.dart' as _i5;
 import 'package:fitnesbuster/domain/entities/entities.dart' as _i2;
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
@@ -52,20 +53,20 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
           as bool);
 
   @override
-  _i4.Future<bool> hasCurrentLegalConsent() =>
-      (super.noSuchMethod(
-            Invocation.method(#hasCurrentLegalConsent, []),
-            returnValue: _i4.Future<bool>.value(false),
-          )
-          as _i4.Future<bool>);
-
-  @override
   _i4.Future<_i2.UserEntity?> getCurrentUserWithProfile() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentUserWithProfile, []),
             returnValue: _i4.Future<_i2.UserEntity?>.value(),
           )
           as _i4.Future<_i2.UserEntity?>);
+
+  @override
+  _i4.Future<bool> hasCurrentLegalConsent() =>
+      (super.noSuchMethod(
+            Invocation.method(#hasCurrentLegalConsent, []),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
 
   @override
   _i4.Future<_i2.UserEntity> login({
@@ -91,7 +92,7 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
     required String? name,
     required String? email,
     required String? password,
-    required Object? consent,
+    required _i5.LegalConsentAcceptance? consent,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#register, [], {
@@ -113,8 +114,11 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
             ),
           )
           as _i4.Future<_i2.UserEntity>);
+
   @override
-  _i4.Future<_i2.UserEntity> signInWithGoogle({Object? newAccountConsent}) =>
+  _i4.Future<_i2.UserEntity> signInWithGoogle({
+    _i5.LegalConsentAcceptance? newAccountConsent,
+  }) =>
       (super.noSuchMethod(
             Invocation.method(#signInWithGoogle, [], {
               #newAccountConsent: newAccountConsent,
@@ -132,7 +136,7 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
 
   @override
   _i4.Future<_i2.UserEntity> acceptCurrentLegalConsent({
-    required Object? consent,
+    required _i5.LegalConsentAcceptance? consent,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#acceptCurrentLegalConsent, [], {

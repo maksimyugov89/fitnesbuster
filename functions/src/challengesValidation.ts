@@ -60,15 +60,23 @@ export function validateProgressValue(value: unknown): number {
 export function validateRecordWorkoutData(data: {
   caloriesBurned?: unknown;
   cardioMinutes?: unknown;
-}): {caloriesBurned: number; cardioMinutes: number} {
-  const {caloriesBurned, cardioMinutes} = data;
+  streak?: unknown;
+}): {caloriesBurned: number; cardioMinutes: number; streak?: number} {
+  const {caloriesBurned, cardioMinutes, streak} = data;
   if (typeof caloriesBurned !== "number" || caloriesBurned < 0 || caloriesBurned > WORKOUT_MAX_CALORIES || !Number.isFinite(caloriesBurned)) {
     throw new HttpsError("invalid-argument", `caloriesBurned must be 0-${WORKOUT_MAX_CALORIES}`);
   }
   if (typeof cardioMinutes !== "number" || cardioMinutes < 0 || cardioMinutes > WORKOUT_MAX_CARDIO_MINUTES || !Number.isFinite(cardioMinutes)) {
     throw new HttpsError("invalid-argument", `cardioMinutes must be 0-${WORKOUT_MAX_CARDIO_MINUTES}`);
   }
-  return {caloriesBurned, cardioMinutes};
+  // Optional one-time migration seed: the client's locally-computed streak,
+  // applied only while the account has no server-tracked lastWorkoutDate.
+  if (streak !== undefined) {
+    if (typeof streak !== "number" || !Number.isFinite(streak) || !Number.isInteger(streak) || streak < 0 || streak > WORKOUT_MAX_STREAK) {
+      throw new HttpsError("invalid-argument", `streak must be an integer 0-${WORKOUT_MAX_STREAK}`);
+    }
+  }
+  return {caloriesBurned, cardioMinutes, streak: streak as number | undefined};
 }
 
 export function utcDateKey(d: Date): string {

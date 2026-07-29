@@ -5,13 +5,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
 
-import 'package:fitnesbuster/domain/entities/body_measurement.dart' as _i6;
+import 'package:fitnesbuster/core/legal/legal_consent.dart' as _i5;
+import 'package:fitnesbuster/domain/entities/body_measurement.dart' as _i7;
 import 'package:fitnesbuster/domain/entities/entities.dart' as _i2;
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart' as _i3;
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart'
-    as _i7;
-import 'package:fitnesbuster/domain/repositories/i_user_repository.dart' as _i5;
-import 'package:fitnesbuster/domain/services/i_exercise_service.dart' as _i8;
+    as _i8;
+import 'package:fitnesbuster/domain/repositories/i_user_repository.dart' as _i6;
+import 'package:fitnesbuster/domain/services/i_exercise_service.dart' as _i9;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -57,20 +58,20 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
           as bool);
 
   @override
-  _i4.Future<bool> hasCurrentLegalConsent() =>
-      (super.noSuchMethod(
-            Invocation.method(#hasCurrentLegalConsent, []),
-            returnValue: _i4.Future<bool>.value(false),
-          )
-          as _i4.Future<bool>);
-
-  @override
   _i4.Future<_i2.UserEntity?> getCurrentUserWithProfile() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentUserWithProfile, []),
             returnValue: _i4.Future<_i2.UserEntity?>.value(),
           )
           as _i4.Future<_i2.UserEntity?>);
+
+  @override
+  _i4.Future<bool> hasCurrentLegalConsent() =>
+      (super.noSuchMethod(
+            Invocation.method(#hasCurrentLegalConsent, []),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
 
   @override
   _i4.Future<_i2.UserEntity> login({
@@ -96,7 +97,7 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
     required String? name,
     required String? email,
     required String? password,
-    required Object? consent,
+    required _i5.LegalConsentAcceptance? consent,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#register, [], {
@@ -118,8 +119,11 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
             ),
           )
           as _i4.Future<_i2.UserEntity>);
+
   @override
-  _i4.Future<_i2.UserEntity> signInWithGoogle({Object? newAccountConsent}) =>
+  _i4.Future<_i2.UserEntity> signInWithGoogle({
+    _i5.LegalConsentAcceptance? newAccountConsent,
+  }) =>
       (super.noSuchMethod(
             Invocation.method(#signInWithGoogle, [], {
               #newAccountConsent: newAccountConsent,
@@ -137,7 +141,7 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
 
   @override
   _i4.Future<_i2.UserEntity> acceptCurrentLegalConsent({
-    required Object? consent,
+    required _i5.LegalConsentAcceptance? consent,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#acceptCurrentLegalConsent, [], {
@@ -232,7 +236,7 @@ class MockIAuthRepository extends _i1.Mock implements _i3.IAuthRepository {
 /// A class which mocks [IUserRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
+class MockIUserRepository extends _i1.Mock implements _i6.IUserRepository {
   MockIUserRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -357,23 +361,6 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
           as _i4.Future<bool>);
 
   @override
-  _i4.Future<void> bootstrapStreak({
-    required String? userId,
-    required int? streak,
-    required String? lastWorkoutDate,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#bootstrapStreak, [], {
-              #userId: userId,
-              #streak: streak,
-              #lastWorkoutDate: lastWorkoutDate,
-            }),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
-
-  @override
   _i4.Future<void> updateGoal({
     required String? userId,
     required _i2.FitnessGoal? goal,
@@ -403,7 +390,7 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
   @override
   _i4.Future<void> saveMeasurement({
     required String? userId,
-    required _i6.BodyMeasurement? measurement,
+    required _i7.BodyMeasurement? measurement,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#saveMeasurement, [], {
@@ -416,14 +403,14 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
           as _i4.Future<void>);
 
   @override
-  _i4.Future<List<_i6.BodyMeasurement>> getMeasurements(String? userId) =>
+  _i4.Future<List<_i7.BodyMeasurement>> getMeasurements(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#getMeasurements, [userId]),
-            returnValue: _i4.Future<List<_i6.BodyMeasurement>>.value(
-              <_i6.BodyMeasurement>[],
+            returnValue: _i4.Future<List<_i7.BodyMeasurement>>.value(
+              <_i7.BodyMeasurement>[],
             ),
           )
-          as _i4.Future<List<_i6.BodyMeasurement>>);
+          as _i4.Future<List<_i7.BodyMeasurement>>);
 
   @override
   _i4.Future<void> updateWorkoutPlan({
@@ -455,7 +442,7 @@ class MockIUserRepository extends _i1.Mock implements _i5.IUserRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockISettingsRepository extends _i1.Mock
-    implements _i7.ISettingsRepository {
+    implements _i8.ISettingsRepository {
   MockISettingsRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -932,7 +919,7 @@ class MockISettingsRepository extends _i1.Mock
 /// A class which mocks [IExerciseService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIExerciseService extends _i1.Mock implements _i8.IExerciseService {
+class MockIExerciseService extends _i1.Mock implements _i9.IExerciseService {
   MockIExerciseService() {
     _i1.throwOnMissingStub(this);
   }

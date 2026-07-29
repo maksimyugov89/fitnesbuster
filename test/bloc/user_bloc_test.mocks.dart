@@ -156,23 +156,6 @@ class MockIUserRepository extends _i1.Mock implements _i3.IUserRepository {
           as _i4.Future<bool>);
 
   @override
-  _i4.Future<void> bootstrapStreak({
-    required String? userId,
-    required int? streak,
-    required String? lastWorkoutDate,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#bootstrapStreak, [], {
-              #userId: userId,
-              #streak: streak,
-              #lastWorkoutDate: lastWorkoutDate,
-            }),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
-
-  @override
   _i4.Future<void> updateGoal({
     required String? userId,
     required _i2.FitnessGoal? goal,
