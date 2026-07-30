@@ -65,6 +65,19 @@ enum MuscleGroup {
 }
 
 @freezed
+class Entitlement with _$Entitlement {
+  const factory Entitlement({
+    @Default('free') String tier,
+    @Default('admin') String source,
+    DateTime? updatedAt,
+    DateTime? expiresAt,
+  }) = _Entitlement;
+
+  factory Entitlement.fromJson(Map<String, dynamic> json) =>
+      _$EntitlementFromJson(json);
+}
+
+@freezed
 class UserEntity with _$UserEntity {
   const factory UserEntity({
     required String id,
@@ -79,6 +92,7 @@ class UserEntity with _$UserEntity {
     // state rather than a fitness-profile attribute.
     int? currentStreak,
     String? lastWorkoutDate,
+    @Default(Entitlement()) Entitlement entitlement,
   }) = _UserEntity;
 
   factory UserEntity.fromJson(Map<String, dynamic> json) =>

@@ -29,129 +29,109 @@ import 'package:mockito/src/dummies.dart' as _i6;
 /// See the documentation for Mockito's code generation for more information.
 class MockISocialService extends _i1.Mock implements _i2.ISocialService {
   @override
-  _i3.Future<void> initFcm() => (super.noSuchMethod(
-        Invocation.method(
-          #initFcm,
-          [],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
-
-  @override
-  _i3.Future<void> setUsername(String? username) => (super.noSuchMethod(
-        Invocation.method(
-          #setUsername,
-          [username],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
-
-  @override
-  _i3.Future<void> publishActivity(
-    String? type,
-    Map<String, dynamic>? data,
-  ) =>
+  _i3.Future<void> initFcm() =>
       (super.noSuchMethod(
-        Invocation.method(
-          #publishActivity,
-          [
-            type,
-            data,
-          ],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+            Invocation.method(#initFcm, []),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
 
   @override
-  _i3.Future<void> sendFriendRequest(String? toUid) => (super.noSuchMethod(
-        Invocation.method(
-          #sendFriendRequest,
-          [toUid],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+  _i3.Future<void> setUsername(String? username) =>
+      (super.noSuchMethod(
+            Invocation.method(#setUsername, [username]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> publishActivity(String? type, Map<String, dynamic>? data) =>
+      (super.noSuchMethod(
+            Invocation.method(#publishActivity, [type, data]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> sendFriendRequest(String? toUid) =>
+      (super.noSuchMethod(
+            Invocation.method(#sendFriendRequest, [toUid]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
 
   @override
   _i3.Future<void> acceptFriendRequest(String? requestId) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #acceptFriendRequest,
-          [requestId],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+            Invocation.method(#acceptFriendRequest, [requestId]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
 
   @override
   _i3.Future<void> declineFriendRequest(String? requestId) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #declineFriendRequest,
-          [requestId],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+            Invocation.method(#declineFriendRequest, [requestId]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
 
   @override
-  _i3.Future<void> removeFriend(String? friendUid) => (super.noSuchMethod(
-        Invocation.method(
-          #removeFriend,
-          [friendUid],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+  _i3.Future<void> removeFriend(String? friendUid) =>
+      (super.noSuchMethod(
+            Invocation.method(#removeFriend, [friendUid]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
 
   @override
   _i3.Future<List<_i4.UserSearchResult>> searchUsers(String? query) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #searchUsers,
-          [query],
-        ),
-        returnValue: _i3.Future<List<_i4.UserSearchResult>>.value(
-            <_i4.UserSearchResult>[]),
-        returnValueForMissingStub: _i3.Future<List<_i4.UserSearchResult>>.value(
-            <_i4.UserSearchResult>[]),
-      ) as _i3.Future<List<_i4.UserSearchResult>>);
+            Invocation.method(#searchUsers, [query]),
+            returnValue: _i3.Future<List<_i4.UserSearchResult>>.value(
+              <_i4.UserSearchResult>[],
+            ),
+            returnValueForMissingStub:
+                _i3.Future<List<_i4.UserSearchResult>>.value(
+                  <_i4.UserSearchResult>[],
+                ),
+          )
+          as _i3.Future<List<_i4.UserSearchResult>>);
 
   @override
-  _i3.Stream<List<_i5.FriendUser>> friendsStream() => (super.noSuchMethod(
-        Invocation.method(
-          #friendsStream,
-          [],
-        ),
-        returnValue: _i3.Stream<List<_i5.FriendUser>>.empty(),
-        returnValueForMissingStub: _i3.Stream<List<_i5.FriendUser>>.empty(),
-      ) as _i3.Stream<List<_i5.FriendUser>>);
+  _i3.Stream<List<_i5.FriendUser>> friendsStream() =>
+      (super.noSuchMethod(
+            Invocation.method(#friendsStream, []),
+            returnValue: _i3.Stream<List<_i5.FriendUser>>.empty(),
+            returnValueForMissingStub: _i3.Stream<List<_i5.FriendUser>>.empty(),
+          )
+          as _i3.Stream<List<_i5.FriendUser>>);
 
   @override
   _i3.Stream<List<_i5.FriendRequest>> incomingRequestsStream() =>
       (super.noSuchMethod(
-        Invocation.method(
-          #incomingRequestsStream,
-          [],
-        ),
-        returnValue: _i3.Stream<List<_i5.FriendRequest>>.empty(),
-        returnValueForMissingStub: _i3.Stream<List<_i5.FriendRequest>>.empty(),
-      ) as _i3.Stream<List<_i5.FriendRequest>>);
+            Invocation.method(#incomingRequestsStream, []),
+            returnValue: _i3.Stream<List<_i5.FriendRequest>>.empty(),
+            returnValueForMissingStub:
+                _i3.Stream<List<_i5.FriendRequest>>.empty(),
+          )
+          as _i3.Stream<List<_i5.FriendRequest>>);
 
   @override
   _i3.Stream<List<_i5.FeedEvent>> feedStream({int? limit}) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #feedStream,
-          [],
-          {#limit: limit},
-        ),
-        returnValue: _i3.Stream<List<_i5.FeedEvent>>.empty(),
-        returnValueForMissingStub: _i3.Stream<List<_i5.FeedEvent>>.empty(),
-      ) as _i3.Stream<List<_i5.FeedEvent>>);
+            Invocation.method(#feedStream, [], {#limit: limit}),
+            returnValue: _i3.Stream<List<_i5.FeedEvent>>.empty(),
+            returnValueForMissingStub: _i3.Stream<List<_i5.FeedEvent>>.empty(),
+          )
+          as _i3.Stream<List<_i5.FeedEvent>>);
 
   @override
   _i3.Future<String> createChallenge({
@@ -163,80 +143,69 @@ class MockISocialService extends _i1.Mock implements _i2.ISocialService {
     required bool? isPublic,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #createChallenge,
-          [],
-          {
-            #title: title,
-            #description: description,
-            #goalType: goalType,
-            #targetValue: targetValue,
-            #durationDays: durationDays,
-            #isPublic: isPublic,
-          },
-        ),
-        returnValue: _i3.Future<String>.value(_i6.dummyValue<String>(
-          this,
-          Invocation.method(
-            #createChallenge,
-            [],
-            {
+            Invocation.method(#createChallenge, [], {
               #title: title,
               #description: description,
               #goalType: goalType,
               #targetValue: targetValue,
               #durationDays: durationDays,
               #isPublic: isPublic,
-            },
-          ),
-        )),
-        returnValueForMissingStub:
-            _i3.Future<String>.value(_i6.dummyValue<String>(
-          this,
-          Invocation.method(
-            #createChallenge,
-            [],
-            {
-              #title: title,
-              #description: description,
-              #goalType: goalType,
-              #targetValue: targetValue,
-              #durationDays: durationDays,
-              #isPublic: isPublic,
-            },
-          ),
-        )),
-      ) as _i3.Future<String>);
+            }),
+            returnValue: _i3.Future<String>.value(
+              _i6.dummyValue<String>(
+                this,
+                Invocation.method(#createChallenge, [], {
+                  #title: title,
+                  #description: description,
+                  #goalType: goalType,
+                  #targetValue: targetValue,
+                  #durationDays: durationDays,
+                  #isPublic: isPublic,
+                }),
+              ),
+            ),
+            returnValueForMissingStub: _i3.Future<String>.value(
+              _i6.dummyValue<String>(
+                this,
+                Invocation.method(#createChallenge, [], {
+                  #title: title,
+                  #description: description,
+                  #goalType: goalType,
+                  #targetValue: targetValue,
+                  #durationDays: durationDays,
+                  #isPublic: isPublic,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<String>);
 
   @override
-  _i3.Future<void> joinChallenge(String? challengeId) => (super.noSuchMethod(
-        Invocation.method(
-          #joinChallenge,
-          [challengeId],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+  _i3.Future<void> joinChallenge(String? challengeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#joinChallenge, [challengeId]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
 
   @override
-  _i3.Future<void> leaveChallenge(String? challengeId) => (super.noSuchMethod(
-        Invocation.method(
-          #leaveChallenge,
-          [challengeId],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+  _i3.Future<void> leaveChallenge(String? challengeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#leaveChallenge, [challengeId]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
 
   @override
-  _i3.Future<void> deleteChallenge(String? challengeId) => (super.noSuchMethod(
-        Invocation.method(
-          #deleteChallenge,
-          [challengeId],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+  _i3.Future<void> deleteChallenge(String? challengeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteChallenge, [challengeId]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
 
   @override
   _i3.Future<List<String>> recordWorkout({
@@ -246,51 +215,46 @@ class MockISocialService extends _i1.Mock implements _i2.ISocialService {
     required int? streak,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #recordWorkout,
-          [],
-          {
-            #durationMinutes: durationMinutes,
-            #caloriesBurned: caloriesBurned,
-            #cardioMinutes: cardioMinutes,
-            #streak: streak,
-          },
-        ),
-        returnValue: _i3.Future<List<String>>.value(<String>[]),
-        returnValueForMissingStub: _i3.Future<List<String>>.value(<String>[]),
-      ) as _i3.Future<List<String>>);
+            Invocation.method(#recordWorkout, [], {
+              #durationMinutes: durationMinutes,
+              #caloriesBurned: caloriesBurned,
+              #cardioMinutes: cardioMinutes,
+              #streak: streak,
+            }),
+            returnValue: _i3.Future<List<String>>.value(<String>[]),
+            returnValueForMissingStub: _i3.Future<List<String>>.value(
+              <String>[],
+            ),
+          )
+          as _i3.Future<List<String>>);
 
   @override
   _i3.Stream<List<_i5.Challenge>> publicChallengesStream() =>
       (super.noSuchMethod(
-        Invocation.method(
-          #publicChallengesStream,
-          [],
-        ),
-        returnValue: _i3.Stream<List<_i5.Challenge>>.empty(),
-        returnValueForMissingStub: _i3.Stream<List<_i5.Challenge>>.empty(),
-      ) as _i3.Stream<List<_i5.Challenge>>);
+            Invocation.method(#publicChallengesStream, []),
+            returnValue: _i3.Stream<List<_i5.Challenge>>.empty(),
+            returnValueForMissingStub: _i3.Stream<List<_i5.Challenge>>.empty(),
+          )
+          as _i3.Stream<List<_i5.Challenge>>);
 
   @override
-  _i3.Stream<List<_i5.Challenge>> myChallengesStream() => (super.noSuchMethod(
-        Invocation.method(
-          #myChallengesStream,
-          [],
-        ),
-        returnValue: _i3.Stream<List<_i5.Challenge>>.empty(),
-        returnValueForMissingStub: _i3.Stream<List<_i5.Challenge>>.empty(),
-      ) as _i3.Stream<List<_i5.Challenge>>);
+  _i3.Stream<List<_i5.Challenge>> myChallengesStream() =>
+      (super.noSuchMethod(
+            Invocation.method(#myChallengesStream, []),
+            returnValue: _i3.Stream<List<_i5.Challenge>>.empty(),
+            returnValueForMissingStub: _i3.Stream<List<_i5.Challenge>>.empty(),
+          )
+          as _i3.Stream<List<_i5.Challenge>>);
 
   @override
   _i3.Stream<List<_i5.ChallengeParticipant>> challengeLeaderboardStream(
-          String? challengeId) =>
+    String? challengeId,
+  ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #challengeLeaderboardStream,
-          [challengeId],
-        ),
-        returnValue: _i3.Stream<List<_i5.ChallengeParticipant>>.empty(),
-        returnValueForMissingStub:
-            _i3.Stream<List<_i5.ChallengeParticipant>>.empty(),
-      ) as _i3.Stream<List<_i5.ChallengeParticipant>>);
+            Invocation.method(#challengeLeaderboardStream, [challengeId]),
+            returnValue: _i3.Stream<List<_i5.ChallengeParticipant>>.empty(),
+            returnValueForMissingStub:
+                _i3.Stream<List<_i5.ChallengeParticipant>>.empty(),
+          )
+          as _i3.Stream<List<_i5.ChallengeParticipant>>);
 }

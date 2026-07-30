@@ -16,7 +16,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDXV3wyJ0FApfqUATvvTpuc0kw2Hnt5TI8',
-    appId: '1:184541768053:android:dcba6eb4f5611b9d3c4b3c',
+    appId: '1:184541768053:android:c2e5c53ee52e6c133c4b3c',
     messagingSenderId: '184541768053',
     projectId: 'fitnesbuster',
     storageBucket: 'fitnesbuster.firebasestorage.app',

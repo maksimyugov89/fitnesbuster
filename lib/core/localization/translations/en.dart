@@ -1403,4 +1403,11 @@ const Map<String, String> enTranslations = {
   'profileAboutBody':
       'FitnesBuster is your personal AI trainer and dietitian on your phone. The app creates personalized workout programs based on your profile, goals, training experience, available equipment, and medical restrictions.\n\nIts AI nutritionist prepares detailed meal plans with portion sizes, meal timing, and macronutrient calculations. The app uses sleep, heart-rate, and daily-activity data through Health Connect.\n\nAll popular workout formats are supported: gym, outdoors, and home. The built-in timer provides voice guidance and tracks sets, weights, and personal records. Test weeks calibrate load to your real capabilities.\n\nChallenges, weekly debriefs, and body-measurement progress analysis help you stay motivated and see results.',
   'profileDeveloperName': 'Developer: Maksim Yugov',
+  'premiumTitle': 'Premium',
+  'premiumSubtitle': 'More tools to help you reach your goal',
+  'premiumMonthly': 'Individual — RUB 499/month',
+  'premiumYearly': 'Individual — RUB 3,499/year',
+  'premiumBetaNotice':
+      'Payments will be available soon. Premium is free during beta testing.',
+  'premiumPaymentSoon': 'Payments coming soon',
 };

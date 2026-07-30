@@ -14,20 +14,20 @@ import 'hi.dart';
 import 'uk.dart';
 import 'be.dart';
 
-const Map<String, Map<String, String>> allTranslations = {
+final Map<String, Map<String, String>> allTranslations = {
   'en': enTranslations,
   'ru': ruTranslations,
-  'es': esTranslations,
-  'de': deTranslations,
-  'fr': frTranslations,
-  'it': itTranslations,
-  'pt': ptTranslations,
-  'tr': trTranslations,
-  'ar': arTranslations,
-  'zh': zhTranslations,
-  'ja': jaTranslations,
-  'ko': koTranslations,
-  'hi': hiTranslations,
-  'uk': ukTranslations,
-  'be': beTranslations,
+  'es': {...enTranslations, ...esTranslations},
+  'de': {...enTranslations, ...deTranslations},
+  'fr': {...enTranslations, ...frTranslations},
+  'it': {...enTranslations, ...itTranslations},
+  'pt': {...enTranslations, ...ptTranslations},
+  'tr': {...enTranslations, ...trTranslations},
+  'ar': {...enTranslations, ...arTranslations},
+  'zh': {...enTranslations, ...zhTranslations},
+  'ja': {...enTranslations, ...jaTranslations},
+  'ko': {...enTranslations, ...koTranslations},
+  'hi': {...enTranslations, ...hiTranslations},
+  'uk': {...enTranslations, ...ukTranslations},
+  'be': {...enTranslations, ...beTranslations},
 };

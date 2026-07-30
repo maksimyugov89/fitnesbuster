@@ -39,6 +39,7 @@ import 'package:fitnesbuster/presentation/screens/workout/workout_calendar_scree
 import 'package:fitnesbuster/presentation/screens/social/feed_screen.dart';
 import 'package:fitnesbuster/presentation/screens/social/friends_screen.dart';
 import 'package:fitnesbuster/presentation/screens/social/challenges_screen.dart';
+import 'package:fitnesbuster/presentation/screens/paywall/paywall_screen.dart';
 
 class AppRouter {
   static const String splash = '/';
@@ -73,6 +74,7 @@ class AppRouter {
   static const String feed = '/social/feed';
   static const String friends = '/social/friends';
   static const String challenges = '/social/challenges';
+  static const String paywall = '/premium';
 
   static late GoRouter router;
 
@@ -181,6 +183,7 @@ class AppRouter {
         GoRoute(path: feed, builder: (_, _) => const FeedScreen()),
         GoRoute(path: friends, builder: (_, _) => const FriendsScreen()),
         GoRoute(path: challenges, builder: (_, _) => const ChallengesScreen()),
+        GoRoute(path: paywall, builder: (_, _) => const PaywallScreen()),
       ],
     );
   }

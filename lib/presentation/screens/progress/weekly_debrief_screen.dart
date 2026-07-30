@@ -6,6 +6,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
@@ -33,6 +34,9 @@ class _WeeklyDebriefScreenState extends State<WeeklyDebriefScreen> {
   @override
   void initState() {
     super.initState();
+    try {
+      sl<IAnalyticsService>().logAiDebriefViewed().ignore();
+    } catch (_) {}
     final authState = context.read<AuthBloc>().state;
     _uid = authState is AuthStateAuthenticated ? authState.userId : null;
     _weekStart = _currentWeekStart();

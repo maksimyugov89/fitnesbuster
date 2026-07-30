@@ -41,10 +41,7 @@ class AnalyticsService implements IAnalyticsService {
 
   @override
   Future<void> logWorkoutStarted({required String sessionId}) async {
-    await _analytics.logEvent(
-      name: 'workout_started',
-      parameters: {'session_id': sessionId},
-    );
+    await _analytics.logEvent(name: 'workout_started');
   }
 
   @override
@@ -55,11 +52,7 @@ class AnalyticsService implements IAnalyticsService {
   }) async {
     await _analytics.logEvent(
       name: 'workout_completed',
-      parameters: {
-        'session_id': sessionId,
-        'duration_seconds': durationSeconds,
-        'exercises_completed': exercisesCompleted,
-      },
+      parameters: {'duration_min': durationSeconds ~/ 60},
     );
   }
 
@@ -80,16 +73,13 @@ class AnalyticsService implements IAnalyticsService {
   }) async {
     await _analytics.logEvent(
       name: 'onboarding_step',
-      parameters: {'step': step, 'step_name': stepName},
+      parameters: {'step': step},
     );
   }
 
   @override
   Future<void> logOnboardingCompleted({required String goal}) async {
-    await _analytics.logEvent(
-      name: 'onboarding_completed',
-      parameters: {'goal': goal},
-    );
+    await _analytics.logEvent(name: 'onboarding_complete');
   }
 
   // ─── Plan / AI events ─────────────────────────────────────────────
@@ -143,6 +133,11 @@ class AnalyticsService implements IAnalyticsService {
   @override
   Future<void> logFriendAdded() async {
     await _analytics.logEvent(name: 'friend_added');
+  }
+
+  @override
+  Future<void> logPaywallViewed() async {
+    await _analytics.logEvent(name: 'paywall_viewed');
   }
 
   // ─── Nutrition events ─────────────────────────────────────────────

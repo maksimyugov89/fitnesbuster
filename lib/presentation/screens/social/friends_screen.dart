@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
@@ -579,6 +580,9 @@ class _RequestTileState extends State<_RequestTile> {
     setState(() => _loading = true);
     try {
       await sl<ISocialService>().acceptFriendRequest(widget.request.id);
+      try {
+        sl<IAnalyticsService>().logFriendAdded().ignore();
+      } catch (_) {}
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

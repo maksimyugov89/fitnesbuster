@@ -19,6 +19,7 @@ abstract interface class IAnalyticsService {
   Future<void> logAiDebriefViewed();
   Future<void> logChallengeJoined({required String goalType});
   Future<void> logFriendAdded();
+  Future<void> logPaywallViewed();
   Future<void> logFoodLogged({
     required String foodName,
     required double calories,

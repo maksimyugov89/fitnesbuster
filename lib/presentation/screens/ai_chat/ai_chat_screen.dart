@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fitnesbuster/core/theme/app_theme.dart' hide AppTheme;
 import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/domain/services/i_deepseek_service.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 import 'package:fitnesbuster/core/ai/ai_exception.dart';
 import 'package:fitnesbuster/core/cache/hive_cache.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
@@ -123,6 +124,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
         });
         await _saveHistory();
         WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+        try {
+          sl<IAnalyticsService>().logAiChatMessage().ignore();
+        } catch (_) {}
       }
     } on AiException catch (e) {
       if (mounted) {

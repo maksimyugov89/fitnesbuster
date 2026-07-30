@@ -371,6 +371,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: l10n.settingsLabel,
               items: [
                 ProfileMenuItem(
+                  icon: Icons.workspace_premium_rounded,
+                  label: AppLocalizations.tl('premiumTitle'),
+                  color: colors.accentOrange,
+                  onTap: () => context.push('/premium'),
+                ),
+                ProfileMenuItem(
                   icon: Icons.sync_rounded,
                   iconAsset: AppImages.bluetoothDevices,
                   label: l10n.healthConnectLabel,

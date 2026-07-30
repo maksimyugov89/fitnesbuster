@@ -504,6 +504,17 @@ class AuthRepository implements IAuthRepository {
           DateTime.now(),
       currentStreak: (data?['currentStreak'] as num?)?.toInt(),
       lastWorkoutDate: data?['lastWorkoutDate'] as String?,
+      entitlement: _parseEntitlement(data?['entitlement']),
+    );
+  }
+
+  Entitlement _parseEntitlement(Object? raw) {
+    if (raw is! Map<String, dynamic>) return const Entitlement();
+    return Entitlement(
+      tier: raw['tier'] as String? ?? 'free',
+      source: raw['source'] as String? ?? 'admin',
+      updatedAt: (raw['updatedAt'] as Timestamp?)?.toDate(),
+      expiresAt: (raw['expiresAt'] as Timestamp?)?.toDate(),
     );
   }
 

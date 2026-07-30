@@ -10,6 +10,7 @@ import 'package:fitnesbuster/core/services/social_models.dart';
 import 'package:fitnesbuster/presentation/widgets/loading_shimmer.dart';
 import 'package:fitnesbuster/presentation/widgets/segmented_tab_bar.dart';
 import 'package:fitnesbuster/core/constants/app_colors.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 
@@ -910,7 +911,11 @@ class _ChallengeCard extends StatelessWidget {
               ),
             ] else if (showJoinButton) ...[
               const SizedBox(height: 12),
-              _JoinButton(challengeId: challenge.id, colors: colors),
+              _JoinButton(
+                challengeId: challenge.id,
+                goalType: challenge.goalType,
+                colors: colors,
+              ),
             ],
             if (showLeaderboard) ...[
               const SizedBox(height: 8),
@@ -984,8 +989,13 @@ class _Stat extends StatelessWidget {
 
 class _JoinButton extends StatefulWidget {
   final String challengeId;
+  final String goalType;
   final ThemePalette colors;
-  const _JoinButton({required this.challengeId, required this.colors});
+  const _JoinButton({
+    required this.challengeId,
+    required this.goalType,
+    required this.colors,
+  });
 
   @override
   State<_JoinButton> createState() => _JoinButtonState();
@@ -1085,6 +1095,11 @@ class _JoinButtonState extends State<_JoinButton> {
     setState(() => _loading = true);
     try {
       await sl<ISocialService>().joinChallenge(widget.challengeId);
+      try {
+        sl<IAnalyticsService>()
+            .logChallengeJoined(goalType: widget.goalType)
+            .ignore();
+      } catch (_) {}
       if (mounted) {
         setState(() {
           _loading = false;

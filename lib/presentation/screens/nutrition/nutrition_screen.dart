@@ -9,6 +9,7 @@ import 'package:fitnesbuster/core/theme/dynamic_theme.dart';
 import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/data/repositories/user_repository.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/data/models/ai_meal_plan.dart';
 import 'package:fitnesbuster/presentation/screens/nutrition/barcode_scanner_screen.dart';
@@ -110,9 +111,17 @@ class _NutritionScreenState extends State<NutritionScreen>
   }
 
   Future<void> _addWater(int ml) async {
+    final prev = _waterIntakeMl;
     final next = (_waterIntakeMl + ml).clamp(0, _waterTargetMl * 2);
     setState(() => _waterIntakeMl = next);
     await sl<ISettingsRepository>().setWaterMl(todayKey(), next);
+    if (prev < _waterTargetMl && next >= _waterTargetMl) {
+      try {
+        sl<IAnalyticsService>()
+            .logDailyTaskCompleted(taskType: 'water')
+            .ignore();
+      } catch (_) {}
+    }
   }
 
   String _normalizeMealType(String raw) =>
