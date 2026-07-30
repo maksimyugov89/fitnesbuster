@@ -12,8 +12,7 @@ part of 'user_entities.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 UserEntity _$UserEntityFromJson(Map<String, dynamic> json) {
   return _UserEntity.fromJson(json);
@@ -28,9 +27,9 @@ mixin _$UserEntity {
   UserProfile? get profile => throw _privateConstructorUsedError;
   DateTime get createdAt =>
       throw _privateConstructorUsedError; // Server-authoritative workout streak (Cloud Function `recordWorkout`
-  // increments/resets these on each completed workout) — kept at the
-  // top level, alongside name/email, since it's account-wide account
-  // state rather than a fitness-profile attribute.
+// increments/resets these on each completed workout) — kept at the
+// top level, alongside name/email, since it's account-wide account
+// state rather than a fitness-profile attribute.
   int? get currentStreak => throw _privateConstructorUsedError;
   String? get lastWorkoutDate => throw _privateConstructorUsedError;
 
@@ -43,20 +42,18 @@ mixin _$UserEntity {
 /// @nodoc
 abstract class $UserEntityCopyWith<$Res> {
   factory $UserEntityCopyWith(
-    UserEntity value,
-    $Res Function(UserEntity) then,
-  ) = _$UserEntityCopyWithImpl<$Res, UserEntity>;
+          UserEntity value, $Res Function(UserEntity) then) =
+      _$UserEntityCopyWithImpl<$Res, UserEntity>;
   @useResult
-  $Res call({
-    String id,
-    String name,
-    String email,
-    String? avatarUrl,
-    UserProfile? profile,
-    DateTime createdAt,
-    int? currentStreak,
-    String? lastWorkoutDate,
-  });
+  $Res call(
+      {String id,
+      String name,
+      String email,
+      String? avatarUrl,
+      UserProfile? profile,
+      DateTime createdAt,
+      int? currentStreak,
+      String? lastWorkoutDate});
 
   $UserProfileCopyWith<$Res>? get profile;
 }
@@ -83,43 +80,40 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
     Object? currentStreak = freezed,
     Object? lastWorkoutDate = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            avatarUrl: freezed == avatarUrl
-                ? _value.avatarUrl
-                : avatarUrl // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            profile: freezed == profile
-                ? _value.profile
-                : profile // ignore: cast_nullable_to_non_nullable
-                      as UserProfile?,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            currentStreak: freezed == currentStreak
-                ? _value.currentStreak
-                : currentStreak // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            lastWorkoutDate: freezed == lastWorkoutDate
-                ? _value.lastWorkoutDate
-                : lastWorkoutDate // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      avatarUrl: freezed == avatarUrl
+          ? _value.avatarUrl
+          : avatarUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      profile: freezed == profile
+          ? _value.profile
+          : profile // ignore: cast_nullable_to_non_nullable
+              as UserProfile?,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      currentStreak: freezed == currentStreak
+          ? _value.currentStreak
+          : currentStreak // ignore: cast_nullable_to_non_nullable
+              as int?,
+      lastWorkoutDate: freezed == lastWorkoutDate
+          ? _value.lastWorkoutDate
+          : lastWorkoutDate // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 
   @override
@@ -139,21 +133,19 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
 abstract class _$$UserEntityImplCopyWith<$Res>
     implements $UserEntityCopyWith<$Res> {
   factory _$$UserEntityImplCopyWith(
-    _$UserEntityImpl value,
-    $Res Function(_$UserEntityImpl) then,
-  ) = __$$UserEntityImplCopyWithImpl<$Res>;
+          _$UserEntityImpl value, $Res Function(_$UserEntityImpl) then) =
+      __$$UserEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    String name,
-    String email,
-    String? avatarUrl,
-    UserProfile? profile,
-    DateTime createdAt,
-    int? currentStreak,
-    String? lastWorkoutDate,
-  });
+  $Res call(
+      {String id,
+      String name,
+      String email,
+      String? avatarUrl,
+      UserProfile? profile,
+      DateTime createdAt,
+      int? currentStreak,
+      String? lastWorkoutDate});
 
   @override
   $UserProfileCopyWith<$Res>? get profile;
@@ -164,9 +156,8 @@ class __$$UserEntityImplCopyWithImpl<$Res>
     extends _$UserEntityCopyWithImpl<$Res, _$UserEntityImpl>
     implements _$$UserEntityImplCopyWith<$Res> {
   __$$UserEntityImplCopyWithImpl(
-    _$UserEntityImpl _value,
-    $Res Function(_$UserEntityImpl) _then,
-  ) : super(_value, _then);
+      _$UserEntityImpl _value, $Res Function(_$UserEntityImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -180,58 +171,55 @@ class __$$UserEntityImplCopyWithImpl<$Res>
     Object? currentStreak = freezed,
     Object? lastWorkoutDate = freezed,
   }) {
-    return _then(
-      _$UserEntityImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        avatarUrl: freezed == avatarUrl
-            ? _value.avatarUrl
-            : avatarUrl // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        profile: freezed == profile
-            ? _value.profile
-            : profile // ignore: cast_nullable_to_non_nullable
-                  as UserProfile?,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        currentStreak: freezed == currentStreak
-            ? _value.currentStreak
-            : currentStreak // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        lastWorkoutDate: freezed == lastWorkoutDate
-            ? _value.lastWorkoutDate
-            : lastWorkoutDate // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$UserEntityImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      avatarUrl: freezed == avatarUrl
+          ? _value.avatarUrl
+          : avatarUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      profile: freezed == profile
+          ? _value.profile
+          : profile // ignore: cast_nullable_to_non_nullable
+              as UserProfile?,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      currentStreak: freezed == currentStreak
+          ? _value.currentStreak
+          : currentStreak // ignore: cast_nullable_to_non_nullable
+              as int?,
+      lastWorkoutDate: freezed == lastWorkoutDate
+          ? _value.lastWorkoutDate
+          : lastWorkoutDate // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UserEntityImpl implements _UserEntity {
-  const _$UserEntityImpl({
-    required this.id,
-    required this.name,
-    required this.email,
-    this.avatarUrl,
-    this.profile,
-    required this.createdAt,
-    this.currentStreak,
-    this.lastWorkoutDate,
-  });
+  const _$UserEntityImpl(
+      {required this.id,
+      required this.name,
+      required this.email,
+      this.avatarUrl,
+      this.profile,
+      required this.createdAt,
+      this.currentStreak,
+      this.lastWorkoutDate});
 
   factory _$UserEntityImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserEntityImplFromJson(json);
@@ -248,10 +236,10 @@ class _$UserEntityImpl implements _UserEntity {
   final UserProfile? profile;
   @override
   final DateTime createdAt;
-  // Server-authoritative workout streak (Cloud Function `recordWorkout`
-  // increments/resets these on each completed workout) — kept at the
-  // top level, alongside name/email, since it's account-wide account
-  // state rather than a fitness-profile attribute.
+// Server-authoritative workout streak (Cloud Function `recordWorkout`
+// increments/resets these on each completed workout) — kept at the
+// top level, alongside name/email, since it's account-wide account
+// state rather than a fitness-profile attribute.
   @override
   final int? currentStreak;
   @override
@@ -283,17 +271,8 @@ class _$UserEntityImpl implements _UserEntity {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    name,
-    email,
-    avatarUrl,
-    profile,
-    createdAt,
-    currentStreak,
-    lastWorkoutDate,
-  );
+  int get hashCode => Object.hash(runtimeType, id, name, email, avatarUrl,
+      profile, createdAt, currentStreak, lastWorkoutDate);
 
   @JsonKey(ignore: true)
   @override
@@ -303,21 +282,22 @@ class _$UserEntityImpl implements _UserEntity {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserEntityImplToJson(this);
+    return _$$UserEntityImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _UserEntity implements UserEntity {
-  const factory _UserEntity({
-    required final String id,
-    required final String name,
-    required final String email,
-    final String? avatarUrl,
-    final UserProfile? profile,
-    required final DateTime createdAt,
-    final int? currentStreak,
-    final String? lastWorkoutDate,
-  }) = _$UserEntityImpl;
+  const factory _UserEntity(
+      {required final String id,
+      required final String name,
+      required final String email,
+      final String? avatarUrl,
+      final UserProfile? profile,
+      required final DateTime createdAt,
+      final int? currentStreak,
+      final String? lastWorkoutDate}) = _$UserEntityImpl;
 
   factory _UserEntity.fromJson(Map<String, dynamic> json) =
       _$UserEntityImpl.fromJson;
@@ -335,9 +315,9 @@ abstract class _UserEntity implements UserEntity {
   @override
   DateTime get createdAt;
   @override // Server-authoritative workout streak (Cloud Function `recordWorkout`
-  // increments/resets these on each completed workout) — kept at the
-  // top level, alongside name/email, since it's account-wide account
-  // state rather than a fitness-profile attribute.
+// increments/resets these on each completed workout) — kept at the
+// top level, alongside name/email, since it's account-wide account
+// state rather than a fitness-profile attribute.
   int? get currentStreak;
   @override
   String? get lastWorkoutDate;
@@ -383,30 +363,28 @@ mixin _$UserProfile {
 /// @nodoc
 abstract class $UserProfileCopyWith<$Res> {
   factory $UserProfileCopyWith(
-    UserProfile value,
-    $Res Function(UserProfile) then,
-  ) = _$UserProfileCopyWithImpl<$Res, UserProfile>;
+          UserProfile value, $Res Function(UserProfile) then) =
+      _$UserProfileCopyWithImpl<$Res, UserProfile>;
   @useResult
-  $Res call({
-    double weight,
-    double height,
-    int age,
-    DateTime? dateOfBirth,
-    Gender gender,
-    FitnessGoal goal,
-    IntensityLevel intensity,
-    TrainingExperience trainingExperience,
-    List<String> medicalRestrictions,
-    List<String> exerciseRestrictions,
-    ActivityLevel activityLevel,
-    double? targetWeight,
-    DateTime? targetDate,
-    bool testWeekCompleted,
-    List<TestExerciseResult> testResults,
-    String? workoutLocation,
-    String? runningPreference,
-    String? city,
-  });
+  $Res call(
+      {double weight,
+      double height,
+      int age,
+      DateTime? dateOfBirth,
+      Gender gender,
+      FitnessGoal goal,
+      IntensityLevel intensity,
+      TrainingExperience trainingExperience,
+      List<String> medicalRestrictions,
+      List<String> exerciseRestrictions,
+      ActivityLevel activityLevel,
+      double? targetWeight,
+      DateTime? targetDate,
+      bool testWeekCompleted,
+      List<TestExerciseResult> testResults,
+      String? workoutLocation,
+      String? runningPreference,
+      String? city});
 }
 
 /// @nodoc
@@ -441,83 +419,80 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
     Object? runningPreference = freezed,
     Object? city = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            weight: null == weight
-                ? _value.weight
-                : weight // ignore: cast_nullable_to_non_nullable
-                      as double,
-            height: null == height
-                ? _value.height
-                : height // ignore: cast_nullable_to_non_nullable
-                      as double,
-            age: null == age
-                ? _value.age
-                : age // ignore: cast_nullable_to_non_nullable
-                      as int,
-            dateOfBirth: freezed == dateOfBirth
-                ? _value.dateOfBirth
-                : dateOfBirth // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            gender: null == gender
-                ? _value.gender
-                : gender // ignore: cast_nullable_to_non_nullable
-                      as Gender,
-            goal: null == goal
-                ? _value.goal
-                : goal // ignore: cast_nullable_to_non_nullable
-                      as FitnessGoal,
-            intensity: null == intensity
-                ? _value.intensity
-                : intensity // ignore: cast_nullable_to_non_nullable
-                      as IntensityLevel,
-            trainingExperience: null == trainingExperience
-                ? _value.trainingExperience
-                : trainingExperience // ignore: cast_nullable_to_non_nullable
-                      as TrainingExperience,
-            medicalRestrictions: null == medicalRestrictions
-                ? _value.medicalRestrictions
-                : medicalRestrictions // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            exerciseRestrictions: null == exerciseRestrictions
-                ? _value.exerciseRestrictions
-                : exerciseRestrictions // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            activityLevel: null == activityLevel
-                ? _value.activityLevel
-                : activityLevel // ignore: cast_nullable_to_non_nullable
-                      as ActivityLevel,
-            targetWeight: freezed == targetWeight
-                ? _value.targetWeight
-                : targetWeight // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            targetDate: freezed == targetDate
-                ? _value.targetDate
-                : targetDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            testWeekCompleted: null == testWeekCompleted
-                ? _value.testWeekCompleted
-                : testWeekCompleted // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            testResults: null == testResults
-                ? _value.testResults
-                : testResults // ignore: cast_nullable_to_non_nullable
-                      as List<TestExerciseResult>,
-            workoutLocation: freezed == workoutLocation
-                ? _value.workoutLocation
-                : workoutLocation // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            runningPreference: freezed == runningPreference
-                ? _value.runningPreference
-                : runningPreference // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            city: freezed == city
-                ? _value.city
-                : city // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      weight: null == weight
+          ? _value.weight
+          : weight // ignore: cast_nullable_to_non_nullable
+              as double,
+      height: null == height
+          ? _value.height
+          : height // ignore: cast_nullable_to_non_nullable
+              as double,
+      age: null == age
+          ? _value.age
+          : age // ignore: cast_nullable_to_non_nullable
+              as int,
+      dateOfBirth: freezed == dateOfBirth
+          ? _value.dateOfBirth
+          : dateOfBirth // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      gender: null == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as Gender,
+      goal: null == goal
+          ? _value.goal
+          : goal // ignore: cast_nullable_to_non_nullable
+              as FitnessGoal,
+      intensity: null == intensity
+          ? _value.intensity
+          : intensity // ignore: cast_nullable_to_non_nullable
+              as IntensityLevel,
+      trainingExperience: null == trainingExperience
+          ? _value.trainingExperience
+          : trainingExperience // ignore: cast_nullable_to_non_nullable
+              as TrainingExperience,
+      medicalRestrictions: null == medicalRestrictions
+          ? _value.medicalRestrictions
+          : medicalRestrictions // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      exerciseRestrictions: null == exerciseRestrictions
+          ? _value.exerciseRestrictions
+          : exerciseRestrictions // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      activityLevel: null == activityLevel
+          ? _value.activityLevel
+          : activityLevel // ignore: cast_nullable_to_non_nullable
+              as ActivityLevel,
+      targetWeight: freezed == targetWeight
+          ? _value.targetWeight
+          : targetWeight // ignore: cast_nullable_to_non_nullable
+              as double?,
+      targetDate: freezed == targetDate
+          ? _value.targetDate
+          : targetDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      testWeekCompleted: null == testWeekCompleted
+          ? _value.testWeekCompleted
+          : testWeekCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      testResults: null == testResults
+          ? _value.testResults
+          : testResults // ignore: cast_nullable_to_non_nullable
+              as List<TestExerciseResult>,
+      workoutLocation: freezed == workoutLocation
+          ? _value.workoutLocation
+          : workoutLocation // ignore: cast_nullable_to_non_nullable
+              as String?,
+      runningPreference: freezed == runningPreference
+          ? _value.runningPreference
+          : runningPreference // ignore: cast_nullable_to_non_nullable
+              as String?,
+      city: freezed == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
@@ -525,31 +500,29 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
 abstract class _$$UserProfileImplCopyWith<$Res>
     implements $UserProfileCopyWith<$Res> {
   factory _$$UserProfileImplCopyWith(
-    _$UserProfileImpl value,
-    $Res Function(_$UserProfileImpl) then,
-  ) = __$$UserProfileImplCopyWithImpl<$Res>;
+          _$UserProfileImpl value, $Res Function(_$UserProfileImpl) then) =
+      __$$UserProfileImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    double weight,
-    double height,
-    int age,
-    DateTime? dateOfBirth,
-    Gender gender,
-    FitnessGoal goal,
-    IntensityLevel intensity,
-    TrainingExperience trainingExperience,
-    List<String> medicalRestrictions,
-    List<String> exerciseRestrictions,
-    ActivityLevel activityLevel,
-    double? targetWeight,
-    DateTime? targetDate,
-    bool testWeekCompleted,
-    List<TestExerciseResult> testResults,
-    String? workoutLocation,
-    String? runningPreference,
-    String? city,
-  });
+  $Res call(
+      {double weight,
+      double height,
+      int age,
+      DateTime? dateOfBirth,
+      Gender gender,
+      FitnessGoal goal,
+      IntensityLevel intensity,
+      TrainingExperience trainingExperience,
+      List<String> medicalRestrictions,
+      List<String> exerciseRestrictions,
+      ActivityLevel activityLevel,
+      double? targetWeight,
+      DateTime? targetDate,
+      bool testWeekCompleted,
+      List<TestExerciseResult> testResults,
+      String? workoutLocation,
+      String? runningPreference,
+      String? city});
 }
 
 /// @nodoc
@@ -557,9 +530,8 @@ class __$$UserProfileImplCopyWithImpl<$Res>
     extends _$UserProfileCopyWithImpl<$Res, _$UserProfileImpl>
     implements _$$UserProfileImplCopyWith<$Res> {
   __$$UserProfileImplCopyWithImpl(
-    _$UserProfileImpl _value,
-    $Res Function(_$UserProfileImpl) _then,
-  ) : super(_value, _then);
+      _$UserProfileImpl _value, $Res Function(_$UserProfileImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -583,111 +555,109 @@ class __$$UserProfileImplCopyWithImpl<$Res>
     Object? runningPreference = freezed,
     Object? city = freezed,
   }) {
-    return _then(
-      _$UserProfileImpl(
-        weight: null == weight
-            ? _value.weight
-            : weight // ignore: cast_nullable_to_non_nullable
-                  as double,
-        height: null == height
-            ? _value.height
-            : height // ignore: cast_nullable_to_non_nullable
-                  as double,
-        age: null == age
-            ? _value.age
-            : age // ignore: cast_nullable_to_non_nullable
-                  as int,
-        dateOfBirth: freezed == dateOfBirth
-            ? _value.dateOfBirth
-            : dateOfBirth // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        gender: null == gender
-            ? _value.gender
-            : gender // ignore: cast_nullable_to_non_nullable
-                  as Gender,
-        goal: null == goal
-            ? _value.goal
-            : goal // ignore: cast_nullable_to_non_nullable
-                  as FitnessGoal,
-        intensity: null == intensity
-            ? _value.intensity
-            : intensity // ignore: cast_nullable_to_non_nullable
-                  as IntensityLevel,
-        trainingExperience: null == trainingExperience
-            ? _value.trainingExperience
-            : trainingExperience // ignore: cast_nullable_to_non_nullable
-                  as TrainingExperience,
-        medicalRestrictions: null == medicalRestrictions
-            ? _value._medicalRestrictions
-            : medicalRestrictions // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        exerciseRestrictions: null == exerciseRestrictions
-            ? _value._exerciseRestrictions
-            : exerciseRestrictions // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        activityLevel: null == activityLevel
-            ? _value.activityLevel
-            : activityLevel // ignore: cast_nullable_to_non_nullable
-                  as ActivityLevel,
-        targetWeight: freezed == targetWeight
-            ? _value.targetWeight
-            : targetWeight // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        targetDate: freezed == targetDate
-            ? _value.targetDate
-            : targetDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        testWeekCompleted: null == testWeekCompleted
-            ? _value.testWeekCompleted
-            : testWeekCompleted // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        testResults: null == testResults
-            ? _value._testResults
-            : testResults // ignore: cast_nullable_to_non_nullable
-                  as List<TestExerciseResult>,
-        workoutLocation: freezed == workoutLocation
-            ? _value.workoutLocation
-            : workoutLocation // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        runningPreference: freezed == runningPreference
-            ? _value.runningPreference
-            : runningPreference // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        city: freezed == city
-            ? _value.city
-            : city // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$UserProfileImpl(
+      weight: null == weight
+          ? _value.weight
+          : weight // ignore: cast_nullable_to_non_nullable
+              as double,
+      height: null == height
+          ? _value.height
+          : height // ignore: cast_nullable_to_non_nullable
+              as double,
+      age: null == age
+          ? _value.age
+          : age // ignore: cast_nullable_to_non_nullable
+              as int,
+      dateOfBirth: freezed == dateOfBirth
+          ? _value.dateOfBirth
+          : dateOfBirth // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      gender: null == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as Gender,
+      goal: null == goal
+          ? _value.goal
+          : goal // ignore: cast_nullable_to_non_nullable
+              as FitnessGoal,
+      intensity: null == intensity
+          ? _value.intensity
+          : intensity // ignore: cast_nullable_to_non_nullable
+              as IntensityLevel,
+      trainingExperience: null == trainingExperience
+          ? _value.trainingExperience
+          : trainingExperience // ignore: cast_nullable_to_non_nullable
+              as TrainingExperience,
+      medicalRestrictions: null == medicalRestrictions
+          ? _value._medicalRestrictions
+          : medicalRestrictions // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      exerciseRestrictions: null == exerciseRestrictions
+          ? _value._exerciseRestrictions
+          : exerciseRestrictions // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      activityLevel: null == activityLevel
+          ? _value.activityLevel
+          : activityLevel // ignore: cast_nullable_to_non_nullable
+              as ActivityLevel,
+      targetWeight: freezed == targetWeight
+          ? _value.targetWeight
+          : targetWeight // ignore: cast_nullable_to_non_nullable
+              as double?,
+      targetDate: freezed == targetDate
+          ? _value.targetDate
+          : targetDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      testWeekCompleted: null == testWeekCompleted
+          ? _value.testWeekCompleted
+          : testWeekCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      testResults: null == testResults
+          ? _value._testResults
+          : testResults // ignore: cast_nullable_to_non_nullable
+              as List<TestExerciseResult>,
+      workoutLocation: freezed == workoutLocation
+          ? _value.workoutLocation
+          : workoutLocation // ignore: cast_nullable_to_non_nullable
+              as String?,
+      runningPreference: freezed == runningPreference
+          ? _value.runningPreference
+          : runningPreference // ignore: cast_nullable_to_non_nullable
+              as String?,
+      city: freezed == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UserProfileImpl extends _UserProfile {
-  const _$UserProfileImpl({
-    required this.weight,
-    required this.height,
-    required this.age,
-    this.dateOfBirth,
-    required this.gender,
-    required this.goal,
-    required this.intensity,
-    this.trainingExperience = TrainingExperience.novice,
-    final List<String> medicalRestrictions = const [],
-    final List<String> exerciseRestrictions = const [],
-    required this.activityLevel,
-    this.targetWeight,
-    this.targetDate,
-    this.testWeekCompleted = false,
-    final List<TestExerciseResult> testResults = const [],
-    this.workoutLocation,
-    this.runningPreference,
-    this.city,
-  }) : _medicalRestrictions = medicalRestrictions,
-       _exerciseRestrictions = exerciseRestrictions,
-       _testResults = testResults,
-       super._();
+  const _$UserProfileImpl(
+      {required this.weight,
+      required this.height,
+      required this.age,
+      this.dateOfBirth,
+      required this.gender,
+      required this.goal,
+      required this.intensity,
+      this.trainingExperience = TrainingExperience.novice,
+      final List<String> medicalRestrictions = const [],
+      final List<String> exerciseRestrictions = const [],
+      required this.activityLevel,
+      this.targetWeight,
+      this.targetDate,
+      this.testWeekCompleted = false,
+      final List<TestExerciseResult> testResults = const [],
+      this.workoutLocation,
+      this.runningPreference,
+      this.city})
+      : _medicalRestrictions = medicalRestrictions,
+        _exerciseRestrictions = exerciseRestrictions,
+        _testResults = testResults,
+        super._();
 
   factory _$UserProfileImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserProfileImplFromJson(json);
@@ -775,14 +745,10 @@ class _$UserProfileImpl extends _UserProfile {
                 other.intensity == intensity) &&
             (identical(other.trainingExperience, trainingExperience) ||
                 other.trainingExperience == trainingExperience) &&
-            const DeepCollectionEquality().equals(
-              other._medicalRestrictions,
-              _medicalRestrictions,
-            ) &&
-            const DeepCollectionEquality().equals(
-              other._exerciseRestrictions,
-              _exerciseRestrictions,
-            ) &&
+            const DeepCollectionEquality()
+                .equals(other._medicalRestrictions, _medicalRestrictions) &&
+            const DeepCollectionEquality()
+                .equals(other._exerciseRestrictions, _exerciseRestrictions) &&
             (identical(other.activityLevel, activityLevel) ||
                 other.activityLevel == activityLevel) &&
             (identical(other.targetWeight, targetWeight) ||
@@ -791,10 +757,8 @@ class _$UserProfileImpl extends _UserProfile {
                 other.targetDate == targetDate) &&
             (identical(other.testWeekCompleted, testWeekCompleted) ||
                 other.testWeekCompleted == testWeekCompleted) &&
-            const DeepCollectionEquality().equals(
-              other._testResults,
-              _testResults,
-            ) &&
+            const DeepCollectionEquality()
+                .equals(other._testResults, _testResults) &&
             (identical(other.workoutLocation, workoutLocation) ||
                 other.workoutLocation == workoutLocation) &&
             (identical(other.runningPreference, runningPreference) ||
@@ -805,26 +769,25 @@ class _$UserProfileImpl extends _UserProfile {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    weight,
-    height,
-    age,
-    dateOfBirth,
-    gender,
-    goal,
-    intensity,
-    trainingExperience,
-    const DeepCollectionEquality().hash(_medicalRestrictions),
-    const DeepCollectionEquality().hash(_exerciseRestrictions),
-    activityLevel,
-    targetWeight,
-    targetDate,
-    testWeekCompleted,
-    const DeepCollectionEquality().hash(_testResults),
-    workoutLocation,
-    runningPreference,
-    city,
-  );
+      runtimeType,
+      weight,
+      height,
+      age,
+      dateOfBirth,
+      gender,
+      goal,
+      intensity,
+      trainingExperience,
+      const DeepCollectionEquality().hash(_medicalRestrictions),
+      const DeepCollectionEquality().hash(_exerciseRestrictions),
+      activityLevel,
+      targetWeight,
+      targetDate,
+      testWeekCompleted,
+      const DeepCollectionEquality().hash(_testResults),
+      workoutLocation,
+      runningPreference,
+      city);
 
   @JsonKey(ignore: true)
   @override
@@ -834,31 +797,32 @@ class _$UserProfileImpl extends _UserProfile {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserProfileImplToJson(this);
+    return _$$UserProfileImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _UserProfile extends UserProfile {
-  const factory _UserProfile({
-    required final double weight,
-    required final double height,
-    required final int age,
-    final DateTime? dateOfBirth,
-    required final Gender gender,
-    required final FitnessGoal goal,
-    required final IntensityLevel intensity,
-    final TrainingExperience trainingExperience,
-    final List<String> medicalRestrictions,
-    final List<String> exerciseRestrictions,
-    required final ActivityLevel activityLevel,
-    final double? targetWeight,
-    final DateTime? targetDate,
-    final bool testWeekCompleted,
-    final List<TestExerciseResult> testResults,
-    final String? workoutLocation,
-    final String? runningPreference,
-    final String? city,
-  }) = _$UserProfileImpl;
+  const factory _UserProfile(
+      {required final double weight,
+      required final double height,
+      required final int age,
+      final DateTime? dateOfBirth,
+      required final Gender gender,
+      required final FitnessGoal goal,
+      required final IntensityLevel intensity,
+      final TrainingExperience trainingExperience,
+      final List<String> medicalRestrictions,
+      final List<String> exerciseRestrictions,
+      required final ActivityLevel activityLevel,
+      final double? targetWeight,
+      final DateTime? targetDate,
+      final bool testWeekCompleted,
+      final List<TestExerciseResult> testResults,
+      final String? workoutLocation,
+      final String? runningPreference,
+      final String? city}) = _$UserProfileImpl;
   const _UserProfile._() : super._();
 
   factory _UserProfile.fromJson(Map<String, dynamic> json) =
@@ -928,18 +892,16 @@ mixin _$TestExerciseResult {
 /// @nodoc
 abstract class $TestExerciseResultCopyWith<$Res> {
   factory $TestExerciseResultCopyWith(
-    TestExerciseResult value,
-    $Res Function(TestExerciseResult) then,
-  ) = _$TestExerciseResultCopyWithImpl<$Res, TestExerciseResult>;
+          TestExerciseResult value, $Res Function(TestExerciseResult) then) =
+      _$TestExerciseResultCopyWithImpl<$Res, TestExerciseResult>;
   @useResult
-  $Res call({
-    String exerciseName,
-    MuscleGroup primaryMuscle,
-    double comfortableWeightKg,
-    int comfortableSets,
-    int comfortableReps,
-    String? notes,
-  });
+  $Res call(
+      {String exerciseName,
+      MuscleGroup primaryMuscle,
+      double comfortableWeightKg,
+      int comfortableSets,
+      int comfortableReps,
+      String? notes});
 }
 
 /// @nodoc
@@ -962,65 +924,59 @@ class _$TestExerciseResultCopyWithImpl<$Res, $Val extends TestExerciseResult>
     Object? comfortableReps = null,
     Object? notes = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            exerciseName: null == exerciseName
-                ? _value.exerciseName
-                : exerciseName // ignore: cast_nullable_to_non_nullable
-                      as String,
-            primaryMuscle: null == primaryMuscle
-                ? _value.primaryMuscle
-                : primaryMuscle // ignore: cast_nullable_to_non_nullable
-                      as MuscleGroup,
-            comfortableWeightKg: null == comfortableWeightKg
-                ? _value.comfortableWeightKg
-                : comfortableWeightKg // ignore: cast_nullable_to_non_nullable
-                      as double,
-            comfortableSets: null == comfortableSets
-                ? _value.comfortableSets
-                : comfortableSets // ignore: cast_nullable_to_non_nullable
-                      as int,
-            comfortableReps: null == comfortableReps
-                ? _value.comfortableReps
-                : comfortableReps // ignore: cast_nullable_to_non_nullable
-                      as int,
-            notes: freezed == notes
-                ? _value.notes
-                : notes // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      exerciseName: null == exerciseName
+          ? _value.exerciseName
+          : exerciseName // ignore: cast_nullable_to_non_nullable
+              as String,
+      primaryMuscle: null == primaryMuscle
+          ? _value.primaryMuscle
+          : primaryMuscle // ignore: cast_nullable_to_non_nullable
+              as MuscleGroup,
+      comfortableWeightKg: null == comfortableWeightKg
+          ? _value.comfortableWeightKg
+          : comfortableWeightKg // ignore: cast_nullable_to_non_nullable
+              as double,
+      comfortableSets: null == comfortableSets
+          ? _value.comfortableSets
+          : comfortableSets // ignore: cast_nullable_to_non_nullable
+              as int,
+      comfortableReps: null == comfortableReps
+          ? _value.comfortableReps
+          : comfortableReps // ignore: cast_nullable_to_non_nullable
+              as int,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$TestExerciseResultImplCopyWith<$Res>
     implements $TestExerciseResultCopyWith<$Res> {
-  factory _$$TestExerciseResultImplCopyWith(
-    _$TestExerciseResultImpl value,
-    $Res Function(_$TestExerciseResultImpl) then,
-  ) = __$$TestExerciseResultImplCopyWithImpl<$Res>;
+  factory _$$TestExerciseResultImplCopyWith(_$TestExerciseResultImpl value,
+          $Res Function(_$TestExerciseResultImpl) then) =
+      __$$TestExerciseResultImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String exerciseName,
-    MuscleGroup primaryMuscle,
-    double comfortableWeightKg,
-    int comfortableSets,
-    int comfortableReps,
-    String? notes,
-  });
+  $Res call(
+      {String exerciseName,
+      MuscleGroup primaryMuscle,
+      double comfortableWeightKg,
+      int comfortableSets,
+      int comfortableReps,
+      String? notes});
 }
 
 /// @nodoc
 class __$$TestExerciseResultImplCopyWithImpl<$Res>
     extends _$TestExerciseResultCopyWithImpl<$Res, _$TestExerciseResultImpl>
     implements _$$TestExerciseResultImplCopyWith<$Res> {
-  __$$TestExerciseResultImplCopyWithImpl(
-    _$TestExerciseResultImpl _value,
-    $Res Function(_$TestExerciseResultImpl) _then,
-  ) : super(_value, _then);
+  __$$TestExerciseResultImplCopyWithImpl(_$TestExerciseResultImpl _value,
+      $Res Function(_$TestExerciseResultImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -1032,48 +988,45 @@ class __$$TestExerciseResultImplCopyWithImpl<$Res>
     Object? comfortableReps = null,
     Object? notes = freezed,
   }) {
-    return _then(
-      _$TestExerciseResultImpl(
-        exerciseName: null == exerciseName
-            ? _value.exerciseName
-            : exerciseName // ignore: cast_nullable_to_non_nullable
-                  as String,
-        primaryMuscle: null == primaryMuscle
-            ? _value.primaryMuscle
-            : primaryMuscle // ignore: cast_nullable_to_non_nullable
-                  as MuscleGroup,
-        comfortableWeightKg: null == comfortableWeightKg
-            ? _value.comfortableWeightKg
-            : comfortableWeightKg // ignore: cast_nullable_to_non_nullable
-                  as double,
-        comfortableSets: null == comfortableSets
-            ? _value.comfortableSets
-            : comfortableSets // ignore: cast_nullable_to_non_nullable
-                  as int,
-        comfortableReps: null == comfortableReps
-            ? _value.comfortableReps
-            : comfortableReps // ignore: cast_nullable_to_non_nullable
-                  as int,
-        notes: freezed == notes
-            ? _value.notes
-            : notes // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$TestExerciseResultImpl(
+      exerciseName: null == exerciseName
+          ? _value.exerciseName
+          : exerciseName // ignore: cast_nullable_to_non_nullable
+              as String,
+      primaryMuscle: null == primaryMuscle
+          ? _value.primaryMuscle
+          : primaryMuscle // ignore: cast_nullable_to_non_nullable
+              as MuscleGroup,
+      comfortableWeightKg: null == comfortableWeightKg
+          ? _value.comfortableWeightKg
+          : comfortableWeightKg // ignore: cast_nullable_to_non_nullable
+              as double,
+      comfortableSets: null == comfortableSets
+          ? _value.comfortableSets
+          : comfortableSets // ignore: cast_nullable_to_non_nullable
+              as int,
+      comfortableReps: null == comfortableReps
+          ? _value.comfortableReps
+          : comfortableReps // ignore: cast_nullable_to_non_nullable
+              as int,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$TestExerciseResultImpl implements _TestExerciseResult {
-  const _$TestExerciseResultImpl({
-    required this.exerciseName,
-    required this.primaryMuscle,
-    required this.comfortableWeightKg,
-    required this.comfortableSets,
-    required this.comfortableReps,
-    this.notes,
-  });
+  const _$TestExerciseResultImpl(
+      {required this.exerciseName,
+      required this.primaryMuscle,
+      required this.comfortableWeightKg,
+      required this.comfortableSets,
+      required this.comfortableReps,
+      this.notes});
 
   factory _$TestExerciseResultImpl.fromJson(Map<String, dynamic> json) =>
       _$$TestExerciseResultImplFromJson(json);
@@ -1116,40 +1069,32 @@ class _$TestExerciseResultImpl implements _TestExerciseResult {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    exerciseName,
-    primaryMuscle,
-    comfortableWeightKg,
-    comfortableSets,
-    comfortableReps,
-    notes,
-  );
+  int get hashCode => Object.hash(runtimeType, exerciseName, primaryMuscle,
+      comfortableWeightKg, comfortableSets, comfortableReps, notes);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$TestExerciseResultImplCopyWith<_$TestExerciseResultImpl> get copyWith =>
       __$$TestExerciseResultImplCopyWithImpl<_$TestExerciseResultImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TestExerciseResultImplToJson(this);
+    return _$$TestExerciseResultImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _TestExerciseResult implements TestExerciseResult {
-  const factory _TestExerciseResult({
-    required final String exerciseName,
-    required final MuscleGroup primaryMuscle,
-    required final double comfortableWeightKg,
-    required final int comfortableSets,
-    required final int comfortableReps,
-    final String? notes,
-  }) = _$TestExerciseResultImpl;
+  const factory _TestExerciseResult(
+      {required final String exerciseName,
+      required final MuscleGroup primaryMuscle,
+      required final double comfortableWeightKg,
+      required final int comfortableSets,
+      required final int comfortableReps,
+      final String? notes}) = _$TestExerciseResultImpl;
 
   factory _TestExerciseResult.fromJson(Map<String, dynamic> json) =
       _$TestExerciseResultImpl.fromJson;

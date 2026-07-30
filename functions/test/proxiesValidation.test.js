@@ -76,3 +76,36 @@ test("validateDeepSeekRequest rejects invalid temperature", () => {
     /temperature must be a finite number/
   );
 });
+
+test("validateDeepSeekRequest rejects non-standard message roles", () => {
+  assert.throws(
+    () => validateDeepSeekRequest({messages: [{role: "admin", content: "x"}]}),
+    /invalid message role/
+  );
+  assert.throws(
+    () => validateDeepSeekRequest({messages: [{role: "", content: "x"}]}),
+    /invalid message role/
+  );
+});
+
+test("validateDeepSeekRequest caps system messages at the project limit", () => {
+  // Client BaseClient sends exactly 1 system — must pass.
+  assert.doesNotThrow(() => validateDeepSeekRequest({
+    messages: [
+      {role: "system", content: "You are a trainer"},
+      {role: "user", content: "hi"},
+    ],
+  }));
+  // 3 system messages → rejected.
+  assert.throws(
+    () => validateDeepSeekRequest({
+      messages: [
+        {role: "system", content: "A"},
+        {role: "system", content: "B"},
+        {role: "system", content: "C"},
+        {role: "user", content: "hi"},
+      ],
+    }),
+    /at most/
+  );
+});

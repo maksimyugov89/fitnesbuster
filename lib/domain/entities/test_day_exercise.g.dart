@@ -7,20 +7,20 @@ part of 'test_day_exercise.dart';
 // **************************************************************************
 
 _$TestDayExerciseImpl _$$TestDayExerciseImplFromJson(
-  Map<String, dynamic> json,
-) => _$TestDayExerciseImpl(
-  name: json['name'] as String,
-  muscle: $enumDecode(_$MuscleGroupEnumMap, json['muscle']),
-  baseWeight: (json['baseWeight'] as num).toDouble(),
-);
+        Map<String, dynamic> json) =>
+    _$TestDayExerciseImpl(
+      name: json['name'] as String,
+      muscle: $enumDecode(_$MuscleGroupEnumMap, json['muscle']),
+      baseWeight: (json['baseWeight'] as num).toDouble(),
+    );
 
 Map<String, dynamic> _$$TestDayExerciseImplToJson(
-  _$TestDayExerciseImpl instance,
-) => <String, dynamic>{
-  'name': instance.name,
-  'muscle': _$MuscleGroupEnumMap[instance.muscle]!,
-  'baseWeight': instance.baseWeight,
-};
+        _$TestDayExerciseImpl instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'muscle': _$MuscleGroupEnumMap[instance.muscle]!,
+      'baseWeight': instance.baseWeight,
+    };
 
 const _$MuscleGroupEnumMap = {
   MuscleGroup.chest: 'chest',

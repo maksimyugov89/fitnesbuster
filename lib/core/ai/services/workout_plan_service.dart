@@ -4,6 +4,7 @@ import 'package:fitnesbuster/core/ai/knowledge/training_knowledge.dart';
 import 'package:fitnesbuster/core/services/recovery_score_service.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/core/ai/exercise_catalog_prompt.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 
 class WorkoutPlanService {
   final BaseClient _client;
@@ -118,13 +119,19 @@ ${exerciseCatalog.promptBlock}
 }
 ''';
 
-    return _client.sendMessageWithValidation(
-      prompt,
-      validator: (raw) => validateWorkoutCatalogPreference(
-        validateWorkoutJson(raw),
-        exerciseCatalog.exactNames,
-      ),
-    );
+    final trace = FirebasePerformance.instance.newTrace('ai_plan_generation');
+    try {
+      await trace.start();
+      return await _client.sendMessageWithValidation(
+        prompt,
+        validator: (raw) => validateWorkoutCatalogPreference(
+          validateWorkoutJson(raw),
+          exerciseCatalog.exactNames,
+        ),
+      );
+    } finally {
+      trace.stop();
+    }
   }
 
   String weeklyVolumeBlock(IntensityLevel intensity, int weekNumber) {

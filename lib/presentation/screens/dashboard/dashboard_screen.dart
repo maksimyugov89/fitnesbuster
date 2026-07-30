@@ -17,6 +17,7 @@ import 'package:fitnesbuster/core/services/i_social_service.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/domain/repositories/i_settings_repository.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 import 'package:fitnesbuster/domain/services/i_gamification_service.dart';
 import 'package:fitnesbuster/presentation/widgets/dashboard/dashboard_app_bar.dart';
 import 'package:fitnesbuster/presentation/widgets/dashboard/activity_rings_card.dart';
@@ -110,6 +111,9 @@ class _DashboardScreenState extends State<DashboardScreen>
       final serverStreak = _effectiveServerStreak(state.user);
       if (serverStreak != null && mounted) {
         setState(() => _streak = serverStreak);
+        try {
+          sl<IAnalyticsService>().logStreakKept(streak: serverStreak).ignore();
+        } catch (_) {}
       }
     });
   }

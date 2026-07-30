@@ -9,6 +9,8 @@ export const ONE_DAY_MS = 86_400_000;
 /** Rate-limit window: DeepSeek proxy — 20 AI calls per minute */
 export const DEEPSEEK_RATE_LIMIT = 20;
 
+export const DEEPSEEK_DAILY_LIMIT = 50;
+
 /** Rate-limit window duration in ms (1 minute) */
 export const RATE_LIMIT_WINDOW_MS = ONE_MINUTE_MS;
 
@@ -26,6 +28,9 @@ export const DEEPSEEK_MAX_MESSAGES = 40;
 
 /** Maximum character length per individual message content (cost-abuse guard) */
 export const DEEPSEEK_MAX_MESSAGE_LENGTH = 40_000;
+
+/** Maximum system-role messages per DeepSeek request (cost-abuse guard) */
+export const DEEPSEEK_MAX_SYSTEM_MESSAGES = 2;
 
 // ─── Friends / Search ─────────────────────────────────────────────────────────
 

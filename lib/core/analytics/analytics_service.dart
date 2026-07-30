@@ -92,6 +92,59 @@ class AnalyticsService implements IAnalyticsService {
     );
   }
 
+  // ─── Plan / AI events ─────────────────────────────────────────────
+
+  @override
+  Future<void> logPlanGenerated({required int durationMs}) async {
+    await _analytics.logEvent(
+      name: 'plan_generated',
+      parameters: {'duration_ms': durationMs},
+    );
+  }
+
+  @override
+  Future<void> logAiChatMessage() async {
+    await _analytics.logEvent(name: 'ai_chat_message');
+  }
+
+  @override
+  Future<void> logAiDebriefViewed() async {
+    await _analytics.logEvent(name: 'ai_debrief_viewed');
+  }
+
+  // ─── Daily tasks / streak ─────────────────────────────────────────
+
+  @override
+  Future<void> logDailyTaskCompleted({required String taskType}) async {
+    await _analytics.logEvent(
+      name: 'daily_task_completed',
+      parameters: {'task_type': taskType},
+    );
+  }
+
+  @override
+  Future<void> logStreakKept({required int streak}) async {
+    await _analytics.logEvent(
+      name: 'streak_kept',
+      parameters: {'streak': streak},
+    );
+  }
+
+  // ─── Social events ────────────────────────────────────────────────
+
+  @override
+  Future<void> logChallengeJoined({required String goalType}) async {
+    await _analytics.logEvent(
+      name: 'challenge_joined',
+      parameters: {'goal_type': goalType},
+    );
+  }
+
+  @override
+  Future<void> logFriendAdded() async {
+    await _analytics.logEvent(name: 'friend_added');
+  }
+
   // ─── Nutrition events ─────────────────────────────────────────────
 
   @override

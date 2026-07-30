@@ -12,8 +12,7 @@ part of 'exercise_info.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 ExerciseInfo _$ExerciseInfoFromJson(Map<String, dynamic> json) {
   return _ExerciseInfo.fromJson(json);
@@ -35,9 +34,8 @@ mixin _$ExerciseInfo {
 /// @nodoc
 abstract class $ExerciseInfoCopyWith<$Res> {
   factory $ExerciseInfoCopyWith(
-    ExerciseInfo value,
-    $Res Function(ExerciseInfo) then,
-  ) = _$ExerciseInfoCopyWithImpl<$Res, ExerciseInfo>;
+          ExerciseInfo value, $Res Function(ExerciseInfo) then) =
+      _$ExerciseInfoCopyWithImpl<$Res, ExerciseInfo>;
   @useResult
   $Res call({String id, String name, String? muscleGroup, String? gifUrl});
 }
@@ -60,27 +58,24 @@ class _$ExerciseInfoCopyWithImpl<$Res, $Val extends ExerciseInfo>
     Object? muscleGroup = freezed,
     Object? gifUrl = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            muscleGroup: freezed == muscleGroup
-                ? _value.muscleGroup
-                : muscleGroup // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            gifUrl: freezed == gifUrl
-                ? _value.gifUrl
-                : gifUrl // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      muscleGroup: freezed == muscleGroup
+          ? _value.muscleGroup
+          : muscleGroup // ignore: cast_nullable_to_non_nullable
+              as String?,
+      gifUrl: freezed == gifUrl
+          ? _value.gifUrl
+          : gifUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
@@ -88,9 +83,8 @@ class _$ExerciseInfoCopyWithImpl<$Res, $Val extends ExerciseInfo>
 abstract class _$$ExerciseInfoImplCopyWith<$Res>
     implements $ExerciseInfoCopyWith<$Res> {
   factory _$$ExerciseInfoImplCopyWith(
-    _$ExerciseInfoImpl value,
-    $Res Function(_$ExerciseInfoImpl) then,
-  ) = __$$ExerciseInfoImplCopyWithImpl<$Res>;
+          _$ExerciseInfoImpl value, $Res Function(_$ExerciseInfoImpl) then) =
+      __$$ExerciseInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String id, String name, String? muscleGroup, String? gifUrl});
@@ -101,9 +95,8 @@ class __$$ExerciseInfoImplCopyWithImpl<$Res>
     extends _$ExerciseInfoCopyWithImpl<$Res, _$ExerciseInfoImpl>
     implements _$$ExerciseInfoImplCopyWith<$Res> {
   __$$ExerciseInfoImplCopyWithImpl(
-    _$ExerciseInfoImpl _value,
-    $Res Function(_$ExerciseInfoImpl) _then,
-  ) : super(_value, _then);
+      _$ExerciseInfoImpl _value, $Res Function(_$ExerciseInfoImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -113,38 +106,32 @@ class __$$ExerciseInfoImplCopyWithImpl<$Res>
     Object? muscleGroup = freezed,
     Object? gifUrl = freezed,
   }) {
-    return _then(
-      _$ExerciseInfoImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        muscleGroup: freezed == muscleGroup
-            ? _value.muscleGroup
-            : muscleGroup // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        gifUrl: freezed == gifUrl
-            ? _value.gifUrl
-            : gifUrl // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$ExerciseInfoImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      muscleGroup: freezed == muscleGroup
+          ? _value.muscleGroup
+          : muscleGroup // ignore: cast_nullable_to_non_nullable
+              as String?,
+      gifUrl: freezed == gifUrl
+          ? _value.gifUrl
+          : gifUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$ExerciseInfoImpl implements _ExerciseInfo {
-  const _$ExerciseInfoImpl({
-    required this.id,
-    required this.name,
-    this.muscleGroup,
-    this.gifUrl,
-  });
+  const _$ExerciseInfoImpl(
+      {required this.id, required this.name, this.muscleGroup, this.gifUrl});
 
   factory _$ExerciseInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$ExerciseInfoImplFromJson(json);
@@ -187,17 +174,18 @@ class _$ExerciseInfoImpl implements _ExerciseInfo {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ExerciseInfoImplToJson(this);
+    return _$$ExerciseInfoImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _ExerciseInfo implements ExerciseInfo {
-  const factory _ExerciseInfo({
-    required final String id,
-    required final String name,
-    final String? muscleGroup,
-    final String? gifUrl,
-  }) = _$ExerciseInfoImpl;
+  const factory _ExerciseInfo(
+      {required final String id,
+      required final String name,
+      final String? muscleGroup,
+      final String? gifUrl}) = _$ExerciseInfoImpl;
 
   factory _ExerciseInfo.fromJson(Map<String, dynamic> json) =
       _$ExerciseInfoImpl.fromJson;

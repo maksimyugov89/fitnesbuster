@@ -28,107 +28,151 @@ import 'package:mockito/src/dummies.dart' as _i3;
 /// See the documentation for Mockito's code generation for more information.
 class MockHealthSyncBloc extends _i1.Mock implements _i2.HealthSyncBloc {
   @override
-  bool get isClosed =>
-      (super.noSuchMethod(
-            Invocation.getter(#isClosed),
-            returnValue: false,
-            returnValueForMissingStub: false,
-          )
-          as bool);
+  bool get isClosed => (super.noSuchMethod(
+        Invocation.getter(#isClosed),
+        returnValue: false,
+        returnValueForMissingStub: false,
+      ) as bool);
 
   @override
-  _i2.HealthSyncState get state =>
-      (super.noSuchMethod(
-            Invocation.getter(#state),
-            returnValue: _i3.dummyValue<_i2.HealthSyncState>(
-              this,
-              Invocation.getter(#state),
-            ),
-            returnValueForMissingStub: _i3.dummyValue<_i2.HealthSyncState>(
-              this,
-              Invocation.getter(#state),
-            ),
-          )
-          as _i2.HealthSyncState);
+  _i2.HealthSyncState get state => (super.noSuchMethod(
+        Invocation.getter(#state),
+        returnValue: _i3.dummyValue<_i2.HealthSyncState>(
+          this,
+          Invocation.getter(#state),
+        ),
+        returnValueForMissingStub: _i3.dummyValue<_i2.HealthSyncState>(
+          this,
+          Invocation.getter(#state),
+        ),
+      ) as _i2.HealthSyncState);
 
   @override
-  _i4.Stream<_i2.HealthSyncState> get stream =>
-      (super.noSuchMethod(
-            Invocation.getter(#stream),
-            returnValue: _i4.Stream<_i2.HealthSyncState>.empty(),
-            returnValueForMissingStub: _i4.Stream<_i2.HealthSyncState>.empty(),
-          )
-          as _i4.Stream<_i2.HealthSyncState>);
+  _i4.Stream<_i2.HealthSyncState> get stream => (super.noSuchMethod(
+        Invocation.getter(#stream),
+        returnValue: _i4.Stream<_i2.HealthSyncState>.empty(),
+        returnValueForMissingStub: _i4.Stream<_i2.HealthSyncState>.empty(),
+      ) as _i4.Stream<_i2.HealthSyncState>);
 
   @override
   void add(_i2.HealthSyncEvent? event) => super.noSuchMethod(
-    Invocation.method(#add, [event]),
-    returnValueForMissingStub: null,
-  );
+        Invocation.method(
+          #add,
+          [event],
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   void onEvent(_i2.HealthSyncEvent? event) => super.noSuchMethod(
-    Invocation.method(#onEvent, [event]),
-    returnValueForMissingStub: null,
-  );
+        Invocation.method(
+          #onEvent,
+          [event],
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   void emit(_i2.HealthSyncState? state) => super.noSuchMethod(
-    Invocation.method(#emit, [state]),
-    returnValueForMissingStub: null,
-  );
+        Invocation.method(
+          #emit,
+          [state],
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   void on<E extends _i2.HealthSyncEvent>(
     _i5.EventHandler<E, _i2.HealthSyncState>? handler, {
     _i5.EventTransformer<E>? transformer,
-  }) => super.noSuchMethod(
-    Invocation.method(#on, [handler], {#transformer: transformer}),
-    returnValueForMissingStub: null,
-  );
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #on,
+          [handler],
+          {#transformer: transformer},
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   void onTransition(
-    _i5.Transition<_i2.HealthSyncEvent, _i2.HealthSyncState>? transition,
-  ) => super.noSuchMethod(
-    Invocation.method(#onTransition, [transition]),
-    returnValueForMissingStub: null,
-  );
+          _i5.Transition<_i2.HealthSyncEvent, _i2.HealthSyncState>?
+              transition) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #onTransition,
+          [transition],
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   void onDone(
     _i2.HealthSyncEvent? event, [
     Object? error,
     StackTrace? stackTrace,
-  ]) => super.noSuchMethod(
-    Invocation.method(#onDone, [event, error, stackTrace]),
-    returnValueForMissingStub: null,
-  );
+  ]) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #onDone,
+          [
+            event,
+            error,
+            stackTrace,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
-  _i4.Future<void> close() =>
-      (super.noSuchMethod(
-            Invocation.method(#close, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> close() => (super.noSuchMethod(
+        Invocation.method(
+          #close,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   void onChange(_i5.Change<_i2.HealthSyncState>? change) => super.noSuchMethod(
-    Invocation.method(#onChange, [change]),
-    returnValueForMissingStub: null,
-  );
+        Invocation.method(
+          #onChange,
+          [change],
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
-  void addError(Object? error, [StackTrace? stackTrace]) => super.noSuchMethod(
-    Invocation.method(#addError, [error, stackTrace]),
-    returnValueForMissingStub: null,
-  );
+  void addError(
+    Object? error, [
+    StackTrace? stackTrace,
+  ]) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #addError,
+          [
+            error,
+            stackTrace,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
-  void onError(Object? error, StackTrace? stackTrace) => super.noSuchMethod(
-    Invocation.method(#onError, [error, stackTrace]),
-    returnValueForMissingStub: null,
-  );
+  void onError(
+    Object? error,
+    StackTrace? stackTrace,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #onError,
+          [
+            error,
+            stackTrace,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
 }

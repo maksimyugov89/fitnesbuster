@@ -4,7 +4,9 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {logInfo, logError, checkRateLimit, enforceAppCheck} from "./shared";
 import {
   DEEPSEEK_RATE_LIMIT,
+  DEEPSEEK_DAILY_LIMIT,
   RATE_LIMIT_WINDOW_MS,
+  ONE_DAY_MS,
 } from "./constants";
 import {validateDeepSeekRequest} from "./proxiesValidation";
 import type {DeepSeekRequest} from "./types";
@@ -32,6 +34,11 @@ export const deepseekProxy = onCall(
       uid, "deepseekProxy", DEEPSEEK_RATE_LIMIT, RATE_LIMIT_WINDOW_MS, {failClosed: true}
     );
     if (!allowed) throw new HttpsError("resource-exhausted", "Too many AI requests. Try again later.");
+
+    const dailyAllowed = await checkRateLimit(
+      uid, "deepseekProxyDaily", DEEPSEEK_DAILY_LIMIT, ONE_DAY_MS, {failClosed: true}
+    );
+    if (!dailyAllowed) throw new HttpsError("resource-exhausted", "Daily AI limit reached. Try again tomorrow.");
 
     const {messages, maxTokens, temperature} = validateDeepSeekRequest(request.data);
     logInfo("deepseekProxy request", {uid, messageCount: messages?.length ?? 0, maxTokens, temperature});
