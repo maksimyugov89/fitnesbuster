@@ -24,21 +24,24 @@ export const cleanOldFeedEvents = onSchedule(
     );
     logInfo("cleanOldFeedEvents started", {cutoff: cutoff.toDate().toISOString()});
 
+    // Collection-group sweep: one query across all feed/{uid}/events instead
+    // of an O(N users) read loop. Requires the COLLECTION_GROUP index on
+    // "events"(timestamp) from firestore.indexes.json.
     let totalDeleted = 0;
-    const usersSnap = await db.collection("users").select().get();
-    for (const userDoc of usersSnap.docs) {
+    for (let i = 0; i < 10; i++) {
       const oldEvents = await db
-        .collection(`feed/${userDoc.id}/events`)
+        .collectionGroup("events")
         .where("timestamp", "<", cutoff)
         .limit(FEED_CLEANUP_LIMIT)
         .get();
-      if (oldEvents.empty) continue;
+      if (oldEvents.empty) break;
       const batch = db.batch();
       for (const doc of oldEvents.docs) batch.delete(doc.ref);
       await batch.commit();
       totalDeleted += oldEvents.size;
+      if (oldEvents.size < FEED_CLEANUP_LIMIT) break;
     }
-    logInfo("cleanOldFeedEvents finished", {totalDeleted, usersProcessed: usersSnap.size});
+    logInfo("cleanOldFeedEvents finished", {totalDeleted});
   }
 );
 
