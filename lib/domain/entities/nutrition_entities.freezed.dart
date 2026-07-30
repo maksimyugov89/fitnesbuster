@@ -12,8 +12,7 @@ part of 'nutrition_entities.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 NutritionPer100g _$NutritionPer100gFromJson(Map<String, dynamic> json) {
   return _NutritionPer100g.fromJson(json);
@@ -38,19 +37,17 @@ mixin _$NutritionPer100g {
 /// @nodoc
 abstract class $NutritionPer100gCopyWith<$Res> {
   factory $NutritionPer100gCopyWith(
-    NutritionPer100g value,
-    $Res Function(NutritionPer100g) then,
-  ) = _$NutritionPer100gCopyWithImpl<$Res, NutritionPer100g>;
+          NutritionPer100g value, $Res Function(NutritionPer100g) then) =
+      _$NutritionPer100gCopyWithImpl<$Res, NutritionPer100g>;
   @useResult
-  $Res call({
-    double calories,
-    double protein,
-    double carbs,
-    double fat,
-    double? fiber,
-    double? sugar,
-    double? sodium,
-  });
+  $Res call(
+      {double calories,
+      double protein,
+      double carbs,
+      double fat,
+      double? fiber,
+      double? sugar,
+      double? sodium});
 }
 
 /// @nodoc
@@ -74,70 +71,64 @@ class _$NutritionPer100gCopyWithImpl<$Res, $Val extends NutritionPer100g>
     Object? sugar = freezed,
     Object? sodium = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            calories: null == calories
-                ? _value.calories
-                : calories // ignore: cast_nullable_to_non_nullable
-                      as double,
-            protein: null == protein
-                ? _value.protein
-                : protein // ignore: cast_nullable_to_non_nullable
-                      as double,
-            carbs: null == carbs
-                ? _value.carbs
-                : carbs // ignore: cast_nullable_to_non_nullable
-                      as double,
-            fat: null == fat
-                ? _value.fat
-                : fat // ignore: cast_nullable_to_non_nullable
-                      as double,
-            fiber: freezed == fiber
-                ? _value.fiber
-                : fiber // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            sugar: freezed == sugar
-                ? _value.sugar
-                : sugar // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            sodium: freezed == sodium
-                ? _value.sodium
-                : sodium // ignore: cast_nullable_to_non_nullable
-                      as double?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      calories: null == calories
+          ? _value.calories
+          : calories // ignore: cast_nullable_to_non_nullable
+              as double,
+      protein: null == protein
+          ? _value.protein
+          : protein // ignore: cast_nullable_to_non_nullable
+              as double,
+      carbs: null == carbs
+          ? _value.carbs
+          : carbs // ignore: cast_nullable_to_non_nullable
+              as double,
+      fat: null == fat
+          ? _value.fat
+          : fat // ignore: cast_nullable_to_non_nullable
+              as double,
+      fiber: freezed == fiber
+          ? _value.fiber
+          : fiber // ignore: cast_nullable_to_non_nullable
+              as double?,
+      sugar: freezed == sugar
+          ? _value.sugar
+          : sugar // ignore: cast_nullable_to_non_nullable
+              as double?,
+      sodium: freezed == sodium
+          ? _value.sodium
+          : sodium // ignore: cast_nullable_to_non_nullable
+              as double?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$NutritionPer100gImplCopyWith<$Res>
     implements $NutritionPer100gCopyWith<$Res> {
-  factory _$$NutritionPer100gImplCopyWith(
-    _$NutritionPer100gImpl value,
-    $Res Function(_$NutritionPer100gImpl) then,
-  ) = __$$NutritionPer100gImplCopyWithImpl<$Res>;
+  factory _$$NutritionPer100gImplCopyWith(_$NutritionPer100gImpl value,
+          $Res Function(_$NutritionPer100gImpl) then) =
+      __$$NutritionPer100gImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    double calories,
-    double protein,
-    double carbs,
-    double fat,
-    double? fiber,
-    double? sugar,
-    double? sodium,
-  });
+  $Res call(
+      {double calories,
+      double protein,
+      double carbs,
+      double fat,
+      double? fiber,
+      double? sugar,
+      double? sodium});
 }
 
 /// @nodoc
 class __$$NutritionPer100gImplCopyWithImpl<$Res>
     extends _$NutritionPer100gCopyWithImpl<$Res, _$NutritionPer100gImpl>
     implements _$$NutritionPer100gImplCopyWith<$Res> {
-  __$$NutritionPer100gImplCopyWithImpl(
-    _$NutritionPer100gImpl _value,
-    $Res Function(_$NutritionPer100gImpl) _then,
-  ) : super(_value, _then);
+  __$$NutritionPer100gImplCopyWithImpl(_$NutritionPer100gImpl _value,
+      $Res Function(_$NutritionPer100gImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -150,53 +141,50 @@ class __$$NutritionPer100gImplCopyWithImpl<$Res>
     Object? sugar = freezed,
     Object? sodium = freezed,
   }) {
-    return _then(
-      _$NutritionPer100gImpl(
-        calories: null == calories
-            ? _value.calories
-            : calories // ignore: cast_nullable_to_non_nullable
-                  as double,
-        protein: null == protein
-            ? _value.protein
-            : protein // ignore: cast_nullable_to_non_nullable
-                  as double,
-        carbs: null == carbs
-            ? _value.carbs
-            : carbs // ignore: cast_nullable_to_non_nullable
-                  as double,
-        fat: null == fat
-            ? _value.fat
-            : fat // ignore: cast_nullable_to_non_nullable
-                  as double,
-        fiber: freezed == fiber
-            ? _value.fiber
-            : fiber // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        sugar: freezed == sugar
-            ? _value.sugar
-            : sugar // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        sodium: freezed == sodium
-            ? _value.sodium
-            : sodium // ignore: cast_nullable_to_non_nullable
-                  as double?,
-      ),
-    );
+    return _then(_$NutritionPer100gImpl(
+      calories: null == calories
+          ? _value.calories
+          : calories // ignore: cast_nullable_to_non_nullable
+              as double,
+      protein: null == protein
+          ? _value.protein
+          : protein // ignore: cast_nullable_to_non_nullable
+              as double,
+      carbs: null == carbs
+          ? _value.carbs
+          : carbs // ignore: cast_nullable_to_non_nullable
+              as double,
+      fat: null == fat
+          ? _value.fat
+          : fat // ignore: cast_nullable_to_non_nullable
+              as double,
+      fiber: freezed == fiber
+          ? _value.fiber
+          : fiber // ignore: cast_nullable_to_non_nullable
+              as double?,
+      sugar: freezed == sugar
+          ? _value.sugar
+          : sugar // ignore: cast_nullable_to_non_nullable
+              as double?,
+      sodium: freezed == sodium
+          ? _value.sodium
+          : sodium // ignore: cast_nullable_to_non_nullable
+              as double?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$NutritionPer100gImpl implements _NutritionPer100g {
-  const _$NutritionPer100gImpl({
-    required this.calories,
-    required this.protein,
-    required this.carbs,
-    required this.fat,
-    this.fiber,
-    this.sugar,
-    this.sodium,
-  });
+  const _$NutritionPer100gImpl(
+      {required this.calories,
+      required this.protein,
+      required this.carbs,
+      required this.fat,
+      this.fiber,
+      this.sugar,
+      this.sodium});
 
   factory _$NutritionPer100gImpl.fromJson(Map<String, dynamic> json) =>
       _$$NutritionPer100gImplFromJson(json);
@@ -239,41 +227,32 @@ class _$NutritionPer100gImpl implements _NutritionPer100g {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    calories,
-    protein,
-    carbs,
-    fat,
-    fiber,
-    sugar,
-    sodium,
-  );
+      runtimeType, calories, protein, carbs, fat, fiber, sugar, sodium);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$NutritionPer100gImplCopyWith<_$NutritionPer100gImpl> get copyWith =>
       __$$NutritionPer100gImplCopyWithImpl<_$NutritionPer100gImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$NutritionPer100gImplToJson(this);
+    return _$$NutritionPer100gImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _NutritionPer100g implements NutritionPer100g {
-  const factory _NutritionPer100g({
-    required final double calories,
-    required final double protein,
-    required final double carbs,
-    required final double fat,
-    final double? fiber,
-    final double? sugar,
-    final double? sodium,
-  }) = _$NutritionPer100gImpl;
+  const factory _NutritionPer100g(
+      {required final double calories,
+      required final double protein,
+      required final double carbs,
+      required final double fat,
+      final double? fiber,
+      final double? sugar,
+      final double? sodium}) = _$NutritionPer100gImpl;
 
   factory _NutritionPer100g.fromJson(Map<String, dynamic> json) =
       _$NutritionPer100gImpl.fromJson;
@@ -322,14 +301,13 @@ abstract class $FoodItemCopyWith<$Res> {
   factory $FoodItemCopyWith(FoodItem value, $Res Function(FoodItem) then) =
       _$FoodItemCopyWithImpl<$Res, FoodItem>;
   @useResult
-  $Res call({
-    String id,
-    String name,
-    String? brand,
-    String? barcode,
-    NutritionPer100g nutrition,
-    String? imageUrl,
-  });
+  $Res call(
+      {String id,
+      String name,
+      String? brand,
+      String? barcode,
+      NutritionPer100g nutrition,
+      String? imageUrl});
 
   $NutritionPer100gCopyWith<$Res> get nutrition;
 }
@@ -354,35 +332,32 @@ class _$FoodItemCopyWithImpl<$Res, $Val extends FoodItem>
     Object? nutrition = null,
     Object? imageUrl = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            brand: freezed == brand
-                ? _value.brand
-                : brand // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            barcode: freezed == barcode
-                ? _value.barcode
-                : barcode // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            nutrition: null == nutrition
-                ? _value.nutrition
-                : nutrition // ignore: cast_nullable_to_non_nullable
-                      as NutritionPer100g,
-            imageUrl: freezed == imageUrl
-                ? _value.imageUrl
-                : imageUrl // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      brand: freezed == brand
+          ? _value.brand
+          : brand // ignore: cast_nullable_to_non_nullable
+              as String?,
+      barcode: freezed == barcode
+          ? _value.barcode
+          : barcode // ignore: cast_nullable_to_non_nullable
+              as String?,
+      nutrition: null == nutrition
+          ? _value.nutrition
+          : nutrition // ignore: cast_nullable_to_non_nullable
+              as NutritionPer100g,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 
   @override
@@ -398,19 +373,17 @@ class _$FoodItemCopyWithImpl<$Res, $Val extends FoodItem>
 abstract class _$$FoodItemImplCopyWith<$Res>
     implements $FoodItemCopyWith<$Res> {
   factory _$$FoodItemImplCopyWith(
-    _$FoodItemImpl value,
-    $Res Function(_$FoodItemImpl) then,
-  ) = __$$FoodItemImplCopyWithImpl<$Res>;
+          _$FoodItemImpl value, $Res Function(_$FoodItemImpl) then) =
+      __$$FoodItemImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    String name,
-    String? brand,
-    String? barcode,
-    NutritionPer100g nutrition,
-    String? imageUrl,
-  });
+  $Res call(
+      {String id,
+      String name,
+      String? brand,
+      String? barcode,
+      NutritionPer100g nutrition,
+      String? imageUrl});
 
   @override
   $NutritionPer100gCopyWith<$Res> get nutrition;
@@ -421,9 +394,8 @@ class __$$FoodItemImplCopyWithImpl<$Res>
     extends _$FoodItemCopyWithImpl<$Res, _$FoodItemImpl>
     implements _$$FoodItemImplCopyWith<$Res> {
   __$$FoodItemImplCopyWithImpl(
-    _$FoodItemImpl _value,
-    $Res Function(_$FoodItemImpl) _then,
-  ) : super(_value, _then);
+      _$FoodItemImpl _value, $Res Function(_$FoodItemImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -435,48 +407,46 @@ class __$$FoodItemImplCopyWithImpl<$Res>
     Object? nutrition = null,
     Object? imageUrl = freezed,
   }) {
-    return _then(
-      _$FoodItemImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        brand: freezed == brand
-            ? _value.brand
-            : brand // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        barcode: freezed == barcode
-            ? _value.barcode
-            : barcode // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        nutrition: null == nutrition
-            ? _value.nutrition
-            : nutrition // ignore: cast_nullable_to_non_nullable
-                  as NutritionPer100g,
-        imageUrl: freezed == imageUrl
-            ? _value.imageUrl
-            : imageUrl // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$FoodItemImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      brand: freezed == brand
+          ? _value.brand
+          : brand // ignore: cast_nullable_to_non_nullable
+              as String?,
+      barcode: freezed == barcode
+          ? _value.barcode
+          : barcode // ignore: cast_nullable_to_non_nullable
+              as String?,
+      nutrition: null == nutrition
+          ? _value.nutrition
+          : nutrition // ignore: cast_nullable_to_non_nullable
+              as NutritionPer100g,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$FoodItemImpl extends _FoodItem {
-  const _$FoodItemImpl({
-    required this.id,
-    required this.name,
-    this.brand,
-    this.barcode,
-    required this.nutrition,
-    this.imageUrl,
-  }) : super._();
+  const _$FoodItemImpl(
+      {required this.id,
+      required this.name,
+      this.brand,
+      this.barcode,
+      required this.nutrition,
+      this.imageUrl})
+      : super._();
 
   factory _$FoodItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$FoodItemImplFromJson(json);
@@ -527,19 +497,20 @@ class _$FoodItemImpl extends _FoodItem {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FoodItemImplToJson(this);
+    return _$$FoodItemImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _FoodItem extends FoodItem {
-  const factory _FoodItem({
-    required final String id,
-    required final String name,
-    final String? brand,
-    final String? barcode,
-    required final NutritionPer100g nutrition,
-    final String? imageUrl,
-  }) = _$FoodItemImpl;
+  const factory _FoodItem(
+      {required final String id,
+      required final String name,
+      final String? brand,
+      final String? barcode,
+      required final NutritionPer100g nutrition,
+      final String? imageUrl}) = _$FoodItemImpl;
   const _FoodItem._() : super._();
 
   factory _FoodItem.fromJson(Map<String, dynamic> json) =
@@ -600,20 +571,20 @@ class _$FoodEntryCopyWithImpl<$Res, $Val extends FoodEntry>
 
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? food = null, Object? grams = null}) {
-    return _then(
-      _value.copyWith(
-            food: null == food
-                ? _value.food
-                : food // ignore: cast_nullable_to_non_nullable
-                      as FoodItem,
-            grams: null == grams
-                ? _value.grams
-                : grams // ignore: cast_nullable_to_non_nullable
-                      as double,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? food = null,
+    Object? grams = null,
+  }) {
+    return _then(_value.copyWith(
+      food: null == food
+          ? _value.food
+          : food // ignore: cast_nullable_to_non_nullable
+              as FoodItem,
+      grams: null == grams
+          ? _value.grams
+          : grams // ignore: cast_nullable_to_non_nullable
+              as double,
+    ) as $Val);
   }
 
   @override
@@ -629,9 +600,8 @@ class _$FoodEntryCopyWithImpl<$Res, $Val extends FoodEntry>
 abstract class _$$FoodEntryImplCopyWith<$Res>
     implements $FoodEntryCopyWith<$Res> {
   factory _$$FoodEntryImplCopyWith(
-    _$FoodEntryImpl value,
-    $Res Function(_$FoodEntryImpl) then,
-  ) = __$$FoodEntryImplCopyWithImpl<$Res>;
+          _$FoodEntryImpl value, $Res Function(_$FoodEntryImpl) then) =
+      __$$FoodEntryImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({FoodItem food, double grams});
@@ -645,25 +615,25 @@ class __$$FoodEntryImplCopyWithImpl<$Res>
     extends _$FoodEntryCopyWithImpl<$Res, _$FoodEntryImpl>
     implements _$$FoodEntryImplCopyWith<$Res> {
   __$$FoodEntryImplCopyWithImpl(
-    _$FoodEntryImpl _value,
-    $Res Function(_$FoodEntryImpl) _then,
-  ) : super(_value, _then);
+      _$FoodEntryImpl _value, $Res Function(_$FoodEntryImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? food = null, Object? grams = null}) {
-    return _then(
-      _$FoodEntryImpl(
-        food: null == food
-            ? _value.food
-            : food // ignore: cast_nullable_to_non_nullable
-                  as FoodItem,
-        grams: null == grams
-            ? _value.grams
-            : grams // ignore: cast_nullable_to_non_nullable
-                  as double,
-      ),
-    );
+  $Res call({
+    Object? food = null,
+    Object? grams = null,
+  }) {
+    return _then(_$FoodEntryImpl(
+      food: null == food
+          ? _value.food
+          : food // ignore: cast_nullable_to_non_nullable
+              as FoodItem,
+      grams: null == grams
+          ? _value.grams
+          : grams // ignore: cast_nullable_to_non_nullable
+              as double,
+    ));
   }
 }
 
@@ -706,15 +676,16 @@ class _$FoodEntryImpl extends _FoodEntry {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FoodEntryImplToJson(this);
+    return _$$FoodEntryImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _FoodEntry extends FoodEntry {
-  const factory _FoodEntry({
-    required final FoodItem food,
-    required final double grams,
-  }) = _$FoodEntryImpl;
+  const factory _FoodEntry(
+      {required final FoodItem food,
+      required final double grams}) = _$FoodEntryImpl;
   const _FoodEntry._() : super._();
 
   factory _FoodEntry.fromJson(Map<String, dynamic> json) =
@@ -752,13 +723,12 @@ abstract class $MealLogCopyWith<$Res> {
   factory $MealLogCopyWith(MealLog value, $Res Function(MealLog) then) =
       _$MealLogCopyWithImpl<$Res, MealLog>;
   @useResult
-  $Res call({
-    String id,
-    String userId,
-    DateTime date,
-    MealType mealType,
-    List<FoodEntry> foods,
-  });
+  $Res call(
+      {String id,
+      String userId,
+      DateTime date,
+      MealType mealType,
+      List<FoodEntry> foods});
 }
 
 /// @nodoc
@@ -780,49 +750,44 @@ class _$MealLogCopyWithImpl<$Res, $Val extends MealLog>
     Object? mealType = null,
     Object? foods = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            userId: null == userId
-                ? _value.userId
-                : userId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            date: null == date
-                ? _value.date
-                : date // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            mealType: null == mealType
-                ? _value.mealType
-                : mealType // ignore: cast_nullable_to_non_nullable
-                      as MealType,
-            foods: null == foods
-                ? _value.foods
-                : foods // ignore: cast_nullable_to_non_nullable
-                      as List<FoodEntry>,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      mealType: null == mealType
+          ? _value.mealType
+          : mealType // ignore: cast_nullable_to_non_nullable
+              as MealType,
+      foods: null == foods
+          ? _value.foods
+          : foods // ignore: cast_nullable_to_non_nullable
+              as List<FoodEntry>,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$MealLogImplCopyWith<$Res> implements $MealLogCopyWith<$Res> {
   factory _$$MealLogImplCopyWith(
-    _$MealLogImpl value,
-    $Res Function(_$MealLogImpl) then,
-  ) = __$$MealLogImplCopyWithImpl<$Res>;
+          _$MealLogImpl value, $Res Function(_$MealLogImpl) then) =
+      __$$MealLogImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    String userId,
-    DateTime date,
-    MealType mealType,
-    List<FoodEntry> foods,
-  });
+  $Res call(
+      {String id,
+      String userId,
+      DateTime date,
+      MealType mealType,
+      List<FoodEntry> foods});
 }
 
 /// @nodoc
@@ -830,9 +795,8 @@ class __$$MealLogImplCopyWithImpl<$Res>
     extends _$MealLogCopyWithImpl<$Res, _$MealLogImpl>
     implements _$$MealLogImplCopyWith<$Res> {
   __$$MealLogImplCopyWithImpl(
-    _$MealLogImpl _value,
-    $Res Function(_$MealLogImpl) _then,
-  ) : super(_value, _then);
+      _$MealLogImpl _value, $Res Function(_$MealLogImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -843,44 +807,42 @@ class __$$MealLogImplCopyWithImpl<$Res>
     Object? mealType = null,
     Object? foods = null,
   }) {
-    return _then(
-      _$MealLogImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        userId: null == userId
-            ? _value.userId
-            : userId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        date: null == date
-            ? _value.date
-            : date // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        mealType: null == mealType
-            ? _value.mealType
-            : mealType // ignore: cast_nullable_to_non_nullable
-                  as MealType,
-        foods: null == foods
-            ? _value._foods
-            : foods // ignore: cast_nullable_to_non_nullable
-                  as List<FoodEntry>,
-      ),
-    );
+    return _then(_$MealLogImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      mealType: null == mealType
+          ? _value.mealType
+          : mealType // ignore: cast_nullable_to_non_nullable
+              as MealType,
+      foods: null == foods
+          ? _value._foods
+          : foods // ignore: cast_nullable_to_non_nullable
+              as List<FoodEntry>,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$MealLogImpl extends _MealLog {
-  const _$MealLogImpl({
-    required this.id,
-    required this.userId,
-    required this.date,
-    required this.mealType,
-    required final List<FoodEntry> foods,
-  }) : _foods = foods,
-       super._();
+  const _$MealLogImpl(
+      {required this.id,
+      required this.userId,
+      required this.date,
+      required this.mealType,
+      required final List<FoodEntry> foods})
+      : _foods = foods,
+        super._();
 
   factory _$MealLogImpl.fromJson(Map<String, dynamic> json) =>
       _$$MealLogImplFromJson(json);
@@ -921,14 +883,8 @@ class _$MealLogImpl extends _MealLog {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    userId,
-    date,
-    mealType,
-    const DeepCollectionEquality().hash(_foods),
-  );
+  int get hashCode => Object.hash(runtimeType, id, userId, date, mealType,
+      const DeepCollectionEquality().hash(_foods));
 
   @JsonKey(ignore: true)
   @override
@@ -938,18 +894,19 @@ class _$MealLogImpl extends _MealLog {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$MealLogImplToJson(this);
+    return _$$MealLogImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _MealLog extends MealLog {
-  const factory _MealLog({
-    required final String id,
-    required final String userId,
-    required final DateTime date,
-    required final MealType mealType,
-    required final List<FoodEntry> foods,
-  }) = _$MealLogImpl;
+  const factory _MealLog(
+      {required final String id,
+      required final String userId,
+      required final DateTime date,
+      required final MealType mealType,
+      required final List<FoodEntry> foods}) = _$MealLogImpl;
   const _MealLog._() : super._();
 
   factory _MealLog.fromJson(Map<String, dynamic> json) = _$MealLogImpl.fromJson;
@@ -992,12 +949,11 @@ abstract class $MealPlanCopyWith<$Res> {
   factory $MealPlanCopyWith(MealPlan value, $Res Function(MealPlan) then) =
       _$MealPlanCopyWithImpl<$Res, MealPlan>;
   @useResult
-  $Res call({
-    MealType type,
-    String title,
-    List<MealPlanItem> items,
-    int targetCalories,
-  });
+  $Res call(
+      {MealType type,
+      String title,
+      List<MealPlanItem> items,
+      int targetCalories});
 }
 
 /// @nodoc
@@ -1018,27 +974,24 @@ class _$MealPlanCopyWithImpl<$Res, $Val extends MealPlan>
     Object? items = null,
     Object? targetCalories = null,
   }) {
-    return _then(
-      _value.copyWith(
-            type: null == type
-                ? _value.type
-                : type // ignore: cast_nullable_to_non_nullable
-                      as MealType,
-            title: null == title
-                ? _value.title
-                : title // ignore: cast_nullable_to_non_nullable
-                      as String,
-            items: null == items
-                ? _value.items
-                : items // ignore: cast_nullable_to_non_nullable
-                      as List<MealPlanItem>,
-            targetCalories: null == targetCalories
-                ? _value.targetCalories
-                : targetCalories // ignore: cast_nullable_to_non_nullable
-                      as int,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as MealType,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      items: null == items
+          ? _value.items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<MealPlanItem>,
+      targetCalories: null == targetCalories
+          ? _value.targetCalories
+          : targetCalories // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
   }
 }
 
@@ -1046,17 +999,15 @@ class _$MealPlanCopyWithImpl<$Res, $Val extends MealPlan>
 abstract class _$$MealPlanImplCopyWith<$Res>
     implements $MealPlanCopyWith<$Res> {
   factory _$$MealPlanImplCopyWith(
-    _$MealPlanImpl value,
-    $Res Function(_$MealPlanImpl) then,
-  ) = __$$MealPlanImplCopyWithImpl<$Res>;
+          _$MealPlanImpl value, $Res Function(_$MealPlanImpl) then) =
+      __$$MealPlanImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    MealType type,
-    String title,
-    List<MealPlanItem> items,
-    int targetCalories,
-  });
+  $Res call(
+      {MealType type,
+      String title,
+      List<MealPlanItem> items,
+      int targetCalories});
 }
 
 /// @nodoc
@@ -1064,9 +1015,8 @@ class __$$MealPlanImplCopyWithImpl<$Res>
     extends _$MealPlanCopyWithImpl<$Res, _$MealPlanImpl>
     implements _$$MealPlanImplCopyWith<$Res> {
   __$$MealPlanImplCopyWithImpl(
-    _$MealPlanImpl _value,
-    $Res Function(_$MealPlanImpl) _then,
-  ) : super(_value, _then);
+      _$MealPlanImpl _value, $Res Function(_$MealPlanImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -1076,38 +1026,36 @@ class __$$MealPlanImplCopyWithImpl<$Res>
     Object? items = null,
     Object? targetCalories = null,
   }) {
-    return _then(
-      _$MealPlanImpl(
-        type: null == type
-            ? _value.type
-            : type // ignore: cast_nullable_to_non_nullable
-                  as MealType,
-        title: null == title
-            ? _value.title
-            : title // ignore: cast_nullable_to_non_nullable
-                  as String,
-        items: null == items
-            ? _value._items
-            : items // ignore: cast_nullable_to_non_nullable
-                  as List<MealPlanItem>,
-        targetCalories: null == targetCalories
-            ? _value.targetCalories
-            : targetCalories // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
+    return _then(_$MealPlanImpl(
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as MealType,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      items: null == items
+          ? _value._items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<MealPlanItem>,
+      targetCalories: null == targetCalories
+          ? _value.targetCalories
+          : targetCalories // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$MealPlanImpl implements _MealPlan {
-  const _$MealPlanImpl({
-    required this.type,
-    required this.title,
-    required final List<MealPlanItem> items,
-    required this.targetCalories,
-  }) : _items = items;
+  const _$MealPlanImpl(
+      {required this.type,
+      required this.title,
+      required final List<MealPlanItem> items,
+      required this.targetCalories})
+      : _items = items;
 
   factory _$MealPlanImpl.fromJson(Map<String, dynamic> json) =>
       _$$MealPlanImplFromJson(json);
@@ -1146,13 +1094,8 @@ class _$MealPlanImpl implements _MealPlan {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    type,
-    title,
-    const DeepCollectionEquality().hash(_items),
-    targetCalories,
-  );
+  int get hashCode => Object.hash(runtimeType, type, title,
+      const DeepCollectionEquality().hash(_items), targetCalories);
 
   @JsonKey(ignore: true)
   @override
@@ -1162,17 +1105,18 @@ class _$MealPlanImpl implements _MealPlan {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$MealPlanImplToJson(this);
+    return _$$MealPlanImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _MealPlan implements MealPlan {
-  const factory _MealPlan({
-    required final MealType type,
-    required final String title,
-    required final List<MealPlanItem> items,
-    required final int targetCalories,
-  }) = _$MealPlanImpl;
+  const factory _MealPlan(
+      {required final MealType type,
+      required final String title,
+      required final List<MealPlanItem> items,
+      required final int targetCalories}) = _$MealPlanImpl;
 
   factory _MealPlan.fromJson(Map<String, dynamic> json) =
       _$MealPlanImpl.fromJson;
@@ -1210,9 +1154,8 @@ mixin _$MealPlanItem {
 /// @nodoc
 abstract class $MealPlanItemCopyWith<$Res> {
   factory $MealPlanItemCopyWith(
-    MealPlanItem value,
-    $Res Function(MealPlanItem) then,
-  ) = _$MealPlanItemCopyWithImpl<$Res, MealPlanItem>;
+          MealPlanItem value, $Res Function(MealPlanItem) then) =
+      _$MealPlanItemCopyWithImpl<$Res, MealPlanItem>;
   @useResult
   $Res call({FoodItem food, double grams, String? note});
 
@@ -1236,23 +1179,20 @@ class _$MealPlanItemCopyWithImpl<$Res, $Val extends MealPlanItem>
     Object? grams = null,
     Object? note = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            food: null == food
-                ? _value.food
-                : food // ignore: cast_nullable_to_non_nullable
-                      as FoodItem,
-            grams: null == grams
-                ? _value.grams
-                : grams // ignore: cast_nullable_to_non_nullable
-                      as double,
-            note: freezed == note
-                ? _value.note
-                : note // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      food: null == food
+          ? _value.food
+          : food // ignore: cast_nullable_to_non_nullable
+              as FoodItem,
+      grams: null == grams
+          ? _value.grams
+          : grams // ignore: cast_nullable_to_non_nullable
+              as double,
+      note: freezed == note
+          ? _value.note
+          : note // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 
   @override
@@ -1268,9 +1208,8 @@ class _$MealPlanItemCopyWithImpl<$Res, $Val extends MealPlanItem>
 abstract class _$$MealPlanItemImplCopyWith<$Res>
     implements $MealPlanItemCopyWith<$Res> {
   factory _$$MealPlanItemImplCopyWith(
-    _$MealPlanItemImpl value,
-    $Res Function(_$MealPlanItemImpl) then,
-  ) = __$$MealPlanItemImplCopyWithImpl<$Res>;
+          _$MealPlanItemImpl value, $Res Function(_$MealPlanItemImpl) then) =
+      __$$MealPlanItemImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({FoodItem food, double grams, String? note});
@@ -1284,9 +1223,8 @@ class __$$MealPlanItemImplCopyWithImpl<$Res>
     extends _$MealPlanItemCopyWithImpl<$Res, _$MealPlanItemImpl>
     implements _$$MealPlanItemImplCopyWith<$Res> {
   __$$MealPlanItemImplCopyWithImpl(
-    _$MealPlanItemImpl _value,
-    $Res Function(_$MealPlanItemImpl) _then,
-  ) : super(_value, _then);
+      _$MealPlanItemImpl _value, $Res Function(_$MealPlanItemImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -1295,33 +1233,28 @@ class __$$MealPlanItemImplCopyWithImpl<$Res>
     Object? grams = null,
     Object? note = freezed,
   }) {
-    return _then(
-      _$MealPlanItemImpl(
-        food: null == food
-            ? _value.food
-            : food // ignore: cast_nullable_to_non_nullable
-                  as FoodItem,
-        grams: null == grams
-            ? _value.grams
-            : grams // ignore: cast_nullable_to_non_nullable
-                  as double,
-        note: freezed == note
-            ? _value.note
-            : note // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$MealPlanItemImpl(
+      food: null == food
+          ? _value.food
+          : food // ignore: cast_nullable_to_non_nullable
+              as FoodItem,
+      grams: null == grams
+          ? _value.grams
+          : grams // ignore: cast_nullable_to_non_nullable
+              as double,
+      note: freezed == note
+          ? _value.note
+          : note // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$MealPlanItemImpl implements _MealPlanItem {
-  const _$MealPlanItemImpl({
-    required this.food,
-    required this.grams,
-    this.note,
-  });
+  const _$MealPlanItemImpl(
+      {required this.food, required this.grams, this.note});
 
   factory _$MealPlanItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$MealPlanItemImplFromJson(json);
@@ -1360,16 +1293,17 @@ class _$MealPlanItemImpl implements _MealPlanItem {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$MealPlanItemImplToJson(this);
+    return _$$MealPlanItemImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _MealPlanItem implements MealPlanItem {
-  const factory _MealPlanItem({
-    required final FoodItem food,
-    required final double grams,
-    final String? note,
-  }) = _$MealPlanItemImpl;
+  const factory _MealPlanItem(
+      {required final FoodItem food,
+      required final double grams,
+      final String? note}) = _$MealPlanItemImpl;
 
   factory _MealPlanItem.fromJson(Map<String, dynamic> json) =
       _$MealPlanItemImpl.fromJson;
@@ -1410,20 +1344,18 @@ mixin _$DailyNutritionPlan {
 /// @nodoc
 abstract class $DailyNutritionPlanCopyWith<$Res> {
   factory $DailyNutritionPlanCopyWith(
-    DailyNutritionPlan value,
-    $Res Function(DailyNutritionPlan) then,
-  ) = _$DailyNutritionPlanCopyWithImpl<$Res, DailyNutritionPlan>;
+          DailyNutritionPlan value, $Res Function(DailyNutritionPlan) then) =
+      _$DailyNutritionPlanCopyWithImpl<$Res, DailyNutritionPlan>;
   @useResult
-  $Res call({
-    String id,
-    String userId,
-    DateTime date,
-    double targetCalories,
-    double targetProtein,
-    double targetCarbs,
-    double targetFat,
-    List<MealPlan> meals,
-  });
+  $Res call(
+      {String id,
+      String userId,
+      DateTime date,
+      double targetCalories,
+      double targetProtein,
+      double targetCarbs,
+      double targetFat,
+      List<MealPlan> meals});
 }
 
 /// @nodoc
@@ -1448,75 +1380,69 @@ class _$DailyNutritionPlanCopyWithImpl<$Res, $Val extends DailyNutritionPlan>
     Object? targetFat = null,
     Object? meals = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            userId: null == userId
-                ? _value.userId
-                : userId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            date: null == date
-                ? _value.date
-                : date // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            targetCalories: null == targetCalories
-                ? _value.targetCalories
-                : targetCalories // ignore: cast_nullable_to_non_nullable
-                      as double,
-            targetProtein: null == targetProtein
-                ? _value.targetProtein
-                : targetProtein // ignore: cast_nullable_to_non_nullable
-                      as double,
-            targetCarbs: null == targetCarbs
-                ? _value.targetCarbs
-                : targetCarbs // ignore: cast_nullable_to_non_nullable
-                      as double,
-            targetFat: null == targetFat
-                ? _value.targetFat
-                : targetFat // ignore: cast_nullable_to_non_nullable
-                      as double,
-            meals: null == meals
-                ? _value.meals
-                : meals // ignore: cast_nullable_to_non_nullable
-                      as List<MealPlan>,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      targetCalories: null == targetCalories
+          ? _value.targetCalories
+          : targetCalories // ignore: cast_nullable_to_non_nullable
+              as double,
+      targetProtein: null == targetProtein
+          ? _value.targetProtein
+          : targetProtein // ignore: cast_nullable_to_non_nullable
+              as double,
+      targetCarbs: null == targetCarbs
+          ? _value.targetCarbs
+          : targetCarbs // ignore: cast_nullable_to_non_nullable
+              as double,
+      targetFat: null == targetFat
+          ? _value.targetFat
+          : targetFat // ignore: cast_nullable_to_non_nullable
+              as double,
+      meals: null == meals
+          ? _value.meals
+          : meals // ignore: cast_nullable_to_non_nullable
+              as List<MealPlan>,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$DailyNutritionPlanImplCopyWith<$Res>
     implements $DailyNutritionPlanCopyWith<$Res> {
-  factory _$$DailyNutritionPlanImplCopyWith(
-    _$DailyNutritionPlanImpl value,
-    $Res Function(_$DailyNutritionPlanImpl) then,
-  ) = __$$DailyNutritionPlanImplCopyWithImpl<$Res>;
+  factory _$$DailyNutritionPlanImplCopyWith(_$DailyNutritionPlanImpl value,
+          $Res Function(_$DailyNutritionPlanImpl) then) =
+      __$$DailyNutritionPlanImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    String userId,
-    DateTime date,
-    double targetCalories,
-    double targetProtein,
-    double targetCarbs,
-    double targetFat,
-    List<MealPlan> meals,
-  });
+  $Res call(
+      {String id,
+      String userId,
+      DateTime date,
+      double targetCalories,
+      double targetProtein,
+      double targetCarbs,
+      double targetFat,
+      List<MealPlan> meals});
 }
 
 /// @nodoc
 class __$$DailyNutritionPlanImplCopyWithImpl<$Res>
     extends _$DailyNutritionPlanCopyWithImpl<$Res, _$DailyNutritionPlanImpl>
     implements _$$DailyNutritionPlanImplCopyWith<$Res> {
-  __$$DailyNutritionPlanImplCopyWithImpl(
-    _$DailyNutritionPlanImpl _value,
-    $Res Function(_$DailyNutritionPlanImpl) _then,
-  ) : super(_value, _then);
+  __$$DailyNutritionPlanImplCopyWithImpl(_$DailyNutritionPlanImpl _value,
+      $Res Function(_$DailyNutritionPlanImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -1530,58 +1456,56 @@ class __$$DailyNutritionPlanImplCopyWithImpl<$Res>
     Object? targetFat = null,
     Object? meals = null,
   }) {
-    return _then(
-      _$DailyNutritionPlanImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        userId: null == userId
-            ? _value.userId
-            : userId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        date: null == date
-            ? _value.date
-            : date // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        targetCalories: null == targetCalories
-            ? _value.targetCalories
-            : targetCalories // ignore: cast_nullable_to_non_nullable
-                  as double,
-        targetProtein: null == targetProtein
-            ? _value.targetProtein
-            : targetProtein // ignore: cast_nullable_to_non_nullable
-                  as double,
-        targetCarbs: null == targetCarbs
-            ? _value.targetCarbs
-            : targetCarbs // ignore: cast_nullable_to_non_nullable
-                  as double,
-        targetFat: null == targetFat
-            ? _value.targetFat
-            : targetFat // ignore: cast_nullable_to_non_nullable
-                  as double,
-        meals: null == meals
-            ? _value._meals
-            : meals // ignore: cast_nullable_to_non_nullable
-                  as List<MealPlan>,
-      ),
-    );
+    return _then(_$DailyNutritionPlanImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      targetCalories: null == targetCalories
+          ? _value.targetCalories
+          : targetCalories // ignore: cast_nullable_to_non_nullable
+              as double,
+      targetProtein: null == targetProtein
+          ? _value.targetProtein
+          : targetProtein // ignore: cast_nullable_to_non_nullable
+              as double,
+      targetCarbs: null == targetCarbs
+          ? _value.targetCarbs
+          : targetCarbs // ignore: cast_nullable_to_non_nullable
+              as double,
+      targetFat: null == targetFat
+          ? _value.targetFat
+          : targetFat // ignore: cast_nullable_to_non_nullable
+              as double,
+      meals: null == meals
+          ? _value._meals
+          : meals // ignore: cast_nullable_to_non_nullable
+              as List<MealPlan>,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DailyNutritionPlanImpl implements _DailyNutritionPlan {
-  const _$DailyNutritionPlanImpl({
-    required this.id,
-    required this.userId,
-    required this.date,
-    required this.targetCalories,
-    required this.targetProtein,
-    required this.targetCarbs,
-    required this.targetFat,
-    required final List<MealPlan> meals,
-  }) : _meals = meals;
+  const _$DailyNutritionPlanImpl(
+      {required this.id,
+      required this.userId,
+      required this.date,
+      required this.targetCalories,
+      required this.targetProtein,
+      required this.targetCarbs,
+      required this.targetFat,
+      required final List<MealPlan> meals})
+      : _meals = meals;
 
   factory _$DailyNutritionPlanImpl.fromJson(Map<String, dynamic> json) =>
       _$$DailyNutritionPlanImplFromJson(json);
@@ -1635,43 +1559,41 @@ class _$DailyNutritionPlanImpl implements _DailyNutritionPlan {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    userId,
-    date,
-    targetCalories,
-    targetProtein,
-    targetCarbs,
-    targetFat,
-    const DeepCollectionEquality().hash(_meals),
-  );
+      runtimeType,
+      id,
+      userId,
+      date,
+      targetCalories,
+      targetProtein,
+      targetCarbs,
+      targetFat,
+      const DeepCollectionEquality().hash(_meals));
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$DailyNutritionPlanImplCopyWith<_$DailyNutritionPlanImpl> get copyWith =>
       __$$DailyNutritionPlanImplCopyWithImpl<_$DailyNutritionPlanImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DailyNutritionPlanImplToJson(this);
+    return _$$DailyNutritionPlanImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _DailyNutritionPlan implements DailyNutritionPlan {
-  const factory _DailyNutritionPlan({
-    required final String id,
-    required final String userId,
-    required final DateTime date,
-    required final double targetCalories,
-    required final double targetProtein,
-    required final double targetCarbs,
-    required final double targetFat,
-    required final List<MealPlan> meals,
-  }) = _$DailyNutritionPlanImpl;
+  const factory _DailyNutritionPlan(
+      {required final String id,
+      required final String userId,
+      required final DateTime date,
+      required final double targetCalories,
+      required final double targetProtein,
+      required final double targetCarbs,
+      required final double targetFat,
+      required final List<MealPlan> meals}) = _$DailyNutritionPlanImpl;
 
   factory _DailyNutritionPlan.fromJson(Map<String, dynamic> json) =
       _$DailyNutritionPlanImpl.fromJson;

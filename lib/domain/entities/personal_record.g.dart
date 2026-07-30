@@ -18,13 +18,13 @@ _$PersonalRecordImpl _$$PersonalRecordImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$PersonalRecordImplToJson(
-  _$PersonalRecordImpl instance,
-) => <String, dynamic>{
-  'id': instance.id,
-  'exerciseName': instance.exerciseName,
-  'weightKg': instance.weightKg,
-  'reps': instance.reps,
-  'sets': instance.sets,
-  'date': instance.date.toIso8601String(),
-  'notes': instance.notes,
-};
+        _$PersonalRecordImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'exerciseName': instance.exerciseName,
+      'weightKg': instance.weightKg,
+      'reps': instance.reps,
+      'sets': instance.sets,
+      'date': instance.date.toIso8601String(),
+      'notes': instance.notes,
+    };

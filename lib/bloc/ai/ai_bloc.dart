@@ -9,6 +9,7 @@ import 'package:fitnesbuster/core/utils/recent_rpe.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
 import 'package:fitnesbuster/core/utils/app_logger.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 
 part 'ai_event.dart';
 part 'ai_state.dart';
@@ -30,6 +31,7 @@ class AiBloc extends Bloc<AiEvent, AiState> {
     Emitter<AiState> emit,
   ) async {
     emit(const AiStateLoading());
+    final sw = Stopwatch()..start();
     try {
       final result = await _aiService.generateWorkoutPlan(
         event.profile,
@@ -38,6 +40,12 @@ class AiBloc extends Bloc<AiEvent, AiState> {
         domsLevel: await todayDomsLevel(),
       );
       emit(AiStateLoaded(result: result, type: AiResultType.workoutPlan));
+      // Fire-and-forget: analytics is not on the critical path.
+      try {
+        sl<IAnalyticsService>()
+            .logPlanGenerated(durationMs: sw.elapsedMilliseconds)
+            .ignore();
+      } catch (_) {}
     } on AiException catch (e) {
       emit(AiStateError(message: e.message));
     } catch (e, st) {

@@ -12,6 +12,13 @@ abstract interface class IAnalyticsService {
   Future<void> logWorkoutPaused({required String sessionId});
   Future<void> logOnboardingStep({required int step, required String stepName});
   Future<void> logOnboardingCompleted({required String goal});
+  Future<void> logPlanGenerated({required int durationMs});
+  Future<void> logDailyTaskCompleted({required String taskType});
+  Future<void> logStreakKept({required int streak});
+  Future<void> logAiChatMessage();
+  Future<void> logAiDebriefViewed();
+  Future<void> logChallengeJoined({required String goalType});
+  Future<void> logFriendAdded();
   Future<void> logFoodLogged({
     required String foodName,
     required double calories,
