@@ -87,6 +87,8 @@ dependencies:
   # Геолокация (определение города пользователя для подбора продуктов питания)
   geolocator: ^13.0.1
   firebase_app_check: ^0.4.5+2
+  firebase_crashlytics: ^5.2.6
+  firebase_performance: ^0.11.4+5
 
 dev_dependencies:
   flutter_test:
