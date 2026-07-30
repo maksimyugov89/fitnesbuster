@@ -4,6 +4,7 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {FIRESTORE_DATABASE_ID} from "./firebaseConfig";
 import {RETRY_BASE_DELAY_MS, RETRY_MAX_ATTEMPTS} from "./constants";
 import {evaluateRateLimit, rateLimitFailureAction} from "./rateLimitLogic";
+import {shouldDeleteFcmToken} from "./sendPushLogic";
 
 const db = getFirestore(FIRESTORE_DATABASE_ID);
 const messaging = admin.messaging();
@@ -129,7 +130,10 @@ async function sendPush(
       apns: {payload: {aps: {sound: "default"}}},
     });
   } catch (e) {
-    await db.doc(`users/${toUid}`).update({fcmToken: FieldValue.delete()});
+    const code = (e as {code?: string})?.code;
+    if (shouldDeleteFcmToken(code)) {
+      await db.doc(`users/${toUid}`).update({fcmToken: FieldValue.delete()});
+    }
   }
 }
 
@@ -202,4 +206,5 @@ export {
   createNotification,
   withRetry,
   enforceAppCheck,
+  shouldDeleteFcmToken,
 };

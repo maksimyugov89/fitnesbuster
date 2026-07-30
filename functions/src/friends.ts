@@ -147,6 +147,7 @@ export const declineFriendRequest = onCall(
     const reqSnap = await reqRef.get();
     if (!reqSnap.exists) throw new HttpsError("not-found", "Request not found");
     if (reqSnap.data()!.toUid !== uid) throw new HttpsError("permission-denied", "Not your request");
+    if (reqSnap.data()!.status !== "pending") throw new HttpsError("failed-precondition", "Request already handled");
 
     await reqRef.update({status: "declined"});
     return {success: true};

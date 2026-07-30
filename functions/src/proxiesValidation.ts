@@ -5,7 +5,10 @@ import {
   DEEPSEEK_MAX_MESSAGE_LENGTH,
   DEEPSEEK_MAX_MESSAGES,
   DEEPSEEK_MAX_TOKENS_CAP,
+  DEEPSEEK_MAX_SYSTEM_MESSAGES,
 } from "./constants";
+
+const VALID_ROLES = new Set(["system", "user", "assistant"]);
 export interface ValidatedDeepSeekRequest {
   messages: Array<{role: string; content: string}>;
   maxTokens: number;
@@ -36,7 +39,17 @@ export function validateDeepSeekRequest(
     throw new HttpsError("invalid-argument", `messages must not exceed ${DEEPSEEK_MAX_MESSAGES} entries`);
   }
   const validatedMessages = messages as Array<{role: string; content: string}>;
+  let systemCount = 0;
   for (const m of validatedMessages) {
+    if (!VALID_ROLES.has(m.role)) {
+      throw new HttpsError("invalid-argument", `invalid message role: "${m.role}". Must be one of: system, user, assistant`);
+    }
+    if (m.role === "system") {
+      systemCount++;
+      if (systemCount > DEEPSEEK_MAX_SYSTEM_MESSAGES) {
+        throw new HttpsError("invalid-argument", `at most ${DEEPSEEK_MAX_SYSTEM_MESSAGES} system messages allowed per request`);
+      }
+    }
     if (typeof m?.content !== "string" || m.content.length > DEEPSEEK_MAX_MESSAGE_LENGTH) {
       throw new HttpsError("invalid-argument", `each message content must be a string under ${DEEPSEEK_MAX_MESSAGE_LENGTH} characters`);
     }
