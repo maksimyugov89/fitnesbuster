@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mockito/annotations.dart';
@@ -11,13 +12,23 @@ import 'auth_repository_test.mocks.dart';
 
 class _FakeUserCredential implements fb.UserCredential {
   final fb.User _user;
-  const _FakeUserCredential(this._user);
+  final fb.AdditionalUserInfo? _additionalUserInfo;
+  const _FakeUserCredential(
+    this._user, {
+    fb.AdditionalUserInfo? additionalUserInfo,
+  }) : _additionalUserInfo = additionalUserInfo;
   @override
   fb.User? get user => _user;
   @override
-  fb.AdditionalUserInfo? get additionalUserInfo => null;
+  fb.AdditionalUserInfo? get additionalUserInfo => _additionalUserInfo;
   @override
   fb.AuthCredential? get credential => null;
+}
+
+/// `AdditionalUserInfo` has a @protected constructor, so the fake extends it
+/// (a legitimate use of a protected member from a subclass).
+class _FakeAdditionalUserInfo extends fb.AdditionalUserInfo {
+  _FakeAdditionalUserInfo({required super.isNewUser});
 }
 
 class _FakeUserMetadata implements fb.UserMetadata {
@@ -36,6 +47,9 @@ class _FakeUserMetadata implements fb.UserMetadata {
   MockSpec<CollectionReference<Map<String, dynamic>>>(),
   MockSpec<DocumentReference<Map<String, dynamic>>>(),
   MockSpec<DocumentSnapshot<Map<String, dynamic>>>(),
+  MockSpec<GoogleSignIn>(),
+  MockSpec<GoogleSignInAccount>(),
+  MockSpec<GoogleSignInAuthentication>(),
 ])
 void main() {
   late MockFirebaseAuth mockAuth;
@@ -361,6 +375,83 @@ void main() {
       ).thenAnswer((_) async {});
       await repo.resetPassword(tEmail);
       verify(mockAuth.sendPasswordResetEmail(email: tEmail)).called(1);
+    });
+  });
+
+  group('signInWithGoogle', () {
+    late MockGoogleSignIn googleSignIn;
+
+    // A consent-less Google account: the flow must ask for consent instead of
+    // dropping the freshly created Firebase session.
+    void stubGoogleSignIn({required bool isNewUser}) {
+      googleSignIn = MockGoogleSignIn();
+      final account = MockGoogleSignInAccount();
+      final gAuth = MockGoogleSignInAuthentication();
+      when(googleSignIn.signIn()).thenAnswer((_) async => account);
+      when(account.authentication).thenAnswer((_) async => gAuth);
+      when(gAuth.accessToken).thenReturn('access-token');
+      when(gAuth.idToken).thenReturn('id-token');
+      when(mockAuth.signInWithCredential(any)).thenAnswer(
+        (_) async => _FakeUserCredential(
+          mockFbUser,
+          additionalUserInfo: _FakeAdditionalUserInfo(isNewUser: isNewUser),
+        ),
+      );
+      repo = AuthRepository(
+        auth: mockAuth,
+        firestore: mockFirestore,
+        deleteAccountCall: () async {},
+        googleSignIn: googleSignIn,
+      );
+
+      final userCollection = MockCollectionReference();
+      final docRef = MockDocumentReference();
+      final consentCollection = MockCollectionReference();
+      final consentDocRef = MockDocumentReference();
+      final missingConsent = MockDocumentSnapshot();
+      when(mockFirestore.collection('users')).thenReturn(userCollection);
+      when(userCollection.doc(tUid)).thenReturn(docRef);
+      when(docRef.collection('legal_consents')).thenReturn(consentCollection);
+      when(
+        consentCollection.doc(LegalConsentAcceptance.recordId),
+      ).thenReturn(consentDocRef);
+      when(missingConsent.exists).thenReturn(false);
+      when(consentDocRef.get()).thenAnswer((_) async => missingConsent);
+    }
+
+    test('a new Google user without consent keeps the session', () async {
+      stubGoogleSignIn(isNewUser: true);
+
+      await expectLater(
+        repo.signInWithGoogle(),
+        throwsA(
+          isA<TermsRequiredException>()
+              .having((e) => e.code, 'code', 'terms-required')
+              .having((e) => e.isNewRegistration, 'isNewRegistration', isTrue),
+        ),
+      );
+
+      // The UI needs a live session to show the dialog and to call
+      // acceptCurrentLegalConsent(); signing out left new users stuck.
+      verifyNever(mockAuth.signOut());
+      verifyNever(mockFbUser.delete());
+      verify(googleSignIn.signIn()).called(1);
+    });
+
+    test('existing Google user without consent keeps the session too', () async {
+      stubGoogleSignIn(isNewUser: false);
+
+      await expectLater(
+        repo.signInWithGoogle(),
+        throwsA(
+          isA<TermsRequiredException>()
+              .having((e) => e.code, 'code', 'terms-required')
+              .having((e) => e.isNewRegistration, 'isNewRegistration', isFalse),
+        ),
+      );
+
+      verifyNever(mockAuth.signOut());
+      verifyNever(mockFbUser.delete());
     });
   });
 }

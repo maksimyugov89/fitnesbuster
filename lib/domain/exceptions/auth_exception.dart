@@ -42,3 +42,14 @@ final class TooManyRequestsException extends AuthException {
 final class UnknownAuthException extends AuthException {
   const UnknownAuthException(String code) : super(code, 'Unknown auth error');
 }
+
+/// The signed-in account still has to accept the legal documents before the
+/// app can be used. [isNewRegistration] is `true` when accepting them finishes
+/// a registration that has just been created, so analytics can report a
+/// sign-up instead of a login.
+final class TermsRequiredException extends AuthException {
+  const TermsRequiredException({this.isNewRegistration = false})
+    : super('terms-required', 'Terms of use must be accepted');
+
+  final bool isNewRegistration;
+}

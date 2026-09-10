@@ -21,14 +21,17 @@ class AuthRepository implements IAuthRepository {
   final fb.FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
   final Future<void> Function() _deleteAccountCall;
+  final GoogleSignIn _googleSignIn;
 
   AuthRepository({
     required fb.FirebaseAuth auth,
     required FirebaseFirestore firestore,
     Future<void> Function()? deleteAccountCall,
+    GoogleSignIn? googleSignIn,
   }) : _auth = auth,
        _firestore = firestore,
-       _deleteAccountCall = deleteAccountCall ?? _callDeleteAccount;
+       _deleteAccountCall = deleteAccountCall ?? _callDeleteAccount,
+       _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   static Future<void> _callDeleteAccount() async {
     await FirebaseFunctions.instanceFor(
@@ -92,7 +95,7 @@ class AuthRepository implements IAuthRepository {
       );
       final fbUser = result.user!;
       if (!await _hasCurrentLegalConsent(fbUser.uid)) {
-        throw const UnknownAuthException('terms-required');
+        throw const TermsRequiredException();
       }
       await _ensureFirestoreDoc(fbUser);
       // The router guards private routes by profile presence. Return the
@@ -116,7 +119,7 @@ class AuthRepository implements IAuthRepository {
       final data = doc.data();
       if (!doc.exists) {
         if (!await _hasCurrentLegalConsent(fbUser.uid)) {
-          throw const UnknownAuthException('terms-required');
+          throw const TermsRequiredException();
         }
         final name =
             (fbUser.displayName?.isNotEmpty == true
@@ -234,9 +237,9 @@ class AuthRepository implements IAuthRepository {
     // Sign out of the Google Sign-In SDK first so the account picker always
     // appears, allowing users to switch between multiple Google accounts on
     // the same device. This does NOT sign out of Firebase Auth.
-    await GoogleSignIn().signOut();
+    await _googleSignIn.signOut();
 
-    final googleUser = await GoogleSignIn().signIn();
+    final googleUser = await _googleSignIn.signIn();
     if (googleUser == null) {
       throw Exception(AppLocalizations.tl('googleLoginCancelled'));
     }
@@ -252,11 +255,13 @@ class AuthRepository implements IAuthRepository {
 
     if (!hasConsent) {
       if (newAccountConsent == null) {
-        if (isNewUser) {
-          await _discardIncompleteRegistration(fbUser);
-          await _auth.signOut();
-        }
-        throw const UnknownAuthException('terms-required');
+        // Keep the session that signInWithCredential just created: the UI
+        // answers `terms-required` with the legal-consent dialog and then
+        // calls acceptCurrentLegalConsent(), which needs currentUser. Signing
+        // out here made the bloc fall through to AuthStateError, so a
+        // brand-new Google user saw an error and had no way to accept the
+        // terms. Declining the dialog is handled by AuthLogoutRequested.
+        throw TermsRequiredException(isNewRegistration: isNewUser);
       }
       try {
         await _recordLegalConsent(fbUser.uid, newAccountConsent);

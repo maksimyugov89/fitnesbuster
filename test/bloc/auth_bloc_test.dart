@@ -3,17 +3,39 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:fitnesbuster/bloc/auth/auth_bloc.dart';
+import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/legal/legal_consent.dart';
 import 'package:fitnesbuster/domain/entities/entities.dart';
 import 'package:fitnesbuster/domain/exceptions/auth_exception.dart';
 import 'package:fitnesbuster/domain/repositories/i_auth_repository.dart';
+import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 
 import 'auth_bloc_test.mocks.dart';
+
+/// Records the analytics calls the auth flows make. Only the auth events are
+/// implemented; every other member is absorbed by [noSuchMethod].
+class _RecordingAnalytics implements IAnalyticsService {
+  final List<String> events = [];
+
+  @override
+  Future<void> logLogin({required String method}) async {
+    events.add('login:$method');
+  }
+
+  @override
+  Future<void> logSignUp({required String method}) async {
+    events.add('signup:$method');
+  }
+
+  @override
+  Future<void> noSuchMethod(Invocation invocation) => Future<void>.value();
+}
 
 @GenerateMocks([IAuthRepository])
 void main() {
   late MockIAuthRepository repo;
   late AuthBloc bloc;
+  late _RecordingAnalytics analytics;
 
   final tUser = UserEntity(
     id: 'uid-1',
@@ -28,6 +50,11 @@ void main() {
 
   setUp(() {
     repo = MockIAuthRepository();
+    analytics = _RecordingAnalytics();
+    if (sl.isRegistered<IAnalyticsService>()) {
+      sl.unregister<IAnalyticsService>();
+    }
+    sl.registerLazySingleton<IAnalyticsService>(() => analytics);
     when(repo.userChanges).thenAnswer((_) => const Stream.empty());
     when(repo.currentUser).thenReturn(null);
     when(repo.isEmailVerified).thenReturn(true);
@@ -41,7 +68,12 @@ void main() {
     bloc = AuthBloc(authRepository: repo);
   });
 
-  tearDown(() => bloc.close());
+  tearDown(() async {
+    await bloc.close();
+    if (sl.isRegistered<IAnalyticsService>()) {
+      sl.unregister<IAnalyticsService>();
+    }
+  });
 
   test('initial state is AuthStateInitial', () {
     expect(bloc.state, const AuthStateInitial());
@@ -245,5 +277,41 @@ void main() {
       act: (b) => b.add(const AuthLogoutRequested()),
       expect: () => [const AuthStateUnauthenticated()],
     );
+  });
+
+  group('consent analytics', () {
+    const googleConsent = LegalConsentAcceptance(
+      source: LegalConsentSource.googleLogin,
+      localeCode: 'ru',
+    );
+
+    Future<void> googleSignInWithoutConsent({required bool isNewUser}) async {
+      when(repo.currentUser).thenReturn(tUser);
+      when(
+        repo.signInWithGoogle(
+          newAccountConsent: anyNamed('newAccountConsent'),
+        ),
+      ).thenThrow(TermsRequiredException(isNewRegistration: isNewUser));
+
+      bloc.add(const AuthGoogleLoginRequested());
+      await bloc.stream.firstWhere(
+        (state) => state is AuthStateLegalConsentRequired,
+      );
+      bloc.add(const AuthLegalConsentAccepted(consent: googleConsent));
+      await bloc.stream.firstWhere((state) => state is AuthStateAuthenticated);
+      await pumpEventQueue();
+    }
+
+    test('accepting consent for a new Google account logs sign_up', () async {
+      await googleSignInWithoutConsent(isNewUser: true);
+
+      expect(analytics.events, ['signup:google']);
+    });
+
+    test('accepting consent for an existing account logs login', () async {
+      await googleSignInWithoutConsent(isNewUser: false);
+
+      expect(analytics.events, ['login:google']);
+    });
   });
 }

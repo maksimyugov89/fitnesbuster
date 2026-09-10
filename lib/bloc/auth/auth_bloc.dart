@@ -17,6 +17,9 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final IAuthRepository _authRepository;
   StreamSubscription<UserEntity?>? _userSubscription;
+  /// Set while the consent dialog is on screen; `true` when accepting it
+  /// finishes a registration that has just been created (analytics: sign_up).
+  bool _consentFinishesNewRegistration = false;
 
   AuthBloc({required IAuthRepository authRepository})
     : _authRepository = authRepository,
@@ -72,6 +75,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     if (!await _authRepository.hasCurrentLegalConsent()) {
+      _consentFinishesNewRegistration = false;
       emit(const AuthStateLegalConsentRequired());
       return;
     }
@@ -112,6 +116,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on AuthException catch (e) {
       appLogger.w('[AuthBloc] login error', error: e);
       if (e.code == 'terms-required' && _authRepository.currentUser != null) {
+        _consentFinishesNewRegistration = false;
         emit(const AuthStateLegalConsentRequired());
       } else {
         emit(AuthStateError(message: _mapFirebaseError(e.code)));
@@ -173,6 +178,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on AuthException catch (e) {
       appLogger.w('[AuthBloc] googleLogin error', error: e);
       if (e.code == 'terms-required' && _authRepository.currentUser != null) {
+        _consentFinishesNewRegistration =
+            e is TermsRequiredException && e.isNewRegistration;
         emit(
           const AuthStateLegalConsentRequired(
             source: LegalConsentSource.googleLogin,
@@ -200,7 +207,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await _authRepository.acceptCurrentLegalConsent(
         consent: event.consent,
       );
-      _track(() => sl<IAnalyticsService>().logLogin(method: 'google'));
+      _track(
+        () => _consentFinishesNewRegistration
+            ? sl<IAnalyticsService>().logSignUp(method: 'google')
+            : sl<IAnalyticsService>().logLogin(method: 'google'),
+      );
+      _consentFinishesNewRegistration = false;
       emit(
         AuthStateAuthenticated(
           user: user,
