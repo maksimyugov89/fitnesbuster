@@ -25,8 +25,14 @@ export const cleanOldFeedEvents = onSchedule(
     logInfo("cleanOldFeedEvents started", {cutoff: cutoff.toDate().toISOString()});
 
     // Collection-group sweep: one query across all feed/{uid}/events instead
-    // of an O(N users) read loop. Requires the COLLECTION_GROUP index on
-    // "events"(timestamp) from firestore.indexes.json.
+    // of an O(N users) read loop. Requires the COLLECTION_GROUP single-field
+    // index on "events"(timestamp), which cannot be expressed in
+    // firestore.indexes.json (that file only accepts composite indexes — the
+    // API answers "this index is not necessary, configure using single field
+    // index controls"). It lives in the Firestore single-field index controls
+    // for the field, was created 2026-09-10 via the Admin API, and is what the
+    // FAILED_PRECONDITION error link in the console points at. Without it the
+    // nightly job fails every time.
     let totalDeleted = 0;
     for (let i = 0; i < 10; i++) {
       const oldEvents = await db

@@ -10,11 +10,27 @@ const db = getFirestore(FIRESTORE_DATABASE_ID);
 const messaging = admin.messaging();
 
 /**
- * App Check enforcement for callable functions. Enabled in production; the
- * Functions emulator does not validate App Check tokens, so enforcement is
- * disabled there to keep emulator tests working without fake tokens.
+ * App Check enforcement for callable functions.
+ *
+ * ⚠️ Намеренно ВЫКЛЮЧЕН (режим мониторинга). Приложение распространяется
+ * как APK вне Google Play, поэтому Play Integrity не может аттестовать
+ * установки: единственный валидный App Check-токен был у debug-сборки
+ * владельца (зарегистрированный debug-токен realme-rmx3853-owner). У всех
+ * остальных клиентов runtime получал невалидный токен и при включённом
+ * enforcement отдавал HTTP 401 «unauthenticated» — из-за этого у новых
+ * пользователей не генерировался план после анкеты (подтверждено логами
+ * production 2026-09-10, uid uEdj9h0l…).
+ *
+ * Защита, которая остаётся: обязательная аутентификация Firebase
+ * (request.auth.uid), поминутный rate limit и дневная квота DeepSeek,
+ * ключ провайдера только на сервере. App Check на клиенте остаётся
+ * включённым, поэтому метрики видны в консоли.
+ *
+ * Включать enforcement обратно — только после настройки Play Console +
+ * Play Integrity API (пресет «Exclusively outside Google Play») или
+ * публикации приложения в Google Play.
  */
-const enforceAppCheck = process.env.FUNCTIONS_EMULATOR !== "true";
+const enforceAppCheck = false;
 
 // ─── Logging ──────────────────────────────────────────────────────────────────
 
