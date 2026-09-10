@@ -1,0 +1,4 @@
+Contact: mailto:maksim.yugov.89@gmail.com
+Expires: 2027-09-10T00:00:00.000Z
+Preferred-Languages: ru, en
+Canonical: https://fitnesbuster.ru/.well-known/security.txt

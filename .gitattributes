@@ -1,0 +1,3 @@
+# Shell-скрипты деплоя должны лежать с LF: CRLF ломает shebang на Linux,
+# а renew-certs.sh запускается по cron на сервере.
+site/deploy/*.sh text eol=lf

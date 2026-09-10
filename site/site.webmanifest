@@ -1,0 +1,15 @@
+{
+  "name": "FitnesBuster — персональный ИИ-тренер",
+  "short_name": "FitnesBuster",
+  "description": "Тренировки, питание, восстановление и прогресс в одном приложении.",
+  "lang": "ru",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#070809",
+  "theme_color": "#070809",
+  "icons": [
+    { "src": "assets/img/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/img/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
