@@ -423,13 +423,9 @@ button {
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, var(--grad-a), var(--grad-c));
-  color: var(--on-primary);
-  font-size: 15px;
-  font-weight: 800;
-  box-shadow: 0 0 0 1px var(--border-strong), 0 8px 24px -8px var(--glow);
+  display: block;
+  object-fit: contain; /* логотип приложения: своя рамка и градиентная обводка */
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
 }
 
 .brand__name span {
@@ -852,6 +848,7 @@ button {
   display: block;
   width: 100%;
   height: 100%;
+  object-fit: contain; /* базовый слой и блики сняты с одного кадра 512×512 */
 }
 
 .card__icon-lit,
@@ -1052,6 +1049,8 @@ button {
 }
 
 .shot__frame {
+  display: block; /* было inline: фон вылезал полосами сверху и снизу */
+  line-height: 0; /* убираем зазор под инлайновой картинкой */
   border-radius: 30px;
   padding: 7px;
   background: linear-gradient(160deg, color-mix(in srgb, var(--elev) 88%, #fff 12%), var(--surface));
