@@ -1121,6 +1121,11 @@ button {
   max-width: min(92vw, 420px);
   max-height: 92vh;
   color: var(--text);
+  /* Окно прижато к верху, а не центрировано по вертикали: при переносе длинного
+     названия на вторую строку окно становилось выше, центрирование сдвигало его
+     вверх — и кадр с кнопками уезжали относительно остальных скриншотов.
+     С фиксированным верхом кадр и кнопки стоят на одном месте для всех. */
+  margin: max(2vh, 10px) auto auto;
 }
 
 .lightbox::backdrop {
@@ -1137,6 +1142,25 @@ button {
   box-shadow: 0 40px 90px -30px #000;
   display: grid;
   place-items: center;
+}
+
+/* Короткий экран (телефон в ландшафте): высота ограничивает картинку, и она
+   выходит уже строки с кнопками — название при этом сжималось в ноль, а кнопки
+   вылезали за окно. Уменьшаем кнопки и оставляем строку им одним. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .lightbox__title {
+    display: none;
+  }
+
+  .lightbox__nav {
+    gap: 8px;
+  }
+
+  .lightbox__nav .icon-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
 }
 
 /* Пропорции родные: картинка вписывается в экран целиком и не растягивается. */
@@ -1157,11 +1181,11 @@ button {
    строки в расчёт ширины, оставаясь растянутой по фактической ширине окна. */
 .lightbox__bar {
   display: flex;
-  align-items: center;
+  align-items: flex-start;          /* кнопки всегда на одной высоте с первой строкой названия */
   justify-content: space-between;
   gap: 10px 14px;
   margin-top: 14px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;                /* строка не переносится: кнопки не уезжают под название */
   width: 0;
   min-width: 100%;
 }
@@ -1170,7 +1194,7 @@ button {
   font-weight: 600;
   font-size: 15px;
   color: var(--text-2);
-  min-width: 0;
+  min-width: 0;                     /* длинное название переносится внутри своей колонки */
   overflow-wrap: anywhere;
 }
 
