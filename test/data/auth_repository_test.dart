@@ -438,20 +438,27 @@ void main() {
       verify(googleSignIn.signIn()).called(1);
     });
 
-    test('existing Google user without consent keeps the session too', () async {
-      stubGoogleSignIn(isNewUser: false);
+    test(
+      'existing Google user without consent keeps the session too',
+      () async {
+        stubGoogleSignIn(isNewUser: false);
 
-      await expectLater(
-        repo.signInWithGoogle(),
-        throwsA(
-          isA<TermsRequiredException>()
-              .having((e) => e.code, 'code', 'terms-required')
-              .having((e) => e.isNewRegistration, 'isNewRegistration', isFalse),
-        ),
-      );
+        await expectLater(
+          repo.signInWithGoogle(),
+          throwsA(
+            isA<TermsRequiredException>()
+                .having((e) => e.code, 'code', 'terms-required')
+                .having(
+                  (e) => e.isNewRegistration,
+                  'isNewRegistration',
+                  isFalse,
+                ),
+          ),
+        );
 
-      verifyNever(mockAuth.signOut());
-      verifyNever(mockFbUser.delete());
-    });
+        verifyNever(mockAuth.signOut());
+        verifyNever(mockFbUser.delete());
+      },
+    );
   });
 }

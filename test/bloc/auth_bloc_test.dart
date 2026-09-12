@@ -288,9 +288,7 @@ void main() {
     Future<void> googleSignInWithoutConsent({required bool isNewUser}) async {
       when(repo.currentUser).thenReturn(tUser);
       when(
-        repo.signInWithGoogle(
-          newAccountConsent: anyNamed('newAccountConsent'),
-        ),
+        repo.signInWithGoogle(newAccountConsent: anyNamed('newAccountConsent')),
       ).thenThrow(TermsRequiredException(isNewRegistration: isNewUser));
 
       bloc.add(const AuthGoogleLoginRequested());

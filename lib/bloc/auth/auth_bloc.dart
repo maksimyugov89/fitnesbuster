@@ -17,6 +17,7 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final IAuthRepository _authRepository;
   StreamSubscription<UserEntity?>? _userSubscription;
+
   /// Set while the consent dialog is on screen; `true` when accepting it
   /// finishes a registration that has just been created (analytics: sign_up).
   bool _consentFinishesNewRegistration = false;
