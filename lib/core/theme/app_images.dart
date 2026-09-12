@@ -51,6 +51,7 @@ class AppImages {
   static const String challenges = 'assets/icons/Challenges.png';
 
   // ─── Profile menu ───────────────────────────────────────────────
+  static const String premium = 'assets/icons/premium_rounded.png';
   static const String personalData = 'assets/icons/person_outline_rounded.png';
   static const String goal = 'assets/icons/flag_outlined.png';
   static const String location = 'assets/icons/location_on_outlined.png';

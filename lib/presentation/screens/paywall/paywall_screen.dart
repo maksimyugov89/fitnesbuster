@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fitnesbuster/core/di/injection.dart';
 import 'package:fitnesbuster/core/localization/app_localizations.dart';
+import 'package:fitnesbuster/core/theme/app_images.dart';
 import 'package:fitnesbuster/domain/services/i_analytics_service.dart';
 
 class PaywallScreen extends StatefulWidget {
@@ -28,10 +29,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            Icon(
-              Icons.workspace_premium_rounded,
-              size: 64,
-              color: theme.colorScheme.primary,
+            Center(
+              child: AppIcon(
+                asset: AppImages.premium,
+                size: 72,
+                glowColor: theme.colorScheme.primary,
+              ),
             ),
             const SizedBox(height: 16),
             Text(

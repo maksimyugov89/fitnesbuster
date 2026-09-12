@@ -372,6 +372,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               items: [
                 ProfileMenuItem(
                   icon: Icons.workspace_premium_rounded,
+                  iconAsset: AppImages.premium,
                   label: AppLocalizations.tl('premiumTitle'),
                   color: colors.accentOrange,
                   onTap: () => context.push('/premium'),
