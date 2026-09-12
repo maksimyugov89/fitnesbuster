@@ -1039,7 +1039,7 @@ button {
 
 .shot {
   scroll-snap-align: center;
-  text-align: left;
+  text-align: start;
   border-radius: var(--radius);
   transition: transform 0.35s var(--ease);
 }
@@ -1053,7 +1053,13 @@ button {
   line-height: 0; /* убираем зазор под инлайновой картинкой */
   border-radius: 30px;
   padding: 7px;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--elev) 88%, #fff 12%), var(--surface));
+  /* Окантовка видна со всех сторон: раньше градиент уходил в цвет фона
+     страницы, и кадры выглядели обведёнными только сверху. */
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--elev) 88%, #fff 12%),
+    color-mix(in srgb, var(--elev) 93%, #fff 7%)
+  );
   border: 1px solid var(--border-strong);
   box-shadow: var(--shadow-soft);
 }
@@ -1062,6 +1068,9 @@ button {
   border-radius: 24px;
   width: 100%;
   height: auto;
+  /* Тёмная линия по краю: светлые экраны (меню тренировки, покупки, диалоги)
+     иначе сливались с окантовкой и она казалась уже. */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.55);
 }
 
 .shot__caption {
@@ -1106,7 +1115,7 @@ button {
 .lightbox__frame {
   border-radius: 34px;
   padding: 8px;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--elev) 88%, #fff 12%), var(--surface));
+  background: linear-gradient(160deg, color-mix(in srgb, var(--elev) 88%, #fff 12%), color-mix(in srgb, var(--elev) 93%, #fff 7%));
   border: 1px solid var(--border-strong);
   box-shadow: 0 40px 90px -30px #000;
   display: grid;
@@ -1120,6 +1129,7 @@ button {
   height: auto;
   max-width: 100%;
   max-height: min(74vh, 780px);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.55);
 }
 
 .lightbox__bar {
@@ -1166,7 +1176,7 @@ button {
 }
 
 .theme {
-  text-align: left;
+  text-align: start;
   padding: 20px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
@@ -1781,6 +1791,16 @@ button {
   .header__actions .btn__meta {
     display: none;
   }
+
+  /* Pill-ссылки в тексте («Политика конфиденциальности», e-mail) —
+     на телефоне делаем комфортную тап-цель не меньше 44px. */
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 16px;
+  }
 }
 
 /* ── Адаптация под телефоны (280–480px) ─────────────────────────────────────
@@ -1900,4 +1920,167 @@ h3,
   .h1 {
     font-size: clamp(27px, 9.4vw, 38px);
   }
+}
+
+/* ── Выбор языка ────────────────────────────────────────────────────────────
+   15 языков без JS: ссылки на /en/, /de/ и т.д. Текущий язык помечен
+   классом is-current, список раскрывается через <details>. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.lang {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.lang__current {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  min-width: 44px;
+  justify-content: center;
+  padding: 0 13px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  list-style: none;
+}
+
+.lang__current::-webkit-details-marker {
+  display: none;
+}
+
+.lang__current:hover,
+.lang[open] .lang__current {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.lang__globe {
+  width: 17px;
+  height: 17px;
+  opacity: 0.8;
+}
+
+.lang__list {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 8px);
+  z-index: 40;
+  min-width: 194px;
+  max-height: min(62vh, 430px);
+  overflow-y: auto;
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+  border-radius: 16px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.lang__link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: var(--text-2);
+  font-size: 14.5px;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.lang__link:hover,
+.lang__link:focus-visible {
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--text);
+}
+
+.lang__link.is-current {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.lang--inline .lang__list {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+}
+
+/* ── Языки справа налево (арабский) ────────────────────────────────────────
+   Разметка построена на логических свойствах; здесь только оставшееся
+   физическим — декоративные плашки и стрелки лайтбокса. */
+[dir='rtl'] .nav {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir='rtl'] .float-chip--1 {
+  left: auto;
+  right: max(0px, 4%);
+}
+
+[dir='rtl'] .float-chip--2 {
+  right: auto;
+  left: max(0px, 4%);
+}
+
+[dir='rtl'] .lightbox__nav {
+  flex-direction: row-reverse;
+}
+
+@media (max-width: 480px) {
+  /* Меню разделов скрыто, поэтому прижимаем логотип и действия по краям */
+  .header__inner {
+    justify-content: space-between;
+  }
+
+  /* На телефоне от переключателя остаётся только глобус */
+  .lang__code {
+    display: none;
+  }
+
+  .lang__current {
+    padding: 0 12px;
+  }
+
+  .lang__list {
+    min-width: 176px;
+  }
+}
+
+@media (max-width: 340px) {
+  /* Самый узкий экран: имя бренда уступает место логотипу и кнопке,
+     иначе «Скачать» не помещается рядом с переключателем языка. */
+  .brand__name {
+    display: none;
+  }
+}
+
+.footer__note {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* Логотип на самых узких экранах: остаётся читаемой тап-целью 44px,
+   хотя название рядом уже скрыто. */
+@media (max-width: 340px) {
+  .brand { min-width: 44px; justify-content: center; }
 }

@@ -1,21 +1,279 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://fitnesbuster.ru/</loc>
-    <lastmod>2026-09-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/en/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/de/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/es/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/fr/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/it/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/pt/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/tr/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/uk/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/be/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/ar/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/hi/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/ja/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/ko/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
+  </url>
+  <url>
+    <loc>https://fitnesbuster.ru/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://fitnesbuster.ru/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://fitnesbuster.ru/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://fitnesbuster.ru/de/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://fitnesbuster.ru/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fitnesbuster.ru/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://fitnesbuster.ru/it/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fitnesbuster.ru/pt/" />
+    <xhtml:link rel="alternate" hreflang="tr" href="https://fitnesbuster.ru/tr/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://fitnesbuster.ru/uk/" />
+    <xhtml:link rel="alternate" hreflang="be" href="https://fitnesbuster.ru/be/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://fitnesbuster.ru/ar/" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://fitnesbuster.ru/hi/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://fitnesbuster.ru/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://fitnesbuster.ru/ko/" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://fitnesbuster.ru/zh/" />
   </url>
   <url>
     <loc>https://fitnesbuster.ru/privacy.html</loc>
-    <lastmod>2026-09-10</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://fitnesbuster.ru/terms.html</loc>
-    <lastmod>2026-09-10</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
   </url>
 </urlset>
