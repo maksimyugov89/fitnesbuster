@@ -1150,18 +1150,28 @@ button {
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.55);
 }
 
+/* Нижняя строка не должна влиять на ширину окна: раньше она задавала её вместо
+   картинки, и у длинных названий («Цели и ИИ-тренер», «День тренировки»,
+   «Список покупок») рамка становилась шире картинки — окантовка выглядела
+   толще, чем у остальных кадров. width: 0 + min-width: 100% убирает вклад
+   строки в расчёт ширины, оставаясь растянутой по фактической ширине окна. */
 .lightbox__bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 10px 14px;
   margin-top: 14px;
+  flex-wrap: wrap;
+  width: 0;
+  min-width: 100%;
 }
 
 .lightbox__title {
   font-weight: 600;
   font-size: 15px;
   color: var(--text-2);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .icon-btn {
