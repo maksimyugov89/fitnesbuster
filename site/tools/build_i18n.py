@@ -164,6 +164,12 @@ def apply_head(html: str, code: str, page: str) -> str:
     else:
         html = html.replace('<meta property="og:locale"',
                             f'<meta property="og:url" content="{url}" />\n    <meta property="og:locale"', 1)
+    # og:locale:alternate — остальные 14 языков (для соцсетей и поисковиков)
+    html = re.sub(r'\n\s*<meta property="og:locale:alternate"[^>]*/>', '', html)
+    alternates = "\n".join(f'    <meta property="og:locale:alternate" content="{OG[c]}" />'
+                           for c in CODES if c != code)
+    html = re.sub(r'(<meta property="og:locale" content="[^"]*" />)',
+                  lambda m: f"{m.group(1)}\n{alternates}", html, count=1)
     return html
 
 
